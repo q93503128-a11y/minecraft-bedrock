@@ -147,3 +147,24 @@ This batch is intentionally bound to the canon rule that a Mythic outcome should
 - **Dragon Fireball Tome** — preserves Tomemancy's original use of Minecraft's Dragon Fireball; 9 s cooldown; 360 direct plus 250 nearby Lucky impact damage.
 
 All four pieces remain a post-Ender-Dragon Mythic reward. The original Tomemancy level/knowledge-scoreboard gate is replaced by this project's persistent dragon progression contract. The source's 1.16.x data-driven item events are ported to `@minecraft/server 2.9.0`; external visual assets remain the source artwork.
+
+
+## Mythic world events — 0.10.0
+
+This milestone deliberately extends P7 away from single-drop stat inflation. It adds two post-Ender-Dragon world-event outcomes while reusing already-cleared external production assets rather than adding temporary art.
+
+### Rift Siege
+- Wave 1: four Inhabitants Impalers.
+- Wave 2: three Impalers + two Ender Warped Clams.
+- Wave 3: five Impalers + three Warped Clams.
+- Objective: four original Obsidilith Rune blocks placed around the event center must be destroyed.
+- Final wave: one late-game Bogre + two Impalers.
+- Completion: one Legendary Lucky Block, 6–9 Mythic Fragments and one Slasher Blade.
+- Presentation uses the already-vendored BOMD rune/particle/audio family and Inhabitants models/animations/sounds.
+
+### Lucky Rain
+- Twenty timed aerial drop pulses.
+- Each pulse drops 2–3 stacks from a weighted non-vanilla-heavy pool: Epic/Legendary/Mythic fragments, selected licensed external utility rewards, Epic/Rare Lucky Blocks and Slasher Blades.
+- Every fifth pulse introduces an Impaler; pulses 10 and 20 additionally introduce a Warped Clam.
+- Final rewards do not appear until event-tagged enemies are cleared.
+- Event state is stored at world level so a normal script reload does not simply forget an active event.

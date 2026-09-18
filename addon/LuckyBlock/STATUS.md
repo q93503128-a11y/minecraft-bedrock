@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.9.0 Mythic Tomemancy content-package integration
+Milestone: 0.10.0 persistent Mythic world-event framework
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -35,10 +35,10 @@ Implemented:
 Still not complete:
 1. robust fishing acquisition;
 2. much larger reward library, especially true held weapons, ranged weapons, armor, pets and mounts;
-3. structures, traps, chained Lucky events, raids, wave defense and minigames;
+3. more structures, traps, chained Lucky events, dungeons and minigames;
 4. post-dragon custom normal mobs/elites/minibosses/bosses;
 5. boss mechanics/phases/telegraphs and late-game stat rebalance;
-6. Mythic content-package outcomes;
+6. more Mythic dungeon/structure packages beyond the implemented set/invasion/Lucky Rain outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
 8. refreshed packaged .mcaddon after the next packaging checkpoint.
 
@@ -179,3 +179,21 @@ Static audit after 0.8.0 Slasher integration:
 - Offhand Diamond Staff gives 1.20x damage to all three Tome spells, making the set mechanically connected.
 - Spell use stays locked until `lb:post_dragon_unlocked`; the source's obsolete 1.16.x data-driven runtime is ported to @minecraft/server 2.9.0.
 - Full MIT notice and exact source-to-target provenance are included.
+
+
+0.10.0 persistent Mythic world-event milestone:
+- P7 is no longer represented only by a boss and a gear set: Mythic blocks can now start persistent world events.
+- Added `BP/scripts/events/mythic_events.js` with world-persisted event state, a four-event global cap, 64-block overlap prevention and pause-when-unattended behavior.
+- Added **Rift Siege / 균열 공성전**:
+  - four combat stages using the already vendored Inhabitants Impaler / Warped Clam / Bogre production assets;
+  - four already-vendored Obsidilith rune blocks become an explicit objective before the final stage;
+  - the final Bogre stage is not released until the runes are destroyed;
+  - completion awards a Legendary Lucky Block, 6–9 Mythic Fragments and a Slasher Blade.
+- Added **Lucky Rain / 럭키 레인**:
+  - twenty timed aerial reward pulses using existing real Lucky/external reward items, not vanilla filler;
+  - 2–3 falling reward stacks per pulse with Epic/Legendary/Mythic fragments and selected licensed external rewards;
+  - Impaler pressure every fifth pulse and Warped Clam pressure at pulse 10/20;
+  - after the rain, players must clear surviving event enemies before the final reward.
+- Mythic pool is now content-first: Obsidilith boss, Tomemancer Archmage Set, Rift Siege and Lucky Rain together take the majority of the post-dragon Mythic outcome weight.
+- Event overlap failure is handled safely by a four-Mythic-Fragment fallback instead of silently consuming the block.
+- No new assistant-drawn model, icon, texture or placeholder was added; the event presentation reuses already-licensed production assets and existing imported particle/audio resources.

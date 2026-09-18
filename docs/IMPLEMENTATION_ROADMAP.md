@@ -38,6 +38,8 @@ Port/rebuild verified high-quality enemies and bosses. Every major boss receives
 ## P7 — Mythic outcomes
 Mythic Lucky Blocks award content packages: boss/event/dungeon/set/invasion/Lucky Rain-style experiences rather than merely one huge-stat item.
 
+Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, persistent Rift Siege invasion/wave event and persistent Lucky Rain event. Still missing: true dungeon/structure package and additional chained event families.
+
 ## P8 — Packaging and release validation
 - Package BP + RP as one .mcaddon.
 - Import into current stable Bedrock and test new world + existing world.

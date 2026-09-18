@@ -7,6 +7,7 @@ import "./integrations/bomd_obsidilith.js";
 import "./integrations/slasher/index.js";
 import "./integrations/tomemancy.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
+import { startMythicEvent } from "./events/mythic_events.js";
 
 function chooseWeighted(pool) {
   const postDragon = world.getDynamicProperty("lb:post_dragon_unlocked") === true;
@@ -43,6 +44,11 @@ function openWeighted(dimension, pos, tier) {
           : 1
       );
       spawnAt(dimension, pos, entry.id, count);
+    }
+  } else if (reward.kind === "event") {
+    const started = startMythicEvent(dimension, pos, reward.id);
+    if (!started) {
+      spawnAt(dimension, pos, "lb:mythic_fragment", 4);
     }
   } else {
     spawnAt(dimension, pos, reward.id, reward.count ?? 1);
