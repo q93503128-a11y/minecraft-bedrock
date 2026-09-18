@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.25.0 Sky Damselfly post-dragon flight mount
+Milestone: 0.26.0 Explorer Field Kit multiplayer-aware utility armor
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -33,7 +33,7 @@ Implemented:
 - Script syntax audit passes for main.js, acquisition.js and reward_behaviors.js.
 
 Still not complete:
-1. much larger reward library, especially additional armor archetypes, minigames and more specialized utility/combat outcomes;
+1. much larger reward library, especially more minigames, additional wearable/accessory archetypes and more specialized utility/combat outcomes;
 2. more structures, traps, chained Lucky events, dungeons and additional minigames;
 3. more pre-dragon encounter breadth, especially miniboss families and exploration structures;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
@@ -557,5 +557,31 @@ Static audit after 0.25.0:
 - Original `blue.png` and vendored texture share the exact Git blob SHA `6863770f5b36ea4736b18c4db907e294b921f5fb`.
 - Stable Creator references confirm `minecraft:input_air_controlled`, `minecraft:movement.hover`, `minecraft:rideable`, `minecraft:navigation.fly`, `minecraft:behavior.random_fly` and Script API `EntityRideableComponent.getRiders()`.
 - Source fall-immunity behavior is retained with a fall-only damage sensor.
+- Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- This remains source/static validation only; stable Bedrock runtime QA is still pending.
+
+
+0.26.0 Explorer Field Kit:
+- Added a second wearable-gear archetype: `lb:explorer_hat` + `lb:explorer_pack`, rewarded together with a compass from Epic Lucky Blocks.
+- Visuals are direct CC0 Loy's Goodies production assets, not project-drawn placeholders.
+- Explorer Hat source is `230726_explorer_hat.bbmodel`: all 7 source cubes are converted into a head-bound attachable; the original 32x32 embedded PNG is unchanged.
+- Field Pack source is `230516_backpack.bbmodel`: 7 physical cuboids are ported from the 10 source elements; the other 3 source elements are inverted duplicate/backface geometry and are explicitly treated as a format-conversion boundary rather than counted as missing art. Original 32x32 PNG is unchanged.
+- Bedrock wearable geometry follows Microsoft's documented custom crown/chestplate attachable pattern rather than inventing a pack-specific rendering hack.
+- Balance is utility-first: Hat protection 1 / durability 320, Pack protection 3 / durability 480. The two pieces total only 4 protection, intentionally trading raw defense for exploration utility instead of replacing diamond/Netherite.
+- Full two-piece wearer receives refreshed Night Vision and Speed I.
+- Multiplayer link: if another full-kit wearer is in the same dimension within 12 blocks, each linked wearer also receives Haste I. The script evaluates every player's equipment independently, excludes self, checks dimension identity and uses no shared global player cooldown/state.
+- Epic weight 7 is funded by reducing repeated generic/utility slices; Epic total remains exactly 100.
+- Current production architecture remains the 0.4.1 multi-addon merge policy: licensed external assets are vendored into one namespace/BP/RP, source-specific runtime logic stays in separate integration modules, and no required external runtime pack dependency is introduced.
+- Stable Bedrock import, actual attachable alignment, multiplayer effect behavior and balance still require real runtime QA.
+
+Static audit after 0.26.0:
+- BP/RP manifests resolve to 0.26.0 and @minecraft/server remains 2.9.0.
+- Changed/runtime-critical JSON and JavaScript parse successfully.
+- Hat item/attachable/geometry and Pack item/attachable/geometry identifiers resolve consistently.
+- Explorer Hat source/target cube count is 7/7.
+- Backpack source classification is 10 total elements = 7 physical cuboids + 3 inverted backface duplicates; target geometry contains the 7 physical cuboids.
+- Explorer Hat source/target texture Git blob SHA is `05dd0344f26e25b8a4b746932f96bda73d8e341c`.
+- Field Pack source/target texture Git blob SHA is `210a555c2b69cd0cc432d8d17c4b4044755837e2`.
+- Multiplayer-static checks confirm per-player full-kit detection, same-dimension filtering, self-exclusion, 12-block link range and linked Haste path.
 - Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
 - This remains source/static validation only; stable Bedrock runtime QA is still pending.

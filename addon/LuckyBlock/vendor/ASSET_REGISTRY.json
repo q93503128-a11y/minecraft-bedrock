@@ -1100,6 +1100,39 @@
       "contentId": "lb:sky_damselfly_mount",
       "integrationModule": "BP/scripts/integrations/slayers_beasts_damselfly.js",
       "modification": "Source Damselfly 10-cube body/wing silhouette and four-wing FLY/PERCH animation data are converted to Bedrock; original blue texture is vendored unchanged. Lucky scales the model to mount size and adds post-dragon taming, riding, 3D air control, 30-second flight energy, dismount recharge and reward gating. Upstream flight/perch identity and fall-damage immunity are preserved; rideability/stamina are project-owned."
+    },
+    {
+      "key": "loys_explorer_hat",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/armor & costumes/hats/230726_explorer_hat.bbmodel"
+      ],
+      "targets": [
+        "BP/items/explorer_hat.json",
+        "RP/attachables/explorer_hat.attachable.json",
+        "RP/models/entity/explorer_hat.geo.json",
+        "RP/textures/items/explorer_hat.png"
+      ],
+      "contentId": "lb:explorer_hat",
+      "integrationModule": "BP/scripts/integrations/loys_explorer_kit.js",
+      "modification": "All 7 source cubes are converted into a head-bound Bedrock attachable using the official custom wearable binding pattern. The embedded 32x32 source PNG is vendored unchanged. Protection, durability and two-piece exploration effects are Lucky-owned gameplay."
+    },
+    {
+      "key": "loys_explorer_pack",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/armor & costumes/packs/230516_backpack.bbmodel"
+      ],
+      "targets": [
+        "BP/items/explorer_pack.json",
+        "BP/scripts/integrations/loys_explorer_kit.js",
+        "RP/attachables/explorer_pack.attachable.json",
+        "RP/models/entity/explorer_pack.geo.json",
+        "RP/textures/items/explorer_pack.png"
+      ],
+      "contentId": "lb:explorer_pack",
+      "integrationModule": "BP/scripts/integrations/loys_explorer_kit.js",
+      "modification": "The source contains 10 Blockbench cube elements: 7 forward-visible cuboids plus 3 inverted duplicate/backface elements. Bedrock entity geometry ports the 7 physical cuboids and uses entity rendering for the backfaces rather than duplicating inverted cubes. The embedded 32x32 PNG is vendored unchanged. Chest-slot wearability and multiplayer-aware set effects are Lucky-owned."
     }
   ]
 }

@@ -64,3 +64,11 @@ A source's top-level license does not override restrictions attached to embedded
 - Direct reused/adapted material is the Damselfly model, FLY/PERCH animation definitions, renderer scale/texture mapping reference and original blue texture.
 - The source is a non-rideable ambient flying/perching creature. Mount sizing, taming, rider controls, flight-energy limits, recharge and Legendary reward placement are Lucky-owned additions.
 - Source fall-damage immunity is preserved rather than reinterpreted as a Lucky ability.
+
+
+## Active Loy's Goodies Explorer Field Kit port — 0.26.0
+- Source: SL0ANE/Loy-s-Goodies, reviewed commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Selected files: `230726_explorer_hat.bbmodel` and `230516_backpack.bbmodel`.
+- Direct reused material is the source geometry and each model's embedded texture.
+- The backpack source's three inverted duplicate/backface elements are not treated as independent physical cuboids in Bedrock entity geometry; the seven physical cuboids are ported and the conversion boundary is documented.
+- Wearable slots, protection/durability, set effects, multiplayer link logic and Lucky reward weights are project-owned additions.

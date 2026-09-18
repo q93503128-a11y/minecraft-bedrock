@@ -259,3 +259,13 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Source visual payload is 10 model cubes and four animated wing bones; the original blue PNG is vendored byte-identically.
 - Source behavior is a small 8 HP flying/perching ambient creature with 0.25 movement and 0.4 flying speed and no fall damage.
 - Lucky-owned additions: mount-scale conversion, 84 HP balance, taming/ownership, rider seat, 3D air controls, 30-second flight energy, exhaustion/forced landing, dismount recharge and post-Ender-Dragon Legendary reward binding.
+
+
+### Loy's Goodies Explorer Field Kit
+- Source: SL0ANE/Loy-s-Goodies, pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+- License: CC0-1.0.
+- Explorer Hat direct source: `models/java-model/armor & costumes/hats/230726_explorer_hat.bbmodel`.
+- Field Pack direct source: `models/java-model/armor & costumes/packs/230516_backpack.bbmodel`.
+- Explorer Hat preserves all 7 source cubes. The Field Pack source contains 7 physical cuboids plus 3 inverted duplicate/backface elements; the Bedrock attachable ports the 7 physical cuboids and relies on entity rendering rather than duplicating inverted Java-block backfaces.
+- Both embedded 32x32 source PNGs are imported unchanged.
+- Lucky-owned additions: wearable slots, low protection/durability balance, Epic bundle binding, full-kit Night Vision/Speed, and the 12-block multiplayer Haste link between separately evaluated full-kit wearers.

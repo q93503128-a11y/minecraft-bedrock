@@ -442,3 +442,33 @@ Lucky role:
 - source fall immunity is preserved so stamina exhaustion means forced landing rather than arbitrary fall-death.
 
 This deliberately replaces the duplicate Legendary Chainsaw reward slice at equal weight. It expands the mount family from one ground combat mount to a separate post-dragon aerial exploration/mobility archetype.
+
+
+## Loy's Goodies Explorer Field Kit — 0.26.0
+
+Status: active Epic pre-dragon utility/support wearable package. License: CC0-1.0. Pinned upstream: `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+
+Direct source payload:
+- `armor & costumes/hats/230726_explorer_hat.bbmodel`: 7 cubes, embedded 32x32 texture;
+- `armor & costumes/packs/230516_backpack.bbmodel`: 10 cube elements, consisting of 7 physical forward cuboids plus 3 inverted duplicate/backface elements, embedded 32x32 texture;
+- both embedded textures are vendored unchanged.
+
+Bedrock visual binding:
+- Explorer Hat is converted to a custom head attachable using the documented item-slot-to-bone binding pattern;
+- Field Pack is converted to a body-bound chest attachable using the documented custom-chestplate body binding pattern;
+- no temporary icon/model/texture is created. The external source texture is also the item-atlas texture;
+- the three Java-block inverted backpack backfaces are documented as a format boundary instead of being falsely reported as physical missing cubes.
+
+Lucky role:
+- Epic bundle: Explorer Hat + Explorer Field Pack + vanilla compass;
+- protection profile 1 + 3, deliberately weak compared with top vanilla armor;
+- durability 320 + 480, repairable by leather or Epic Fragments;
+- full two-piece set grants refreshed Night Vision and Speed I;
+- multiplayer Expedition Link: full-kit wearers within 12 blocks in the same dimension each receive Haste I;
+- link evaluation is per player and per current equipment state; self is excluded and no global/shared cooldown owns player state.
+
+Integration architecture:
+- source assets remain vendored under the existing `lb` namespace;
+- runtime lives in its own `loys_explorer_kit.js` module;
+- the final pack remains one BP + one RP with mutual dependencies and no external add-on dependency;
+- this follows the project's established multi-add-on merge pattern: isolate provenance and logic by source while merging licensed content into a single distributable namespace.
