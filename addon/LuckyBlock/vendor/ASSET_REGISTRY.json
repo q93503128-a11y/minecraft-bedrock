@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "rules": {
+    "defaultMode": "vendored",
+    "namespace": "lb",
+    "targetPrefix": "reward_",
+    "externalRuntimeDependencyPolicy": "Avoid unless an upstream add-on must remain separate. Separate BP script realms cannot import each other directly.",
+    "sourcePinning": "Every active source is pinned to a reviewed Git commit SHA.",
+    "collisionPolicy": "All imported identifiers and file names are remapped into the lb namespace before entering BP/RP.",
+    "licensePolicy": "vendored assets require verified redistribution/modification permission; reference-only sources never enter distributable packs."
+  },
+  "sources": {
+    "microsoft_minecraft_samples": {
+      "url": "https://github.com/microsoft/minecraft-samples",
+      "license": "MIT",
+      "reviewedRef": "main",
+      "reviewedCommit": "5e04b6f719c316b0611f569af0cab7d6e9a2fb26",
+      "integrationMode": "vendored"
+    },
+    "corvae_pylon": {
+      "url": "https://github.com/CorvaeOboro/minecraft_botania_pylon_crystal",
+      "license": "CC0-1.0",
+      "reviewedRef": "main",
+      "reviewedCommit": "7a0d28235188131313bfa4b20684549d3ac15528",
+      "integrationMode": "vendored"
+    },
+    "loys_goodies": {
+      "url": "https://github.com/SL0ANE/Loy-s-Goodies",
+      "license": "CC0-1.0",
+      "reviewedRef": "main",
+      "reviewedCommit": "afbb7695b09de0ed8ee3aa97732ff7c3d367520c",
+      "integrationMode": "vendored"
+    }
+  },
+  "assets": [
+    {
+      "key": "common_lucky_visual",
+      "source": "microsoft_minecraft_samples",
+      "upstream": [
+        "lucky_block/version_1/resource_packs/mike_luck/models/blocks/luckyblock.geo.json",
+        "lucky_block/version_1/resource_packs/mike_luck/textures/blocks/luckyblock.png"
+      ],
+      "targets": [
+        "RP/models/blocks/common_lucky_block.geo.json",
+        "RP/textures/blocks/lb_common_lucky.png"
+      ],
+      "contentId": "lb:common_lucky_block",
+      "modification": "geometry identifier remapped; visual used as current Common technical base"
+    },
+    {
+      "key": "tier_crystal_visuals",
+      "source": "corvae_pylon",
+      "upstream": [
+        "src/main/resources/assets/botania_pylon_crystal/models/block/pylon_crystal_bipyramid_short.json",
+        "src/main/resources/assets/botania_pylon_crystal/models/block/pylon_crystal_bipyramid_shorttall.json",
+        "src/main/resources/assets/botania_pylon_crystal/models/block/pylon_crystal_bipyramid_tallshort.json",
+        "src/main/resources/assets/botania_pylon_crystal/models/block/pylon_crystal_bipyramid_tall.json",
+        "src/main/resources/assets/botania_pylon_crystal/models/block/pylon_ring_natura.json",
+        "src/main/resources/assets/botania_pylon_crystal/models/block/pylon_ring_gaia.json",
+        "src/main/resources/assets/botania_pylon_crystal/textures/block/pylon_crystal_mana.png",
+        "src/main/resources/assets/botania_pylon_crystal/textures/block/pylon_crystal_natura.png",
+        "src/main/resources/assets/botania_pylon_crystal/textures/block/pylon_crystal_gaia.png",
+        "src/main/resources/assets/botania_pylon_crystal/textures/block/pylon_ring_natura.png",
+        "src/main/resources/assets/botania_pylon_crystal/textures/block/pylon_ring_gaia.png"
+      ],
+      "targets": [
+        "RP/models/blocks/*_fragment.geo.json",
+        "RP/models/blocks/{rare,epic,legendary,mythic}_lucky_block.geo.json",
+        "RP/textures/blocks/lb_fragment_mana.png",
+        "RP/textures/blocks/lb_crystal_natura.png",
+        "RP/textures/blocks/lb_crystal_gaia.png",
+        "RP/textures/blocks/lb_ring_natura.png",
+        "RP/textures/blocks/lb_ring_gaia.png"
+      ],
+      "modification": "Java block geometry converted to Bedrock geometry; textures retained"
+    },
+    {
+      "key": "loys_burger",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/foods & drinks/220909_burger.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_burger.json",
+        "RP/models/blocks/reward_burger.geo.json",
+        "RP/textures/blocks/lb_reward_burger.png"
+      ],
+      "contentId": "lb:reward_burger",
+      "behaviorComponent": "lb:consume_burger",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_plunger",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/220211_plunger.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_plunger.json",
+        "RP/models/blocks/reward_plunger.geo.json",
+        "RP/textures/blocks/lb_reward_plunger.png"
+      ],
+      "contentId": "lb:reward_plunger",
+      "behaviorComponent": "lb:plunger_launch",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_backpack",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/armor & costumes/packs/230516_backpack.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_backpack.json",
+        "RP/models/blocks/reward_backpack.geo.json",
+        "RP/textures/blocks/lb_reward_backpack.png"
+      ],
+      "contentId": "lb:reward_backpack",
+      "behaviorComponent": "lb:open_backpack",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_snow_globe",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/220130_snow_globe.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_snow_globe.json",
+        "RP/models/blocks/reward_snow_globe.geo.json",
+        "RP/textures/blocks/lb_reward_snow_globe.png"
+      ],
+      "contentId": "lb:reward_snow_globe",
+      "behaviorComponent": "lb:snow_globe",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_vending_machine",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tech & machine/230924_vending_machine.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_vending_machine.json",
+        "RP/models/blocks/reward_vending_machine.geo.json",
+        "RP/textures/blocks/lb_reward_vending_machine.png"
+      ],
+      "contentId": "lb:reward_vending_machine",
+      "behaviorComponent": "lb:vending_machine",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_noodles",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/foods & drinks/230423_noodles.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_noodles.json",
+        "RP/models/blocks/reward_noodles.geo.json",
+        "RP/textures/blocks/lb_reward_noodles.png"
+      ],
+      "contentId": "lb:reward_noodles",
+      "behaviorComponent": "lb:consume_noodles",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_moai",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/230617_moai.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_moai.json",
+        "RP/models/blocks/reward_moai.geo.json",
+        "RP/textures/blocks/lb_reward_moai.png"
+      ],
+      "contentId": "lb:reward_moai",
+      "behaviorComponent": "lb:moai_blessing",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_pc",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tech & machine/220523_pc.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_pc.json",
+        "RP/models/blocks/reward_pc.geo.json",
+        "RP/textures/blocks/lb_reward_pc.png"
+      ],
+      "contentId": "lb:reward_pc",
+      "behaviorComponent": "lb:pc_overclock",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_cctv",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tech & machine/230502_cctv_camera.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_cctv.json",
+        "RP/models/blocks/reward_cctv.geo.json",
+        "RP/textures/blocks/lb_reward_cctv.png"
+      ],
+      "contentId": "lb:reward_cctv",
+      "behaviorComponent": "lb:cctv_scan",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_wrench",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/220420_wrench.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_wrench.json",
+        "RP/models/blocks/reward_wrench.geo.json",
+        "RP/textures/blocks/lb_reward_wrench.png"
+      ],
+      "contentId": "lb:reward_wrench",
+      "behaviorComponent": "lb:wrench_tune",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_chainsaw",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/230501_chainsaw.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_chainsaw.json",
+        "RP/models/blocks/reward_chainsaw.geo.json",
+        "RP/textures/blocks/lb_reward_chainsaw.png"
+      ],
+      "contentId": "lb:reward_chainsaw",
+      "behaviorComponent": "lb:chainsaw_cut",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_camera",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/230511_camera.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_camera.json",
+        "RP/models/blocks/reward_camera.geo.json",
+        "RP/textures/blocks/lb_reward_camera.png"
+      ],
+      "contentId": "lb:reward_camera",
+      "behaviorComponent": "lb:camera_snapshot",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_golden_hammer",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/hammer/230512_golden_hammer.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_golden_hammer.json",
+        "RP/models/blocks/reward_golden_hammer.geo.json",
+        "RP/textures/blocks/lb_reward_golden_hammer.png"
+      ],
+      "contentId": "lb:reward_golden_hammer",
+      "behaviorComponent": "lb:hammer_blessing",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_vase",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/230217_vase.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_vase.json",
+        "RP/models/blocks/reward_vase.geo.json",
+        "RP/textures/blocks/lb_reward_vase.png"
+      ],
+      "contentId": "lb:reward_vase",
+      "behaviorComponent": "lb:vase_cache",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "loys_easel",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/230627_easel.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_easel.json",
+        "RP/models/blocks/reward_easel.geo.json",
+        "RP/textures/blocks/lb_reward_easel.png"
+      ],
+      "contentId": "lb:reward_easel",
+      "behaviorComponent": "lb:easel_focus",
+      "integrationModule": "BP/scripts/integrations/loys_goodies.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    }
+  ]
+}
