@@ -11,7 +11,7 @@ Bedrock baseline for active implementation: current stable 26.51, with compatibi
 | Loy-s-Goodies | Loy / CC0-1.0 | `220909_burger.bbmodel`, `230423_noodles.bbmodel`, `230516_backpack.bbmodel`, `220130_snow_globe.bbmodel`, `230924_vending_machine.bbmodel`, plunger, turret, chainsaw, multiple axes/bows/hammers/shields/swords/wands | Common/Rare joke and utility rewards; Epic weapon/utility pool after behavior work | mainly pre | Medium | VERIFIED |
 | mc-blockbench-models | FrenchKrab / CC BY 4.0 | cardboard axe/shield/sword, drill breaker, warhammer-pickaxe, mineral greatsword; selected original-looking mob models after provenance screen | odd Common rewards through Epic equipment; selected encounter models | both | Medium | VERIFIED WITH ATTRIBUTION |
 | Inhabitants | Team Synapse / MIT | `geo/bogre.geo.json`, `geo/impaler.geo.json`, `geo/warped_clam.geo.json`; matching animations, textures, glow masks, spike projectile; Bogre recipes and lair loot concepts | Bogre encounter/event, Impaler elite, Warped Clam utility/End encounter; projectile/effect patterns | Impaler pre/late candidate; Warped Clam post; Bogre either | Medium-High | VERIFIED |
-| Slayers-Beasts | InvictusSlayer / MIT | Mantis model source, WALK/SCUTTLE/STRIKE/FLAP animation source, original 128x128 texture, ambient/hurt/death OGG | post-dragon fast predator; Rift Siege reinforcement | post | High (Java model/animation -> Bedrock) | MANTIS ACTIVE; MORE ASSETS PENDING |
+| Slayers-Beasts | InvictusSlayer / MIT | Mantis + Tyrachnid model/animation sources and original textures; Mantis OGG audio | post-dragon fast predator + rare cave elite; Rift Siege reinforcements | post | High (Java model/animation -> Bedrock) | MANTIS + TYRACHNID ACTIVE; MORE ASSETS PENDING |
 | forgero | SigmundGranaas / MIT | repo default branch `1.20`; modular weapon/tool implementation and assets pending per-file review | modular special tool/weapon reward family | both | High | LICENSE VERIFIED, ASSET REVIEW PENDING |
 | visuality | PinkGoosik / MIT | crystal sparkle/hit/environmental visual-effect patterns | acquisition/opening/combat presentation reference and selective reusable assets | both | Medium-High | VERIFIED; JAVA LOGIC REBUILD REQUIRED |
 | bosses-of-mass-destruction | Barribob / LGPL-3.0 | boss models/mechanics and encounter flow | high-tier boss encounter reference; direct reuse only under explicit LGPL compliance path | post | High | CONDITIONAL |
@@ -175,3 +175,23 @@ This milestone deliberately extends P7 away from single-drop stat inflation. It 
 Status: active vendored post-dragon normal enemy. License: MIT. Pinned upstream: `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
 
 The source's Mantis identity is a fast approach/scuttle, leap, melee strike and poison predator. The Bedrock port keeps that role while scaling to the Lucky late game: 320 HP, 24 melee, 32-block tracking, long-range lunge cadence, 50% poison on successful hits, vegetation-biased post-dragon spawning with a three-nearby cap, and source-derived WALK/SCUTTLE/STRIKE/FLAP animation keyframes. The original texture and audio are vendored unchanged; no vanilla recolor or temporary model is used.
+
+
+## Slayers-Beasts Tyrachnid — 0.12.0
+
+Status: active vendored post-dragon **elite**, not a boss. License: MIT. Pinned upstream: `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+
+Direct external visual payload:
+- original Tyrachnid texture;
+- 43 source model parts / 90 cubes converted from `TyrachnidModel.java`;
+- 40 animation channels / 200 keyframes converted from the original WALK animation.
+
+Lucky role:
+- 900 HP / 34 melee / 0.30 movement / 55% knockback resistance;
+- rare cave-only post-dragon ecology spawn, maximum one within 96 blocks;
+- also a post-dragon Legendary Lucky Block encounter;
+- source-faithful large, fast, high-knockback melee identity;
+- **Lucky-owned Silk Snare**: 1-second five-point telegraph, then 42 damage + Slowness III for players who remain within 4.5 blocks;
+- stage-3 Rift Siege elite reinforcement.
+
+The upstream `performRangedAttack` method is empty. Therefore Silk Snare is documented as a Lucky mechanic, not misattributed to Slayers-Beasts. Its telegraph reuses already-cleared BOMD particle assets instead of introducing temporary art.

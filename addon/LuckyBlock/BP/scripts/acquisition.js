@@ -173,6 +173,13 @@ world.afterEvents.entityDie.subscribe((event) => {
     return;
   }
 
+  if (typeId === "lb:tyrachnid") {
+    spawnReward(dimension, location, "lb:legendary_fragment", 1, 2);
+    rollReward(dimension, location, 0.25, "lb:epic_lucky_block", 1, 1);
+    rollReward(dimension, location, 0.08, "lb:mythic_fragment", 1, 1);
+    return;
+  }
+
   if (typeId === "minecraft:wither") {
     spawnReward(dimension, location, "lb:epic_lucky_block", 1, 1);
     rollReward(dimension, location, postDragon ? 0.30 : 0.15, "lb:legendary_fragment", 1, 2);

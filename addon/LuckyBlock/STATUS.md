@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.11.0 Slayers-Beasts Mantis late-game ecology
+Milestone: 0.12.0 Slayers-Beasts Tyrachnid cave elite
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -222,3 +222,17 @@ Static audit after 0.11.0 Mantis integration:
 - Runtime import, post-dragon gate, vegetation habitat selection, acquisition drops and three Rift Siege Mantis bindings are present.
 - No placeholder/dummy/temp/test-texture filename is present under the Lucky Block source tree.
 - This is source/static validation only; current stable Bedrock import, content-log, render, combat-balance and multiplayer runtime QA remain release-stage work.
+
+
+0.12.0 Slayers-Beasts Tyrachnid milestone:
+- Added `lb:tyrachnid` from the already-verified Slayers-Beasts MIT source as a post-dragon **elite**, not another boss.
+- No assistant-drawn/recolored stand-in: the original Tyrachnid texture is vendored unchanged.
+- All 43 parsed model parts / 90 cubes from `TyrachnidModel.java` are converted to Bedrock geometry.
+- All 40 source WALK channels / 200 keyframes are converted to Bedrock animation.
+- Lucky balance: 900 HP, 34 melee, 0.30 movement, 55% knockback resistance and strong scripted hit knockback.
+- Natural ecology spawn is post-dragon only, restricted to underground stone/deepslate/tuff/dripstone/moss surfaces with a nearby cave ceiling and a one-within-96-block cap.
+- Added a post-dragon Legendary Lucky Block Tyrachnid encounter.
+- Added a project-owned Silk Snare: five-point BOMD indicator telegraph, 1-second dodge window, then 42 damage + Slowness III inside 4.5 blocks.
+- The source's `RangedAttackMob` hook is empty upstream; Silk Snare is explicitly not misrepresented as original source behavior.
+- Rift Siege stage 3 now includes one Tyrachnid while reducing the raw number of other mobs to keep the wave role-based rather than merely denser.
+- Kill rewards: guaranteed 1–2 Legendary Fragments, 25% Epic Lucky Block and 8% Mythic Fragment.

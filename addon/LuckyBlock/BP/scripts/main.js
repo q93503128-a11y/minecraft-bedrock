@@ -7,6 +7,7 @@ import "./integrations/bomd_obsidilith.js";
 import "./integrations/slasher/index.js";
 import "./integrations/tomemancy.js";
 import "./integrations/slayers_beasts_mantis.js";
+import "./integrations/slayers_beasts_tyrachnid.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 import { startMythicEvent } from "./events/mythic_events.js";
 

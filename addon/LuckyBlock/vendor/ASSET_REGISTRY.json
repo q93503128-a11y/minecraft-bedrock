@@ -793,6 +793,29 @@
       "contentId": "lb:mantis",
       "integrationModule": "BP/scripts/integrations/slayers_beasts_mantis.js",
       "modification": "Original Java Mantis model proportions and WALK/SCUTTLE/STRIKE/FLAP keyframes are converted to Bedrock coordinates; original texture and three OGG sounds are vendored unchanged. Java AI is reimplemented as post-dragon habitat spawning, leap pressure, melee poison and event participation."
+    },
+    {
+      "key": "slayers_beasts_tyrachnid",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/TyrachnidModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/TyrachnidAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/TyrachnidRenderer.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/Tyrachnid.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/tyrachnid.png"
+      ],
+      "targets": [
+        "BP/entities/tyrachnid.json",
+        "BP/scripts/integrations/slayers_beasts_tyrachnid.js",
+        "RP/entity/tyrachnid.entity.json",
+        "RP/models/entity/tyrachnid.geo.json",
+        "RP/animations/tyrachnid.animation.json",
+        "RP/animation_controllers/tyrachnid.animation_controllers.json",
+        "RP/textures/entity/tyrachnid.png"
+      ],
+      "contentId": "lb:tyrachnid",
+      "integrationModule": "BP/scripts/integrations/slayers_beasts_tyrachnid.js",
+      "modification": "Original 43-part / 90-cube Java model and 40-channel WALK animation are converted to Bedrock coordinates; original texture is vendored unchanged. Source melee stats/large-body identity are Lucky-rebalanced. Upstream RangedAttackMob hook is empty, so the telegraphed Silk Snare is explicitly Lucky-owned and reuses already-vendored BOMD indicator/burst particles."
     }
   ]
 }

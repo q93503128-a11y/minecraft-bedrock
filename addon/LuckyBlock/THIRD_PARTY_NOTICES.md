@@ -156,3 +156,13 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Directly reused/adapted: original Mantis texture, ambient/hurt/death OGG audio, model dimensions/pivots/base rotations, and WALK/SCUTTLE/STRIKE/FLAP keyframes.
 - Java model/animation coordinates are converted into Bedrock JSON rather than visually redesigned.
 - Java AI is reimplemented for Bedrock while retaining the source Mantis's fast approach, leap, strike and poison identity.
+
+
+### Tyrachnid elite
+- Same Slayers-Beasts MIT source and pinned commit as the Mantis integration.
+- Directly reused/adapted:
+  - original `textures/entity/tyrachnid.png`;
+  - all 43 model parts / 90 cubes represented by `TyrachnidModel.java`;
+  - the original 40-channel / 200-keyframe WALK animation.
+- The source entity's actual implemented combat is fast, high-knockback melee. Its `RangedAttackMob` method is empty upstream, so this project does **not** present a ranged projectile as source-original behavior.
+- Lucky-specific addition: a telegraphed Silk Snare zone reusing already-vendored BOMD indicator/burst particles; this is a project-side late-game elite mechanic.

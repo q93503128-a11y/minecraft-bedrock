@@ -1,0 +1,33 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:tyrachnid",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/tyrachnid"
+      },
+      "geometry": {
+        "default": "geometry.lb.tyrachnid"
+      },
+      "animations": {
+        "walk": "animation.lb.tyrachnid.walk",
+        "locomotion": "controller.animation.lb.tyrachnid.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#30231f",
+        "overlay_color": "#a44a34"
+      }
+    }
+  }
+}

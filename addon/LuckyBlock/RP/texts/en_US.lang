@@ -43,3 +43,5 @@ item.lb:tomemancy_dragon_fireball_tome.name=§dDragon Fireball Tome§r
 entity.lb:tomemancy_meteor.name=Meteor
 
 entity.lb:mantis.name=Mantis
+
+entity.lb:tyrachnid.name=Tyrachnid

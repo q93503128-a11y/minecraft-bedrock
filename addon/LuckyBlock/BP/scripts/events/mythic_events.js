@@ -283,9 +283,10 @@ function tickSiege(state, dimension) {
   }
 
   if (state.stage === 2) {
-    spawnEventMob(state, dimension, "lb:impaler", 3);
-    spawnEventMob(state, dimension, "lb:warped_clam", 3);
-    spawnEventMob(state, dimension, "lb:mantis", 3);
+    spawnEventMob(state, dimension, "lb:impaler", 2);
+    spawnEventMob(state, dimension, "lb:warped_clam", 2);
+    spawnEventMob(state, dimension, "lb:mantis", 2);
+    spawnEventMob(state, dimension, "lb:tyrachnid", 1);
     state.stage = 3;
     messageNear(dimension, state.center, "§5[신화 럭키] 3단계 — 균열 방어대가 쏟아집니다.");
     return false;
