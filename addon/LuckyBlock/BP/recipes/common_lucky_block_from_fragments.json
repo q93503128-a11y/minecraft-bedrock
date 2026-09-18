@@ -1,0 +1,21 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "lb:common_lucky_block_from_fragments"
+    },
+    "tags": ["crafting_table"],
+    "ingredients": [
+      { "item": "lb:common_fragment" },
+      { "item": "lb:common_fragment" },
+      { "item": "lb:common_fragment" },
+      { "item": "lb:common_fragment" },
+      { "item": "lb:common_fragment" },
+      { "item": "lb:common_fragment" }
+    ],
+    "result": {
+      "item": "lb:common_lucky_block",
+      "count": 1
+    }
+  }
+}
