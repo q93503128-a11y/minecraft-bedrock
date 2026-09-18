@@ -7,25 +7,26 @@ Canonical planning/documentation repository for Minecraft Bedrock projects.
 Active project: a five-tier Lucky Block Add-On with externally licensed real assets, varied rewards/events and a first-Ender-Dragon late-game gate.
 
 Current source milestone:
-- 0.3.0 acquisition + first external reward batch
+- `0.4.0` — functional reward expansion + exploration acquisition
 
 Latest packaged development build:
 - `build/LuckyBlock_0.2.0.mcaddon`
 
-0.3.0 source now contains:
-- all five Lucky Block tiers and all five Lucky Fragment tiers;
-- Microsoft MIT + CorvaeOboro CC0 production visuals;
-- five CC0 Loy's Goodies 3D rewards: burger, plunger, backpack, snow globe and vending machine;
-- Common/Rare weighted opening pools using real external rewards;
-- mining, logging, farming, hostile/elite/boss acquisition hooks;
-- persistent first-Ender-Dragon late-game unlock;
-- post-dragon combat reward modifiers.
+0.4.0 source now contains:
+- five Lucky Block tiers and five Lucky Fragment tiers;
+- actual Microsoft MIT + CorvaeOboro CC0 production visuals;
+- 15 CC0 Loy's Goodies 3D reward models with original embedded textures;
+- distinct scripted functionality across those 15 rewards;
+- Common/Rare/Epic weighted external reward pools;
+- mining, logging, farming and combat acquisition;
+- first-open natural chest/trapped-chest/barrel exploration acquisition with anti-abuse tracking;
+- persistent first-Ender-Dragon late-game unlock.
 
 Important:
-- 0.3.0 is not the completed add-on.
-- The packaged 0.2.0 file intentionally remains the latest downloadable package until the next packaging/validation pass.
+- 0.4.0 is not the completed add-on.
+- The latest downloadable package remains 0.2.0 until the next packaging checkpoint.
 - No placeholder image/model/icon/sound is allowed.
-- Fishing, exploration/chest acquisition, the large reward library, custom equipment behavior, structures/events and post-dragon custom enemies/bosses remain under development.
+- Fishing, true held combat equipment, pets/mounts, structures/events, post-dragon custom mobs/bosses and Mythic content packages remain under development.
 
 Project documents:
 - `docs/LUCKY_BLOCK_CANON.md`

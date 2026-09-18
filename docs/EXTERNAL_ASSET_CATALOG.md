@@ -37,3 +37,10 @@ Fragments are intended as placeable micro-crystal blocks/items rather than flat 
 - WorldAnimals assets: no reuse until a redistribution license is actually verified.
 - FrenchKrab models that obviously derive from third-party game/IP designs: exclude unless provenance independently clears them.
 - Fantasy Knights third-party skins: exclude unless individually licensed.
+
+
+## Integrated reward batch — 0.4.0
+
+Direct CC0 imports from Loy's Goodies now include 15 production models in total. The new 0.4.0 batch adds noodles, Moai, PC, CCTV camera, wrench, chainsaw, camera, golden hammer, vase and easel to the earlier burger, plunger, backpack, snow globe and vending machine set.
+
+All 15 are bound to distinct behavior contracts in `BP/scripts/reward_behaviors.js`; they are not counted as distinct merely because their geometry differs.

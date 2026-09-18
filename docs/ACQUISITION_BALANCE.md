@@ -31,3 +31,27 @@ This is the transition from part one into the late-game content pool.
 ## Deferred acquisition channels
 
 Fishing and block-container chest discovery are not faked through unreliable heuristics. They remain required work and will be attached using a robust implementation rather than temporary detection.
+
+
+## Exploration containers — 0.4.0
+
+The stable Script API exposes `blockContainerOpened`; the project now uses it for finite exploration rewards.
+
+Eligible block containers:
+- Chest
+- Trapped Chest
+- Barrel
+
+Anti-abuse rules:
+- Player-placed eligible containers are marked on `playerPlaceBlock` and never receive exploration rewards.
+- Natural/unmarked containers roll only on their first open.
+- Each opened natural container is persisted by a hashed dimension + coordinate world dynamic-property key.
+
+First-open rolls:
+- Common Fragment: 22%
+- Rare Fragment: 4.5%
+- Epic Fragment: 0.6%
+- Common Lucky Block: 1.2%
+- After the Ender Dragon gate, Legendary Fragment: 0.10%
+
+These rolls do not use repeat-action decay; the finite first-open rule represents exploration scarcity rather than punishment for repetition.

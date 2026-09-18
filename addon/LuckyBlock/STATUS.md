@@ -1,40 +1,45 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.3.0 acquisition + first external reward batch (source milestone)
+Milestone: 0.4.0 acquisition + functional external reward expansion
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
-- Five CC0 Loy's Goodies 3D reward props: burger, plunger, backpack, snow globe and vending machine.
-- Common/Rare weighted opening pools now include actual external 3D rewards rather than only fragment cascades.
-- Normal-play acquisition hooks for mining, bulk mining, logging, farming and hostile/elite/boss kills.
+- 15 CC0 Loy's Goodies 3D rewards are now integrated as actual model + texture content.
+- All 15 current external rewards have distinct gameplay behavior or utility rather than being texture-only duplicates.
+- Current external reward set:
+  - burger: consumable saturation/regeneration;
+  - noodles: stronger food/buff consumable;
+  - plunger: reusable launch device;
+  - backpack: one-time fragment cache;
+  - snow globe: nearby slow field + snowballs;
+  - vending machine: finite 3-use food dispenser using block state;
+  - moai: one-use stone-skin blessing;
+  - PC: one-use overclock buffs;
+  - CCTV: reusable hostile scan;
+  - wrench: one-use high haste tuning;
+  - chainsaw: reusable nearby-log cutting utility;
+  - camera: reusable coordinate snapshot storage;
+  - golden hammer: one-use strength/resistance blessing;
+  - vase: one-use randomized fragment cache;
+  - easel: one-use exploration/focus buffs.
+- Common, Rare and Epic weighted opening pools contain materially different external rewards.
+- Mining, bulk mining, logging, mature farming, hostile/elite/boss kill acquisition hooks.
+- First Ender Dragon death persists `lb:post_dragon_unlocked` and activates late-game reward modifiers.
+- Natural-container exploration rewards:
+  - chest / trapped chest / barrel first-open rolls;
+  - player-placed containers are marked and excluded;
+  - already-opened natural containers cannot be farmed repeatedly.
 - No repeat-action probability decay.
-- Risk/rarity scaling: ordinary actions feed Common; richer ores/elites/bosses can reach higher fragments/blocks.
-- First Ender Dragon death sets a persistent world dynamic property and grants the transition reward.
-- Post-dragon status already affects selected vanilla combat rolls and is ready to gate future custom enemies/events.
-- Exact acquisition probabilities are documented in docs/ACQUISITION_BALANCE.md.
-- External reward provenance is recorded in THIRD_PARTY_NOTICES.md.
+- Script syntax audit passes for main.js, acquisition.js and reward_behaviors.js.
 
 Still not complete:
 1. robust fishing acquisition;
-2. chest/structure exploration acquisition;
-3. many more materially distinct external reward items, weapons, foods, pets, mounts and tools;
-4. functional behavior for equipment-class rewards such as firearms/chainsaws/magic weapons;
-5. structures, traps, chained Lucky events, raids and minigames;
-6. post-dragon custom normal mobs/elites/minibosses/bosses;
-7. boss mechanics/phases;
-8. Mythic content-package outcomes;
-9. full in-game Bedrock import/content-log/render/balance QA;
-10. refreshed packaged mcaddon after the 0.3 source set is sufficiently complete.
+2. much larger reward library, especially true held weapons, ranged weapons, armor, pets and mounts;
+3. structures, traps, chained Lucky events, raids, wave defense and minigames;
+4. post-dragon custom normal mobs/elites/minibosses/bosses;
+5. boss mechanics/phases/telegraphs and late-game stat rebalance;
+6. Mythic content-package outcomes;
+7. full in-game Bedrock import/content-log/render/balance QA;
+8. refreshed packaged .mcaddon after the next packaging checkpoint.
 
-No project-completion claim is made.
-
-
-Static audit after 0.3 source commit:
-- 39/39 Add-On JSON files parse successfully.
-- BP/RP source versions both report 0.3.0.
-- @minecraft/server dependency is 2.9.0.
-- acquisition.js is imported by main.js.
-- playerBreakBlock and entityDie hooks are present.
-- persistent lb:post_dragon_unlocked gate is present.
-- all five external reward identifiers referenced by the opening pool resolve to committed reward block files.
-- no repeat-action decay/streak mechanic is present.
+No project-completion claim is made and no placeholder assets are intentionally included.

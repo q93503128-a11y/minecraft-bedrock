@@ -33,3 +33,18 @@ This source snapshot contains directly reused or adapted assets from permissivel
 - Original Blockbench/Java-block geometry is converted to Bedrock geometry; original embedded PNG textures are retained.
 
 No placeholder image, model, icon or sound is intentionally included.
+
+
+### Additional Loy's Goodies CC0 reward assets integrated in 0.4.0
+- `230423_noodles.bbmodel`
+- `230617_moai.bbmodel`
+- `220523_pc.bbmodel`
+- `230502_cctv_camera.bbmodel`
+- `220420_wrench.bbmodel`
+- `230501_chainsaw.bbmodel`
+- `230511_camera.bbmodel`
+- `230512_golden_hammer.bbmodel`
+- `230217_vase.bbmodel`
+- `230627_easel.bbmodel`
+
+Each selected model had a directly embedded PNG texture in its Blockbench source. The original CC0 model geometry and PNG were converted/imported directly; no placeholder texture was substituted.
