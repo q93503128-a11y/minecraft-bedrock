@@ -1,0 +1,149 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.lb.sky_damselfly_mount.fly": {
+      "loop": true,
+      "animation_length": 1,
+      "bones": {
+        "wing_left_front": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              -5
+            ],
+            "1": [
+              0,
+              0,
+              -5
+            ],
+            "0.5": [
+              0,
+              0,
+              5
+            ]
+          }
+        },
+        "wing_right_front": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              5
+            ],
+            "1": [
+              0,
+              0,
+              5
+            ],
+            "0.5": [
+              0,
+              0,
+              -5
+            ]
+          }
+        },
+        "wing_left_hind": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              5
+            ],
+            "1": [
+              0,
+              0,
+              5
+            ],
+            "0.5": [
+              0,
+              0,
+              -5
+            ]
+          }
+        },
+        "wing_right_hind": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              -5
+            ],
+            "1": [
+              0,
+              0,
+              -5
+            ],
+            "0.5": [
+              0,
+              0,
+              5
+            ]
+          }
+        }
+      }
+    },
+    "animation.lb.sky_damselfly_mount.perch": {
+      "loop": "hold_on_last_frame",
+      "animation_length": 1,
+      "bones": {
+        "wing_left_front": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "1": [
+              -15,
+              -75,
+              -92.5
+            ]
+          }
+        },
+        "wing_left_hind": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "1": [
+              -180,
+              -65,
+              -95
+            ]
+          }
+        },
+        "wing_right_front": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "1": [
+              -15,
+              75,
+              92.5
+            ]
+          }
+        },
+        "wing_right_hind": {
+          "rotation": {
+            "0": [
+              0,
+              0,
+              0
+            ],
+            "1": [
+              -180,
+              65,
+              95
+            ]
+          }
+        }
+      }
+    }
+  }
+}

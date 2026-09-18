@@ -1,0 +1,221 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:sky_damselfly_mount",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "lb:damselfly_wild": {
+        "minecraft:movement.hover": {},
+        "minecraft:navigation.fly": {
+          "can_path_over_water": true,
+          "avoid_damage_blocks": true
+        },
+        "minecraft:behavior.random_fly": {
+          "priority": 7,
+          "xz_dist": 8,
+          "y_dist": 5,
+          "y_offset": 0,
+          "speed_multiplier": 0.8
+        }
+      },
+      "lb:damselfly_tamed": {
+        "minecraft:is_tamed": {},
+        "minecraft:rideable": {
+          "seat_count": 1,
+          "controlling_seat": 0,
+          "crouching_skip_interact": true,
+          "family_types": [
+            "player"
+          ],
+          "interact_text": "action.interact.ride.horse",
+          "seats": {
+            "position": [
+              0,
+              1.45,
+              -0.1
+            ],
+            "third_person_camera_radius": 7
+          }
+        },
+        "minecraft:behavior.player_ride_tamed": {},
+        "minecraft:behavior.follow_owner": {
+          "priority": 5,
+          "speed_multiplier": 1,
+          "start_distance": 10,
+          "stop_distance": 4
+        },
+        "minecraft:behavior.teleport_to_owner": {
+          "priority": 2,
+          "filters": {
+            "all_of": [
+              {
+                "test": "owner_distance",
+                "operator": ">",
+                "value": 28
+              }
+            ]
+          }
+        }
+      },
+      "lb:damselfly_ground": {
+        "minecraft:movement.basic": {},
+        "minecraft:navigation.walk": {
+          "avoid_water": false,
+          "can_walk": true,
+          "can_path_over_water": true
+        },
+        "minecraft:input_ground_controlled": {},
+        "minecraft:behavior.random_stroll": {
+          "priority": 7,
+          "speed_multiplier": 0.65
+        }
+      },
+      "lb:damselfly_flight": {
+        "minecraft:movement.hover": {
+          "max_turn": 24
+        },
+        "minecraft:input_air_controlled": {
+          "strafe_speed_modifier": 0.85,
+          "backwards_movement_modifier": 0.45
+        }
+      },
+      "lb:damselfly_exhausted": {
+        "minecraft:movement.basic": {},
+        "minecraft:navigation.walk": {
+          "avoid_water": false,
+          "can_walk": true,
+          "can_path_over_water": true
+        },
+        "minecraft:input_ground_controlled": {}
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "mob",
+          "mount",
+          "lb_companion",
+          "lb_damselfly"
+        ]
+      },
+      "minecraft:health": {
+        "value": 84,
+        "max": 84
+      },
+      "minecraft:movement": {
+        "value": 0.46
+      },
+      "minecraft:collision_box": {
+        "width": 1.55,
+        "height": 1.15
+      },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.35
+      },
+      "minecraft:follow_range": {
+        "value": 32
+      },
+      "minecraft:nameable": {},
+      "minecraft:leashable": {},
+      "minecraft:tameable": {
+        "probability": 1,
+        "tame_items": [
+          "minecraft:honey_bottle"
+        ],
+        "tame_event": {
+          "event": "lb:on_tame",
+          "target": "self"
+        }
+      },
+      "minecraft:healable": {
+        "items": [
+          {
+            "item": "minecraft:honey_bottle",
+            "heal_amount": 10
+          },
+          {
+            "item": "minecraft:glow_berries",
+            "heal_amount": 4
+          }
+        ]
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 8,
+        "look_distance": 10,
+        "probability": 0.05
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 9
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "add": {
+          "component_groups": [
+            "lb:damselfly_wild"
+          ]
+        }
+      },
+      "lb:on_tame": {
+        "remove": {
+          "component_groups": [
+            "lb:damselfly_wild"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:damselfly_tamed",
+            "lb:damselfly_ground"
+          ]
+        }
+      },
+      "lb:flight_start": {
+        "remove": {
+          "component_groups": [
+            "lb:damselfly_ground",
+            "lb:damselfly_exhausted"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:damselfly_flight"
+          ]
+        }
+      },
+      "lb:flight_land": {
+        "remove": {
+          "component_groups": [
+            "lb:damselfly_flight",
+            "lb:damselfly_exhausted"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:damselfly_ground"
+          ]
+        }
+      },
+      "lb:flight_exhausted": {
+        "remove": {
+          "component_groups": [
+            "lb:damselfly_flight",
+            "lb:damselfly_ground"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:damselfly_exhausted"
+          ]
+        }
+      }
+    }
+  }
+}

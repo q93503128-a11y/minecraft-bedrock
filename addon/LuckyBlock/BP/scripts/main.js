@@ -13,6 +13,7 @@ import "./integrations/slayers_beasts_mantis.js";
 import "./integrations/slayers_beasts_tyrachnid.js";
 import "./integrations/slayers_beasts_wither_spider.js";
 import "./integrations/slayers_beasts_wudu.js";
+import "./integrations/slayers_beasts_damselfly.js";
 import "./integrations/slayers_beasts_ant_queen.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 import { startMythicEvent } from "./events/mythic_events.js";

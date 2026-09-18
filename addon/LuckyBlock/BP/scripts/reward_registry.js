@@ -69,7 +69,7 @@ weightedPools.legendary = [
   { weight: 18, kind: "item", id: "lb:epic_lucky_block", count: 2, source: "core" },
   { weight: 12, kind: "fragments", id: "lb:mythic_fragment", min: 1, max: 1, source: "core", requiresPostDragon: true },
   { weight: 10, kind: "item", id: "lb:legendary_lucky_block", source: "core" },
-  { weight: 6, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" }
+  { weight: 6, kind: "entity", id: "lb:sky_damselfly_mount", nameTag: "Sky Damselfly Mount", source: "slayers_beasts", requiresPostDragon: true, tameToOpener: true, tameEvent: "lb:on_tame" }
 ];
 
 weightedPools.mythic = [

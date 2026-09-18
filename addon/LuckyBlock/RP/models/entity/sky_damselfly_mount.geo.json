@@ -1,0 +1,255 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.lb.sky_damselfly_mount",
+        "texture_width": 64,
+        "texture_height": 64,
+        "visible_bounds_width": 7,
+        "visible_bounds_height": 4,
+        "visible_bounds_offset": [
+          0,
+          1.5,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            1.25,
+            5,
+            -5
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -3.75,
+                0,
+                -20
+              ],
+              "size": [
+                7.5,
+                5,
+                15
+              ],
+              "uv": [
+                0,
+                19
+              ]
+            },
+            {
+              "origin": [
+                -2.5,
+                5,
+                -20
+              ],
+              "size": [
+                5,
+                2.5,
+                15
+              ],
+              "uv": [
+                18,
+                19
+              ]
+            },
+            {
+              "origin": [
+                -2.5,
+                0,
+                -25
+              ],
+              "size": [
+                5,
+                5,
+                5
+              ],
+              "uv": [
+                0,
+                8
+              ]
+            },
+            {
+              "origin": [
+                -5.625,
+                1.25,
+                -26.25
+              ],
+              "size": [
+                5,
+                5,
+                5
+              ],
+              "uv": [
+                0,
+                4
+              ]
+            },
+            {
+              "origin": [
+                0.625,
+                1.25,
+                -26.25
+              ],
+              "size": [
+                5,
+                5,
+                5
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            },
+            {
+              "origin": [
+                -2.5,
+                1.25,
+                -5
+              ],
+              "size": [
+                5,
+                5,
+                32.5
+              ],
+              "uv": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_left_front",
+          "parent": "body",
+          "pivot": [
+            2.5,
+            7.5,
+            -16.875
+          ],
+          "rotation": [
+            0,
+            10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                2.5,
+                7.5,
+                -19.375
+              ],
+              "size": [
+                37.5,
+                0,
+                10
+              ],
+              "uv": [
+                0,
+                15
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_left_hind",
+          "parent": "body",
+          "pivot": [
+            2.5,
+            6.25,
+            -10.625
+          ],
+          "rotation": [
+            0,
+            -10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                2.5,
+                6.25,
+                -13.125
+              ],
+              "size": [
+                37.5,
+                0,
+                10
+              ],
+              "uv": [
+                13,
+                8
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_right_front",
+          "parent": "body",
+          "pivot": [
+            -2.5,
+            7.5,
+            -16.875
+          ],
+          "rotation": [
+            0,
+            -10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -40,
+                7.5,
+                -19.375
+              ],
+              "size": [
+                37.5,
+                0,
+                10
+              ],
+              "uv": [
+                13,
+                4
+              ]
+            }
+          ]
+        },
+        {
+          "name": "wing_right_hind",
+          "parent": "body",
+          "pivot": [
+            -2.5,
+            6.25,
+            -10.625
+          ],
+          "rotation": [
+            0,
+            10,
+            0
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -40,
+                6.25,
+                -13.125
+              ],
+              "size": [
+                37.5,
+                0,
+                10
+              ],
+              "uv": [
+                13,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
