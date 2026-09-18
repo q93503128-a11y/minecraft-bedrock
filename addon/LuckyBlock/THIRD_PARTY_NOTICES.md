@@ -14,7 +14,11 @@ This source snapshot contains directly reused or adapted assets from permissivel
 - Source: https://github.com/CorvaeOboro/minecraft_botania_pylon_crystal
 - License: CC0-1.0
 - Imported/adapted:
-  - mana crystal animated texture.
-  - short bipyramid geometry language converted to Bedrock geometry for the Common Lucky Fragment.
+  - mana, natura and gaia animated crystal textures;
+  - natura and gaia ring textures;
+  - short, short-tall, tall-short and tall bipyramid geometry families;
+  - Natura ring geometry;
+  - Gaia ring geometry.
+- Java-format block models were converted into Bedrock geometry without replacing them with temporary stand-ins.
 
 No placeholder image, model, icon or sound is included in this snapshot.
