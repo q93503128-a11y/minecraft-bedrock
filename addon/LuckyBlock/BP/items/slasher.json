@@ -1,0 +1,53 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:item": {
+    "description": {
+      "identifier": "lb:slasher",
+      "menu_category": {
+        "category": "equipment",
+        "is_hidden_in_commands": false
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "slasher_icon"
+        }
+      },
+      "minecraft:glint": false,
+      "minecraft:rarity": "epic",
+      "minecraft:display_name": {
+        "value": "item.lb:slasher.name"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:damage": {
+        "value": 32
+      },
+      "minecraft:can_destroy_in_creative": {
+        "value": false
+      },
+      "minecraft:durability": {
+        "damage_chance": {
+          "min": 0,
+          "max": 0
+        },
+        "max_durability": 2200
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": ["lb:slasher_blade"],
+            "repair_amount": 320
+          }
+        ]
+      },
+      "minecraft:hand_equipped": true,
+      "minecraft:allow_off_hand": false,
+      "minecraft:use_modifiers": {
+
+        "movement_modifier": 1.0,
+        "use_duration": 3600
+      }
+    }
+  }
+}
