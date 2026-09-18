@@ -13,9 +13,9 @@
         "default": "geometry.lb.obsidilith"
       },
       "animations": {
-        "placeholder": "animation.lb.obsidilith.placeholder",
         "death": "animation.lb.obsidilith.death",
-        "summon": "animation.lb.obsidilith.summon"
+        "summon": "animation.lb.obsidilith.summon",
+        "idle_pose": "animation.lb.obsidilith.idle_pose"
       },
       "render_controllers": [
         "controller.render.default"

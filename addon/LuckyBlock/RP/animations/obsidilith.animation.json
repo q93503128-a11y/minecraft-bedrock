@@ -1,9 +1,6 @@
 {
   "format_version": "1.8.0",
   "animations": {
-    "animation.lb.obsidilith.placeholder": {
-      "loop": true
-    },
     "animation.lb.obsidilith.death": {
       "loop": true
     },
@@ -30,6 +27,9 @@
           }
         }
       }
+    },
+    "animation.lb.obsidilith.idle_pose": {
+      "loop": true
     }
   },
   "geckolib_format_version": 2
