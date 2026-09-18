@@ -81,6 +81,51 @@
           "stream": false
         }
       ]
+    },
+    "lb.obsidilith.prepare": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/obsidilith_prepare",
+          "stream": false
+        }
+      ]
+    },
+    "lb.obsidilith.burst": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/obsidilith_burst",
+          "stream": false
+        }
+      ]
+    },
+    "lb.obsidilith.spike_indicator": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/obsidilith_spike_indicator",
+          "stream": false
+        }
+      ]
+    },
+    "lb.obsidilith.spike": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/obsidilith_spike",
+          "stream": false
+        }
+      ]
+    },
+    "lb.obsidilith.wave_indicator": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/obsidilith_wave_indicator",
+          "stream": false
+        }
+      ]
     }
   }
 }

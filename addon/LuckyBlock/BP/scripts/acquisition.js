@@ -136,6 +136,13 @@ world.afterEvents.entityDie.subscribe((event) => {
   const location = dead.location;
   const postDragon = world.getDynamicProperty(POST_DRAGON_KEY) === true;
 
+  if (typeId === "lb:obsidilith") {
+    spawnReward(dimension, location, "lb:legendary_lucky_block", 1, 2);
+    spawnReward(dimension, location, "lb:mythic_fragment", 4, 7);
+    rollReward(dimension, location, 0.28, "lb:mythic_lucky_block", 1, 1);
+    return;
+  }
+
   if (typeId === "lb:bogre") {
     spawnReward(dimension, location, "lb:epic_lucky_block", 1, 1);
     spawnReward(dimension, location, "lb:legendary_fragment", 6, 10);

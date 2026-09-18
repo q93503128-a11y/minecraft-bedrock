@@ -47,8 +47,15 @@ weightedPools.legendary = [
   { weight: 6, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" }
 ];
 
-export const tierFallbacks = {
-  mythic: { fragment: "lb:mythic_fragment", min: 4, max: 6, bonus: "lb:legendary_lucky_block", bonusChance: 1.0 }
-};
+weightedPools.mythic = [
+  { weight: 30, kind: "fragments", id: "lb:mythic_fragment", min: 3, max: 6, source: "core" },
+  { weight: 22, kind: "item", id: "lb:legendary_lucky_block", count: 2, source: "core" },
+  { weight: 18, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
+  { weight: 12, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
+  { weight: 10, kind: "fragments", id: "lb:legendary_fragment", min: 6, max: 10, source: "core" },
+  { weight: 8, kind: "item", id: "lb:mythic_lucky_block", source: "core" }
+];
+
+export const tierFallbacks = {};
 
 export const activeTiers = ["common", "rare", "epic", "legendary", "mythic"];

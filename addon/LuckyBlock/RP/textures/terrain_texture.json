@@ -75,6 +75,9 @@
     },
     "lb_reward_cardboard_shield": {
       "textures": "textures/blocks/lb_reward_cardboard_shield"
+    },
+    "lb_obsidilith_rune": {
+      "textures": "textures/blocks/lb_obsidilith_rune"
     }
   }
 }

@@ -3,6 +3,7 @@ import "./acquisition.js";
 import "./reward_behaviors.js";
 import "./integrations/inhabitants.js";
 import "./integrations/inhabitants_bogre.js";
+import "./integrations/bomd_obsidilith.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 
 function chooseWeighted(pool) {

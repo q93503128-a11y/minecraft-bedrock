@@ -26,3 +26,5 @@ tile.lb:reward_easel.name=Lucky Easel
 tile.lb:reward_cardboard_sword.name=Cardboard Sword\ntile.lb:reward_cardboard_axe.name=Cardboard Axe\ntile.lb:reward_cardboard_shield.name=Cardboard Shield\nentity.lb:impaler.name=Impaler
 entity.lb:warped_clam.name=Warped Clam
 entity.lb:bogre.name=Bogre
+entity.lb:obsidilith.name=Obsidilith
+tile.lb:obsidilith_rune.name=Obsidilith Rune
