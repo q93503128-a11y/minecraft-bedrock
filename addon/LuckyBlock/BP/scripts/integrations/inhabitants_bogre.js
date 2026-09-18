@@ -73,14 +73,14 @@ function telegraphShockwave(bogre, target, phase) {
 
       if (!player.isOnGround) continue;
 
-      const damage = phase === 3 ? 13 : phase === 2 ? 10 : 8;
+      const damage = phase === 3 ? 38 : phase === 2 ? 30 : 22;
       try { player.applyDamage(damage); } catch {}
       const len=Math.max(0.001,horizontal);
       try { player.applyImpulse({x:dx/len*(0.7+phase*0.12),y:0.32+phase*0.06,z:dz/len*(0.7+phase*0.12)}); } catch {}
     }
 
     try { bogre.triggerEvent("lb:open_weak"); } catch {}
-    bogre.setDynamicProperty("lb:bogre_weak_until", encounterTick + (phase === 3 ? 22 : 30));
+    bogre.setDynamicProperty("lb:bogre_weak_until", encounterTick + (phase === 3 ? 18 : 26));
     try {
       for (const player of world.getAllPlayers()) {
         if (player.dimension.id === bogre.dimension.id && distanceSq(player.location,bogre.location) < 400) {
@@ -132,7 +132,7 @@ function tickBogre(bogre) {
   const target=nearestPlayer(bogre,26);
   if (!target) return;
 
-  const baseCooldown=phase===3?55:phase===2?72:90;
+  const baseCooldown=phase===3?46:phase===2?62:82;
   bogre.setDynamicProperty("lb:bogre_next_action", encounterTick + baseCooldown + Math.floor(Math.random()*25));
 
   if (target.distanceSq <= 196) telegraphShockwave(bogre,target.player,phase);

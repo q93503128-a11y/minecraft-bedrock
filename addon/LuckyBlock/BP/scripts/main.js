@@ -1,4 +1,4 @@
-import { system, BlockPermutation, ItemStack } from "@minecraft/server";
+import { system, world, BlockPermutation, ItemStack } from "@minecraft/server";
 import "./acquisition.js";
 import "./reward_behaviors.js";
 import "./integrations/inhabitants.js";
@@ -6,13 +6,16 @@ import "./integrations/inhabitants_bogre.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 
 function chooseWeighted(pool) {
-  const total = pool.reduce((sum, entry) => sum + entry.weight, 0);
+  const postDragon = world.getDynamicProperty("lb:post_dragon_unlocked") === true;
+  const eligible = pool.filter(entry => !entry.requiresPostDragon || postDragon);
+  const actualPool = eligible.length ? eligible : pool.filter(entry => !entry.requiresPostDragon);
+  const total = actualPool.reduce((sum, entry) => sum + entry.weight, 0);
   let roll = Math.random() * total;
-  for (const entry of pool) {
+  for (const entry of actualPool) {
     roll -= entry.weight;
     if (roll < 0) return entry;
   }
-  return pool[pool.length - 1];
+  return actualPool[actualPool.length - 1];
 }
 
 function spawnAt(dimension, pos, id, count = 1) {

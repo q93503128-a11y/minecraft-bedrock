@@ -138,8 +138,8 @@ world.afterEvents.entityDie.subscribe((event) => {
 
   if (typeId === "lb:bogre") {
     spawnReward(dimension, location, "lb:epic_lucky_block", 1, 1);
-    spawnReward(dimension, location, "lb:legendary_fragment", 2, 4);
-    rollReward(dimension, location, postDragon ? 0.10 : 0.04, "lb:mythic_fragment", 1, 1);
+    spawnReward(dimension, location, "lb:legendary_fragment", 6, 10);
+    rollReward(dimension, location, 0.35, "lb:mythic_fragment", 1, 1);
     return;
   }
 
