@@ -7,7 +7,9 @@
     "externalRuntimeDependencyPolicy": "Avoid unless an upstream add-on must remain separate. Separate BP script realms cannot import each other directly.",
     "sourcePinning": "Every active source is pinned to a reviewed Git commit SHA.",
     "collisionPolicy": "All imported identifiers and file names are remapped into the lb namespace before entering BP/RP.",
-    "licensePolicy": "vendored assets require verified redistribution/modification permission; reference-only sources never enter distributable packs."
+    "licensePolicy": "vendored assets require verified redistribution/modification permission; reference-only sources never enter distributable packs.",
+    "productionPackPolicy": "Final distributable remains one BP + one RP with mutual dependencies; do not add required dependencies on external packs.",
+    "sidecarPolicy": "Sidecars are exceptional interoperability targets, not the normal shipping architecture. Prefer vendored merge when redistribution/modification is licensed."
   },
   "sources": {
     "microsoft_minecraft_samples": {

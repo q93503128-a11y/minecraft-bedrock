@@ -111,3 +111,21 @@ addon/LuckyBlock/
 ## Scaling rule
 
 When a new external source is introduced, first create its vendor registry source entry and integration module. Only then add its rewards to tier pools. This prevents a future 200+ reward table from losing provenance or mixing source-specific behavior into unrelated code.
+
+
+## Microsoft Cooperative Add-On alignment
+
+The current Microsoft cooperative add-on guidance reinforces the chosen production layout:
+
+- ship one Behavior Pack and one Resource Pack;
+- make the two packs depend on each other;
+- avoid dependencies on packs outside the add-on;
+- make the Resource Pack world-scoped so it is not accidentally applied globally;
+- use unique namespaces to avoid pack-stack identifier collisions.
+
+Lucky Block now follows this directly:
+- final external content is vendored/remapped into `lb:` when licensing allows;
+- BP/RP are mutually linked;
+- RP declares `pack_scope: "world"`;
+- the integration audit rejects non-`lb:` vendored content IDs;
+- sidecar integration is retained only as an exceptional interoperability pattern, not the default release design.

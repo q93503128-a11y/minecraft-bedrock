@@ -51,3 +51,15 @@ Static audit after 0.4.0 source commit:
 - All 15 reward IDs referenced by weighted pools resolve to committed block JSON, Bedrock geometry, PNG texture and terrain-atlas entries.
 - First-open exploration hook exists and includes both player-placed exclusion and already-opened persistence.
 - Current stable API choices were checked against @minecraft/server 2.9.0 documentation.
+
+
+0.4.1 external-integration architecture hardening:
+- Studied current Bedrock multi-addon/build patterns and Microsoft Cooperative Add-On guidance.
+- External integration is now split into explicit vendored / sidecar / reference-only modes.
+- Production default is vendored merge into one BP + one RP; required outside-pack dependencies are disallowed by project policy.
+- RP now declares pack_scope=world.
+- reward selection data moved to reward_registry.js.
+- source-specific gameplay behavior moved to BP/scripts/integrations/loys_goodies.js.
+- reward_behaviors.js is now an integration bootstrap rather than a monolithic external-content file.
+- vendor/ASSET_REGISTRY.json pins reviewed upstream commit SHAs and exact source->target mappings.
+- tools/audit_integrations.mjs checks source metadata, duplicate IDs/targets, target existence and lb: namespace ownership.

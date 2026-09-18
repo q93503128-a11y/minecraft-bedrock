@@ -7,12 +7,12 @@ Canonical planning/documentation repository for Minecraft Bedrock projects.
 Active project: a five-tier Lucky Block Add-On with externally licensed real assets, varied rewards/events and a first-Ender-Dragon late-game gate.
 
 Current source milestone:
-- `0.4.0` — functional reward expansion + exploration acquisition
+- `0.4.1` — functional reward expansion + external-integration architecture hardening
 
 Latest packaged development build:
 - `build/LuckyBlock_0.2.0.mcaddon`
 
-0.4.0 source now contains:
+0.4.1 source now contains:
 - five Lucky Block tiers and five Lucky Fragment tiers;
 - actual Microsoft MIT + CorvaeOboro CC0 production visuals;
 - 15 CC0 Loy's Goodies 3D reward models with original embedded textures;
@@ -36,3 +36,7 @@ Project documents:
 - `docs/ACQUISITION_BALANCE.md`
 - `addon/LuckyBlock/STATUS.md`
 - `addon/LuckyBlock/THIRD_PARTY_NOTICES.md`
+
+- external source revisions pinned in `addon/LuckyBlock/vendor/ASSET_REGISTRY.json`;
+- source-specific integration modules under `BP/scripts/integrations/`;
+- one-BP + one-RP cooperative packaging policy with RP world scope;

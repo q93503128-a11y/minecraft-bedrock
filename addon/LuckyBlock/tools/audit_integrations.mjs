@@ -24,6 +24,7 @@ for (const asset of registry.assets ?? []) {
   }
 
   if (asset.contentId) {
+    if (!asset.contentId.startsWith("lb:")) errors.push(`non-lb contentId ${asset.contentId}: ${asset.key}`);
     if (ids.has(asset.contentId)) errors.push(`duplicate contentId ${asset.contentId}: ${ids.get(asset.contentId)} and ${asset.key}`);
     else ids.set(asset.contentId, asset.key);
   }
