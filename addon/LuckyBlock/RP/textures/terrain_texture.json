@@ -4,23 +4,16 @@
   "padding": 8,
   "num_mip_levels": 4,
   "texture_data": {
-    "lb_common_lucky": {
-      "textures": "textures/blocks/lb_common_lucky"
-    },
-    "lb_fragment_mana": {
-      "textures": "textures/blocks/lb_fragment_mana"
-    },
-    "lb_crystal_natura": {
-      "textures": "textures/blocks/lb_crystal_natura"
-    },
-    "lb_crystal_gaia": {
-      "textures": "textures/blocks/lb_crystal_gaia"
-    },
-    "lb_ring_natura": {
-      "textures": "textures/blocks/lb_ring_natura"
-    },
-    "lb_ring_gaia": {
-      "textures": "textures/blocks/lb_ring_gaia"
-    }
+    "lb_common_lucky": { "textures": "textures/blocks/lb_common_lucky" },
+    "lb_fragment_mana": { "textures": "textures/blocks/lb_fragment_mana" },
+    "lb_crystal_natura": { "textures": "textures/blocks/lb_crystal_natura" },
+    "lb_crystal_gaia": { "textures": "textures/blocks/lb_crystal_gaia" },
+    "lb_ring_natura": { "textures": "textures/blocks/lb_ring_natura" },
+    "lb_ring_gaia": { "textures": "textures/blocks/lb_ring_gaia" },
+    "lb_reward_burger": { "textures": "textures/blocks/lb_reward_burger" },
+    "lb_reward_plunger": { "textures": "textures/blocks/lb_reward_plunger" },
+    "lb_reward_backpack": { "textures": "textures/blocks/lb_reward_backpack" },
+    "lb_reward_snow_globe": { "textures": "textures/blocks/lb_reward_snow_globe" },
+    "lb_reward_vending_machine": { "textures": "textures/blocks/lb_reward_vending_machine" }
   }
 }

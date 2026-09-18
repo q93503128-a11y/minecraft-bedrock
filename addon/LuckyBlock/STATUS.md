@@ -1,42 +1,29 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.2.0 five-tier real-asset visual slice
+Milestone: 0.3.0 acquisition + first external reward batch (source milestone)
 
 Implemented:
-- Behavior Pack and Resource Pack manifests, bumped to 0.2.0.
-- All five Lucky Block tiers now exist as distinct blocks.
-- All five Lucky Fragment tiers now exist as distinct blocks.
-- Common keeps the Microsoft MIT Lucky Block sample geometry/texture base.
-- Rare and Epic use distinct CC0 bipyramid crystal geometries.
-- Legendary uses the 141-element CC0 Natura ring geometry.
-- Mythic uses the 196-element CC0 Gaia ring geometry.
-- Higher tiers use increasing light emission: Rare 4, Epic 7, Legendary 11, Mythic 15.
-- CC0 mana/natura/gaia crystal textures and natura/gaia ring textures are integrated as actual binary assets.
-- Crystal textures retain animated flipbooks.
-- Current geometry conversions use the 1.21.0 visual schema so per-face uv_rotation from the source models is preserved.
-- All five tiers have opening component registrations.
-- Tier cascade opening outcomes are implemented as real progression outcomes while the large reward pool is still being built.
-- Six same-tier fragments craft one same-tier Lucky Block.
-- Korean and English names exist for every current tier.
-- Built:
-  - build/LuckyBlock_BP_0.2.0.mcpack
-  - build/LuckyBlock_RP_0.2.0.mcpack
-  - build/LuckyBlock_0.2.0.mcaddon
+- Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
+- Five CC0 Loy's Goodies 3D reward props: burger, plunger, backpack, snow globe and vending machine.
+- Common/Rare weighted opening pools now include actual external 3D rewards rather than only fragment cascades.
+- Normal-play acquisition hooks for mining, bulk mining, logging, farming and hostile/elite/boss kills.
+- No repeat-action probability decay.
+- Risk/rarity scaling: ordinary actions feed Common; richer ores/elites/bosses can reach higher fragments/blocks.
+- First Ender Dragon death sets a persistent world dynamic property and grants the transition reward.
+- Post-dragon status already affects selected vanilla combat rolls and is ready to gate future custom enemies/events.
+- Exact acquisition probabilities are documented in docs/ACQUISITION_BALANCE.md.
+- External reward provenance is recorded in THIRD_PARTY_NOTICES.md.
 
-Important:
-- 0.2.0 is not the finished project.
-- Runtime import/Content Log testing in Minecraft Bedrock is still required.
-- The reward system is intentionally not being called complete until external custom items/events/mobs/structures are integrated.
-
-Remaining major work:
-1. normal-play acquisition hooks and tuned drop tables;
-2. large Common-to-Mythic external reward library;
-3. custom weapons/tools/food/pets/mounts/mob encounters;
-4. structures, traps, chained events and world events;
-5. first-Ender-Dragon persistent unlock;
-6. post-dragon normal mobs, elites, minibosses and bosses;
-7. boss mechanics and late-game stat rebalance;
+Still not complete:
+1. robust fishing acquisition;
+2. chest/structure exploration acquisition;
+3. many more materially distinct external reward items, weapons, foods, pets, mounts and tools;
+4. functional behavior for equipment-class rewards such as firearms/chainsaws/magic weapons;
+5. structures, traps, chained Lucky events, raids and minigames;
+6. post-dragon custom normal mobs/elites/minibosses/bosses;
+7. boss mechanics/phases;
 8. Mythic content-package outcomes;
-9. repeated balance/compatibility/runtime QA and final release packaging.
+9. full in-game Bedrock import/content-log/render/balance QA;
+10. refreshed packaged mcaddon after the 0.3 source set is sufficiently complete.
 
-There are intentionally no placeholder images, dummy sounds, colored stand-in mobs or vanilla filler reward tables.
+No project-completion claim is made.
