@@ -263,3 +263,13 @@ Static audit after 0.12.0 Tyrachnid integration:
 - Completion: 2 Legendary Lucky Blocks + 8–12 Mythic Fragments + 2 Slasher Blades; the cleared vault remains as a world landmark.
 - Mythic pool is reweighted to exactly 100 total weight. Content-package outcomes (Obsidilith, Archmage Set, Rift Siege, Lucky Rain, Rift Vault) now occupy 78/100 weight.
 - No new placeholder model, texture, icon or sound was created; the dungeon's distinctive non-vanilla objective/presentation reuses already-cleared production external assets.
+
+
+Static audit after 0.13.0 Rift Vault integration:
+- BP/RP manifests and mutual dependencies resolve to 0.13.0.
+- Mythic reward weights sum to exactly 100; boss/set/invasion/Lucky Rain/Rift Vault content-package outcomes occupy 78/100 total weight.
+- Rift Vault site search, permanent structure builder, delayed rune-objective phase, two guard waves, Obsidilith final wave and persistent event dispatcher all pass JavaScript syntax parsing.
+- If site search fails before event creation, the generic Mythic event dispatcher falls back to 4 Mythic Fragments; if structure placement itself fails after event creation, the dungeon now explicitly returns the same 4-fragment compensation instead of consuming the reward silently.
+- Integration registry remains at 9 external sources / 31 asset records / 30 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- Repository placeholder/dummy/temp/test-texture filename scan returns zero.
+- Source/static validation is complete for this milestone; Bedrock import/content-log/render/combat/multiplayer runtime QA has not yet been performed.

@@ -433,7 +433,8 @@ function tickVault(state, dimension) {
 
   if ((state.stage ?? 0) === 0) {
     if (!buildRiftVault(state, dimension)) {
-      messageNear(dimension, state.center, "§8[신화 럭키] 균열 금고를 안정적으로 형성하지 못했습니다.");
+      spawnItem(dimension, state.center, "lb:mythic_fragment", 4);
+      messageNear(dimension, state.center, "§8[신화 럭키] 균열 금고를 안정적으로 형성하지 못해 신화 조각 4개로 보상했습니다.");
       return true;
     }
     spawnVaultWave(state, dimension, [
