@@ -50,3 +50,7 @@ entity.lb:irk_companion.name=Irk Companion
 entity.lb:ent_guardian.name=Ent Guardian
 
 entity.lb:war_ant_mount.name=War Ant Mount
+
+item.lb:amethyst_repeater.name=Amethyst Repeater
+item.lb:amethyst_charge.name=Amethyst Charge
+entity.lb:wither_spider.name=Wither Spider

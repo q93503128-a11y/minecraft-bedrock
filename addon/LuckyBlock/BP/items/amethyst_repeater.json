@@ -1,0 +1,57 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:item": {
+    "description": {
+      "identifier": "lb:amethyst_repeater",
+      "menu_category": {
+        "category": "equipment",
+        "is_hidden_in_commands": false
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "amethyst_repeater"
+        }
+      },
+      "minecraft:glint": false,
+      "minecraft:rarity": "epic",
+      "minecraft:display_name": {
+        "value": "item.lb:amethyst_repeater.name"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true,
+      "minecraft:allow_off_hand": false,
+      "minecraft:damage": {
+        "value": 6
+      },
+      "minecraft:durability": {
+        "damage_chance": {
+          "min": 0,
+          "max": 0
+        },
+        "max_durability": 720
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "minecraft:amethyst_shard"
+            ],
+            "repair_amount": 24
+          },
+          {
+            "items": [
+              "lb:epic_fragment"
+            ],
+            "repair_amount": 120
+          }
+        ]
+      },
+      "minecraft:use_modifiers": {
+        "movement_modifier": 0.9,
+        "use_duration": 3600
+      }
+    }
+  }
+}

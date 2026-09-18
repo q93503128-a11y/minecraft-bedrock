@@ -13,6 +13,12 @@
     },
     "tomemancy_spellbook": {
       "textures": "textures/items/tomemancy_spellbook"
+    },
+    "amethyst_repeater": {
+      "textures": "textures/items/amethyst_repeater"
+    },
+    "amethyst_charge": {
+      "textures": "textures/items/amethyst_charge"
     }
   }
 }

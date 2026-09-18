@@ -50,3 +50,7 @@ entity.lb:irk_companion.name=이르크 동료
 entity.lb:ent_guardian.name=엔트 수호자
 
 entity.lb:war_ant_mount.name=전투 개미 탈것
+
+item.lb:amethyst_repeater.name=자수정 연발 지팡이
+item.lb:amethyst_charge.name=자수정 충전탄
+entity.lb:wither_spider.name=위더 거미
