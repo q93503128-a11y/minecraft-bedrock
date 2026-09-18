@@ -71,3 +71,12 @@ Multi-source integration validation:
 - FrenchKrab source is pinned to reviewed commit 3a568ceda77434a17e2722459e8becf48a1f6920.
 - Attribution is included in THIRD_PARTY_NOTICES.md and the machine-readable vendor registry.
 - The reward registry now records source ownership per external reward entry.
+
+
+0.4.2 multi-source merge validation:
+- Active vendored sources now include Microsoft minecraft-samples, CorvaeOboro pylon crystal, Loy's Goodies and FrenchKrab.
+- FrenchKrab CC BY 4.0 Cardboard Sword/Axe/Shield are integrated as real model+texture rewards through BP/scripts/integrations/frenchkrab.js.
+- Current reward registry references 18 external reward IDs and every one resolves to a vendor-owned record and terrain texture entry.
+- Vendor audit currently sees 20 asset records / 19 content IDs with no duplicate IDs, duplicate explicit targets or missing explicit target files.
+- Integration bootstrap, both source modules and reward_registry.js pass syntax parsing.
+- RP pack_scope is world and BP/RP mutual manifest dependencies are intact.
