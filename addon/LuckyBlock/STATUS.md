@@ -356,3 +356,16 @@ Static audit after 0.16.0 War Ant mount integration:
 - Wither Spider has low-density Nether ecology spawning (cap 2/64 blocks), an 8% Epic encounter result, and modest Rare/Epic fragment drops.
 - Epic reward pool still sums to exactly 100.
 - No placeholder model, texture, sound, beam or temporary projectile asset was introduced.
+
+
+Static audit after 0.17.0 ranged combat integration:
+- BP/RP manifests and mutual dependencies resolve to 0.17.0.
+- Epic reward weights sum to exactly 100 and include the Amethyst Repeater kit plus Wither Spider encounter.
+- `main.js`, `reward_registry.js`, `acquisition.js`, the Amethyst Repeater adapter and the Wither Spider adapter pass JavaScript syntax parsing after module-import stripping.
+- Amethyst Repeater and Charge item JSON, renewable 8-charge recipe and item-atlas bindings parse and resolve; original Tomemancy staff/orb texture targets are present.
+- The Repeater uses stable `Dimension.getEntitiesFromRay` + `Dimension.getBlockFromRay` paths and contains no custom `minecraft:projectile` runtime dependency.
+- Wither Spider behavior/client identifiers match; converted geometry contains 33 bones / 70 cubes, and all 8 WALK animation bone targets resolve.
+- Source-faithful melee Wither is present; the Lucky-owned Nether spawn and telegraphed ranged Wither-zone paths are bound.
+- Vendor registry resolves 10 external sources / 38 asset records / 36 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- Placeholder/dummy/temp/test-texture filename scan remains zero.
+- This is source/static validation only. Current stable Bedrock still needs real firing/ammo/raycast, Nether spawn, Wither telegraph, multiplayer, rendering and balance QA.
