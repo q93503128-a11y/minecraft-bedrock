@@ -11,7 +11,7 @@ Bedrock baseline for active implementation: current stable 26.51, with compatibi
 | Loy-s-Goodies | Loy / CC0-1.0 | `220909_burger.bbmodel`, `230423_noodles.bbmodel`, `230516_backpack.bbmodel`, `220130_snow_globe.bbmodel`, `230924_vending_machine.bbmodel`, plunger, turret, chainsaw, multiple axes/bows/hammers/shields/swords/wands | Common/Rare joke and utility rewards; Epic weapon/utility pool after behavior work | mainly pre | Medium | VERIFIED |
 | mc-blockbench-models | FrenchKrab / CC BY 4.0 | cardboard axe/shield/sword, drill breaker, warhammer-pickaxe, mineral greatsword; selected original-looking mob models after provenance screen | odd Common rewards through Epic equipment; selected encounter models | both | Medium | VERIFIED WITH ATTRIBUTION |
 | Inhabitants | Team Synapse / MIT | `geo/bogre.geo.json`, `geo/impaler.geo.json`, `geo/warped_clam.geo.json`; matching animations, textures, glow masks, spike projectile; Bogre recipes and lair loot concepts | Bogre encounter/event, Impaler elite, Warped Clam utility/End encounter; projectile/effect patterns | Impaler pre/late candidate; Warped Clam post; Bogre either | Medium-High | VERIFIED |
-| Slayers-Beasts | InvictusSlayer / MIT | Mantis + Tyrachnid model/animation sources and original textures; Mantis OGG audio | post-dragon fast predator + rare cave elite; Rift Siege reinforcements | post | High (Java model/animation -> Bedrock) | MANTIS + TYRACHNID ACTIVE; MORE ASSETS PENDING |
+| Slayers-Beasts | InvictusSlayer / MIT | Mantis, Tyrachnid, Irk and medium Ent model/animation sources + original textures; Mantis OGG audio | post-dragon predators/elites + pre-dragon companion/guardian content | both | High (Java model/animation -> Bedrock) | MANTIS + TYRACHNID + IRK + ENT ACTIVE |
 | forgero | SigmundGranaas / MIT | repo default branch `1.20`; modular weapon/tool implementation and assets pending per-file review | modular special tool/weapon reward family | both | High | LICENSE VERIFIED, ASSET REVIEW PENDING |
 | visuality | PinkGoosik / MIT | crystal sparkle/hit/environmental visual-effect patterns | acquisition/opening/combat presentation reference and selective reusable assets | both | Medium-High | VERIFIED; JAVA LOGIC REBUILD REQUIRED |
 | bosses-of-mass-destruction | Barribob / LGPL-3.0 | boss models/mechanics and encounter flow | high-tier boss encounter reference; direct reuse only under explicit LGPL compliance path | post | High | CONDITIONAL |
@@ -214,3 +214,23 @@ Flow:
 - the cleared vault remains in the world as a trophy/late-game landmark rather than disappearing as a temporary greybox.
 
 The event uses the same persisted Mythic event state system and pauses while unattended.
+
+
+## Pre-dragon wilderness batch — 0.15.0
+
+### Irk Companion
+- Slayers-Beasts MIT source; original model, WALK animation and texture.
+- Rare Lucky Block pet outcome.
+- 48 HP / 8 attack / 0.30 movement.
+- Uses native Bedrock tameable ownership, sit, follow-owner, teleport-to-owner and owner-defense behaviors.
+- The reward dispatcher attempts to tame the spawned Irk directly to the Lucky Block opener; manual spawn remains tameable with glow berries.
+
+### Awakened Grove + Ent Guardian
+- Epic Lucky Block persistent structure/event outcome.
+- Finished 13×13 moss/mossy-cobblestone/rooted-dirt shrine with four oak-log/leaf corner trees, glowstone waypoints and a central pedestal. The cleared shrine remains as an exploration landmark.
+- Stage 1: two Inhabitants Impalers.
+- Stage 2: one Slayers-Beasts medium Ent guardian using its original oak texture/model/WALK animation.
+- The source Ent only acquires combat through retaliation; the Lucky guardian preserves that identity instead of becoming an always-hostile reskin.
+- Lucky balance: 160 HP / 14 melee / 65% knockback resistance.
+- Completion: 4–6 Epic Fragments + one Rare Lucky Block + 25% Easel reward.
+- If no safe structure site exists, the generic event fallback gives 3–4 Epic Fragments instead of silently consuming the Lucky Block.

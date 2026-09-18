@@ -29,6 +29,8 @@ Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Th
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
 
+Implemented P4 slices: Inhabitants Impaler elite, Slayers-Beasts Irk companion, and the persistent Awakened Grove structure/Ent-guardian event. Still thin: mounts, ranged encounters, additional miniboss families and exploration structures.
+
 ## P5 — First Ender Dragon gate
 Persist a world-level first-kill unlock. After that point, late-game spawn tables, event tables, rewards and encounter pools become eligible.
 

@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.14.0 robust fishing acquisition
+Milestone: 0.15.0 pre-dragon wilderness expansion
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -33,9 +33,9 @@ Implemented:
 - Script syntax audit passes for main.js, acquisition.js and reward_behaviors.js.
 
 Still not complete:
-1. much larger reward library, especially true held weapons, ranged weapons, armor, pets and mounts;
+1. much larger reward library, especially true held/ranged weapons, armor and mounts;
 2. more structures, traps, chained Lucky events, dungeons and minigames;
-3. more pre-dragon encounter/event/structure breadth;
+3. more pre-dragon encounter breadth, especially ranged enemies, miniboss families and exploration structures;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
 5. tier-specific opening presentation plus fusion expected-value/catalyst tuning;
 6. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
@@ -296,3 +296,16 @@ Static audit after 0.14.0 fishing integration:
 - The full MinecraftCustomEvents MIT license and code provenance mapping are present.
 - Placeholder/dummy/temp/test-texture filename scan remains zero.
 - This is source/static validation. Fishing behavior still needs an actual current-Bedrock multiplayer/runtime pass before release.
+
+
+0.15.0 pre-dragon wilderness milestone:
+- Added two materially different pre-dragon outcomes from the already-pinned Slayers-Beasts MIT source.
+- `lb:irk_companion`: original 18-part / 44-cube Irk model, original 16-channel / 80-keyframe WALK animation and original texture converted into a real companion. Lucky balance is 48 HP / 8 attack / 0.30 movement.
+- Rare Lucky Blocks now have a 6% Irk Companion result. The generic entity reward dispatcher uses `EntityTameableComponent.tame(player)` to bind it to the opener; the entity then uses sit, follow-owner, teleport-to-owner and owner-defense behaviors.
+- `lb:ent_guardian`: original 23-part / 42-cube medium Ent model, original 10-channel / 42-keyframe WALK animation and original oak texture. Lucky balance is 160 HP / 14 melee / 65% knockback resistance.
+- Added persistent `awakened_grove` Epic event: a finished 13×13 moss/mossy-cobblestone/rooted-dirt grove with four real oak/leaf corner trees, glowstone waypoints and a central shrine.
+- Grove flow: 2 Impalers -> neutral-retaliatory Ent Guardian -> completion. The source Ent's hurt-response identity is preserved rather than replaced by permanent player aggro.
+- Completion rewards: 4–6 Epic Fragments + 1 Rare Lucky Block + 25% Easel. If no safe site exists, the event dispatcher falls back to 3–4 Epic Fragments.
+- Rare and Epic weighted pools now each sum to exactly 100.
+- Generic event handling now supports tier-specific fallback rewards instead of assuming every event is Mythic.
+- No placeholder model, texture, sound or temporary structure was introduced.
