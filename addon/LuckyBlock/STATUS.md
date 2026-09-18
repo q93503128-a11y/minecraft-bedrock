@@ -284,3 +284,15 @@ Static audit after 0.13.0 Rift Vault integration:
 - Vanilla treasure catches receive a higher risk/time reward profile: 25% Common (1–2), 5% Rare, 0.8% Epic and post-dragon 0.12% Legendary.
 - No anti-farming decay was added.
 - Full upstream MIT license/provenance is bundled and the source-to-target code mapping is registered.
+
+
+Static audit after 0.14.0 fishing integration:
+- BP/RP manifests and mutual dependencies resolve to 0.14.0.
+- Repository tree scan completed without truncation.
+- Fishing adapter and acquisition scripts pass JavaScript syntax parsing after module-import stripping.
+- The fishing adapter contains hook-spawn, rod-use, water-entry, hook-remove and actual item-spawn confirmation paths; deprecated `isValid()` calls are absent.
+- Empty rod use without a spawned/water-entered hook cannot award Lucky rewards through this adapter.
+- Integration registry resolves 10 external sources / 32 asset records / 30 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- The full MinecraftCustomEvents MIT license and code provenance mapping are present.
+- Placeholder/dummy/temp/test-texture filename scan remains zero.
+- This is source/static validation. Fishing behavior still needs an actual current-Bedrock multiplayer/runtime pass before release.
