@@ -332,3 +332,16 @@ Static audit after 0.15.0 pre-dragon wilderness integration:
 - Lucky reward dispatcher now optionally fires an explicit tame event after Script API taming. This hardens Irk/War Ant auto-tame so ownership and data-driven tamed behavior groups agree immediately.
 - War Ant tamed behavior includes direct player ground control, one-player rideable seat, owner follow/teleport and owner-defense.
 - No placeholder model, texture, sound or temporary structure was introduced.
+
+
+Static audit after 0.16.0 War Ant mount integration:
+- BP/RP manifests and mutual dependencies resolve to 0.16.0.
+- Epic reward weights sum to exactly 100 and include the War Ant Mount at 10%.
+- `main.js` and `reward_registry.js` pass JavaScript syntax parsing after module-import stripping.
+- War Ant behavior/client identifiers match; converted geometry contains 21 bones / 29 cubes.
+- WALK + AMBIENT animation bone targets all resolve against the converted geometry.
+- Tamed mount group contains rideable, ground input, player-ridden control, owner follow/teleport and owner-defense components.
+- Reward auto-taming now explicitly triggers the configured data-driven tame event after Script API taming.
+- Vendor registry resolves 10 external sources / 35 asset records / 33 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- Original wood-soldier texture target is present and placeholder/dummy/temp/test-texture filename scan remains zero.
+- This is source/static validation only; current Bedrock riding controls, seat placement, tame ownership, animation scale and multiplayer runtime QA remain untested.
