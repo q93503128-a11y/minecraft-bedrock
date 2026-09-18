@@ -451,3 +451,16 @@ Static audit after 0.20.0 Fortune Relay integration:
 - Natural spawn is post-dragon only, low-density, wooded Overworld only, capped at one Wudu within 96 blocks.
 - Legendary pool adds Wudu at 8 weight while reducing the generic fragment slice by the same 8, so the full post-dragon Legendary weight total stays unchanged.
 - No placeholder asset or source-invented behavior claim was introduced.
+
+
+Static audit after 0.21.0 Wudu Binder integration:
+- BP/RP manifests and mutual dependencies resolve to 0.21.0.
+- `main.js`, `reward_registry.js`, `acquisition.js` and the Wudu integration script pass JavaScript syntax parsing after import/export stripping.
+- Wudu behavior/client identifiers match; converted geometry contains 32 bones / 31 cubes and all 30 CRAWL animation bone targets resolve.
+- Original oak Wudu texture blob SHA matches upstream exactly.
+- Post-dragon gate, low-density wooded Overworld spawn, 18-tick dodge telegraph, Slowness/pull control and Resistance support-aura paths are all present.
+- Legendary pool adds Wudu at 8 weight while preserving the previous full post-dragon Legendary total of 122.
+- Vendor registry resolves 10 external sources / 40 asset records / 38 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- Placeholder/dummy/temp/test-texture filename scan remains zero.
+- Source audit explicitly records that upstream `WuduGrabGoal.canUse()` returns false; Lucky's functional grasp and support aura are project-owned mechanics, not misattributed upstream behavior.
+- This remains source/static validation only; stable-Bedrock collision size, spawn ecology, pull impulse, support aura, rendering and multiplayer behavior still require runtime QA.
