@@ -426,3 +426,16 @@ Static audit after 0.19.0 opening/fusion integration:
 - Completion awards 3–5 Rare Fragments + 1 Common Lucky Block, with 35% Epic Fragment and 25% Camera bonus rolls. The finished vault remains as a world landmark.
 - If no safe 19×19 site exists, the generic Rare event fallback grants 3–4 Rare Fragments.
 - Rare reward pool still sums to exactly 100.
+
+
+Static audit after 0.20.0 Fortune Relay integration:
+- BP/RP manifests and mutual dependencies resolve to 0.20.0.
+- `pre_dragon_events.js` and `reward_registry.js` pass JavaScript syntax parsing after import/export stripping.
+- Rare reward weights still sum to exactly 100 and include the 8-weight `fortune_relay` event plus a Rare-fragment fallback.
+- The permanent relay structure contract resolves to a 19×19 vault with 118 wall cells, 5 ordered checkpoints and a 50-second run timer.
+- Independent BFS verification confirms every route leg (start -> gold -> lapis -> emerald -> amethyst -> center) is connected while the 2-block internal walls prevent normal jump-over shortcuts.
+- All referenced production FX IDs (Obsidilith indicator/burst and Slasher spark) resolve to committed particle definitions.
+- Structure materials are stable vanilla production blocks; no temporary texture/model or assistant-drawn graybox asset is introduced.
+- Vendor registry remains 10 external sources / 39 asset records / 37 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- Placeholder/dummy/temp/test-texture filename scan remains zero.
+- Runtime QA is still required for real-world terrain site selection, checkpoint detection height tolerances, cooperative multiplayer timing and Bedrock persistence.
