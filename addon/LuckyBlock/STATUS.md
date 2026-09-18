@@ -309,3 +309,15 @@ Static audit after 0.14.0 fishing integration:
 - Rare and Epic weighted pools now each sum to exactly 100.
 - Generic event handling now supports tier-specific fallback rewards instead of assuming every event is Mythic.
 - No placeholder model, texture, sound or temporary structure was introduced.
+
+
+Static audit after 0.15.0 pre-dragon wilderness integration:
+- BP/RP manifests and mutual dependencies resolve to 0.15.0.
+- Rare and Epic reward pools each sum to exactly 100.
+- `main.js`, `reward_registry.js`, `acquisition.js` and `events/pre_dragon_events.js` pass JavaScript syntax parsing after module-import stripping.
+- Irk behavior/client identifiers match; converted geometry contains 18 bones / 44 cubes and every WALK animation bone target resolves. The tameable component is present in base components so Script API can tame the companion immediately after spawn.
+- Ent behavior/client identifiers match; converted geometry contains 23 bones / 42 cubes and every WALK animation bone target resolves.
+- Awakened Grove structure builder, Impaler guard stage, Ent guardian stage, completion rewards and tier-specific failure fallback are all present.
+- Vendor registry resolves 10 external sources / 34 asset records / 32 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- Placeholder/dummy/temp/test-texture filename scan returns zero.
+- This is source/static validation only; current stable Bedrock import, companion ownership behavior, structure placement, persistence and multiplayer runtime QA remain untested.
