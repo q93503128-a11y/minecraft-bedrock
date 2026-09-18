@@ -78,3 +78,14 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Java-side entity/AI code is not assumed to run on Bedrock. Its gameplay intent was studied, while Bedrock entity JSON and Script API behavior were written for this project.
 - Runtime identifiers are remapped to `lb:impaler` and `lb:warped_clam`.
 - The MIT notice must remain with redistributed substantial portions.
+
+
+### Bogre miniboss
+- Source: Team-Synapse-MC/Inhabitants, reviewed commit `2da25600eb052862d34818b4a2a458afea83e868`
+- License: MIT
+- Directly reused/adapted:
+  - `geo/bogre.geo.json`
+  - `animations/bogre.animation.json`
+  - `textures/entity/bogre.png`
+  - selected Bogre roar/attack/shockwave/hurt/death OGG files
+- The original Java AI is not bundled as executable Bedrock code. Its combat intent and constants were reviewed, then a Bedrock-specific phased encounter was implemented with Entity JSON and Script API.

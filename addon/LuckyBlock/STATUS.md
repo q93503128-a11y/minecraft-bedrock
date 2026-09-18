@@ -101,3 +101,15 @@ Static audit after 0.5.0 enemy integration:
 - lb:warped_clam behavior/client identifiers match, geometry reference resolves, texture exists and all 4 imported animation identifiers resolve.
 - Warped Clam intentionally has no normal spawn rule; its runtime spawn path is guarded by lb:post_dragon_unlocked.
 - Inhabitants original combat sound definitions resolve for Impaler scream/spike and Warped Clam open/hit.
+
+
+0.6.0 miniboss milestone:
+- Added Inhabitants Bogre as a real Lucky encounter rather than a natural ambient mob.
+- Original 31-bone / 40-cube model, 21-animation set, texture and five original combat sounds are vendored.
+- Bogre has a Bedrock boss HUD and 220 HP.
+- Three HP phases change action cadence.
+- Shockwave is visibly/sound-telegraphed and is avoidable by jumping.
+- After each shockwave the Bogre enters a temporary 1.6x incoming-damage weak window.
+- Entity.playAnimation is used to play original roar/attack animations during the scripted mechanic.
+- Epic Lucky Blocks can rarely produce a Bogre encounter; Legendary Lucky Blocks have a substantial Bogre encounter roll.
+- Bogre kill rewards are integrated with the Lucky progression.

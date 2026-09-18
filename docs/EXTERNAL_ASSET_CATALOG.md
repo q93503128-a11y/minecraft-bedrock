@@ -64,3 +64,17 @@ Inhabitants has moved from candidate status to active vendored content.
 - Bedrock behavior: stationary 130 HP enemy, strong close-range pulse/knockback.
 - Spawn gate: never normal-spawned by a spawn rule; Script API only attempts spawns in The End after `lb:post_dragon_unlocked` is true, with a nearby density cap.
 - Lucky drops: high Epic Fragment chance, Legendary Fragment chance, low Mythic Fragment jackpot.
+
+
+## Bogre miniboss implementation — 0.6.0
+
+- Source: Inhabitants / MIT.
+- Original visual payload: 31 bones, 40 cubes, 21 named animations, original texture and selected original OGG combat sounds.
+- Lucky role: Epic rare encounter / Legendary major encounter.
+- Bedrock stats: 220 HP, boss HUD, high knockback resistance, melee pressure.
+- Phase thresholds: >62%, 30–62%, <=30%.
+- Core mechanic: telegraphed ground shockwave. Players off the ground at impact avoid the shockwave.
+- Weak window: after a shockwave, `minecraft:damage_sensor` temporarily raises received damage to 1.6x.
+- The boss becomes faster and uses shockwaves more frequently as its HP decreases.
+- Reward: guaranteed Epic Lucky Block + 2–4 Legendary Fragments; Mythic Fragment chance is 4% pre-dragon / 10% post-dragon.
+- Bogre is not added to ambient natural spawning. It enters gameplay through Lucky Block encounter outcomes.

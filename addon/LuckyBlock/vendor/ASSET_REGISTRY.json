@@ -433,6 +433,39 @@
       "contentId": "lb:warped_clam",
       "integrationModule": "BP/scripts/integrations/inhabitants.js",
       "modification": "Ender variant visual/animation/sounds vendored; Java behavior replaced with post-Ender-Dragon Script API spawning and radial impact behavior."
+    },
+    {
+      "key": "inhabitants_bogre",
+      "source": "inhabitants",
+      "upstream": [
+        "src/main/resources/assets/inhabitants/geo/bogre.geo.json",
+        "src/main/resources/assets/inhabitants/animations/bogre.animation.json",
+        "src/main/resources/assets/inhabitants/textures/entity/bogre.png",
+        "src/main/resources/assets/inhabitants/sounds/entity/bogre/aggressive/bogre_roar_0.ogg",
+        "src/main/resources/assets/inhabitants/sounds/entity/bogre/aggressive/bogre_attack_0.ogg",
+        "src/main/resources/assets/inhabitants/sounds/entity/bogre/aggressive/bogre_shockwave_feedback.ogg",
+        "src/main/resources/assets/inhabitants/sounds/entity/bogre/neutral/bogre_hurt_0.ogg",
+        "src/main/resources/assets/inhabitants/sounds/entity/bogre/neutral/bogre_death_0.ogg",
+        "src/main/java/com/jeremyseq/inhabitants/entities/bogre/BogreEntity.java",
+        "src/main/java/com/jeremyseq/inhabitants/entities/bogre/ai/BogreAttackGoal.java",
+        "src/main/java/com/jeremyseq/inhabitants/entities/bogre/ai/ShockwaveGoal.java"
+      ],
+      "targets": [
+        "BP/entities/bogre.json",
+        "RP/models/entity/bogre.geo.json",
+        "RP/animations/bogre.animation.json",
+        "RP/textures/entity/bogre.png",
+        "RP/entity/bogre.entity.json",
+        "RP/animation_controllers/bogre.animation_controllers.json",
+        "RP/sounds/entity/bogre_roar.ogg",
+        "RP/sounds/entity/bogre_attack.ogg",
+        "RP/sounds/entity/bogre_shockwave.ogg",
+        "RP/sounds/entity/bogre_hurt.ogg",
+        "RP/sounds/entity/bogre_death.ogg"
+      ],
+      "contentId": "lb:bogre",
+      "integrationModule": "BP/scripts/integrations/inhabitants_bogre.js",
+      "modification": "Original geometry, 21-animation set, texture and selected original sounds vendored. Java boss AI rebuilt for Bedrock as a three-phase Lucky encounter with telegraphed jump-dodge shockwaves and temporary vulnerability windows."
     }
   ]
 }
