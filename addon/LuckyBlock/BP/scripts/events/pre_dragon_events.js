@@ -484,8 +484,233 @@ function tickFortuneBulwark(state,dimension){
   return false;
 }
 
+
+function playerOnGalleryStart(player,state){
+  return Math.abs(player.location.x-state.center.x)<=8.6&&
+    Math.abs(player.location.z-(state.center.z+8))<=1.25&&
+    Math.abs(player.location.y-state.center.y)<=2.25;
+}
+function galleryTargetOffsets(){
+  return [
+    [-6,1,-4],[-2,1,-4],[2,1,-4],[6,1,-4],
+    [-6,2,-7],[-2,2,-7],[2,2,-7],[6,2,-7],
+    [-6,3,-10],[-2,3,-10],[2,3,-10],[6,3,-10]
+  ];
+}
+function gallerySiteClear(dimension,center){
+  const bx=Math.floor(center.x),by=Math.floor(center.y),bz=Math.floor(center.z);
+  for(const [dx,dz] of [[-9,-11],[-9,9],[9,-11],[9,9],[0,0],[-9,0],[9,0],[0,-11],[0,9]]){
+    const g=groundAt(dimension,bx+dx,by,bz+dz);
+    if(!g||Math.abs(g.y-by)>1)return false;
+  }
+  for(let dx=-9;dx<=9;dx+=2)for(let dz=-11;dz<=9;dz+=2)for(let dy=0;dy<=6;dy++){
+    try{if(dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz})?.typeId!=="minecraft:air")return false;}catch{return false;}
+  }
+  return true;
+}
+function findGallerySite(dimension,center){
+  for(const [dx,dz] of [[0,0],[28,0],[-28,0],[0,28],[0,-28],[28,28],[-28,28],[28,-28],[-28,-28],[40,0],[-40,0],[0,40],[0,-40]]){
+    const g=groundAt(dimension,center.x+dx,center.y,center.z+dz);if(!g)continue;
+    const c={x:g.x+0.5,y:g.y,z:g.z+0.5};if(gallerySiteClear(dimension,c))return c;
+  }
+}
+function galleryTargetLocation(state,index){
+  const [dx,dy,dz]=galleryTargetOffsets()[index];
+  return{x:Math.floor(state.center.x)+dx,y:Math.floor(state.center.y)+dy,z:Math.floor(state.center.z)+dz};
+}
+function galleryTargetIndex(state,location){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const x=Math.floor(location.x)-bx,y=Math.floor(location.y)-by,z=Math.floor(location.z)-bz;
+  const targets=galleryTargetOffsets();
+  for(let i=0;i<targets.length;i++){
+    const [dx,dy,dz]=targets[i];
+    if(x===dx&&y===dy&&z===dz)return i;
+  }
+  return -1;
+}
+function insideGallery(state,location){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const x=Math.floor(location.x)-bx,y=Math.floor(location.y)-by,z=Math.floor(location.z)-bz;
+  return Math.abs(x)<=9&&z>=-11&&z<=9&&y>=-1&&y<=6;
+}
+function buildFortuneGallery(state,dimension){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const P={
+    floor:mc.BlockPermutation.resolve("minecraft:smooth_stone"),
+    lane:mc.BlockPermutation.resolve("minecraft:polished_andesite"),
+    wall:mc.BlockPermutation.resolve("minecraft:deepslate_tiles"),
+    copper:mc.BlockPermutation.resolve("minecraft:copper_block"),
+    light:mc.BlockPermutation.resolve("minecraft:sea_lantern"),
+    start:mc.BlockPermutation.resolve("minecraft:quartz_block"),
+    target:mc.BlockPermutation.resolve("lb:reward_vase")
+  };
+  let placed=0;
+  function put(dx,dy,dz,p){try{const b=dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz});if(!b)return;b.setPermutation(p);placed++;}catch{}}
+  for(let dx=-9;dx<=9;dx++)for(let dz=-11;dz<=9;dz++)put(dx,-1,dz,Math.abs(dx)%4===0?P.lane:P.floor);
+  for(let x=-9;x<=9;x++)for(let y=0;y<=5;y++)put(x,y,-11,P.wall);
+  for(const side of [-9,9])for(let z=-11;z<=9;z++)for(let y=0;y<=1;y++)put(side,y,z,P.wall);
+  for(const [dx,dz] of [[-9,-11],[9,-11],[-9,9],[9,9]]){
+    for(let y=0;y<=5;y++)put(dx,y,dz,P.copper);
+    put(dx,6,dz,P.light);
+  }
+  for(let x=-8;x<=8;x++)put(x,-1,8,P.start);
+  for(const [dx,dy,dz] of galleryTargetOffsets()){
+    put(dx,dy-1,dz,P.copper);
+    put(dx,dy,dz,P.target);
+    if(dy>1)for(let y=0;y<dy-1;y++)put(dx,y,dz,P.wall);
+  }
+  state.structureBuilt=placed>=500;
+  return state.structureBuilt;
+}
+function restoreGalleryTargets(state,dimension){
+  const target=mc.BlockPermutation.resolve("lb:reward_vase");
+  const mask=state.hitMask??0;
+  const targets=galleryTargetOffsets();
+  for(let i=0;i<targets.length;i++){
+    if((mask&(1<<i))!==0)continue;
+    const loc=galleryTargetLocation(state,i);
+    try{
+      const block=dimension.getBlock(loc);
+      if(block&&block.typeId!=="lb:reward_vase")block.setPermutation(target);
+    }catch{}
+  }
+}
+function pulseGalleryTargets(state,dimension){
+  const mask=state.hitMask??0;
+  for(let i=0;i<galleryTargetOffsets().length;i++){
+    if((mask&(1<<i))!==0)continue;
+    const loc=galleryTargetLocation(state,i);
+    try{dimension.spawnParticle("lb:obsidilith_indicator",{x:loc.x+0.5,y:loc.y+1.05,z:loc.z+0.5});}catch{}
+  }
+}
+function giveTrialSnowballs(player,count=24){
+  try{
+    const inv=player.getComponent("minecraft:inventory")?.container;
+    if(!inv)return;
+    const leftover=inv.addItem(new mc.ItemStack("minecraft:snowball",count));
+    if(leftover)player.dimension.spawnItem(leftover,{x:player.location.x,y:player.location.y+0.5,z:player.location.z});
+  }catch{}
+}
+function resetGalleryRun(state,dimension,msg){
+  state.running=false;
+  state.hitMask=0;
+  state.hits=0;
+  state.misses=0;
+  state.runTicks=0;
+  state.scoreByPlayer={};
+  state.ammoGranted=[];
+  state.completePending=false;
+  restoreGalleryTargets(state,dimension);
+  if(msg)messageNear(dimension,state.center,msg);
+}
+function finishGallery(state,dimension){
+  const misses=state.misses??0;
+  const time=state.runTicks??900;
+  spawnItem(dimension,state.center,"lb:epic_fragment",4+Math.floor(Math.random()*2));
+  spawnItem(dimension,state.center,"lb:rare_lucky_block",1);
+  if(misses<=3)spawnItem(dimension,state.center,"minecraft:arrow",32);
+  const precision=time<=500&&misses<=1;
+  if(precision)spawnItem(dimension,state.center,"lb:storm_longbow",1);
+  try{dimension.playSound("slasher.critical",state.center,{volume:0.82,pitch:1.12});}catch{}
+  try{dimension.spawnParticle("lb:obsidilith_burst",{x:state.center.x,y:state.center.y+0.5,z:state.center.z});}catch{}
+  const seconds=Math.ceil(time/20);
+  const contributors=Object.keys(state.scoreByPlayer??{}).length;
+  messageNear(dimension,state.center,"§b[Fortune Gallery] 완료! §f"+seconds+"초 / 빗나감 "+misses+" / 참가 "+contributors+"명"+(precision?" §6— Sharpshooter 보너스: Storm Longbow!":""));
+}
+function tickFortuneGallery(state,dimension){
+  state.elapsed=(state.elapsed??0)+STEP;
+  if(state.elapsed>18000){
+    spawnItem(dimension,state.center,"lb:epic_fragment",3);
+    messageNear(dimension,state.center,"§8[에픽 럭키] Fortune Gallery가 종료되었습니다. 에픽 조각 3개를 남겼습니다.");
+    return true;
+  }
+  if((state.stage??0)===0){
+    if(!buildFortuneGallery(state,dimension)){
+      spawnItem(dimension,state.center,"lb:epic_fragment",3);
+      messageNear(dimension,state.center,"§8[에픽 럭키] 사격장을 만들 공간이 없어 에픽 조각 3개로 보상했습니다.");
+      return true;
+    }
+    state.stage=1;
+    resetGalleryRun(state,dimension);
+    messageNear(dimension,state.center,"§b[에픽 럭키] Fortune Gallery — 남쪽 흰색 사선에 서서 시작. 45초 안에 12개의 Lucky Vase를 눈덩이로 맞히세요.");
+    return false;
+  }
+  if(state.completePending){
+    finishGallery(state,dimension);
+    return true;
+  }
+  restoreGalleryTargets(state,dimension);
+  if(!state.running){
+    if((state.elapsed%20)===0)pulseGalleryTargets(state,dimension);
+    const start={x:state.center.x,y:state.center.y,z:state.center.z+8};
+    const starters=playersNear(dimension,state.center,28).filter(p=>playerOnGalleryStart(p,state));
+    if(starters.length){
+      state.running=true;
+      state.runTicks=0;
+      state.hitMask=0;
+      state.hits=0;
+      state.misses=0;
+      state.scoreByPlayer={};
+      state.ammoGranted=[];
+      state.attempts=(state.attempts??0)+1;
+      for(const p of starters){giveTrialSnowballs(p,24);state.ammoGranted.push(p.id);}
+      try{dimension.playSound("random.bow",start,{volume:0.7,pitch:1.15});}catch{}
+      messageNear(dimension,state.center,"§f[Fortune Gallery] 시작! §b12개 표적§f을 45초 안에 전부 맞히세요. 중간 합류도 가능합니다.");
+    }
+    return false;
+  }
+  state.runTicks=(state.runTicks??0)+STEP;
+  const nearby=playersNear(dimension,state.center,28);
+  state.ammoGranted=Array.isArray(state.ammoGranted)?state.ammoGranted:[];
+  for(const p of nearby){
+    if(state.ammoGranted.includes(p.id))continue;
+    giveTrialSnowballs(p,16);
+    state.ammoGranted.push(p.id);
+    try{p.sendMessage("§b[Fortune Gallery] 중간 합류 — 눈덩이 16개 지급.");}catch{}
+  }
+  if((state.runTicks%20)===0)pulseGalleryTargets(state,dimension);
+  if(state.runTicks>900){
+    resetGalleryRun(state,dimension,"§c[Fortune Gallery] 45초 초과. 표적이 복구되었습니다. 남쪽 사선에서 바로 재도전할 수 있습니다.");
+    return false;
+  }
+  return false;
+}
+mc.world.afterEvents.projectileHitBlock.subscribe(event=>{
+  const source=event.source;
+  if(!(source instanceof mc.Player)||event.projectile?.typeId!=="minecraft:snowball")return;
+  let hit;try{hit=event.getBlockHit()?.block;}catch{return;}
+  if(!hit)return;
+  const states=loadStates();
+  let changed=false;
+  for(const state of states){
+    if(state.type!=="fortune_gallery"||!state.running||!(state.dimension===event.dimension.id||event.dimension.id.endsWith(":"+state.dimension)))continue;
+    if(!insideGallery(state,hit.location))continue;
+    const index=galleryTargetIndex(state,hit.location);
+    if(index<0){
+      state.misses=(state.misses??0)+1;
+      changed=true;
+      try{source.onScreenDisplay.setActionBar("§bFortune Gallery §8— §cMiss "+state.misses);}catch{}
+      break;
+    }
+    const bit=1<<index;
+    if(((state.hitMask??0)&bit)!==0)break;
+    state.hitMask=(state.hitMask??0)|bit;
+    state.hits=(state.hits??0)+1;
+    state.scoreByPlayer=state.scoreByPlayer&&typeof state.scoreByPlayer==="object"?state.scoreByPlayer:{};
+    state.scoreByPlayer[source.id]=(state.scoreByPlayer[source.id]??0)+1;
+    try{hit.setPermutation(mc.BlockPermutation.resolve("minecraft:air"));}catch{}
+    try{event.dimension.playSound("break.amethyst_cluster",hit.location,{volume:0.72,pitch:1.0+state.hits*0.025});}catch{}
+    try{event.dimension.spawnParticle("lb:obsidilith_burst",{x:hit.location.x+0.5,y:hit.location.y+0.5,z:hit.location.z+0.5});}catch{}
+    try{source.onScreenDisplay.setActionBar("§bFortune Gallery §8— §f"+state.hits+"/12 §7(내 적중 "+state.scoreByPlayer[source.id]+")");}catch{}
+    if(state.hits>=galleryTargetOffsets().length)state.completePending=true;
+    changed=true;
+    break;
+  }
+  if(changed)saveStates(states);
+});
+
 export function startPreDragonEvent(dimension,center,type){
-  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark")return false;
+  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark"&&type!=="fortune_gallery")return false;
   if(!dimension.id.includes("overworld"))return false;
   const site=type==="awakened_grove"
     ?findGroveSite(dimension,center)
@@ -493,10 +718,12 @@ export function startPreDragonEvent(dimension,center,type){
       ?findRelaySite(dimension,center)
       :type==="royal_anthill"
         ?findAnthillSite(dimension,center)
-        :findBulwarkSite(dimension,center);
+        :type==="fortune_bulwark"
+          ?findBulwarkSite(dimension,center)
+          :findGallerySite(dimension,center);
   if(!site)return false;
   const states=loadStates();if(states.length>=MAX_ACTIVE)return false;
-  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:48;
+  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:type==="fortune_gallery"?58:48;
   for(const s of states)if(s.dimension==="overworld"&&distSq(s.center,site)<overlap*overlap)return false;
   states.push({id:nextId(),type,dimension:"overworld",center:site,stage:0,elapsed:0});saveStates(states);return true;
 }
@@ -515,7 +742,9 @@ mc.system.runInterval(()=>{
             ?tickRoyalAnthill(state,dimension)
             :state.type==="fortune_bulwark"
               ?tickFortuneBulwark(state,dimension)
-              :true;
+              :state.type==="fortune_gallery"
+                ?tickFortuneGallery(state,dimension)
+                :true;
     }catch{done=false;}
     if(!done)next.push(state);
   }
