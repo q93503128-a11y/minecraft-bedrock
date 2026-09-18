@@ -31,7 +31,7 @@ Implemented reward-family slices now include utility/decor, Slasher melee, Tomem
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
 
-Implemented P4 slices: Inhabitants Impaler elite, Slayers-Beasts Irk companion, persistent Awakened Grove/Ent-guardian event, Slayers-Beasts War Ant player-controlled mount, and the pre-dragon Nether Wither Spider ranged/control encounter. Still thin: additional ranged families, mount families, miniboss families and exploration structures.
+Implemented P4 slices: Inhabitants Impaler elite, Slayers-Beasts Irk companion, persistent Awakened Grove/Ent-guardian event, Slayers-Beasts War Ant player-controlled mount, pre-dragon Nether Wither Spider ranged/control encounter, and the permanent Fortune Relay Vault timed maze/minigame. Still thin: additional ranged families, mount families, miniboss families and exploration structures.
 
 ## P5 — First Ender Dragon gate
 Persist a world-level first-kill unlock. After that point, late-game spawn tables, event tables, rewards and encounter pools become eligible.

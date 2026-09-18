@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.19.0 opening presentation + fusion
+Milestone: 0.20.0 Fortune Relay Vault
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -34,8 +34,8 @@ Implemented:
 
 Still not complete:
 1. much larger reward library, especially true held/ranged weapons, armor and mounts;
-2. more structures, traps, chained Lucky events, dungeons and minigames;
-3. more pre-dragon encounter breadth, especially ranged enemies, miniboss families and exploration structures;
+2. more structures, traps, chained Lucky events, dungeons and additional minigames;
+3. more pre-dragon encounter breadth, especially miniboss families and exploration structures;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
 5. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
@@ -414,3 +414,15 @@ Static audit after 0.19.0 opening/fusion integration:
 - Vendor registry remains 10 external sources / 39 asset records / 37 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
 - Placeholder/dummy/temp/test-texture filename scan remains zero.
 - P2 source implementation is now treated as 96% complete; only real Bedrock runtime/balance QA remains for this phase.
+
+
+0.20.0 Fortune Relay Vault milestone:
+- Added `fortune_relay` as the first dedicated non-combat Lucky minigame outcome.
+- Rare Lucky Blocks now have an 8-weight chance to create a permanent 19×19 roofless vault maze rather than only items/fragments/pets.
+- The vault is built from final vanilla materials (polished andesite, deepslate tiles/bricks, copper, sea lanterns and five distinct mineral checkpoint pads); no graybox or temporary texture exists.
+- Maze topology is deterministic and 2-block internal walls prevent normal jump-skipping. The south entrance opens onto a white start pad.
+- Cooperative timed objective: activate five pads in order within 50 seconds. Any nearby player can advance the shared route; timeout resets the run immediately without deleting the structure or consuming another Lucky Block.
+- Checkpoint guidance reuses already-vendored Obsidilith indicator/burst and Slasher spark production effects.
+- Completion awards 3–5 Rare Fragments + 1 Common Lucky Block, with 35% Epic Fragment and 25% Camera bonus rolls. The finished vault remains as a world landmark.
+- If no safe 19×19 site exists, the generic Rare event fallback grants 3–4 Rare Fragments.
+- Rare reward pool still sums to exactly 100.
