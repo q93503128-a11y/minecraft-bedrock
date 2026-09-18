@@ -882,6 +882,27 @@
       ],
       "contentId": "lb:ent_guardian",
       "modification": "Original medium Ent model, WALK animation and oak texture are ported. Source retaliatory melee identity is preserved; Lucky binds it to the permanent pre-dragon Awakened Grove structure event."
+    },
+    {
+      "key": "slayers_beasts_war_ant_mount",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/AntSoldierModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/AntSoldierAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/AntSoldierRenderer.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/AntSoldier.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/ant/wood_soldier.png"
+      ],
+      "targets": [
+        "BP/entities/war_ant_mount.json",
+        "RP/entity/war_ant_mount.entity.json",
+        "RP/models/entity/war_ant_mount.geo.json",
+        "RP/animations/war_ant_mount.animation.json",
+        "RP/animation_controllers/war_ant_mount.animation_controllers.json",
+        "RP/textures/entity/war_ant_mount.png"
+      ],
+      "contentId": "lb:war_ant_mount",
+      "modification": "Original Ant Soldier model, WALK/AMBIENT animation data and wood-soldier texture are ported. The upstream renderer's 1.5x visual scale is baked into Bedrock geometry. Lucky converts the neutral soldier-ant identity into an Epic tameable player-controlled mount using official Bedrock rideable/input_ground_controlled/player_ride_tamed components."
     }
   ]
 }

@@ -39,7 +39,10 @@ function openWeighted(dimension, pos, tier, player) {
       const spawned = dimension.spawnEntity(reward.id, { x: pos.x, y: pos.y + 0.4, z: pos.z });
       if (reward.nameTag) spawned.nameTag = reward.nameTag;
       if (reward.tameToOpener && player?.typeId === "minecraft:player") {
-        try { spawned.getComponent("minecraft:tameable")?.tame(player); } catch {}
+        try {
+          spawned.getComponent("minecraft:tameable")?.tame(player);
+          if (reward.tameEvent) spawned.triggerEvent(reward.tameEvent);
+        } catch {}
       }
     } catch {}
   } else if (reward.kind === "bundle") {

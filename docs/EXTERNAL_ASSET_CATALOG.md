@@ -234,3 +234,24 @@ The event uses the same persisted Mythic event state system and pauses while una
 - Lucky balance: 160 HP / 14 melee / 65% knockback resistance.
 - Completion: 4–6 Epic Fragments + one Rare Lucky Block + 25% Easel reward.
 - If no safe structure site exists, the generic event fallback gives 3–4 Epic Fragments instead of silently consuming the Lucky Block.
+
+
+## Slayers-Beasts War Ant Mount — 0.16.0
+
+Status: active Epic pre-dragon mount reward. License: MIT. Pinned upstream: `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+
+Direct source payload:
+- Ant Soldier model converted to Bedrock geometry with the original renderer's 1.5× visual scale baked in;
+- original WALK and AMBIENT antenna animation data;
+- original wood-soldier texture.
+
+Lucky role:
+- `lb:war_ant_mount`;
+- 90 HP / 12 melee / 0.38 movement / 60% knockback resistance;
+- Epic Lucky Block 10% outcome;
+- spawned reward is tamed to the opener and its data-driven tame group is explicitly activated;
+- one-player seat with `minecraft:input_ground_controlled` and `minecraft:behavior.player_ride_tamed`;
+- follows/teleports to its owner while unmounted and defends its owner;
+- sugar can tame a manually spawned specimen; sugar/honey bottle heal it.
+
+This fills the first real mount-reward family without introducing a vanilla horse recolor or temporary model.

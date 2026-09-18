@@ -29,14 +29,15 @@ export const weightedPools = {
     { weight: 6, kind: "entity", id: "lb:irk_companion", nameTag: "Irk Companion", source: "slayers_beasts", tameToOpener: true }
   ],
   epic: [
-    { weight: 28, kind: "fragments", id: "lb:epic_fragment", min: 2, max: 4, source: "core" },
-    { weight: 18, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" },
+    { weight: 23, kind: "fragments", id: "lb:epic_fragment", min: 2, max: 4, source: "core" },
+    { weight: 15, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" },
     { weight: 10, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
     { weight: 8, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
     { weight: 10, kind: "item", id: "lb:rare_lucky_block", count: 2, source: "core" },
     { weight: 8, kind: "fragments", id: "lb:legendary_fragment", min: 1, max: 1, source: "core" },
     { weight: 4, kind: "item", id: "lb:epic_lucky_block", source: "core" },
-    { weight: 14, kind: "event", id: "awakened_grove", source: "core+inhabitants+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } }
+    { weight: 12, kind: "event", id: "awakened_grove", source: "core+inhabitants+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
+    { weight: 10, kind: "entity", id: "lb:war_ant_mount", nameTag: "War Ant Mount", source: "slayers_beasts", tameToOpener: true, tameEvent: "lb:on_tame" }
   ]
 };
 

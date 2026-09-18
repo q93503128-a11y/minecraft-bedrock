@@ -189,3 +189,10 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Irk: original model dimensions/pivots, WALK keyframes and `textures/entity/irk.png` are ported; Lucky adds the Bedrock companion/taming behavior.
 - Ent: original medium-Ent model dimensions/pivots, WALK keyframes and oak texture are ported; Lucky preserves its retaliatory identity and adds the Awakened Grove encounter.
 - Awakened Grove layout/rewards are Lucky-owned and use final vanilla building materials rather than temporary art.
+
+
+### War Ant Mount
+- Source: Slayers-Beasts / InvictusSlayer / MIT, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Directly adapted source files: AntSoldier model, WALK + AMBIENT animation data, renderer scale reference and original wood-soldier texture.
+- The upstream 1.5× render scale is baked into the converted Bedrock geometry rather than silently changing the source silhouette.
+- Lucky-owned behavior changes the original neutral combat ant into a tameable Epic mount. Taming, rideable seating, ground input, player-ridden control and owner-defense behavior are Bedrock-side adaptations, not upstream Java behavior.

@@ -1,0 +1,165 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:war_ant_mount",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "lb:war_ant_wild": {
+        "minecraft:behavior.random_stroll": {
+          "priority": 6,
+          "speed_multiplier": 0.75
+        }
+      },
+      "lb:war_ant_tamed": {
+        "minecraft:is_tamed": {},
+        "minecraft:rideable": {
+          "seat_count": 1,
+          "crouching_skip_interact": true,
+          "family_types": [
+            "player"
+          ],
+          "interact_text": "action.interact.ride.horse",
+          "seats": {
+            "position": [
+              0,
+              0.95,
+              -0.15
+            ]
+          }
+        },
+        "minecraft:input_ground_controlled": {},
+        "minecraft:behavior.player_ride_tamed": {},
+        "minecraft:behavior.follow_owner": {
+          "priority": 5,
+          "speed_multiplier": 1,
+          "start_distance": 10,
+          "stop_distance": 3
+        },
+        "minecraft:behavior.teleport_to_owner": {
+          "priority": 2,
+          "filters": {
+            "all_of": [
+              {
+                "test": "owner_distance",
+                "operator": ">",
+                "value": 22
+              }
+            ]
+          }
+        },
+        "minecraft:behavior.owner_hurt_by_target": {
+          "priority": 2
+        },
+        "minecraft:behavior.owner_hurt_target": {
+          "priority": 3
+        },
+        "minecraft:behavior.melee_attack": {
+          "priority": 4,
+          "speed_multiplier": 1.1,
+          "track_target": true
+        }
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "mob",
+          "mount",
+          "lb_companion",
+          "lb_war_ant"
+        ]
+      },
+      "minecraft:health": {
+        "value": 90,
+        "max": 90
+      },
+      "minecraft:attack": {
+        "damage": 12
+      },
+      "minecraft:movement": {
+        "value": 0.38
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "avoid_water": true,
+        "can_walk": true,
+        "can_path_over_water": false
+      },
+      "minecraft:jump.static": {},
+      "minecraft:collision_box": {
+        "width": 1.8,
+        "height": 0.9
+      },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.6
+      },
+      "minecraft:follow_range": {
+        "value": 28
+      },
+      "minecraft:nameable": {},
+      "minecraft:leashable": {},
+      "minecraft:tameable": {
+        "probability": 1,
+        "tame_items": [
+          "minecraft:sugar"
+        ],
+        "tame_event": {
+          "event": "lb:on_tame",
+          "target": "self"
+        }
+      },
+      "minecraft:healable": {
+        "items": [
+          {
+            "item": "minecraft:sugar",
+            "heal_amount": 4
+          },
+          {
+            "item": "minecraft:honey_bottle",
+            "heal_amount": 12
+          }
+        ]
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 4
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 8,
+        "look_distance": 10,
+        "probability": 0.05
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 9
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "add": {
+          "component_groups": [
+            "lb:war_ant_wild"
+          ]
+        }
+      },
+      "lb:on_tame": {
+        "remove": {
+          "component_groups": [
+            "lb:war_ant_wild"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:war_ant_tamed"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.15.0 pre-dragon wilderness expansion
+Milestone: 0.16.0 War Ant mount
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -321,3 +321,14 @@ Static audit after 0.15.0 pre-dragon wilderness integration:
 - Vendor registry resolves 10 external sources / 34 asset records / 32 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
 - Placeholder/dummy/temp/test-texture filename scan returns zero.
 - This is source/static validation only; current stable Bedrock import, companion ownership behavior, structure placement, persistence and multiplayer runtime QA remain untested.
+
+
+0.16.0 War Ant mount milestone:
+- Added `lb:war_ant_mount`, the first dedicated mount reward family.
+- Uses the pinned Slayers-Beasts MIT Ant Soldier model, original WALK/AMBIENT animation data and original wood-soldier texture; no horse recolor or temporary model.
+- Converted geometry contains 21 source parts; the source renderer's 1.5× visual scale is baked into the Bedrock geometry.
+- Lucky mount balance: 90 HP / 12 melee / 0.38 movement / 60% knockback resistance.
+- Epic pool now includes the mount at 10% and still sums to exactly 100.
+- Lucky reward dispatcher now optionally fires an explicit tame event after Script API taming. This hardens Irk/War Ant auto-tame so ownership and data-driven tamed behavior groups agree immediately.
+- War Ant tamed behavior includes direct player ground control, one-player rideable seat, owner follow/teleport and owner-defense.
+- No placeholder model, texture, sound or temporary structure was introduced.
