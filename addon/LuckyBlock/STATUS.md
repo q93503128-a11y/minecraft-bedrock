@@ -11,15 +11,23 @@ Implemented:
 - Six Common Fragments craft one Common Lucky Block.
 - Korean and English display names.
 - Source-specific licensing notes.
+- Built `build/LuckyBlock_BP_0.1.0.mcpack`.
+- Built `build/LuckyBlock_RP_0.1.0.mcpack`.
+- Built `build/LuckyBlock_0.1.0.mcaddon`.
+- Re-read the generated package: both nested mcpack archives and every contained entry pass CRC validation.
+- Source reference audit passes for BP/RP UUID dependencies, geometry IDs, texture atlas keys, fragment flipbook, custom component registration and @minecraft/server dependency.
 
-Not claimed complete:
+Still required before this slice can be called runtime-validated:
+- Import the .mcaddon into Minecraft Bedrock and inspect the Content Log.
+- Place/open the Common Lucky Block, verify fragment render animation/collision, and verify the 6-fragment recipe in-game.
+
+Project work still outstanding:
 - Rare/Epic/Legendary/Mythic blocks and fragment visuals.
 - full Common reward library.
 - acquisition hooks.
 - external custom weapon/item rewards.
 - mobs, structures and events.
 - first-Ender-Dragon late-game gate.
-- final balancing and Minecraft runtime validation.
-- final .mcaddon release package.
+- balance passes and full release QA.
 
 There are intentionally no temporary images, dummy sounds, colored stand-in mobs or vanilla filler reward tables.
