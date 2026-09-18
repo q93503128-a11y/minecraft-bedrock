@@ -11,7 +11,7 @@ Bedrock baseline for active implementation: current stable 26.51, with compatibi
 | Loy-s-Goodies | Loy / CC0-1.0 | `220909_burger.bbmodel`, `230423_noodles.bbmodel`, `230516_backpack.bbmodel`, `220130_snow_globe.bbmodel`, `230924_vending_machine.bbmodel`, plunger, turret, chainsaw, multiple axes/bows/hammers/shields/swords/wands | Common/Rare joke and utility rewards; Epic weapon/utility pool after behavior work | mainly pre | Medium | VERIFIED |
 | mc-blockbench-models | FrenchKrab / CC BY 4.0 | cardboard axe/shield/sword, drill breaker, warhammer-pickaxe, mineral greatsword; selected original-looking mob models after provenance screen | odd Common rewards through Epic equipment; selected encounter models | both | Medium | VERIFIED WITH ATTRIBUTION |
 | Inhabitants | Team Synapse / MIT | `geo/bogre.geo.json`, `geo/impaler.geo.json`, `geo/warped_clam.geo.json`; matching animations, textures, glow masks, spike projectile; Bogre recipes and lair loot concepts | Bogre encounter/event, Impaler elite, Warped Clam utility/End encounter; projectile/effect patterns | Impaler pre/late candidate; Warped Clam post; Bogre either | Medium-High | VERIFIED |
-| Slayers-Beasts | InvictusSlayer / MIT | Mantis, Tyrachnid, Irk and medium Ent model/animation sources + original textures; Mantis OGG audio | post-dragon predators/elites + pre-dragon companion/guardian content | both | High (Java model/animation -> Bedrock) | MANTIS + TYRACHNID + IRK + ENT ACTIVE |
+| Slayers-Beasts | InvictusSlayer / MIT | Mantis, Tyrachnid, Irk, medium Ent, Ant Soldier and Ant Queen model/animation sources + original textures; Mantis OGG audio | post-dragon predators/elites + pre-dragon companion/guardian/mount/miniboss content | both | High (Java model/animation -> Bedrock) | MANTIS + TYRACHNID + IRK + ENT + ANT SOLDIER + ANT QUEEN ACTIVE |
 | forgero | SigmundGranaas / MIT | repo default branch `1.20`; modular weapon/tool implementation and assets pending per-file review | modular special tool/weapon reward family | both | High | LICENSE VERIFIED, ASSET REVIEW PENDING |
 | visuality | PinkGoosik / MIT | crystal sparkle/hit/environmental visual-effect patterns | acquisition/opening/combat presentation reference and selective reusable assets | both | Medium-High | VERIFIED; JAVA LOGIC REBUILD REQUIRED |
 | bosses-of-mass-destruction | Barribob / LGPL-3.0 | boss models/mechanics and encounter flow | high-tier boss encounter reference; direct reuse only under explicit LGPL compliance path | post | High | CONDITIONAL |
@@ -321,3 +321,29 @@ Lucky late-game role:
 - modest Epic/Legendary/Mythic fragment kill rolls.
 
 The grasp and support aura are Lucky-owned mechanics and are intentionally documented as such.
+
+
+## Slayers-Beasts Royal Anthill / Ant Queen — 0.22.0
+
+Status: active Epic pre-dragon exploration/miniboss package. License: MIT. Pinned upstream: `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+
+Direct source payload:
+- original `AntQueenModel.java` silhouette converted into Bedrock geometry;
+- original 3-second six-leg WALK animation converted from `AntQueenAnimation.java`;
+- original `wood_queen.png` texture retained unchanged;
+- upstream renderer's 1.5x display scale baked into the converted geometry;
+- already-vendored Ant Soldier visual/animation family reused for encounter guards.
+
+Source fidelity boundary:
+- upstream Ant Queen is neutral and uses persistent anger;
+- upstream attributes are 25 HP / 2 attack / 0.22 movement / 70% knockback resistance;
+- upstream entity loot is empty and no special summon/telegraph boss mechanic is implemented.
+
+Lucky package:
+- permanent 19x19 Royal Anthill arena/warren;
+- entrance guard objective followed by three spatial brood-seal activations;
+- 260 HP Ant Queen miniboss with a 0.8-second five-point Mandible Crush telegraph and two reinforcement thresholds;
+- completion grants 4-6 Epic Fragments and a War Ant that attempts to bond to the nearest participating player;
+- structure remains as a world landmark after completion.
+
+Mandible Crush, staged brood seals, reinforcement phases and the completion reward are Lucky-owned mechanics, not source-original features.

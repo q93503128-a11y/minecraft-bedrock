@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.21.0 Wudu Binder late-game support
+Milestone: 0.22.0 Royal Anthill pre-dragon miniboss/exploration package
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -464,3 +464,15 @@ Static audit after 0.21.0 Wudu Binder integration:
 - Placeholder/dummy/temp/test-texture filename scan remains zero.
 - Source audit explicitly records that upstream `WuduGrabGoal.canUse()` returns false; Lucky's functional grasp and support aura are project-owned mechanics, not misattributed upstream behavior.
 - This remains source/static validation only; stable-Bedrock collision size, spawn ecology, pull impulse, support aura, rendering and multiplayer behavior still require runtime QA.
+
+
+0.22.0 Royal Anthill implementation:
+- Added an Epic pre-dragon Royal Anthill event as a permanent 19x19 exploration/encounter structure.
+- Event flow is staged: entrance guards -> three spatial brood seals -> Royal Ant Queen miniboss -> Royal Brood War Ant reward.
+- Slayers-Beasts MIT Queen Ant model, WALK animation and original wood-queen texture are ported with the source renderer's 1.5x visual scale baked into Bedrock geometry.
+- The source Queen Ant is only neutral/anger-based melee. Lucky's always-hostile event role, telegraphed Mandible Crush, two reinforcement thresholds and Royal Anthill objective are explicitly project-owned.
+- Queen balance is 260 HP / 12 melee / 0.24 movement / 70% knockback resistance; difficulty comes from dodge telegraphs and adds rather than raw HP alone.
+- Added lb:ant_soldier_guard by reusing the already-vendored Ant Soldier production model/texture/animation family; no temporary enemy art is introduced.
+- Epic pool gives Royal Anthill 8 weight while reducing the generic Epic-fragment slice by 8, preserving the pre-existing total Epic weight of 100.
+- Fixed the pre-dragon event dispatcher regression that caused Fortune Relay states to complete without calling tickFortuneRelay().
+- Stable Bedrock runtime/import/render/collision/multiplayer behavior is not claimed tested by this source commit.

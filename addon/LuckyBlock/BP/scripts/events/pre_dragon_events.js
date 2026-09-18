@@ -237,13 +237,154 @@ function tickGrove(state,dimension){
   }
   return false;
 }
+
+function anthillSiteClear(dimension,center){
+  const bx=Math.floor(center.x),by=Math.floor(center.y),bz=Math.floor(center.z);
+  for(const [dx,dz] of [[-9,-9],[-9,9],[9,-9],[9,9],[0,0],[-9,0],[9,0],[0,-9],[0,9]]){
+    const g=groundAt(dimension,bx+dx,by,bz+dz);
+    if(!g||Math.abs(g.y-by)>1)return false;
+  }
+  for(let dx=-9;dx<=9;dx+=2)for(let dz=-9;dz<=9;dz+=2)for(let dy=0;dy<=4;dy++){
+    try{if(dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz})?.typeId!=="minecraft:air")return false;}catch{return false;}
+  }
+  return true;
+}
+function findAnthillSite(dimension,center){
+  for(const [dx,dz] of [[0,0],[24,0],[-24,0],[0,24],[0,-24],[24,24],[-24,24],[24,-24],[-24,-24],[32,0],[-32,0],[0,32],[0,-32]]){
+    const g=groundAt(dimension,center.x+dx,center.y,center.z+dz);if(!g)continue;
+    const c={x:g.x+0.5,y:g.y,z:g.z+0.5};if(anthillSiteClear(dimension,c))return c;
+  }
+}
+function buildRoyalAnthill(state,dimension){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const P={
+    floor:mc.BlockPermutation.resolve("minecraft:packed_mud"),
+    wall:mc.BlockPermutation.resolve("minecraft:mud_bricks"),
+    root:mc.BlockPermutation.resolve("minecraft:rooted_dirt"),
+    brood:mc.BlockPermutation.resolve("minecraft:honeycomb_block"),
+    dark:mc.BlockPermutation.resolve("minecraft:brown_mushroom_block"),
+    light:mc.BlockPermutation.resolve("minecraft:shroomlight")
+  };
+  let placed=0;
+  function put(dx,dy,dz,p){try{const b=dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz});if(!b)return;b.setPermutation(p);placed++;}catch{}}
+  for(let dx=-9;dx<=9;dx++)for(let dz=-9;dz<=9;dz++){
+    const rootPattern=((dx*dx+dz*dz)%11===0)||Math.abs(dx)+Math.abs(dz)<=2;
+    put(dx,-1,dz,rootPattern?P.root:P.floor);
+  }
+  for(let v=-9;v<=9;v++){
+    for(const side of [-9,9]){
+      if(Math.abs(v)<=1)continue;
+      for(let y=0;y<=2;y++){put(v,y,side,P.wall);put(side,y,v,P.wall);}
+    }
+  }
+  for(const [dx,dz] of [[-9,-9],[-9,9],[9,-9],[9,9]]){
+    for(let y=0;y<=4;y++)put(dx,y,dz,P.dark);
+    put(dx,5,dz,P.light);
+  }
+  for(let dx=-5;dx<=5;dx++)for(let dz=-5;dz<=5;dz++){
+    if(Math.max(Math.abs(dx),Math.abs(dz))!==5)continue;
+    if((Math.abs(dx)<=1&&Math.abs(dz)===5)||(Math.abs(dz)<=1&&Math.abs(dx)===5))continue;
+    for(let y=0;y<=1;y++)put(dx,y,dz,P.wall);
+  }
+  for(const [dx,dz] of [[-6,-6],[6,-6],[0,6]]){
+    for(let ox=-1;ox<=1;ox++)for(let oz=-1;oz<=1;oz++)put(dx+ox,-1,dz+oz,P.brood);
+    put(dx,0,dz,P.light);
+  }
+  for(let ox=-1;ox<=1;ox++)for(let oz=-1;oz<=1;oz++)put(ox,-1,oz,P.brood);
+  state.structureBuilt=placed>=600;
+  return state.structureBuilt;
+}
+function nearestEventPlayer(dimension,center,radius=32){
+  const list=playersNear(dimension,center,radius);
+  let best,bestSq=Infinity;
+  for(const p of list){const d=distSq(p.location,center);if(d<bestSq){best=p;bestSq=d;}}
+  return best;
+}
+function finishRoyalAnthill(state,dimension){
+  spawnItem(dimension,state.center,"lb:epic_fragment",4+Math.floor(Math.random()*3));
+  const winner=nearestEventPlayer(dimension,state.center,36);
+  try{
+    const mount=dimension.spawnEntity("lb:war_ant_mount",{x:state.center.x+2,y:state.center.y+0.2,z:state.center.z});
+    if(winner){
+      try{mount.getComponent("minecraft:tameable")?.tame(winner);}catch{}
+      try{mount.triggerEvent("lb:on_tame");}catch{}
+      mount.nameTag="Royal Brood War Ant";
+    }
+  }catch{}
+  try{dimension.playSound("break.amethyst_cluster",state.center,{volume:0.85,pitch:0.82});}catch{}
+  try{dimension.spawnParticle("lb:obsidilith_burst",{x:state.center.x,y:state.center.y+0.5,z:state.center.z});}catch{}
+  messageNear(dimension,state.center,"§6[에픽 럭키] 로열 앤트힐 정복 완료! 여왕의 무리에서 워 앤트 한 마리가 합류했습니다.");
+}
+function tickRoyalAnthill(state,dimension){
+  state.elapsed=(state.elapsed??0)+STEP;
+  if(state.elapsed>18000){
+    for(const e of enemies(state,dimension)){try{e.remove();}catch{}}
+    spawnItem(dimension,state.center,"lb:epic_fragment",3);
+    messageNear(dimension,state.center,"§8[에픽 럭키] 로열 앤트힐의 무리가 흩어졌습니다. 에픽 조각 3개를 남겼습니다.");
+    return true;
+  }
+  if((state.stage??0)===0){
+    if(!buildRoyalAnthill(state,dimension)){
+      spawnItem(dimension,state.center,"lb:epic_fragment",3);
+      messageNear(dimension,state.center,"§8[에픽 럭키] 앤트힐을 만들 공간이 없어 에픽 조각 3개로 보상했습니다.");
+      return true;
+    }
+    state.sealMask=0;
+    spawnTagged(state,dimension,"lb:ant_soldier_guard",[[-5,0],[5,0]]);
+    state.stage=1;
+    messageNear(dimension,state.center,"§6[에픽 럭키] 로열 앤트힐 — 입구 경비 개미를 처치하고 세 개의 빛나는 brood seal을 조사하세요.");
+    return false;
+  }
+  if(state.stage===1){
+    if(enemies(state,dimension).length>0)return false;
+    state.stage=2;
+    messageNear(dimension,state.center,"§e[로열 앤트힐] 경비선 붕괴. 세 brood seal 중 하나를 밟아 여왕의 방을 여세요.");
+    return false;
+  }
+  if(state.stage===2){
+    if(enemies(state,dimension).length>0)return false;
+    const seals=[[-6,-6],[6,-6],[0,6]];
+    const players=playersNear(dimension,state.center,28);
+    for(let i=0;i<seals.length;i++){
+      if((state.sealMask&(1<<i))!==0)continue;
+      const point=relayPoint(state,seals[i]);
+      if((state.elapsed%20)===0)pulseRelayTarget(dimension,point);
+      const opener=players.find(p=>playerOnPoint(p,point,1.6));
+      if(!opener)continue;
+      state.sealMask|=(1<<i);
+      try{dimension.playSound("break.amethyst_cluster",point,{volume:0.65,pitch:0.88+i*0.12});}catch{}
+      try{dimension.spawnParticle("lb:obsidilith_burst",{x:point.x,y:point.y+0.25,z:point.z});}catch{}
+      spawnTagged(state,dimension,"lb:ant_soldier_guard",[[seals[i][0]*0.72,seals[i][1]*0.72]]);
+      const count=[1,2,4].filter(bit=>(state.sealMask&bit)!==0).length;
+      messageNear(dimension,state.center,"§e[로열 앤트힐] brood seal "+count+"/3 활성화 — 경비를 쓰러뜨리고 다음 봉인으로 이동하세요.");
+      return false;
+    }
+    if(state.sealMask===7){
+      spawnTagged(state,dimension,"lb:ant_queen",[[0,0]]);
+      state.stage=3;
+      messageNear(dimension,state.center,"§6[로열 앤트힐] Royal Ant Queen이 깨어났습니다! 표시된 지면 공격을 피하고 증원 개미를 끊어내세요.");
+    }
+    return false;
+  }
+  if(state.stage===3){
+    if(enemies(state,dimension).length>0)return false;
+    finishRoyalAnthill(state,dimension);
+    return true;
+  }
+  return false;
+}
+
 export function startPreDragonEvent(dimension,center,type){
-  if(type!=="awakened_grove"&&type!=="fortune_relay")return false;
+  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill")return false;
   if(!dimension.id.includes("overworld"))return false;
-  const site=type==="awakened_grove"?findGroveSite(dimension,center):findRelaySite(dimension,center);
+  const site=type==="awakened_grove"
+    ?findGroveSite(dimension,center)
+    :type==="fortune_relay"
+      ?findRelaySite(dimension,center)
+      :findAnthillSite(dimension,center);
   if(!site)return false;
   const states=loadStates();if(states.length>=MAX_ACTIVE)return false;
-  const overlap=type==="fortune_relay"?56:48;
+  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:48;
   for(const s of states)if(s.dimension==="overworld"&&distSq(s.center,site)<overlap*overlap)return false;
   states.push({id:nextId(),type,dimension:"overworld",center:site,stage:0,elapsed:0});saveStates(states);return true;
 }
@@ -252,7 +393,16 @@ mc.system.runInterval(()=>{
   for(const state of states){
     let dimension;try{dimension=mc.world.getDimension(state.dimension);}catch{continue;}
     if(playersNear(dimension,state.center,56).length===0){next.push(state);continue;}
-    let done=false;try{done=state.type==="awakened_grove"?tickGrove(state,dimension):true;}catch{done=false;}
+    let done=false;
+    try{
+      done=state.type==="awakened_grove"
+        ?tickGrove(state,dimension)
+        :state.type==="fortune_relay"
+          ?tickFortuneRelay(state,dimension)
+          :state.type==="royal_anthill"
+            ?tickRoyalAnthill(state,dimension)
+            :true;
+    }catch{done=false;}
     if(!done)next.push(state);
   }
   saveStates(next);

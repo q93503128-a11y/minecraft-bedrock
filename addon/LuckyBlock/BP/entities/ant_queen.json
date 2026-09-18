@@ -1,0 +1,98 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:ant_queen",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "monster",
+          "lb_hostile",
+          "lb_pre_dragon",
+          "lb_miniboss",
+          "lb_ant_queen"
+        ]
+      },
+      "minecraft:boss": {
+        "name": "Royal Ant Queen",
+        "hud_range": 48,
+        "should_darken_sky": false
+      },
+      "minecraft:health": {
+        "value": 260,
+        "max": 260
+      },
+      "minecraft:attack": {
+        "damage": 12
+      },
+      "minecraft:movement": {
+        "value": 0.24
+      },
+      "minecraft:movement.basic": {
+        "max_turn": 30
+      },
+      "minecraft:navigation.walk": {
+        "avoid_water": true,
+        "can_path_over_water": false,
+        "can_walk": true
+      },
+      "minecraft:jump.static": {},
+      "minecraft:collision_box": {
+        "width": 2.2,
+        "height": 1.2
+      },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.7
+      },
+      "minecraft:follow_range": {
+        "value": 30
+      },
+      "minecraft:nameable": {},
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "within_radius": 30,
+        "reselect_targets": true,
+        "must_see": false,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "player"
+            },
+            "max_dist": 30
+          }
+        ]
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 3,
+        "speed_multiplier": 1.08,
+        "track_target": true,
+        "reach_multiplier": 1.45
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 7,
+        "speed_multiplier": 0.65
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 8,
+        "look_distance": 14,
+        "probability": 0.08
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 9
+      }
+    }
+  }
+}

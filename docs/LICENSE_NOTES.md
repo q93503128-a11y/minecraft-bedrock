@@ -37,3 +37,9 @@ A source's top-level license does not override restrictions attached to embedded
 - Obsidilith assets are now actively vendored.
 - Keep the full LGPL text with distributions and keep the corresponding modified integration source available.
 - Do not silently relicense copied BOMD material as project-original content.
+
+
+## Active Slayers-Beasts Queen Ant port — 0.22.0
+- Source remains InvictusSlayer/Slayers-Beasts, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`, under the verified MIT license.
+- Direct reused/adapted material in this milestone is limited to the Queen Ant model/animation/renderer reference and original `wood_queen.png` texture; the existing Ant Soldier art is reused from the already-cleared War Ant integration.
+- Royal Anthill layout, staged seals, Queen combat telegraph/reinforcement logic and completion reward are Lucky-owned additions and are documented separately from upstream behavior.

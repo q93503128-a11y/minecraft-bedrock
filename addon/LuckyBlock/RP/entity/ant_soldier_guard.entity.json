@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:ant_soldier_guard",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/war_ant_mount"
+      },
+      "geometry": {
+        "default": "geometry.lb.war_ant_mount"
+      },
+      "animations": {
+        "walk": "animation.lb.war_ant_mount.walk",
+        "ambient": "animation.lb.war_ant_mount.ambient",
+        "locomotion": "controller.animation.lb.war_ant_mount.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "ambient",
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#5a2718",
+        "overlay_color": "#c6843e"
+      }
+    }
+  }
+}

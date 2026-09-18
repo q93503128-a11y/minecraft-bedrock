@@ -1015,6 +1015,29 @@
       ],
       "contentId": "lb:wudu_binder",
       "modification": "Original Wudu model, CRAWL animation and oak texture are ported from the MIT source. Upstream Wudu currently defines an empty WuduGrabGoal whose canUse() always returns false, so Lucky does not claim an upstream grab attack. The telegraphed grasp/pull and nearby ally Resistance aura are explicitly Lucky-owned post-dragon control/support mechanics."
+    },
+    {
+      "key": "slayers_beasts_ant_queen",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/AntQueen.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/AntQueenModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/AntQueenAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/AntQueenRenderer.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/ant/wood_queen.png"
+      ],
+      "targets": [
+        "BP/entities/ant_queen.json",
+        "BP/scripts/integrations/slayers_beasts_ant_queen.js",
+        "RP/entity/ant_queen.entity.json",
+        "RP/models/entity/ant_queen.geo.json",
+        "RP/animations/ant_queen.animation.json",
+        "RP/animation_controllers/ant_queen.animation_controllers.json",
+        "RP/textures/entity/ant_queen_wood.png"
+      ],
+      "contentId": "lb:ant_queen",
+      "integrationModule": "BP/scripts/integrations/slayers_beasts_ant_queen.js",
+      "modification": "Original Queen Ant model, 3-second WALK animation and wood-queen texture are ported from the pinned MIT Slayers-Beasts source, with the upstream renderer's 1.5x scale baked into Bedrock geometry. Upstream AntQueen is a neutral persistent-anger melee mob with 25 HP / 2 attack / 0.22 movement and no summon mechanic. Lucky's Royal Anthill structure, always-hostile encounter role, telegraphed Mandible Crush, phase reinforcements and War Ant completion reward are project-owned gameplay."
     }
   ]
 }

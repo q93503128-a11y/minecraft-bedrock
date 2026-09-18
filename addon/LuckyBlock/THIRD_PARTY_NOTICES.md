@@ -224,3 +224,12 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Direct reuse/adaptation: original Wudu model, CRAWL animation and original oak Wudu texture.
 - Upstream source currently contains `WuduGrabGoal`, but `canUse()` returns false and no functional grab AI is implemented there.
 - Lucky therefore does **not** attribute the implemented grasp mechanic to upstream. The 0.9-second telegraphed pull/slow attack and nearby-ally Resistance aura are Lucky-owned post-dragon mechanics added to fill the missing control/support ecosystem role.
+
+
+### Queen Ant / Royal Anthill
+- Source: Slayers-Beasts / InvictusSlayer / MIT, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Directly reused/adapted: `AntQueenModel.java`, `AntQueenAnimation.java`, `AntQueenRenderer.java`, `AntQueen.java` as behavior/proportion reference, and the original `textures/entity/ant/wood_queen.png`.
+- The original renderer's 1.5x visual scale is baked into the Bedrock geometry rather than replacing the source silhouette.
+- Upstream Queen Ant behavior is neutral persistent-anger melee with no summon phase or boss telegraph.
+- Lucky-owned additions: the permanent Royal Anthill structure, always-hostile event binding, three brood-seal objective, Mandible Crush telegraph, health-threshold reinforcements and War Ant completion reward.
+- The Royal Anthill guard reuses the already-vendored Ant Soldier model/animation/wood texture family rather than introducing temporary art.

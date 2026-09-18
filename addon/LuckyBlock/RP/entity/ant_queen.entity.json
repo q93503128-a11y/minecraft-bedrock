@@ -1,0 +1,33 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:ant_queen",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/ant_queen_wood"
+      },
+      "geometry": {
+        "default": "geometry.lb.ant_queen"
+      },
+      "animations": {
+        "walk": "animation.lb.ant_queen.walk",
+        "locomotion": "controller.animation.lb.ant_queen.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#4a2116",
+        "overlay_color": "#d5a54b"
+      }
+    }
+  }
+}
