@@ -154,9 +154,9 @@ All four pieces remain a post-Ender-Dragon Mythic reward. The original Tomemancy
 This milestone deliberately extends P7 away from single-drop stat inflation. It adds two post-Ender-Dragon world-event outcomes while reusing already-cleared external production assets rather than adding temporary art.
 
 ### Rift Siege
-- Wave 1: four Inhabitants Impalers.
-- Wave 2: three Impalers + two Ender Warped Clams.
-- Wave 3: five Impalers + three Warped Clams.
+- Wave 1: three Inhabitants Impalers + two Slayers-Beasts Mantis.
+- Wave 2: two Impalers + two Ender Warped Clams + two Mantis.
+- Wave 3: two Impalers + two Warped Clams + two Mantis + one Tyrachnid elite.
 - Objective: four original Obsidilith Rune blocks placed around the event center must be destroyed.
 - Final wave: one late-game Bogre + two Impalers.
 - Completion: one Legendary Lucky Block, 6–9 Mythic Fragments and one Slasher Blade.
@@ -195,3 +195,22 @@ Lucky role:
 - stage-3 Rift Siege elite reinforcement.
 
 The upstream `performRangedAttack` method is empty. Therefore Silk Snare is documented as a Lucky mechanic, not misattributed to Slayers-Beasts. Its telegraph reuses already-cleared BOMD particle assets instead of introducing temporary art.
+
+
+## Rift Vault structure/dungeon — 0.13.0
+
+Status: active post-dragon Mythic content package.
+
+This closes the roadmap's first true structure/dungeon gap without introducing temporary art. The structure itself is a finished 17×17 encounter arena built from deepslate tiles, polished blackstone bricks, obsidian, crying obsidian and gilded blackstone, while its unique objective uses the already-vendored BOMD Obsidilith Rune block and particle/audio family.
+
+Flow:
+- the event searches a bounded set of nearby flat, clear sites instead of blindly overwriting the Lucky Block location;
+- four entrances, corner towers, crying-obsidian ribs, a central boss dais and four rune pedestals create the permanent structure silhouette;
+- guard wave: 3 Impalers + 2 Mantis;
+- deep wave: 1 Tyrachnid + 2 Warped Clams + 2 Mantis;
+- only after both combat waves are cleared do four Obsidilith Runes materialize;
+- breaking all four runes opens the core and releases Obsidilith + 2 Impalers;
+- completion drops 2 Legendary Lucky Blocks, 8–12 Mythic Fragments and 2 Slasher Blades;
+- the cleared vault remains in the world as a trophy/late-game landmark rather than disappearing as a temporary greybox.
+
+The event uses the same persisted Mythic event state system and pauses while unattended.

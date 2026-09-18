@@ -50,11 +50,11 @@ weightedPools.legendary = [
 ];
 
 weightedPools.mythic = [
-  { weight: 10, kind: "fragments", id: "lb:mythic_fragment", min: 3, max: 6, source: "core" },
-  { weight: 6, kind: "item", id: "lb:legendary_lucky_block", count: 2, source: "core" },
-  { weight: 18, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
+  { weight: 6, kind: "fragments", id: "lb:mythic_fragment", min: 3, max: 6, source: "core" },
+  { weight: 4, kind: "item", id: "lb:legendary_lucky_block", count: 2, source: "core" },
+  { weight: 16, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
   {
-    weight: 18,
+    weight: 16,
     kind: "bundle",
     id: "tomemancer_archmage_set",
     source: "tomemancy",
@@ -66,12 +66,13 @@ weightedPools.mythic = [
       { id: "lb:tomemancy_dragon_fireball_tome", count: 1 }
     ]
   },
-  { weight: 18, kind: "event", id: "rift_siege", source: "core+inhabitants+bomd", requiresPostDragon: true },
-  { weight: 15, kind: "event", id: "lucky_rain", source: "core+licensed_external_rewards", requiresPostDragon: true },
-  { weight: 4, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
-  { weight: 5, kind: "fragments", id: "lb:legendary_fragment", min: 6, max: 10, source: "core" },
-  { weight: 6, kind: "item", id: "lb:mythic_lucky_block", source: "core" }
-];
+  { weight: 15, kind: "event", id: "rift_siege", source: "core+inhabitants+bomd+slayers_beasts", requiresPostDragon: true },
+  { weight: 13, kind: "event", id: "lucky_rain", source: "core+licensed_external_rewards", requiresPostDragon: true },
+  { weight: 18, kind: "event", id: "rift_vault", source: "core+licensed_external_encounters", requiresPostDragon: true },
+  { weight: 3, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
+  { weight: 4, kind: "fragments", id: "lb:legendary_fragment", min: 6, max: 10, source: "core" },
+  { weight: 5, kind: "item", id: "lb:mythic_lucky_block", source: "core" }
+]
 
 export const tierFallbacks = {};
 

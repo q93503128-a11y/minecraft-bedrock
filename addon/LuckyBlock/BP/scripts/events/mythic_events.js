@@ -188,6 +188,163 @@ function clearRunes(state, dimension) {
   state.runes = [];
 }
 
+function vaultSiteIsClear(dimension, center) {
+  const bx = Math.floor(center.x), by = Math.floor(center.y), bz = Math.floor(center.z);
+  try {
+    const baseId = dimension.getBlock({ x: bx, y: by - 1, z: bz })?.typeId ?? "";
+    if (baseId === "minecraft:water" || baseId === "minecraft:lava" || baseId.endsWith("_leaves")) return false;
+  } catch {
+    return false;
+  }
+
+  for (const dx of [-7, 0, 7]) {
+    for (const dz of [-7, 0, 7]) {
+      const ground = groundAt(dimension, bx + dx, by, bz + dz);
+      if (!ground || Math.abs(ground.y - by) > 1) return false;
+    }
+  }
+
+  for (let dx = -8; dx <= 8; dx += 2) {
+    for (let dz = -8; dz <= 8; dz += 2) {
+      for (let dy = 0; dy <= 5; dy++) {
+        try {
+          if (dimension.getBlock({ x: bx + dx, y: by + dy, z: bz + dz })?.typeId !== "minecraft:air") {
+            return false;
+          }
+        } catch {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
+}
+
+function findVaultSite(dimension, center) {
+  const offsets = [
+    [0, 0], [20, 0], [-20, 0], [0, 20], [0, -20],
+    [20, 20], [20, -20], [-20, 20], [-20, -20],
+    [28, 0], [-28, 0], [0, 28], [0, -28]
+  ];
+  for (const [dx, dz] of offsets) {
+    const ground = groundAt(dimension, center.x + dx, center.y, center.z + dz);
+    if (!ground) continue;
+    const candidate = { x: ground.x + 0.5, y: ground.y, z: ground.z + 0.5 };
+    if (vaultSiteIsClear(dimension, candidate)) return candidate;
+  }
+  return undefined;
+}
+
+function buildRiftVault(state, dimension) {
+  const bx = Math.floor(state.center.x), by = Math.floor(state.center.y), bz = Math.floor(state.center.z);
+  const p = {
+    floorA: mc.BlockPermutation.resolve("minecraft:deepslate_tiles"),
+    floorB: mc.BlockPermutation.resolve("minecraft:polished_blackstone_bricks"),
+    wall: mc.BlockPermutation.resolve("minecraft:polished_blackstone_bricks"),
+    obsidian: mc.BlockPermutation.resolve("minecraft:obsidian"),
+    crying: mc.BlockPermutation.resolve("minecraft:crying_obsidian"),
+    gilded: mc.BlockPermutation.resolve("minecraft:gilded_blackstone")
+  };
+  let placed = 0;
+
+  function put(dx, dy, dz, permutation) {
+    try {
+      const block = dimension.getBlock({ x: bx + dx, y: by + dy, z: bz + dz });
+      if (!block) return;
+      block.setPermutation(permutation);
+      placed++;
+    } catch {}
+  }
+
+  // Seventeen-by-seventeen finished arena floor. The palette deliberately
+  // uses final vanilla materials plus the already-vendored Obsidilith rune
+  // objective; this is not a greybox/placeholder structure.
+  for (let dx = -8; dx <= 8; dx++) {
+    for (let dz = -8; dz <= 8; dz++) {
+      let material = ((dx + dz) & 1) === 0 ? p.floorA : p.floorB;
+      if (Math.abs(dx) <= 2 && Math.abs(dz) <= 2) material = p.obsidian;
+      else if (dx === 0 || dz === 0) material = p.floorB;
+      put(dx, -1, dz, material);
+    }
+  }
+
+  // Perimeter walls with four real entrances and solid top lintels.
+  for (let y = 0; y <= 4; y++) {
+    for (let i = -8; i <= 8; i++) {
+      const northGate = Math.abs(i) <= 1 && y < 4;
+      if (!northGate) {
+        put(i, y, -8, y === 4 ? p.obsidian : p.wall);
+        put(i, y, 8, y === 4 ? p.obsidian : p.wall);
+        put(-8, y, i, y === 4 ? p.obsidian : p.wall);
+        put(8, y, i, y === 4 ? p.obsidian : p.wall);
+      }
+    }
+  }
+
+  // Corner towers and crying-obsidian ribs make the silhouette visibly
+  // different from a plain square room.
+  for (const [dx, dz] of [[-8,-8],[-8,8],[8,-8],[8,8]]) {
+    for (let y = 0; y <= 6; y++) put(dx, y, dz, y % 2 === 0 ? p.crying : p.obsidian);
+    put(dx > 0 ? dx - 1 : dx + 1, 5, dz, p.gilded);
+    put(dx, 5, dz > 0 ? dz - 1 : dz + 1, p.gilded);
+  }
+
+  // Rune pedestals. Actual rune blocks appear only after both guard waves
+  // are defeated, so the objective cannot be skipped early.
+  for (const [dx, dz] of [[-5,-5],[-5,5],[5,-5],[5,5]]) {
+    put(dx, 0, dz, p.gilded);
+    put(dx - Math.sign(dx), 0, dz, p.obsidian);
+    put(dx, 0, dz - Math.sign(dz), p.obsidian);
+  }
+
+  // Central boss dais and four ribs.
+  for (const [dx, dz] of [[3,0],[-3,0],[0,3],[0,-3]]) {
+    put(dx, 0, dz, p.crying);
+    put(dx, 1, dz, p.obsidian);
+  }
+
+  state.structureBuilt = placed >= 450;
+  return state.structureBuilt;
+}
+
+function placeVaultRunes(state, dimension) {
+  const bx = Math.floor(state.center.x), by = Math.floor(state.center.y), bz = Math.floor(state.center.z);
+  const positions = [[-5,-5],[-5,5],[5,-5],[5,5]].map(([dx,dz]) => ({
+    x: bx + dx, y: by + 1, z: bz + dz
+  }));
+  state.runes = [];
+  for (const pos of positions) {
+    try {
+      const block = dimension.getBlock(pos);
+      if (!block || block.typeId !== "minecraft:air") continue;
+      block.setPermutation(mc.BlockPermutation.resolve("lb:obsidilith_rune"));
+      state.runes.push(pos);
+      particle(dimension, "lb:obsidilith_indicator", { x: pos.x + 0.5, y: pos.y + 1.2, z: pos.z + 0.5 });
+    } catch {}
+  }
+}
+
+function spawnVaultWave(state, dimension, entries) {
+  const offsets = [[-5,0],[5,0],[0,-5],[0,5],[-4,-4],[4,4],[-4,4],[4,-4],[0,0]];
+  const tag = tagFor(state.id);
+  let cursor = 0;
+  for (const entry of entries) {
+    for (let i = 0; i < entry.count; i++) {
+      const [dx, dz] = offsets[cursor % offsets.length];
+      cursor++;
+      try {
+        const entity = dimension.spawnEntity(entry.id, {
+          x: state.center.x + dx,
+          y: state.center.y + 0.2,
+          z: state.center.z + dz
+        });
+        entity.addTag(tag);
+        entity.setDynamicProperty("lb:mythic_event_id", state.id);
+      } catch {}
+    }
+  }
+}
+
 function spawnItem(dimension, center, id, count = 1, high = false) {
   const pos = high
     ? {
@@ -251,6 +408,89 @@ function completeRain(state, dimension) {
     x: state.center.x, y: state.center.y + 1.5, z: state.center.z
   });
   messageNear(dimension, state.center, "§d[신화 럭키] 럭키 레인 종료! 마지막 보상이 떨어졌습니다.");
+}
+
+function completeVault(state, dimension) {
+  clearRunes(state, dimension);
+  spawnItem(dimension, state.center, "lb:legendary_lucky_block", 2);
+  spawnItem(dimension, state.center, "lb:mythic_fragment", 8 + Math.floor(Math.random() * 5));
+  spawnItem(dimension, state.center, "lb:slasher_blade", 2);
+  particle(dimension, "lb:obsidilith_burst", {
+    x: state.center.x, y: state.center.y + 1.5, z: state.center.z
+  });
+  sound(dimension, "lb.obsidilith.burst", state.center, { volume: 1.35, pitch: 0.8 });
+  messageNear(dimension, state.center, "§d[신화 럭키] 균열 금고 정복! 구조물은 전리품 거점으로 남습니다.");
+}
+
+function tickVault(state, dimension) {
+  state.elapsed = (state.elapsed ?? 0) + TICK_STEP;
+  if (state.elapsed > 30000) {
+    clearRunes(state, dimension);
+    cleanupEnemies(state, dimension);
+    messageNear(dimension, state.center, "§8[신화 럭키] 균열 금고의 전투 균열이 닫혔습니다.");
+    return true;
+  }
+
+  if ((state.stage ?? 0) === 0) {
+    if (!buildRiftVault(state, dimension)) {
+      messageNear(dimension, state.center, "§8[신화 럭키] 균열 금고를 안정적으로 형성하지 못했습니다.");
+      return true;
+    }
+    spawnVaultWave(state, dimension, [
+      { id: "lb:impaler", count: 3 },
+      { id: "lb:mantis", count: 2 }
+    ]);
+    state.stage = 1;
+    messageNear(dimension, state.center, "§5[신화 럭키] 균열 금고 형성 — 외곽 수호대를 돌파하세요.");
+    sound(dimension, "lb.obsidilith.prepare", state.center, { volume: 1.1, pitch: 0.85 });
+    return false;
+  }
+
+  if (eventEnemies(state, dimension).length > 0) return false;
+
+  if (state.stage === 1) {
+    spawnVaultWave(state, dimension, [
+      { id: "lb:tyrachnid", count: 1 },
+      { id: "lb:warped_clam", count: 2 },
+      { id: "lb:mantis", count: 2 }
+    ]);
+    state.stage = 2;
+    messageNear(dimension, state.center, "§5[신화 럭키] 금고 심층 수호대 — 타이라크니드가 길을 막습니다.");
+    return false;
+  }
+
+  if (state.stage === 2) {
+    placeVaultRunes(state, dimension);
+    state.stage = 3;
+    messageNear(dimension, state.center, "§d[신화 럭키] 네 개의 옵시딜리스 룬을 파괴해 금고 핵을 개방하세요.");
+    return false;
+  }
+
+  if (state.stage === 3) {
+    const runes = liveRunes(state, dimension);
+    if (runes > 0) {
+      state.reminder = (state.reminder ?? 0) + TICK_STEP;
+      if (state.reminder >= 100) {
+        state.reminder = 0;
+        messageNear(dimension, state.center, "§d[신화 럭키] 남은 금고 룬: " + runes + "개");
+      }
+      return false;
+    }
+    spawnVaultWave(state, dimension, [
+      { id: "lb:obsidilith", count: 1 },
+      { id: "lb:impaler", count: 2 }
+    ]);
+    state.stage = 4;
+    messageNear(dimension, state.center, "§c[신화 럭키] 금고 핵 개방 — 옵시딜리스가 내려왔습니다!");
+    sound(dimension, "lb.obsidilith.prepare", state.center, { volume: 1.3, pitch: 0.75 });
+    return false;
+  }
+
+  if (state.stage === 4) {
+    completeVault(state, dimension);
+    return true;
+  }
+  return false;
 }
 
 function tickSiege(state, dimension) {
@@ -360,17 +600,22 @@ function tickRain(state, dimension) {
 }
 
 export function startMythicEvent(dimension, center, type) {
-  if (type !== "rift_siege" && type !== "lucky_rain") return false;
+  if (type !== "rift_siege" && type !== "lucky_rain" && type !== "rift_vault") return false;
   if (mc.world.getDynamicProperty("lb:post_dragon_unlocked") !== true) return false;
 
   const states = loadStates();
   if (states.length >= MAX_ACTIVE_EVENTS) return false;
 
-  const normalizedCenter = {
+  let normalizedCenter = {
     x: Math.floor(center.x) + 0.5,
     y: Math.floor(center.y),
     z: Math.floor(center.z) + 0.5
   };
+  if (type === "rift_vault") {
+    const site = findVaultSite(dimension, normalizedCenter);
+    if (!site) return false;
+    normalizedCenter = site;
+  }
   const key = dimKey(dimension.id);
 
   for (const state of states) {
@@ -416,6 +661,7 @@ mc.system.runInterval(() => {
     try {
       if (state.type === "rift_siege") done = tickSiege(state, dimension);
       else if (state.type === "lucky_rain") done = tickRain(state, dimension);
+      else if (state.type === "rift_vault") done = tickVault(state, dimension);
       else done = true;
     } catch {
       done = false;

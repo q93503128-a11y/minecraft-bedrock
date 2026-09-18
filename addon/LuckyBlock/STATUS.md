@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.12.0 Slayers-Beasts Tyrachnid cave elite
+Milestone: 0.13.0 Rift Vault Mythic dungeon
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -38,7 +38,7 @@ Still not complete:
 3. more structures, traps, chained Lucky events, dungeons and minigames;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
 5. boss mechanics/phases/telegraphs and late-game stat rebalance;
-6. more Mythic dungeon/structure packages beyond the implemented set/invasion/Lucky Rain outcomes;
+6. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
 8. refreshed packaged .mcaddon after the next packaging checkpoint.
 
@@ -249,3 +249,17 @@ Static audit after 0.12.0 Tyrachnid integration:
 - Post-dragon cave gate, Legendary encounter entry, acquisition rewards, Silk Snare telegraph and Rift Siege binding are present.
 - Placeholder/dummy/temp/test-texture filename scan returns zero.
 - This remains source/static validation; Bedrock import/content-log/render/combat/multiplayer runtime QA is still release-stage validation.
+
+
+0.13.0 Rift Vault Mythic dungeon milestone:
+- Re-read the canonical plan and roadmap before implementation; this batch targets the explicit P7 “true dungeon/structure package” gap.
+- Added `rift_vault` as a persistent post-dragon Mythic event outcome.
+- The dungeon is a finished 17×17 permanent structure, not a temporary greybox: deepslate/polished-blackstone floor language, four real entrances, perimeter walls, four corner towers, crying-obsidian ribs, central boss dais and four rune pedestals.
+- Site selection checks a bounded set of nearby locations for flatness and clear build volume instead of blindly replacing terrain at the opened Lucky Block.
+- Wave 1: 3 Impalers + 2 Mantis.
+- Wave 2: 1 Tyrachnid + 2 Warped Clams + 2 Mantis.
+- Objective phase: four already-vendored Obsidilith Rune blocks appear only after both guard waves are cleared.
+- Final: Obsidilith + 2 Impalers.
+- Completion: 2 Legendary Lucky Blocks + 8–12 Mythic Fragments + 2 Slasher Blades; the cleared vault remains as a world landmark.
+- Mythic pool is reweighted to exactly 100 total weight. Content-package outcomes (Obsidilith, Archmage Set, Rift Siege, Lucky Rain, Rift Vault) now occupy 78/100 weight.
+- No new placeholder model, texture, icon or sound was created; the dungeon's distinctive non-vanilla objective/presentation reuses already-cleared production external assets.
