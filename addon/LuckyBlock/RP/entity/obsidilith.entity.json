@@ -1,0 +1,29 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:obsidilith",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/obsidilith"
+      },
+      "geometry": {
+        "default": "geometry.lb.obsidilith"
+      },
+      "animations": {
+        "placeholder": "animation.lb.obsidilith.placeholder",
+        "death": "animation.lb.obsidilith.death",
+        "summon": "animation.lb.obsidilith.summon"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#241829",
+        "overlay_color": "#8d48b6"
+      }
+    }
+  }
+}

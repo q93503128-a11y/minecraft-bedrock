@@ -1,0 +1,136 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:obsidilith",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "lb:shielded": {
+        "minecraft:damage_sensor": {
+          "triggers": {
+            "cause": "all",
+            "damage_multiplier": 0.12,
+            "deals_damage": "yes"
+          }
+        }
+      },
+      "lb:exposed": {
+        "minecraft:damage_sensor": {
+          "triggers": {
+            "cause": "all",
+            "damage_multiplier": 1.35,
+            "deals_damage": "yes"
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "monster",
+          "lb_hostile",
+          "lb_boss",
+          "lb_obsidilith",
+          "post_dragon"
+        ]
+      },
+      "minecraft:boss": {
+        "name": "Obsidilith",
+        "hud_range": 64,
+        "should_darken_sky": true
+      },
+      "minecraft:health": {
+        "value": 9000,
+        "max": 9000
+      },
+      "minecraft:attack": {
+        "damage": 46
+      },
+      "minecraft:movement": {
+        "value": 0.05
+      },
+      "minecraft:movement.basic": {
+        "max_turn": 18
+      },
+      "minecraft:navigation.walk": {
+        "avoid_water": false,
+        "can_path_over_water": true
+      },
+      "minecraft:physics": {},
+      "minecraft:collision_box": {
+        "width": 2.3,
+        "height": 4.6
+      },
+      "minecraft:knockback_resistance": {
+        "value": 1
+      },
+      "minecraft:follow_range": {
+        "value": 56
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "within_radius": 56,
+        "reselect_targets": true,
+        "must_see": false,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "player"
+            },
+            "max_dist": 56
+          }
+        ]
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 4,
+        "look_distance": 28,
+        "probability": 1
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 5
+      }
+    },
+    "events": {
+      "lb:shield_on": {
+        "remove": {
+          "component_groups": [
+            "lb:exposed"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:shielded"
+          ]
+        }
+      },
+      "lb:shield_off": {
+        "remove": {
+          "component_groups": [
+            "lb:shielded",
+            "lb:exposed"
+          ]
+        }
+      },
+      "lb:expose": {
+        "remove": {
+          "component_groups": [
+            "lb:shielded"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:exposed"
+          ]
+        }
+      }
+    }
+  }
+}
