@@ -50,3 +50,10 @@ A source's top-level license does not override restrictions attached to embedded
 - Selected file: `models/java-model/tools & weapons/220420_turret.bbmodel`.
 - Direct reuse is limited to the source model geometry and its embedded PNG; both are tracked in the vendor registry.
 - Auto-targeting, finite ammunition, damage balance, block-to-entity deployment and Fortune Bulwark event logic are project-owned additions rather than source-original behavior.
+
+
+## Active Loy's Goodies Storm Longbow port — 0.24.0
+- Source: SL0ANE/Loy-s-Goodies, reviewed commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Selected direct-use files: `230419_bow_1_0.bbmodel` through `230419_bow_1_3.bbmodel`.
+- The four original draw-state geometries and their single shared embedded texture are the external payload.
+- Charge thresholds, ammunition/durability handling, raycast combat, damage/range scaling and piercing are Lucky-owned additions.

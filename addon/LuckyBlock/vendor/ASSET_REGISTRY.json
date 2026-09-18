@@ -1056,6 +1056,27 @@
       "behaviorComponent": "lb:deploy_turret",
       "integrationModule": "BP/scripts/integrations/loys_goodies.js",
       "modification": "Original 16-cube Blockbench Java-block geometry converted to Bedrock geometry and the embedded 64x64 PNG imported byte-identically. Lucky-owned behavior turns the placed reward into a stationary 96-shot line-of-sight auto-turret and uses the same production asset in the Fortune Bulwark defense event."
+    },
+    {
+      "key": "loys_storm_longbow",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/bows/230419_bow_1_0.bbmodel",
+        "models/java-model/tools & weapons/bows/230419_bow_1_1.bbmodel",
+        "models/java-model/tools & weapons/bows/230419_bow_1_2.bbmodel",
+        "models/java-model/tools & weapons/bows/230419_bow_1_3.bbmodel"
+      ],
+      "targets": [
+        "BP/items/storm_longbow.json",
+        "BP/scripts/integrations/loys_storm_longbow.js",
+        "RP/attachables/storm_longbow.attachable.json",
+        "RP/models/entity/storm_longbow.geo.json",
+        "RP/animations/storm_longbow.animation.json",
+        "RP/textures/items/storm_longbow.png"
+      ],
+      "contentId": "lb:storm_longbow",
+      "integrationModule": "BP/scripts/integrations/loys_storm_longbow.js",
+      "modification": "All four source draw-state models are converted into four bones in one Bedrock attachable (16/19/19/19 cubes preserved) and switched by stable query.item_in_use_duration. The shared embedded 32x32 bow_1.png is vendored unchanged. Charge timing, arrow consumption, raycast hit logic, damage/range tiers and piercing are Lucky-owned gameplay."
     }
   ]
 }

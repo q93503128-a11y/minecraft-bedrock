@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.23.0 Deployable Auto-Turret + Fortune Bulwark defense event
+Milestone: 0.24.0 Storm Longbow four-stage charge weapon
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -511,4 +511,28 @@ Static audit after 0.23.0 turret batch:
 - Rare/Epic pool totals are 100/100 after the correction pass; Common/Legendary/Mythic remain 96/122/100.
 - Fortune Bulwark is accepted, site-routed and tick-dispatched by the persisted pre-dragon event system.
 - Canonical vendor audit target after registry update: 10 sources / 42 asset records / 40 unique content IDs with no duplicate explicit target ownership or missing explicit targets.
+- This remains source/static validation only; in-game Bedrock QA is still pending.
+
+
+0.24.0 Storm Longbow:
+- Added `lb:storm_longbow` as a mechanically distinct Epic ranged weapon instead of another burst/raycast repeater clone.
+- Visual source is Loy's Goodies CC0 bow set `230419_bow_1_0..3.bbmodel`; no temporary model/icon/texture is used.
+- All four source draw states are represented in one attachable and switch by stable `query.item_in_use_duration`.
+- Source cube counts are preserved exactly per stage: 16 / 19 / 19 / 19.
+- The four source files share one embedded 32x32 texture; the vendored `storm_longbow.png` matches the reconstructed source Git blob `afd67cad7857871d648fcdb5c2fbb56e15e2c8de`.
+- Gameplay: release before 5 ticks does not fire; 5-11 ticks = 8 damage / 24 blocks; 12-21 = 14 / 36; 22-29 = 20 / 48 with one extra pierced target; 30+ = Perfect Draw, 26 / 56 with two extra pierced targets.
+- Each successful shot consumes one vanilla arrow outside Creative and one durability point. The Epic reward grants the bow plus 32 arrows.
+- Block-aware and entity raycasts prevent normal through-wall hits; full-draw rewards timing rather than raw rapid-fire DPS.
+- Epic pool remains exactly 100 by reducing repeated utility/core slices rather than increasing total probability.
+- Current stable Creator documentation confirms `itemStartUse`, `itemReleaseUse`, `itemStopUse` and the Molang item-use duration query are stable surfaces.
+- Stable Bedrock import/first-person/third-person render alignment and multiplayer combat are not claimed runtime-tested.
+
+Static audit after 0.24.0:
+- BP/RP manifests and mutual dependencies resolve to 0.24.0; @minecraft/server remains 2.9.0.
+- Seven changed/runtime-critical JSON files and three changed JavaScript files parse successfully.
+- Item/attachable/geometry/atlas IDs resolve consistently and `main.js` imports the Longbow integration.
+- All four upstream source models were re-read at the pinned commit; target stage cube counts exactly match 16 / 19 / 19 / 19.
+- Source texture reconstruction and vendored texture Git blob are identical: `afd67cad7857871d648fcdb5c2fbb56e15e2c8de`.
+- Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- Runtime-static checks confirm charge start/release/stop wiring, vanilla-arrow consumption, block/entity raycasts, durability use, 30-tick full draw, 26-damage max profile, 56-block max range and two additional pierced targets.
 - This remains source/static validation only; in-game Bedrock QA is still pending.

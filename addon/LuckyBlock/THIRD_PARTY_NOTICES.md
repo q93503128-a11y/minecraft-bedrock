@@ -241,3 +241,12 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Directly reused/adapted: `models/java-model/tools & weapons/220420_turret.bbmodel`.
 - The source's 16-cube geometry is converted to Bedrock geometry and its embedded 64x64 PNG is extracted unchanged.
 - Lucky-owned additions: block-to-entity deployment, finite 96-shot ammunition, 20-block line-of-sight targeting, 9-damage / 15-tick fire cadence, and the Fortune Bulwark three-wave defense event.
+
+
+### Loy's Goodies Storm Longbow
+- Source: SL0ANE/Loy-s-Goodies, pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+- License: CC0-1.0.
+- Directly reused/adapted: `230419_bow_1_0.bbmodel` through `230419_bow_1_3.bbmodel`.
+- The four original draw-state geometries are preserved as 16 / 19 / 19 / 19 cube stages in one Bedrock attachable.
+- All four source files share the same embedded 32x32 `bow_1.png`; that PNG is imported unchanged.
+- Lucky-owned additions: charge thresholds, arrow consumption, line-of-sight raycast combat, damage/range scaling, full-draw piercing, durability and reward-tier binding.

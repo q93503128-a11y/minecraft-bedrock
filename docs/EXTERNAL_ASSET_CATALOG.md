@@ -381,3 +381,33 @@ Fortune Bulwark:
 - completion removes the trial units and grants 1 deployable Auto-Turret + 3-5 Epic Fragments + 35% chance of one Rare Lucky Block.
 
 The upstream model provides visual art only. Targeting, ammunition, damage, line-of-sight logic, deployment and Fortune Bulwark are Lucky-owned gameplay.
+
+
+## Loy's Goodies Storm Longbow — 0.24.0
+
+Status: active Epic pre-dragon precision-ranged reward. License: CC0-1.0. Pinned upstream: `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+
+Direct source payload:
+- `230419_bow_1_0.bbmodel`: 16 cubes;
+- `230419_bow_1_1.bbmodel`: 19 cubes;
+- `230419_bow_1_2.bbmodel`: 19 cubes;
+- `230419_bow_1_3.bbmodel`: 19 cubes;
+- all four files share the same embedded 32x32 `bow_1.png`, imported unchanged.
+
+Bedrock visual binding:
+- one attachable contains four source-faithful stage bones;
+- `query.item_in_use_duration` switches stage 0 -> 1 -> 2 -> 3 while the use button is held;
+- item-use events are used only for gameplay timing; draw-state art is not replaced by generated animation art.
+
+Lucky combat role:
+- Epic bundle includes one Storm Longbow + 32 vanilla arrows;
+- minimum 5-tick draw;
+- 5-11 ticks: 8 damage / 24-block range;
+- 12-21 ticks: 14 damage / 36-block range;
+- 22-29 ticks: 20 damage / 48-block range / pierces one additional target;
+- 30+ ticks: 26 damage / 56-block range / pierces two additional targets;
+- one arrow and one durability are consumed per successful release outside Creative;
+- block-aware raycast caps the entity ray at terrain, preventing ordinary wall penetration;
+- 640 durability, repairable with string or Epic Fragments.
+
+This is intentionally separated from the Amethyst Repeater: Repeater is fast three-shot pressure with dedicated charges; Storm Longbow is slow timing/precision with vanilla-arrow economy and reward for deep draw.
