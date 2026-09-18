@@ -41,3 +41,5 @@ item.lb:tomemancy_meteor_tome.name=§cMeteor Tome§r
 item.lb:tomemancy_gigavolt_tome.name=§eGigavolt Tome§r
 item.lb:tomemancy_dragon_fireball_tome.name=§dDragon Fireball Tome§r
 entity.lb:tomemancy_meteor.name=Meteor
+
+entity.lb:mantis.name=Mantis

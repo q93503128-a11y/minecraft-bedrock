@@ -1,0 +1,92 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:mantis",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "monster",
+          "lb_hostile",
+          "lb_post_dragon",
+          "lb_mantis"
+        ]
+      },
+      "minecraft:health": {
+        "value": 320,
+        "max": 320
+      },
+      "minecraft:attack": {
+        "damage": 24
+      },
+      "minecraft:movement": {
+        "value": 0.32
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "avoid_water": true,
+        "can_path_over_water": false,
+        "can_walk": true
+      },
+      "minecraft:collision_box": {
+        "width": 1.6,
+        "height": 1.4
+      },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.25
+      },
+      "minecraft:follow_range": {
+        "value": 32
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "within_radius": 32,
+        "reselect_targets": true,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "player"
+            },
+            "max_dist": 32
+          }
+        ]
+      },
+      "minecraft:behavior.leap_at_target": {
+        "priority": 3,
+        "yd": 0.6,
+        "must_be_on_ground": false
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 4,
+        "speed_multiplier": 1.25,
+        "track_target": true,
+        "reach_multiplier": 1.5
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 7,
+        "speed_multiplier": 0.8
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 8,
+        "look_distance": 10,
+        "probability": 0.08
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 9
+      }
+    }
+  }
+}

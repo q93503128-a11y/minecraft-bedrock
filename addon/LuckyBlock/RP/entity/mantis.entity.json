@@ -1,0 +1,36 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:mantis",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/mantis"
+      },
+      "geometry": {
+        "default": "geometry.lb.mantis"
+      },
+      "animations": {
+        "walk": "animation.lb.mantis.walk",
+        "scuttle": "animation.lb.mantis.scuttle",
+        "strike": "animation.lb.mantis.strike",
+        "flap": "animation.lb.mantis.flap",
+        "locomotion": "controller.animation.lb.mantis.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#66763f",
+        "overlay_color": "#2b3218"
+      }
+    }
+  }
+}

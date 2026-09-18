@@ -84,6 +84,18 @@
       "licenseFile": "THIRD_PARTY_LICENSES/TOMEMANCY_MIT.txt",
       "originalBedrockLine": "1.16.x",
       "portTargetServerApi": "@minecraft/server 2.9.0"
+    },
+    "slayers_beasts": {
+      "url": "https://github.com/InvictusSlayer/Slayers-Beasts",
+      "license": "MIT",
+      "author": "InvictusSlayer",
+      "reviewedRef": "1.21.4",
+      "reviewedCommit": "ffc1f6480a60598797c63150c0d0fe66b65697ff",
+      "integrationMode": "vendored",
+      "attributionRequired": true,
+      "licenseFile": "THIRD_PARTY_LICENSES/SLAYERS_BEASTS_MIT.txt",
+      "sourcePlatform": "Minecraft Java",
+      "portTarget": "Minecraft Bedrock / @minecraft/server 2.9.0"
     }
   },
   "assets": [
@@ -752,6 +764,35 @@
       "contentId": "lb:tomemancy_dragon_fireball_tome",
       "integrationModule": "BP/scripts/integrations/tomemancy.js",
       "modification": "Preserves the upstream Advanced Tome concept of firing Minecraft's Dragon Fireball, with Lucky-owned impact damage/cooldown and the post-dragon gate."
+    },
+    {
+      "key": "slayers_beasts_mantis",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/MantisModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/MantisAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/MantisRenderer.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/Mantis.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/mantis.png",
+        "common/src/main/resources/assets/slayersbeasts/sounds/entity/mantis/ambient.ogg",
+        "common/src/main/resources/assets/slayersbeasts/sounds/entity/mantis/death.ogg",
+        "common/src/main/resources/assets/slayersbeasts/sounds/entity/mantis/hurt.ogg"
+      ],
+      "targets": [
+        "BP/entities/mantis.json",
+        "BP/scripts/integrations/slayers_beasts_mantis.js",
+        "RP/entity/mantis.entity.json",
+        "RP/models/entity/mantis.geo.json",
+        "RP/animations/mantis.animation.json",
+        "RP/animation_controllers/mantis.animation_controllers.json",
+        "RP/textures/entity/mantis.png",
+        "RP/sounds/entity/mantis_ambient.ogg",
+        "RP/sounds/entity/mantis_death.ogg",
+        "RP/sounds/entity/mantis_hurt.ogg"
+      ],
+      "contentId": "lb:mantis",
+      "integrationModule": "BP/scripts/integrations/slayers_beasts_mantis.js",
+      "modification": "Original Java Mantis model proportions and WALK/SCUTTLE/STRIKE/FLAP keyframes are converted to Bedrock coordinates; original texture and three OGG sounds are vendored unchanged. Java AI is reimplemented as post-dragon habitat spawning, leap pressure, melee poison and event participation."
     }
   ]
 }

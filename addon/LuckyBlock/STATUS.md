@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.10.0 persistent Mythic world-event framework
+Milestone: 0.11.0 Slayers-Beasts Mantis late-game ecology
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -197,3 +197,15 @@ Static audit after 0.8.0 Slasher integration:
 - Mythic pool is now content-first: Obsidilith boss, Tomemancer Archmage Set, Rift Siege and Lucky Rain together take the majority of the post-dragon Mythic outcome weight.
 - Event overlap failure is handled safely by a four-Mythic-Fragment fallback instead of silently consuming the block.
 - No new assistant-drawn model, icon, texture or placeholder was added; the event presentation reuses already-licensed production assets and existing imported particle/audio resources.
+
+
+0.11.0 Slayers-Beasts Mantis milestone:
+- Activated Slayers-Beasts (InvictusSlayer / MIT), pinned to `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Added `lb:mantis` as a post-Ender-Dragon normal hostile, not another boss.
+- Original Mantis texture and ambient/hurt/death OGG files are vendored unchanged; no assistant-drawn/recolored stand-in exists.
+- All 25 model parts parsed from `MantisModel.java` are represented in the Bedrock geometry conversion.
+- WALK, SCUTTLE, STRIKE and FLAP keyframes are converted from `MantisAnimation.java`.
+- Lucky rebalance: 320 HP, 24 melee, 32-block tracking, leap/lunge pressure and 50% poison on successful hits.
+- Habitat spawning prefers vegetation-heavy grass/mud/moss/podzol surfaces after the Dragon gate and caps nearby Mantis density at 3.
+- Rift Siege now uses Mantis reinforcements in the first three waves.
+- Kill rewards: 45% Epic Fragment (1–2), 8% Legendary Fragment, 0.2% Mythic Fragment.

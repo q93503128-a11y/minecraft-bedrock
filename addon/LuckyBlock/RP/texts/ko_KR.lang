@@ -41,3 +41,5 @@ item.lb:tomemancy_meteor_tome.name=§c메테오 마도서§r
 item.lb:tomemancy_gigavolt_tome.name=§e기가볼트 마도서§r
 item.lb:tomemancy_dragon_fireball_tome.name=§d드래곤 파이어볼 마도서§r
 entity.lb:tomemancy_meteor.name=메테오
+
+entity.lb:mantis.name=맨티스

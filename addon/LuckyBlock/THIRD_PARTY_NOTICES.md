@@ -145,3 +145,14 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
   - the first-Ender-Dragon Lucky gate replaces Tomemancy's original player-level/knowledge progression for this reward;
   - the four pieces are delivered together as a Mythic content set rather than a single high-stat item;
   - damage, cooldown and durability are rebalanced around Bogre / Obsidilith late-game combat.
+
+
+## Slayers-Beasts — Mantis
+- Source: https://github.com/InvictusSlayer/Slayers-Beasts
+- Creator: InvictusSlayer
+- Reviewed branch / commit: `1.21.4` / `ffc1f6480a60598797c63150c0d0fe66b65697ff`
+- License: MIT.
+- Full reviewed license text is included at `THIRD_PARTY_LICENSES/SLAYERS_BEASTS_MIT.txt`.
+- Directly reused/adapted: original Mantis texture, ambient/hurt/death OGG audio, model dimensions/pivots/base rotations, and WALK/SCUTTLE/STRIKE/FLAP keyframes.
+- Java model/animation coordinates are converted into Bedrock JSON rather than visually redesigned.
+- Java AI is reimplemented for Bedrock while retaining the source Mantis's fast approach, leap, strike and poison identity.

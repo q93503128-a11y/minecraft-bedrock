@@ -299,6 +299,33 @@
           "volume": 0.79
         }
       ]
+    },
+    "lb.mantis.ambient": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/mantis_ambient",
+          "stream": false
+        }
+      ]
+    },
+    "lb.mantis.hurt": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/mantis_hurt",
+          "stream": false
+        }
+      ]
+    },
+    "lb.mantis.death": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/mantis_death",
+          "stream": false
+        }
+      ]
     }
   }
 }

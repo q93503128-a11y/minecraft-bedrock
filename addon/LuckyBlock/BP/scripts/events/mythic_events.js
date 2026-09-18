@@ -264,7 +264,8 @@ function tickSiege(state, dimension) {
 
   if ((state.stage ?? 0) === 0) {
     placeRiftRunes(state, dimension);
-    spawnEventMob(state, dimension, "lb:impaler", 4);
+    spawnEventMob(state, dimension, "lb:impaler", 3);
+    spawnEventMob(state, dimension, "lb:mantis", 2);
     state.stage = 1;
     messageNear(dimension, state.center, "§5[신화 럭키] 균열 공성전 1단계 — 임페일러 습격");
     return false;
@@ -273,16 +274,18 @@ function tickSiege(state, dimension) {
   if (eventEnemies(state, dimension).length > 0) return false;
 
   if (state.stage === 1) {
-    spawnEventMob(state, dimension, "lb:impaler", 3);
+    spawnEventMob(state, dimension, "lb:impaler", 2);
     spawnEventMob(state, dimension, "lb:warped_clam", 2);
+    spawnEventMob(state, dimension, "lb:mantis", 2);
     state.stage = 2;
     messageNear(dimension, state.center, "§5[신화 럭키] 2단계 — 뒤틀린 조개가 균열을 고정합니다.");
     return false;
   }
 
   if (state.stage === 2) {
-    spawnEventMob(state, dimension, "lb:impaler", 5);
+    spawnEventMob(state, dimension, "lb:impaler", 3);
     spawnEventMob(state, dimension, "lb:warped_clam", 3);
+    spawnEventMob(state, dimension, "lb:mantis", 3);
     state.stage = 3;
     messageNear(dimension, state.center, "§5[신화 럭키] 3단계 — 균열 방어대가 쏟아집니다.");
     return false;

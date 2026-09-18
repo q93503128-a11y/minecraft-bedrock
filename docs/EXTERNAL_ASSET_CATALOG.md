@@ -11,7 +11,7 @@ Bedrock baseline for active implementation: current stable 26.51, with compatibi
 | Loy-s-Goodies | Loy / CC0-1.0 | `220909_burger.bbmodel`, `230423_noodles.bbmodel`, `230516_backpack.bbmodel`, `220130_snow_globe.bbmodel`, `230924_vending_machine.bbmodel`, plunger, turret, chainsaw, multiple axes/bows/hammers/shields/swords/wands | Common/Rare joke and utility rewards; Epic weapon/utility pool after behavior work | mainly pre | Medium | VERIFIED |
 | mc-blockbench-models | FrenchKrab / CC BY 4.0 | cardboard axe/shield/sword, drill breaker, warhammer-pickaxe, mineral greatsword; selected original-looking mob models after provenance screen | odd Common rewards through Epic equipment; selected encounter models | both | Medium | VERIFIED WITH ATTRIBUTION |
 | Inhabitants | Team Synapse / MIT | `geo/bogre.geo.json`, `geo/impaler.geo.json`, `geo/warped_clam.geo.json`; matching animations, textures, glow masks, spike projectile; Bogre recipes and lair loot concepts | Bogre encounter/event, Impaler elite, Warped Clam utility/End encounter; projectile/effect patterns | Impaler pre/late candidate; Warped Clam post; Bogre either | Medium-High | VERIFIED |
-| Slayers-Beasts | InvictusSlayer / MIT | repo default branch `1.21.4`; creature/boss extraction pending | fantasy mobs, minibosses and bosses | mostly post | High | LICENSE VERIFIED, ASSET REVIEW PENDING |
+| Slayers-Beasts | InvictusSlayer / MIT | Mantis model source, WALK/SCUTTLE/STRIKE/FLAP animation source, original 128x128 texture, ambient/hurt/death OGG | post-dragon fast predator; Rift Siege reinforcement | post | High (Java model/animation -> Bedrock) | MANTIS ACTIVE; MORE ASSETS PENDING |
 | forgero | SigmundGranaas / MIT | repo default branch `1.20`; modular weapon/tool implementation and assets pending per-file review | modular special tool/weapon reward family | both | High | LICENSE VERIFIED, ASSET REVIEW PENDING |
 | visuality | PinkGoosik / MIT | crystal sparkle/hit/environmental visual-effect patterns | acquisition/opening/combat presentation reference and selective reusable assets | both | Medium-High | VERIFIED; JAVA LOGIC REBUILD REQUIRED |
 | bosses-of-mass-destruction | Barribob / LGPL-3.0 | boss models/mechanics and encounter flow | high-tier boss encounter reference; direct reuse only under explicit LGPL compliance path | post | High | CONDITIONAL |
@@ -168,3 +168,10 @@ This milestone deliberately extends P7 away from single-drop stat inflation. It 
 - Every fifth pulse introduces an Impaler; pulses 10 and 20 additionally introduce a Warped Clam.
 - Final rewards do not appear until event-tagged enemies are cleared.
 - Event state is stored at world level so a normal script reload does not simply forget an active event.
+
+
+## Slayers-Beasts Mantis — 0.11.0
+
+Status: active vendored post-dragon normal enemy. License: MIT. Pinned upstream: `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+
+The source's Mantis identity is a fast approach/scuttle, leap, melee strike and poison predator. The Bedrock port keeps that role while scaling to the Lucky late game: 320 HP, 24 melee, 32-block tracking, long-range lunge cadence, 50% poison on successful hits, vegetation-biased post-dragon spawning with a three-nearby cap, and source-derived WALK/SCUTTLE/STRIKE/FLAP animation keyframes. The original texture and audio are vendored unchanged; no vanilla recolor or temporary model is used.
