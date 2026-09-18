@@ -159,3 +159,55 @@ world.afterEvents.entityDie.subscribe((event) => {
 export function isPostDragonUnlocked() {
   return world.getDynamicProperty(POST_DRAGON_KEY) === true;
 }
+
+
+const EXPLORATION_CONTAINERS = new Set([
+  "minecraft:chest",
+  "minecraft:trapped_chest",
+  "minecraft:barrel"
+]);
+
+function containerKey(prefix, dimension, block) {
+  const raw = `${dimension.id}|${block.location.x}|${block.location.y}|${block.location.z}`;
+  let hash = 2166136261;
+  for (let i = 0; i < raw.length; i++) {
+    hash ^= raw.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `lb:${prefix}_${(hash >>> 0).toString(16)}`;
+}
+
+world.afterEvents.playerPlaceBlock.subscribe((event) => {
+  if (!EXPLORATION_CONTAINERS.has(event.block.typeId)) return;
+  world.setDynamicProperty(containerKey("placed_container", event.dimension, event.block), true);
+});
+
+world.afterEvents.blockContainerOpened.subscribe((event) => {
+  if (!EXPLORATION_CONTAINERS.has(event.block.typeId)) return;
+
+  const opener = event.openSource?.entity;
+  if (!opener || opener.typeId !== "minecraft:player") return;
+
+  const placedKey = containerKey("placed_container", event.dimension, event.block);
+  const openedKey = containerKey("opened_container", event.dimension, event.block);
+
+  if (world.getDynamicProperty(placedKey) === true) return;
+  if (world.getDynamicProperty(openedKey) === true) return;
+
+  world.setDynamicProperty(openedKey, true);
+
+  const postDragon = world.getDynamicProperty(POST_DRAGON_KEY) === true;
+  const location = event.block.location;
+
+  rollReward(event.dimension, location, 0.22, "lb:common_fragment", 1, 2);
+  rollReward(event.dimension, location, 0.045, "lb:rare_fragment", 1, 1);
+  rollReward(event.dimension, location, 0.006, "lb:epic_fragment", 1, 1);
+
+  if (postDragon) {
+    rollReward(event.dimension, location, 0.0010, "lb:legendary_fragment", 1, 1);
+  }
+
+  if (Math.random() < 0.012) {
+    spawnReward(event.dimension, location, "lb:common_lucky_block", 1, 1);
+  }
+});
