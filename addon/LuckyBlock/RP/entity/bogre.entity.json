@@ -1,0 +1,40 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:bogre",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/bogre"
+      },
+      "geometry": {
+        "default": "geometry.lb.bogre"
+      },
+      "animations": {
+        "idle": "animation.lb.bogre.idle",
+        "idle_rare": "animation.lb.bogre.idle_rare",
+        "walk": "animation.lb.bogre.walk",
+        "run": "animation.lb.bogre.run",
+        "roar": "animation.lb.bogre.roar",
+        "attack": "animation.lb.bogre.attack",
+        "hurt": "animation.lb.bogre.taking_damage",
+        "death": "animation.lb.bogre.death_anim",
+        "locomotion": "controller.animation.lb.bogre.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#604321",
+        "overlay_color": "#a64628"
+      }
+    }
+  }
+}
