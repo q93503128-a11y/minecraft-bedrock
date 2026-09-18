@@ -26,7 +26,7 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant mount and the Tomemancy Amethyst Repeater finite-ammo ranged weapon. Armor and broader ranged/minigame families remain thin.
+Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant mount, the Tomemancy Amethyst Repeater finite-ammo ranged weapon and a full Tomemancy Mystical Aegis armor set with a non-stat-stick ward mechanic. Broader armor archetypes, ranged variants and minigame families remain thin.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.

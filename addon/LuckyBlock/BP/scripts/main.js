@@ -7,6 +7,7 @@ import "./integrations/bomd_obsidilith.js";
 import "./integrations/slasher/index.js";
 import "./integrations/tomemancy.js";
 import "./integrations/tomemancy_amethyst_repeater.js";
+import "./integrations/tomemancy_mystical_aegis.js";
 import "./integrations/slayers_beasts_mantis.js";
 import "./integrations/slayers_beasts_tyrachnid.js";
 import "./integrations/slayers_beasts_wither_spider.js";

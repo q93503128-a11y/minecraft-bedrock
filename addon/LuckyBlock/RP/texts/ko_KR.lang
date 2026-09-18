@@ -54,3 +54,8 @@ entity.lb:war_ant_mount.name=전투 개미 탈것
 item.lb:amethyst_repeater.name=자수정 연발 지팡이
 item.lb:amethyst_charge.name=자수정 충전탄
 entity.lb:wither_spider.name=위더 거미
+
+item.lb:tomemancy_mystical_helmet.name=§d신비의 투구§r
+item.lb:tomemancy_mystical_chestplate.name=§d신비의 흉갑§r
+item.lb:tomemancy_mystical_leggings.name=§d신비의 각반§r
+item.lb:tomemancy_mystical_boots.name=§d신비의 장화§r

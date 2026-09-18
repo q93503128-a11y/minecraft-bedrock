@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.17.0 ranged combat expansion
+Milestone: 0.18.0 Mystical Aegis armor
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -369,3 +369,13 @@ Static audit after 0.17.0 ranged combat integration:
 - Vendor registry resolves 10 external sources / 38 asset records / 36 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
 - Placeholder/dummy/temp/test-texture filename scan remains zero.
 - This is source/static validation only. Current stable Bedrock still needs real firing/ammo/raycast, Nether spawn, Wither telegraph, multiplayer, rendering and balance QA.
+
+
+0.18.0 Mystical Aegis armor milestone:
+- Added a complete Epic pre-dragon Tomemancy Mystical Aegis armor bundle rather than splitting four armor pieces into duplicate reward-table filler.
+- Direct external visuals: four original Tomemancy armor icons + original `magic.png` wearable texture + original humanoid armor attachable layout.
+- Source protection profile is preserved exactly: head 1 / chest 4 / legs 3 / feet 2.
+- Lucky durability scaling: 360 / 520 / 480 / 420; amethyst shards and Epic Fragments repair the set.
+- Full-set Aegis Ward is Lucky-owned: after 6 seconds without taking damage, Absorption II recharges for 8 seconds on a 10-second cycle.
+- Epic reward pool remains exactly 100 weight after adding the 8-weight full-set bundle.
+- No temporary armor texture, placeholder model or recolored vanilla stand-in was introduced.

@@ -29,17 +29,29 @@ export const weightedPools = {
     { weight: 6, kind: "entity", id: "lb:irk_companion", nameTag: "Irk Companion", source: "slayers_beasts", tameToOpener: true }
   ],
   epic: [
-    { weight: 18, kind: "fragments", id: "lb:epic_fragment", min: 2, max: 4, source: "core" },
-    { weight: 12, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" },
-    { weight: 8, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
-    { weight: 6, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
-    { weight: 9, kind: "item", id: "lb:rare_lucky_block", count: 2, source: "core" },
-    { weight: 7, kind: "fragments", id: "lb:legendary_fragment", min: 1, max: 1, source: "core" },
+    { weight: 16, kind: "fragments", id: "lb:epic_fragment", min: 2, max: 4, source: "core" },
+    { weight: 10, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" },
+    { weight: 7, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
+    { weight: 5, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
+    { weight: 8, kind: "item", id: "lb:rare_lucky_block", count: 2, source: "core" },
+    { weight: 6, kind: "fragments", id: "lb:legendary_fragment", min: 1, max: 1, source: "core" },
     { weight: 3, kind: "item", id: "lb:epic_lucky_block", source: "core" },
     { weight: 10, kind: "event", id: "awakened_grove", source: "core+inhabitants+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 9, kind: "entity", id: "lb:war_ant_mount", nameTag: "War Ant Mount", source: "slayers_beasts", tameToOpener: true, tameEvent: "lb:on_tame" },
     { weight: 10, kind: "bundle", id: "amethyst_repeater_kit", source: "tomemancy", items: [{ id: "lb:amethyst_repeater", count: 1 }, { id: "lb:amethyst_charge", count: 48 }] },
-    { weight: 8, kind: "entity", id: "lb:wither_spider", nameTag: "Wither Spider Artillery", source: "slayers_beasts" }
+    { weight: 8, kind: "entity", id: "lb:wither_spider", nameTag: "Wither Spider Artillery", source: "slayers_beasts" },
+    {
+      weight: 8,
+      kind: "bundle",
+      id: "tomemancy_mystical_aegis_set",
+      source: "tomemancy",
+      items: [
+        { id: "lb:tomemancy_mystical_helmet", count: 1 },
+        { id: "lb:tomemancy_mystical_chestplate", count: 1 },
+        { id: "lb:tomemancy_mystical_leggings", count: 1 },
+        { id: "lb:tomemancy_mystical_boots", count: 1 }
+      ]
+    }
   ]
 };
 

@@ -1,6 +1,6 @@
 # Lucky Block Completion Audit — 2026-09-18
 
-Baseline reviewed through the 0.17.0 ranged combat milestone.
+Baseline reviewed through the 0.18.0 Mystical Aegis armor milestone.
 
 This document separates **source/gameplay implementation completeness** from **full-content vision** and **release readiness**. A single percentage without that separation would be misleading because the project already has a substantial runtime architecture but is intentionally targeting hundreds of materially different outcomes.
 
@@ -11,7 +11,7 @@ This document separates **source/gameplay implementation completeness** from **f
 | P0 Canon/legal inventory | 100% | Canon, license notes, external catalog, provenance registry and license bundle are established. |
 | P1 Real visual foundation | 85% | Five tiers/fragments use real licensed production assets and placeholder scans are clean; final in-game render/display QA is still missing. |
 | P2 Acquisition/opening core | 82% | Five tiers, weighted dispatcher, mining/logging/farming/fishing/combat/exploration/boss hooks and fragment recipes exist. Tier-specific opening presentation and EV/catalyst fusion tuning remain. |
-| P3 Reward library | 50% | The library now covers utility/decor, melee, Mythic magic, pet, mount, structure/event and a finite-ammo held ranged weapon. Armor, minigames and sheer outcome count remain thin. |
+| P3 Reward library | 58% | The library now covers utility/decor, melee, Mythic magic, pet, mount, structure/event, finite-ammo ranged combat and a complete wearable armor set with a full-set mechanic. More armor archetypes, minigames and sheer outcome count remain thin. |
 | P4 Pre-dragon encounters | 64% | Impaler, Irk, Awakened Grove/Ent, War Ant and Nether Wither Spider now cover elite + pet + structure/event + mount + ranged/control roles. More exploration, miniboss, ranged and mount families remain sparse. |
 | P5 Ender Dragon gate | 95% | Persistent first-kill unlock and late-game gating are implemented; real-world Bedrock runtime persistence testing remains. |
 | P6 Late game | 60% | Bogre, Obsidilith, Warped Clam, Mantis and Tyrachnid cover several roles with mechanics, but the ecosystem still needs ranged/support/control enemies and more encounter families. |
@@ -21,8 +21,8 @@ This document separates **source/gameplay implementation completeness** from **f
 ## Practical reading
 
 - Core systems / architecture: roughly **75%+**.
-- Full content vision from the canon: roughly **52–56%** because the target is hundreds of materially different rewards and broad category coverage.
-- Overall project against the complete roadmap after 0.17.0: roughly **66–70%**.
+- Full content vision from the canon: roughly **55–59%** because the target is hundreds of materially different rewards and broad category coverage.
+- Overall project against the complete roadmap after 0.18.0: roughly **68–72%**.
 - Release readiness: roughly **35%** at best until current Bedrock runtime/import/content-log/render/multiplayer tests are actually performed.
 
-The largest remaining work is not another boss with more HP. Fishing is now closed; the major remaining work is content breadth: additional pre-dragon encounter variety, armor rewards and broader ranged/mount families, additional structures/dungeons/chained events, tier-specific opening presentation, fusion EV/catalyst tuning, and then P8 real-game QA/packaging.
+The largest remaining work is not another boss with more HP. Fishing is now closed; the major remaining work is content breadth: additional pre-dragon encounter variety, broader armor/ranged/mount families, additional structures/dungeons/chained events, tier-specific opening presentation, fusion EV/catalyst tuning, and then P8 real-game QA/packaging.

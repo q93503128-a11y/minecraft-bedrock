@@ -209,3 +209,11 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Direct reuse/adaptation: original Wither Spider model, WALK animation, original texture and the renderer's 1.2× scale.
 - Source gameplay is melee and applies Wither on contact. Lucky preserves that contact identity.
 - The telegraphed ranged Wither volley is a Lucky-owned mechanic added to fill the pre-dragon ranged/control role. It reuses already-vendored BOMD indicator/burst particles and is not source-original behavior.
+
+
+### Mystical Aegis Armor
+- Source: Tomemancy / MIT, pinned at `b5a76921e98c06aae9942c705af605e2abcac44c`.
+- Direct reuse: the four original Mystical Armor item icons, original `magic.png` wearable texture, and the original vanilla-humanoid armor attachable layout.
+- Source armor protection profile is retained exactly at helmet/chest/legs/boots = 1/4/3/2.
+- Lucky modification: durability and repair values are raised so the set works as persistent Lucky gear rather than disposable spell output.
+- The full-set **Aegis Ward** is Lucky-owned behavior inspired by Tomemancy's original Aegis spell: after 6 seconds without taking damage, the equipped full set can recharge Absorption II for 8 seconds on a 10-second ward cycle. This behavior is not claimed to be source-original.

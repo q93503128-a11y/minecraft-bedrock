@@ -955,6 +955,44 @@
       ],
       "contentId": "lb:wither_spider",
       "modification": "Original Wither Spider model, WALK animation, 1.2x renderer scale and texture are ported. Source melee Wither identity remains. Lucky adds a clearly documented dodgeable ranged/control volley and Nether ecology role; that ranged mechanic is not attributed to upstream."
+    },
+    {
+      "key": "tomemancy_mystical_aegis_armor",
+      "source": "tomemancy",
+      "upstream": [
+        "Tomemancy [B]/items/magic_helmet.json",
+        "Tomemancy [B]/items/magic_chestplate.json",
+        "Tomemancy [B]/items/magic_leggings.json",
+        "Tomemancy [B]/items/magic_boots.json",
+        "Tomemancy [R]/attachables/magic_helmet.json",
+        "Tomemancy [R]/attachables/magic_chestplate.json",
+        "Tomemancy [R]/attachables/magic_leggings.json",
+        "Tomemancy [R]/attachables/magic_boots.json",
+        "Tomemancy [R]/textures/items/magic_helmet.png",
+        "Tomemancy [R]/textures/items/magic_chestplate.png",
+        "Tomemancy [R]/textures/items/magic_leggings.png",
+        "Tomemancy [R]/textures/items/magic_boots.png",
+        "Tomemancy [R]/textures/models/armor/magic.png",
+        "Tomemancy [B]/items/tomes/[2]/armor.json"
+      ],
+      "targets": [
+        "BP/items/tomemancy_mystical_helmet.json",
+        "BP/items/tomemancy_mystical_chestplate.json",
+        "BP/items/tomemancy_mystical_leggings.json",
+        "BP/items/tomemancy_mystical_boots.json",
+        "BP/scripts/integrations/tomemancy_mystical_aegis.js",
+        "RP/attachables/tomemancy_mystical_helmet.json",
+        "RP/attachables/tomemancy_mystical_chestplate.json",
+        "RP/attachables/tomemancy_mystical_leggings.json",
+        "RP/attachables/tomemancy_mystical_boots.json",
+        "RP/textures/items/tomemancy_mystical_helmet.png",
+        "RP/textures/items/tomemancy_mystical_chestplate.png",
+        "RP/textures/items/tomemancy_mystical_leggings.png",
+        "RP/textures/items/tomemancy_mystical_boots.png",
+        "RP/textures/models/armor/tomemancy_magic.png"
+      ],
+      "contentId": "lb:tomemancy_mystical_aegis_set",
+      "modification": "Original Tomemancy Mystical Armor item icons, wearable texture and vanilla-humanoid attachable layout are directly reused under lb IDs. Source protection profile 1/4/3/2 is retained. Lucky increases durability/repairability for persistent gear and adds the documented full-set Aegis Ward recharge mechanic inspired by the source Aegis armor-replacement spell."
     }
   ]
 }

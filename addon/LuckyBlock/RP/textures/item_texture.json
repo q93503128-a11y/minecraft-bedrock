@@ -19,6 +19,18 @@
     },
     "amethyst_charge": {
       "textures": "textures/items/amethyst_charge"
+    },
+    "tomemancy_mystical_helmet": {
+      "textures": "textures/items/tomemancy_mystical_helmet"
+    },
+    "tomemancy_mystical_chestplate": {
+      "textures": "textures/items/tomemancy_mystical_chestplate"
+    },
+    "tomemancy_mystical_leggings": {
+      "textures": "textures/items/tomemancy_mystical_leggings"
+    },
+    "tomemancy_mystical_boots": {
+      "textures": "textures/items/tomemancy_mystical_boots"
     }
   }
 }

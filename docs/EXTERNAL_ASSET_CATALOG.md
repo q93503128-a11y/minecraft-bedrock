@@ -276,3 +276,23 @@ This fills the first real mount-reward family without introducing a vanilla hors
 - Pre-dragon Nether ecology spawn, maximum two within 64 blocks, plus an Epic Lucky Block encounter.
 - Lucky-owned ranged/control role: 0.8-second five-point ground telegraph, then 14 damage + 5 seconds Wither I in a 3.2-block impact circle, approximately every 5–8 seconds while the player stays at mid-range.
 - The ranged volley is explicitly not source-original.
+
+
+## Tomemancy Mystical Aegis armor — 0.18.0
+
+Status: active Epic pre-dragon armor-set reward. License: MIT. Pinned upstream: `b5a76921e98c06aae9942c705af605e2abcac44c`.
+
+Direct source payload:
+- all four original Mystical Armor inventory icons;
+- original `textures/models/armor/magic.png` wearable texture;
+- original helmet/chestplate/leggings/boots attachable contracts using the vanilla humanoid armor geometries;
+- original source protection profile 1 / 4 / 3 / 2.
+
+Lucky role:
+- one Epic Lucky Block bundle grants all four pieces together rather than four filler rolls;
+- source protection values are preserved, keeping raw armor below diamond/Netherite instead of creating another stat-stick set;
+- durability is scaled to 360 / 520 / 480 / 420 for persistent progression and each piece can be repaired with amethyst shards or Epic Fragments;
+- full-set **Aegis Ward**: after six seconds without taking damage, the set recharges Absorption II for eight seconds; the ward can recharge once per ten-second cycle;
+- ward presentation reuses already-cleared amethyst sound and Obsidilith indicator particle rather than introducing temporary FX.
+
+The Aegis Ward is a Lucky-owned gameplay adaptation inspired by the source Aegis spell. It is not attributed to upstream armor behavior.
