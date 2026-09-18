@@ -1,0 +1,40 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:lucky_turret",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "mob",
+          "lb_friendly",
+          "lb_turret"
+        ]
+      },
+      "minecraft:health": {
+        "value": 72,
+        "max": 72
+      },
+      "minecraft:movement": {
+        "value": 0
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:collision_box": {
+        "width": 0.85,
+        "height": 1.35
+      },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": {
+        "value": 1
+      },
+      "minecraft:follow_range": {
+        "value": 20
+      },
+      "minecraft:nameable": {}
+    }
+  }
+}

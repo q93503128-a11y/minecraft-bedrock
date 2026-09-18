@@ -1,4 +1,4 @@
-import { BlockPermutation, ItemStack } from "@minecraft/server";
+import { BlockPermutation, ItemStack, EntityDamageCause, system, world } from "@minecraft/server";
 
 const HOSTILES = new Set([
   "minecraft:zombie","minecraft:husk","minecraft:drowned","minecraft:skeleton","minecraft:stray",
@@ -6,7 +6,9 @@ const HOSTILES = new Set([
   "minecraft:cave_spider","minecraft:enderman","minecraft:witch","minecraft:slime",
   "minecraft:magma_cube","minecraft:blaze","minecraft:ghast","minecraft:guardian",
   "minecraft:shulker","minecraft:phantom","minecraft:pillager","minecraft:vindicator",
-  "minecraft:evocation_illager","minecraft:ravager","minecraft:breeze","minecraft:warden"
+  "minecraft:evocation_illager","minecraft:ravager","minecraft:breeze","minecraft:warden",
+  "lb:impaler","lb:wither_spider","lb:ant_soldier_guard","lb:ant_queen",
+  "lb:mantis","lb:tyrachnid","lb:wudu_binder","lb:bogre","lb:warped_clam","lb:obsidilith"
 ]);
 
 function center(block) {
@@ -24,6 +26,95 @@ function spawn(event, id, count = 1) {
 function register(registry, id, handlers) {
   registry.registerCustomComponent(id, handlers);
 }
+
+
+const TURRET_STEP = 5;
+const TURRET_RANGE = 20;
+const TURRET_DAMAGE = 9;
+const TURRET_COOLDOWN = 15;
+const TURRET_DEFAULT_AMMO = 96;
+let turretTick = 0;
+
+function turretTarget(turret) {
+  let best;
+  let bestSq = TURRET_RANGE * TURRET_RANGE;
+  for (const entity of turret.dimension.getEntities({ location: turret.location, maxDistance: TURRET_RANGE })) {
+    if (!HOSTILES.has(entity.typeId)) continue;
+    const dx = entity.location.x - turret.location.x;
+    const dy = entity.location.y - turret.location.y;
+    const dz = entity.location.z - turret.location.z;
+    const d = dx * dx + dy * dy + dz * dz;
+    if (d >= bestSq) continue;
+
+    const origin = { x: turret.location.x, y: turret.location.y + 0.95, z: turret.location.z };
+    const aim = { x: entity.location.x, y: entity.location.y + 0.65, z: entity.location.z };
+    const vx = aim.x - origin.x, vy = aim.y - origin.y, vz = aim.z - origin.z;
+    const len = Math.max(0.001, Math.hypot(vx, vy, vz));
+    let blocked = false;
+    try {
+      blocked = !!turret.dimension.getBlockFromRay(
+        origin,
+        { x: vx / len, y: vy / len, z: vz / len },
+        { maxDistance: Math.max(0.1, len - 0.55), includeLiquidBlocks: false, includePassableBlocks: false }
+      );
+    } catch {}
+    if (blocked) continue;
+    best = entity;
+    bestSq = d;
+  }
+  return best;
+}
+
+function turretTracer(turret, target) {
+  const a = { x: turret.location.x, y: turret.location.y + 1.0, z: turret.location.z };
+  const b = { x: target.location.x, y: target.location.y + 0.7, z: target.location.z };
+  for (let i = 1; i <= 5; i++) {
+    const t = i / 6;
+    try {
+      turret.dimension.spawnParticle("lb:slasher_spark_particle", {
+        x: a.x + (b.x - a.x) * t,
+        y: a.y + (b.y - a.y) * t,
+        z: a.z + (b.z - a.z) * t
+      });
+    } catch {}
+  }
+}
+
+function fireTurret(turret, target) {
+  try { turret.teleport(turret.location, { facingLocation: target.location }); } catch {}
+  turretTracer(turret, target);
+  try { turret.dimension.playSound("random.bow", turret.location, { volume: 0.35, pitch: 1.55 }); } catch {}
+  try { target.applyDamage(TURRET_DAMAGE, { cause: EntityDamageCause.entityAttack, damagingEntity: turret }); }
+  catch { try { target.applyDamage(TURRET_DAMAGE); } catch {} }
+}
+
+function runTurrets() {
+  turretTick += TURRET_STEP;
+  for (const dimensionId of ["overworld", "nether", "the_end"]) {
+    let dimension;
+    try { dimension = world.getDimension(dimensionId); } catch { continue; }
+    for (const turret of dimension.getEntities({ type: "lb:lucky_turret" })) {
+      let ammo = Number(turret.getDynamicProperty("lb:turret_ammo"));
+      if (!Number.isFinite(ammo)) {
+        ammo = TURRET_DEFAULT_AMMO;
+        turret.setDynamicProperty("lb:turret_ammo", ammo);
+      }
+      if (ammo <= 0) {
+        try { dimension.spawnParticle("lb:slasher_spark_particle", { x: turret.location.x, y: turret.location.y + 0.8, z: turret.location.z }); } catch {}
+        try { turret.remove(); } catch {}
+        continue;
+      }
+      const next = Number(turret.getDynamicProperty("lb:turret_next_shot") ?? 0);
+      if (turretTick < next) continue;
+      const target = turretTarget(turret);
+      if (!target) continue;
+      fireTurret(turret, target);
+      turret.setDynamicProperty("lb:turret_ammo", ammo - 1);
+      turret.setDynamicProperty("lb:turret_next_shot", turretTick + TURRET_COOLDOWN);
+    }
+  }
+}
+system.runInterval(runTurrets, TURRET_STEP);
 
 export function registerLoysGoodiesIntegration(registry) {
   register(registry, "lb:consume_burger", {
@@ -182,6 +273,22 @@ export function registerLoysGoodiesIntegration(registry) {
       event.player.addEffect("slow_falling", 300, { amplifier: 0 });
       event.player.addEffect("speed", 200, { amplifier: 0 });
       consumeBlock(event);
+    }
+  });
+
+  register(registry, "lb:deploy_turret", {
+    onPlayerInteract(event) {
+      const p = center(event.block);
+      try {
+        const turret = event.dimension.spawnEntity("lb:lucky_turret", { x: p.x, y: event.block.location.y + 0.05, z: p.z });
+        turret.nameTag = "Lucky Auto-Turret";
+        turret.setDynamicProperty("lb:turret_ammo", TURRET_DEFAULT_AMMO);
+        turret.setDynamicProperty("lb:turret_next_shot", turretTick + 8);
+        consumeBlock(event);
+        try { event.dimension.playSound("random.click", p, { volume: 0.65, pitch: 1.15 }); } catch {}
+      } catch {
+        event.player.sendMessage("§c[럭키 터렛] 배치 공간을 확보한 뒤 다시 시도하세요.");
+      }
     }
   });
 }

@@ -78,6 +78,9 @@
     },
     "lb_obsidilith_rune": {
       "textures": "textures/blocks/lb_obsidilith_rune"
+    },
+    "lb_reward_turret": {
+      "textures": "textures/blocks/lb_reward_turret"
     }
   }
 }

@@ -1,0 +1,24 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:lucky_turret",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/blocks/lb_reward_turret"
+      },
+      "geometry": {
+        "default": "geometry.lb.reward_turret"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#57565c",
+        "overlay_color": "#d79043"
+      }
+    }
+  }
+}

@@ -374,17 +374,129 @@ function tickRoyalAnthill(state,dimension){
   return false;
 }
 
+
+function bulwarkSiteClear(dimension,center){
+  const bx=Math.floor(center.x),by=Math.floor(center.y),bz=Math.floor(center.z);
+  for(const [dx,dz] of [[-7,-7],[-7,7],[7,-7],[7,7],[0,0],[-7,0],[7,0],[0,-7],[0,7]]){
+    const g=groundAt(dimension,bx+dx,by,bz+dz);
+    if(!g||Math.abs(g.y-by)>1)return false;
+  }
+  for(let dx=-7;dx<=7;dx+=2)for(let dz=-7;dz<=7;dz+=2)for(let dy=0;dy<=4;dy++){
+    try{if(dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz})?.typeId!=="minecraft:air")return false;}catch{return false;}
+  }
+  return true;
+}
+function findBulwarkSite(dimension,center){
+  for(const [dx,dz] of [[0,0],[20,0],[-20,0],[0,20],[0,-20],[20,20],[-20,20],[20,-20],[-20,-20],[28,0],[-28,0],[0,28],[0,-28]]){
+    const g=groundAt(dimension,center.x+dx,center.y,center.z+dz);if(!g)continue;
+    const c={x:g.x+0.5,y:g.y,z:g.z+0.5};if(bulwarkSiteClear(dimension,c))return c;
+  }
+}
+function buildFortuneBulwark(state,dimension){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const P={
+    floor:mc.BlockPermutation.resolve("minecraft:polished_tuff"),
+    ring:mc.BlockPermutation.resolve("minecraft:copper_block"),
+    wall:mc.BlockPermutation.resolve("minecraft:tuff_bricks"),
+    signal:mc.BlockPermutation.resolve("minecraft:redstone_block"),
+    light:mc.BlockPermutation.resolve("minecraft:sea_lantern")
+  };
+  let placed=0;
+  function put(dx,dy,dz,p){try{const b=dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz});if(!b)return;b.setPermutation(p);placed++;}catch{}}
+  for(let dx=-7;dx<=7;dx++)for(let dz=-7;dz<=7;dz++){
+    const edge=Math.max(Math.abs(dx),Math.abs(dz))===7;
+    const rail=Math.abs(dx)===4||Math.abs(dz)===4;
+    put(dx,-1,dz,edge?P.ring:rail?P.wall:P.floor);
+  }
+  for(const [dx,dz] of [[-7,-7],[-7,7],[7,-7],[7,7]]){
+    for(let y=0;y<=2;y++)put(dx,y,dz,P.wall);
+    put(dx,3,dz,P.light);
+  }
+  for(const [dx,dz] of [[-3,0],[3,0]]){put(dx,-1,dz,P.signal);put(dx,0,dz,P.light);}
+  for(const [dx,dz] of [[0,-7],[-7,0],[7,0],[0,7]])put(dx,0,dz,P.ring);
+  state.structureBuilt=placed>=300;
+  return state.structureBuilt;
+}
+function trialTurrets(state,dimension){
+  const tag="lb_turret_trial_"+state.id;
+  try{return dimension.getEntities({type:"lb:lucky_turret",location:state.center,maxDistance:32}).filter(e=>{try{return e.hasTag(tag);}catch{return false;}});}catch{return[];}
+}
+function spawnTrialTurrets(state,dimension){
+  const tag="lb_turret_trial_"+state.id;
+  for(const dx of [-3,3]){
+    try{
+      const turret=dimension.spawnEntity("lb:lucky_turret",{x:state.center.x+dx,y:state.center.y+0.05,z:state.center.z});
+      turret.addTag(tag);
+      turret.nameTag="Bulwark Trial Turret";
+      turret.setDynamicProperty("lb:turret_ammo",128);
+    }catch{}
+  }
+}
+function cleanTrialTurrets(state,dimension){for(const e of trialTurrets(state,dimension)){try{e.remove();}catch{}}}
+function failBulwark(state,dimension,msg){
+  for(const e of enemies(state,dimension)){try{e.remove();}catch{}}
+  cleanTrialTurrets(state,dimension);
+  spawnItem(dimension,state.center,"lb:epic_fragment",3);
+  messageNear(dimension,state.center,msg);
+  return true;
+}
+function finishBulwark(state,dimension){
+  cleanTrialTurrets(state,dimension);
+  spawnItem(dimension,state.center,"lb:reward_turret",1);
+  spawnItem(dimension,state.center,"lb:epic_fragment",3+Math.floor(Math.random()*3));
+  if(Math.random()<0.35)spawnItem(dimension,state.center,"lb:rare_lucky_block",1);
+  try{dimension.playSound("slasher.critical",state.center,{volume:0.72,pitch:1.05});}catch{}
+  try{dimension.spawnParticle("lb:obsidilith_burst",{x:state.center.x,y:state.center.y+0.4,z:state.center.z});}catch{}
+  messageNear(dimension,state.center,"§6[에픽 럭키] Fortune Bulwark 완료! 실전용 Lucky Auto-Turret을 획득했습니다.");
+}
+function tickFortuneBulwark(state,dimension){
+  state.elapsed=(state.elapsed??0)+STEP;
+  if(state.elapsed>18000)return failBulwark(state,dimension,"§8[에픽 럭키] 방벽 훈련이 시간 초과로 종료되었습니다. 에픽 조각 3개를 남겼습니다.");
+  if((state.stage??0)===0){
+    if(!buildFortuneBulwark(state,dimension)){
+      spawnItem(dimension,state.center,"lb:epic_fragment",3);
+      messageNear(dimension,state.center,"§8[에픽 럭키] 방벽 훈련장을 만들 공간이 없어 에픽 조각 3개로 보상했습니다.");
+      return true;
+    }
+    spawnTrialTurrets(state,dimension);
+    spawnTagged(state,dimension,"lb:ant_soldier_guard",[[-6,-4],[-6,4],[6,-4],[6,4]]);
+    state.stage=1;
+    messageNear(dimension,state.center,"§6[에픽 럭키] Fortune Bulwark — 자동 포탑 2기를 지키며 3개 공격파를 막으세요.");
+    return false;
+  }
+  if(trialTurrets(state,dimension).length===0)return failBulwark(state,dimension,"§c[Fortune Bulwark] 포탑 2기가 모두 파괴되어 훈련에 실패했습니다. 에픽 조각 3개를 회수했습니다.");
+  if(enemies(state,dimension).length>0)return false;
+  if(state.stage===1){
+    spawnTagged(state,dimension,"lb:impaler",[[-6,0],[6,0]]);
+    spawnTagged(state,dimension,"lb:ant_soldier_guard",[[0,-6],[0,6]]);
+    state.stage=2;
+    messageNear(dimension,state.center,"§e[Fortune Bulwark] 2/3 — 임페일러가 측면으로 진입합니다.");
+    return false;
+  }
+  if(state.stage===2){
+    spawnTagged(state,dimension,"lb:impaler",[[-6,-3],[-6,3],[6,-3],[6,3]]);
+    spawnTagged(state,dimension,"lb:ant_soldier_guard",[[0,-6],[0,6]]);
+    state.stage=3;
+    messageNear(dimension,state.center,"§c[Fortune Bulwark] 최종 공격파 — 포탑 사선을 유지하며 전부 정리하세요.");
+    return false;
+  }
+  if(state.stage===3){finishBulwark(state,dimension);return true;}
+  return false;
+}
+
 export function startPreDragonEvent(dimension,center,type){
-  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill")return false;
+  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark")return false;
   if(!dimension.id.includes("overworld"))return false;
   const site=type==="awakened_grove"
     ?findGroveSite(dimension,center)
     :type==="fortune_relay"
       ?findRelaySite(dimension,center)
-      :findAnthillSite(dimension,center);
+      :type==="royal_anthill"
+        ?findAnthillSite(dimension,center)
+        :findBulwarkSite(dimension,center);
   if(!site)return false;
   const states=loadStates();if(states.length>=MAX_ACTIVE)return false;
-  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:48;
+  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:48;
   for(const s of states)if(s.dimension==="overworld"&&distSq(s.center,site)<overlap*overlap)return false;
   states.push({id:nextId(),type,dimension:"overworld",center:site,stage:0,elapsed:0});saveStates(states);return true;
 }
@@ -401,7 +513,9 @@ mc.system.runInterval(()=>{
           ?tickFortuneRelay(state,dimension)
           :state.type==="royal_anthill"
             ?tickRoyalAnthill(state,dimension)
-            :true;
+            :state.type==="fortune_bulwark"
+              ?tickFortuneBulwark(state,dimension)
+              :true;
     }catch{done=false;}
     if(!done)next.push(state);
   }
