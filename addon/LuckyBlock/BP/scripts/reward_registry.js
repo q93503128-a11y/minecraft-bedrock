@@ -42,7 +42,7 @@ weightedPools.legendary = [
   { weight: 34, kind: "fragments", id: "lb:legendary_fragment", min: 2, max: 4, source: "core" },
   { weight: 20, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
   { weight: 18, kind: "item", id: "lb:epic_lucky_block", count: 2, source: "core" },
-  { weight: 12, kind: "fragments", id: "lb:mythic_fragment", min: 1, max: 1, source: "core" },
+  { weight: 12, kind: "fragments", id: "lb:mythic_fragment", min: 1, max: 1, source: "core", requiresPostDragon: true },
   { weight: 10, kind: "item", id: "lb:legendary_lucky_block", source: "core" },
   { weight: 6, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" }
 ];
