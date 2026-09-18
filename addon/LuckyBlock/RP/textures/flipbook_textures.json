@@ -1,0 +1,8 @@
+[
+  {
+    "flipbook_texture": "textures/blocks/lb_fragment_mana",
+    "atlas_tile": "lb_fragment_mana",
+    "ticks_per_frame": 5,
+    "blend_frames": true
+  }
+]
