@@ -1,2 +1,10 @@
 tile.lb:common_lucky_block.name=Common Lucky Block
+tile.lb:rare_lucky_block.name=Rare Lucky Block
+tile.lb:epic_lucky_block.name=Epic Lucky Block
+tile.lb:legendary_lucky_block.name=Legendary Lucky Block
+tile.lb:mythic_lucky_block.name=Mythic Lucky Block
 tile.lb:common_fragment.name=Common Lucky Fragment
+tile.lb:rare_fragment.name=Rare Lucky Fragment
+tile.lb:epic_fragment.name=Epic Lucky Fragment
+tile.lb:legendary_fragment.name=Legendary Lucky Fragment
+tile.lb:mythic_fragment.name=Mythic Lucky Fragment

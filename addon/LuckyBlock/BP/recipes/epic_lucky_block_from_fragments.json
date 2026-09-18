@@ -1,0 +1,35 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "lb:epic_lucky_block_from_fragments"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "lb:epic_fragment"
+      },
+      {
+        "item": "lb:epic_fragment"
+      },
+      {
+        "item": "lb:epic_fragment"
+      },
+      {
+        "item": "lb:epic_fragment"
+      },
+      {
+        "item": "lb:epic_fragment"
+      },
+      {
+        "item": "lb:epic_fragment"
+      }
+    ],
+    "result": {
+      "item": "lb:epic_lucky_block",
+      "count": 1
+    }
+  }
+}

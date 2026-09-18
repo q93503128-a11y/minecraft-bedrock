@@ -1,2 +1,10 @@
 tile.lb:common_lucky_block.name=일반 럭키 블럭
+tile.lb:rare_lucky_block.name=희귀 럭키 블럭
+tile.lb:epic_lucky_block.name=에픽 럭키 블럭
+tile.lb:legendary_lucky_block.name=전설 럭키 블럭
+tile.lb:mythic_lucky_block.name=신화 럭키 블럭
 tile.lb:common_fragment.name=일반 럭키 조각
+tile.lb:rare_fragment.name=희귀 럭키 조각
+tile.lb:epic_fragment.name=에픽 럭키 조각
+tile.lb:legendary_fragment.name=전설 럭키 조각
+tile.lb:mythic_fragment.name=신화 럭키 조각

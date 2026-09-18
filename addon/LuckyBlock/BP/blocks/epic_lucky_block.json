@@ -1,0 +1,25 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:epic_lucky_block",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.epic_lucky_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_crystal_natura",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.75
+      },
+      "minecraft:light_emission": 7,
+      "lb:open_epic": {}
+    }
+  }
+}

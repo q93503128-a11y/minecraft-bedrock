@@ -9,6 +9,18 @@
     },
     "lb_fragment_mana": {
       "textures": "textures/blocks/lb_fragment_mana"
+    },
+    "lb_crystal_natura": {
+      "textures": "textures/blocks/lb_crystal_natura"
+    },
+    "lb_crystal_gaia": {
+      "textures": "textures/blocks/lb_crystal_gaia"
+    },
+    "lb_ring_natura": {
+      "textures": "textures/blocks/lb_ring_natura"
+    },
+    "lb_ring_gaia": {
+      "textures": "textures/blocks/lb_ring_gaia"
     }
   }
 }

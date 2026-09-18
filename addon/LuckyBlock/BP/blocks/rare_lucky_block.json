@@ -1,0 +1,25 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:rare_lucky_block",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.rare_lucky_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_fragment_mana",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.5
+      },
+      "minecraft:light_emission": 4,
+      "lb:open_rare": {}
+    }
+  }
+}

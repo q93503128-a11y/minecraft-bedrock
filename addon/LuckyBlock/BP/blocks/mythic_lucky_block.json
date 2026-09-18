@@ -1,0 +1,25 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:mythic_lucky_block",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.mythic_lucky_block",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_ring_gaia",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 2.25
+      },
+      "minecraft:light_emission": 15,
+      "lb:open_mythic": {}
+    }
+  }
+}
