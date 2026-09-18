@@ -1,0 +1,24 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:reward_golden_hammer",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.reward_golden_hammer",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_reward_golden_hammer",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.35
+      },
+      "lb:hammer_blessing": {}
+    }
+  }
+}
