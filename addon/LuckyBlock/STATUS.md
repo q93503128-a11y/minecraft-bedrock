@@ -126,3 +126,15 @@ Static audit after 0.5.0 enemy integration:
 - Obsidilith uses Bedrock reimplementations of the upstream Burst, Spike and Wave combat roles.
 - Mythic reward pools only permit the Obsidilith encounter after the persistent first-Ender-Dragon gate.
 - Original BOMD LGPL-3.0 license text is included in source.
+
+
+0.7.0 final progression audit:
+- Bogre is absent from the Epic pool.
+- Bogre Legendary encounter has requiresPostDragon=true.
+- Legendary -> Mythic Fragment outcome has requiresPostDragon=true.
+- Obsidilith Mythic encounter has requiresPostDragon=true.
+- Reward selection filters requiresPostDragon entries against lb:post_dragon_unlocked before rolling.
+- Bogre late-game rebalance: 1800 HP / 32 melee / 1.8x weak window.
+- Obsidilith Mythic scale: 9000 HP / 46 base attack / 12% incoming damage while rune-shielded / 135% during exposed window.
+- Obsidilith uses original BOMD model, texture, rune art, particle art frames and sounds; no temporary visual asset was introduced.
+- Repository filename audit found no temporary/dummy/test-texture files in the Lucky Block source tree.
