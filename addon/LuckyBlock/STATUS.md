@@ -80,3 +80,13 @@ Multi-source integration validation:
 - Vendor audit currently sees 20 asset records / 19 content IDs with no duplicate IDs, duplicate explicit targets or missing explicit target files.
 - Integration bootstrap, both source modules and reward_registry.js pass syntax parsing.
 - RP pack_scope is world and BP/RP mutual manifest dependencies are intact.
+
+
+0.5.0 enemy-content milestone:
+- Inhabitants (MIT) is now an active pinned vendor source.
+- Added lb:impaler as a low-density pre-dragon elite with original Inhabitants model, animation, texture and combat sounds.
+- Added lb:warped_clam as a post-Ender-Dragon End special enemy with original model, animation, Ender texture and sounds.
+- Impaler keeps natural dark monster spawning but uses Lucky-specific stats and Bedrock Script API special attacks.
+- Warped Clam spawn eligibility is explicitly gated by the persistent first-Ender-Dragon world property.
+- Both custom enemies have Lucky-specific fragment drop tables.
+- No recolored vanilla entity or placeholder enemy model is used.

@@ -65,3 +65,16 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
   - identifiers remapped into the `lb:` namespace;
   - original Lucky Block interaction behavior added by this project.
 - Attribution is retained here because CC BY 4.0 requires credit.
+
+
+## Inhabitants
+- Source: https://github.com/Team-Synapse-MC/Inhabitants
+- License: MIT
+- Copyright notice in reviewed source: Copyright (c) 2025 Team Obsidian
+- Reviewed commit: `2da25600eb052862d34818b4a2a458afea83e868`
+- Integrated content:
+  - Impaler geometry, animation, default texture, scream/spike sounds;
+  - Warped Clam geometry, animation, Ender texture, open/hit sounds.
+- Java-side entity/AI code is not assumed to run on Bedrock. Its gameplay intent was studied, while Bedrock entity JSON and Script API behavior were written for this project.
+- Runtime identifiers are remapped to `lb:impaler` and `lb:warped_clam`.
+- The MIT notice must remain with redistributed substantial portions.

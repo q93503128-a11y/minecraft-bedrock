@@ -44,3 +44,23 @@ Fragments are intended as placeable micro-crystal blocks/items rather than flat 
 Direct CC0 imports from Loy's Goodies now include 15 production models in total. The new 0.4.0 batch adds noodles, Moai, PC, CCTV camera, wrench, chainsaw, camera, golden hammer, vase and easel to the earlier burger, plunger, backpack, snow globe and vending machine set.
 
 All 15 are bound to distinct behavior contracts in `BP/scripts/reward_behaviors.js`; they are not counted as distinct merely because their geometry differs.
+
+
+## Inhabitants implementation — 0.5.0
+
+Inhabitants has moved from candidate status to active vendored content.
+
+### Impaler
+- Role: pre-dragon elite hostile.
+- Visuals: original 19-bone / 21-cube geometry, original animation set and default texture.
+- Audio: original scream and spike sounds.
+- Bedrock behavior: 70 HP, 10 melee damage, low-density dark natural spawning, plus periodic mid-range spike/shove special behavior.
+- Lucky drops: strong Rare Fragment chance, Epic Fragment chance, small post-dragon Legendary Fragment chance.
+
+### Warped Clam
+- Role: post-Ender-Dragon End special enemy.
+- Visuals: original 5-bone / 10-cube geometry, original opening/closing/opened/pushing animation set and Ender texture.
+- Audio: original opening/impact sounds.
+- Bedrock behavior: stationary 130 HP enemy, strong close-range pulse/knockback.
+- Spawn gate: never normal-spawned by a spawn rule; Script API only attempts spawns in The End after `lb:post_dragon_unlocked` is true, with a nearby density cap.
+- Lucky drops: high Epic Fragment chance, Legendary Fragment chance, low Mythic Fragment jackpot.

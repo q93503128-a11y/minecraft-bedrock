@@ -41,6 +41,15 @@
       "reviewedCommit": "3a568ceda77434a17e2722459e8becf48a1f6920",
       "integrationMode": "vendored",
       "attributionRequired": true
+    },
+    "inhabitants": {
+      "url": "https://github.com/Team-Synapse-MC/Inhabitants",
+      "license": "MIT",
+      "author": "Team Obsidian / Team Synapse",
+      "reviewedRef": "develop",
+      "reviewedCommit": "2da25600eb052862d34818b4a2a458afea83e868",
+      "integrationMode": "vendored",
+      "attributionRequired": true
     }
   },
   "assets": [
@@ -372,6 +381,58 @@
       "behaviorComponent": "lb:cardboard_shield",
       "integrationModule": "BP/scripts/integrations/frenchkrab.js",
       "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported; Lucky behavior added"
+    },
+    {
+      "key": "inhabitants_impaler",
+      "source": "inhabitants",
+      "upstream": [
+        "src/main/resources/assets/inhabitants/geo/impaler.geo.json",
+        "src/main/resources/assets/inhabitants/animations/impaler.animation.json",
+        "src/main/resources/assets/inhabitants/textures/entity/impaler/default.png",
+        "src/main/resources/assets/inhabitants/sounds/entity/impaler/impaler_scream_0.ogg",
+        "src/main/resources/assets/inhabitants/sounds/entity/impaler/impaler_spikes_0.ogg",
+        "src/main/java/com/jeremyseq/inhabitants/entities/impaler/ImpalerEntity.java",
+        "src/main/java/com/jeremyseq/inhabitants/entities/impaler/ImpalerScreamGoal.java",
+        "src/main/java/com/jeremyseq/inhabitants/entities/impaler/ImpalerSpikeThrowGoal.java"
+      ],
+      "targets": [
+        "BP/entities/impaler.json",
+        "BP/spawn_rules/impaler.json",
+        "RP/models/entity/impaler.geo.json",
+        "RP/animations/impaler.animation.json",
+        "RP/textures/entity/impaler.png",
+        "RP/entity/impaler.entity.json",
+        "RP/animation_controllers/impaler.animation_controllers.json",
+        "RP/sounds/entity/impaler_scream.ogg",
+        "RP/sounds/entity/impaler_spike.ogg"
+      ],
+      "contentId": "lb:impaler",
+      "integrationModule": "BP/scripts/integrations/inhabitants.js",
+      "modification": "Original Bedrock-format geometry/animation and original texture/sounds retained with identifiers remapped; Java AI replaced by Bedrock entity components and Script API ranged shock behavior."
+    },
+    {
+      "key": "inhabitants_warped_clam",
+      "source": "inhabitants",
+      "upstream": [
+        "src/main/resources/assets/inhabitants/geo/warped_clam.geo.json",
+        "src/main/resources/assets/inhabitants/animations/warped_clam.animation.json",
+        "src/main/resources/assets/inhabitants/textures/entity/warped_clam/ender.png",
+        "src/main/resources/assets/inhabitants/sounds/entity/warped_clam/clam_opening_1.ogg",
+        "src/main/resources/assets/inhabitants/sounds/entity/warped_clam/clam_closed_damage_1.ogg",
+        "src/main/java/com/jeremyseq/inhabitants/entities/warped_clam/WarpedClamEntity.java"
+      ],
+      "targets": [
+        "BP/entities/warped_clam.json",
+        "RP/models/entity/warped_clam.geo.json",
+        "RP/animations/warped_clam.animation.json",
+        "RP/textures/entity/warped_clam.png",
+        "RP/entity/warped_clam.entity.json",
+        "RP/sounds/entity/clam_open.ogg",
+        "RP/sounds/entity/clam_hit.ogg"
+      ],
+      "contentId": "lb:warped_clam",
+      "integrationModule": "BP/scripts/integrations/inhabitants.js",
+      "modification": "Ender variant visual/animation/sounds vendored; Java behavior replaced with post-Ender-Dragon Script API spawning and radial impact behavior."
     }
   ]
 }
