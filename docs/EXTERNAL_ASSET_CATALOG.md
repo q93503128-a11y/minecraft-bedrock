@@ -78,3 +78,28 @@ Inhabitants has moved from candidate status to active vendored content.
 - The boss becomes faster and uses shockwaves more frequently as its HP decreases.
 - Reward: guaranteed Epic Lucky Block + 2–4 Legendary Fragments; Mythic Fragment chance is 4% pre-dragon / 10% post-dragon.
 - Bogre is not added to ambient natural spawning. It enters gameplay through Lucky Block encounter outcomes.
+
+
+## Bosses of Mass Destruction — Obsidilith — 0.7.0
+
+Status: active vendored Mythic boss.
+License: LGPL-3.0.
+Pinned upstream: `2fbd0dc79bea498bcad755c4ad9969055dc452c7`.
+
+Direct external visuals/audio:
+- original 6-bone / 8-cube Obsidilith geometry;
+- original `placeholder`, `death`, `summon` animation set;
+- original Obsidilith texture;
+- original Obsidilith Rune cube-all concept + texture;
+- original wave-indicator, split and soul-flame particle art frames;
+- original prepare/burst/spike/wave indicator sound files.
+
+Lucky role:
+- Mythic post-dragon boss only;
+- 9000 HP;
+- rune shield milestones at 75%, 50%, 25%;
+- four destructible rune blocks per shield milestone;
+- 12% incoming damage while shielded;
+- 135% incoming damage during the 4-second exposed window;
+- three telegraphed attack families derived from upstream Burst/Spike/Wave roles;
+- kill reward: 1–2 Legendary Lucky Blocks, 4–7 Mythic Fragments, 28% Mythic Lucky Block.

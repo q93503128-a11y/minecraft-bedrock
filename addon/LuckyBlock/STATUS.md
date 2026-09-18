@@ -113,3 +113,16 @@ Static audit after 0.5.0 enemy integration:
 - Entity.playAnimation is used to play original roar/attack animations during the scripted mechanic.
 - Epic Lucky Blocks can rarely produce a Bogre encounter; Legendary Lucky Blocks have a substantial Bogre encounter roll.
 - Bogre kill rewards are integrated with the Lucky progression.
+
+
+0.7.0 post-dragon boss rebalance:
+- No placeholder or assistant-drawn visual asset was introduced.
+- Bogre is removed from the Epic pool and is now a post-Ender-Dragon Legendary encounter only.
+- Bogre health increased 220 -> 1800; melee 14 -> 32; weak-window multiplier 1.6x -> 1.8x; shockwave damage/cadence raised for late-game gear.
+- Added Bosses of Mass Destruction Obsidilith as a Mythic post-dragon boss using original LGPL-3.0 geometry, animation, texture, rune texture, particle art and combat audio.
+- Obsidilith health is 9000 with 75/50/25% rune-shield phases.
+- Each shield phase attempts to place four original-design Obsidilith Rune blocks; while runes survive, incoming damage is multiplied by 0.12.
+- Destroying all runes opens a 4-second 1.35x vulnerability window.
+- Obsidilith uses Bedrock reimplementations of the upstream Burst, Spike and Wave combat roles.
+- Mythic reward pools only permit the Obsidilith encounter after the persistent first-Ender-Dragon gate.
+- Original BOMD LGPL-3.0 license text is included in source.

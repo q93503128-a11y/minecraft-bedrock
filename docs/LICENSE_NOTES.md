@@ -28,3 +28,12 @@ This file records licensing decisions that affect Lucky Block production. It is 
 ## General rule
 
 A source's top-level license does not override restrictions attached to embedded third-party assets. Every selected external file must retain a source record that is specific enough to reconstruct where it came from and why it is safe to redistribute.
+
+
+## Active conditional source: Bosses of Mass Destruction
+- Repository: `barribob/bosses-of-mass-destruction`
+- Reviewed commit: `2fbd0dc79bea498bcad755c4ad9969055dc452c7`
+- License: LGPL-3.0.
+- Obsidilith assets are now actively vendored.
+- Keep the full LGPL text with distributions and keep the corresponding modified integration source available.
+- Do not silently relicense copied BOMD material as project-original content.

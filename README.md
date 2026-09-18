@@ -7,12 +7,12 @@ Canonical planning/documentation repository for Minecraft Bedrock projects.
 Active project: a five-tier Lucky Block Add-On with externally licensed real assets, varied rewards/events and a first-Ender-Dragon late-game gate.
 
 Current source milestone:
-- `0.6.0` — first phased Lucky miniboss milestone
+- `0.7.0` — post-dragon Legendary/Mythic boss progression
 
 Latest packaged development build:
 - `build/LuckyBlock_0.2.0.mcaddon`
 
-0.6.0 source now contains:
+0.7.0 source now contains:
 - five Lucky Block tiers and five Lucky Fragment tiers;
 - actual Microsoft MIT + CorvaeOboro CC0 production visuals;
 - 15 CC0 Loy's Goodies 3D reward models with original embedded textures;
@@ -52,3 +52,8 @@ Project documents:
 - Inhabitants Bogre as a phased Lucky miniboss using its original model, 21 animations, texture and combat audio;
 - jump-dodge shockwave mechanics and temporary vulnerability windows instead of HP-sponge-only difficulty;
 - Bogre encounter outcomes in Epic/Legendary Lucky reward pools.
+
+- Bogre rebalanced to a 1800-HP post-dragon Legendary encounter;
+- Bosses of Mass Destruction Obsidilith integrated as a 9000-HP Mythic post-dragon boss;
+- original Obsidilith rune, particle art and combat audio with rune-shield / exposed-window mechanics;
+- no placeholder or assistant-drawn art in the new boss batch.

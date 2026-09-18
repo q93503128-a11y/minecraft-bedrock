@@ -89,3 +89,18 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
   - `textures/entity/bogre.png`
   - selected Bogre roar/attack/shockwave/hurt/death OGG files
 - The original Java AI is not bundled as executable Bedrock code. Its combat intent and constants were reviewed, then a Bedrock-specific phased encounter was implemented with Entity JSON and Script API.
+
+
+## Bosses of Mass Destruction — Obsidilith
+- Source: https://github.com/barribob/bosses-of-mass-destruction
+- Reviewed commit: `2fbd0dc79bea498bcad755c4ad9969055dc452c7`
+- License: GNU Lesser General Public License v3.0
+- Full reviewed license text is included at `THIRD_PARTY_LICENSES/BOMD_LGPL-3.0.txt`.
+- Directly reused/adapted:
+  - Obsidilith geometry and animation data;
+  - original Obsidilith entity texture;
+  - original Obsidilith rune texture and cube-all design;
+  - original wave-indicator / split / soul-flame particle art frames;
+  - original prepare/burst/spike/wave indicator audio.
+- The upstream Kotlin boss implementation is not executed in Bedrock. Its Burst/Spike/Wave/Pillar mechanics were studied and reimplemented in the Bedrock Script API.
+- Modified integration source remains available in this repository.

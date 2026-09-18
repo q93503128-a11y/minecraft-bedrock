@@ -50,6 +50,17 @@
       "reviewedCommit": "2da25600eb052862d34818b4a2a458afea83e868",
       "integrationMode": "vendored",
       "attributionRequired": true
+    },
+    "bosses_of_mass_destruction": {
+      "url": "https://github.com/barribob/bosses-of-mass-destruction",
+      "license": "LGPL-3.0",
+      "author": "barribob / Bosses of Mass Destruction contributors",
+      "reviewedRef": "master",
+      "reviewedCommit": "2fbd0dc79bea498bcad755c4ad9969055dc452c7",
+      "integrationMode": "vendored",
+      "attributionRequired": true,
+      "sourceAvailability": "Modified Bedrock integration source is stored in this repository; upstream source is linked here.",
+      "licenseFile": "THIRD_PARTY_LICENSES/BOMD_LGPL-3.0.txt"
     }
   },
   "assets": [
@@ -466,6 +477,55 @@
       "contentId": "lb:bogre",
       "integrationModule": "BP/scripts/integrations/inhabitants_bogre.js",
       "modification": "Original geometry, 21-animation set, texture and selected original sounds vendored. Java boss AI rebuilt for Bedrock as a three-phase Lucky encounter with telegraphed jump-dodge shockwaves and temporary vulnerability windows."
+    },
+    {
+      "key": "bomd_obsidilith",
+      "source": "bosses_of_mass_destruction",
+      "upstream": [
+        "src/main/resources/assets/bosses_of_mass_destruction/geo/obsidilith.geo.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/animations/obsidilith.animation.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/entity/obsidilith.png",
+        "src/main/resources/assets/bosses_of_mass_destruction/models/block/obsidilith_rune.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/block/obsidilith_rune.png",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/particle/wave_indicator_0.png",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/particle/split_0.png",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/particle/soul_flame00.png",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/obsidilith_prepare_attack.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/obsidilith_burst.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/spike_indicator.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/spike.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/wave_indicator.ogg",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/obsidilith/ObsidilithEntity.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/obsidilith/BurstAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/obsidilith/SpikeAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/obsidilith/WaveAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/obsidilith/PillarAction.kt"
+      ],
+      "targets": [
+        "BP/entities/obsidilith.json",
+        "BP/blocks/obsidilith_rune.json",
+        "BP/scripts/integrations/bomd_obsidilith.js",
+        "RP/entity/obsidilith.entity.json",
+        "RP/models/entity/obsidilith.geo.json",
+        "RP/animations/obsidilith.animation.json",
+        "RP/textures/entity/obsidilith.png",
+        "RP/models/blocks/obsidilith_rune.geo.json",
+        "RP/textures/blocks/lb_obsidilith_rune.png",
+        "RP/particles/obsidilith_indicator.json",
+        "RP/particles/obsidilith_burst.json",
+        "RP/particles/obsidilith_wave.json",
+        "RP/textures/particle/lb_obsidilith_indicator.png",
+        "RP/textures/particle/lb_obsidilith_burst.png",
+        "RP/textures/particle/lb_obsidilith_wave.png",
+        "RP/sounds/entity/obsidilith_prepare.ogg",
+        "RP/sounds/entity/obsidilith_burst.ogg",
+        "RP/sounds/entity/obsidilith_spike_indicator.ogg",
+        "RP/sounds/entity/obsidilith_spike.ogg",
+        "RP/sounds/entity/obsidilith_wave_indicator.ogg"
+      ],
+      "contentId": "lb:obsidilith",
+      "integrationModule": "BP/scripts/integrations/bomd_obsidilith.js",
+      "modification": "Original Obsidilith geometry/animation/entity texture, rune texture, selected original particle textures and sounds are vendored. Java/Kotlin combat is reimplemented for Bedrock as a Mythic post-dragon encounter with rune shields and Burst/Spike/Wave roles."
     }
   ]
 }
