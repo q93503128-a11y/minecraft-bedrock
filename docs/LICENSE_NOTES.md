@@ -43,3 +43,10 @@ A source's top-level license does not override restrictions attached to embedded
 - Source remains InvictusSlayer/Slayers-Beasts, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`, under the verified MIT license.
 - Direct reused/adapted material in this milestone is limited to the Queen Ant model/animation/renderer reference and original `wood_queen.png` texture; the existing Ant Soldier art is reused from the already-cleared War Ant integration.
 - Royal Anthill layout, staged seals, Queen combat telegraph/reinforcement logic and completion reward are Lucky-owned additions and are documented separately from upstream behavior.
+
+
+## Active Loy's Goodies turret port — 0.23.0
+- Source: SL0ANE/Loy-s-Goodies, reviewed commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Selected file: `models/java-model/tools & weapons/220420_turret.bbmodel`.
+- Direct reuse is limited to the source model geometry and its embedded PNG; both are tracked in the vendor registry.
+- Auto-targeting, finite ammunition, damage balance, block-to-entity deployment and Fortune Bulwark event logic are project-owned additions rather than source-original behavior.

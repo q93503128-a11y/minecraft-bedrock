@@ -347,3 +347,37 @@ Lucky package:
 - structure remains as a world landmark after completion.
 
 Mandible Crush, staged brood seals, reinforcement phases and the completion reward are Lucky-owned mechanics, not source-original features.
+
+
+## Loy's Goodies Auto-Turret + Fortune Bulwark — 0.23.0
+
+Status: active Rare deployable reward + Epic pre-dragon defense-event family. License: CC0-1.0. Pinned upstream: `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+
+Direct source payload:
+- `models/java-model/tools & weapons/220420_turret.bbmodel`;
+- all 16 original model cubes converted to Bedrock geometry;
+- the model's embedded 64x64 PNG extracted unchanged; no generated or temporary icon/texture substitutes it.
+
+Auto-Turret reward:
+- Rare pool weight 6;
+- place the real turret model as `lb:reward_turret`, then interact to deploy `lb:lucky_turret`;
+- 72 HP stationary support unit;
+- 96 finite shots;
+- 20-block acquisition radius;
+- block-aware line-of-sight check via stable `Dimension.getBlockFromRay`;
+- rotates to the selected target using stable `TeleportOptions.facingLocation`;
+- 9 damage every 15 ticks while a valid hostile remains visible;
+- projectile-like spark tracer reuses already-vendored production FX;
+- damage is attributed to the turret entity so normal hurt-by-target retaliation can treat it as an attacker.
+
+Fortune Bulwark:
+- Epic pool weight 6;
+- permanent 15x15 polished-tuff/copper training arena;
+- two event-only turrets start with 128 shots each;
+- wave 1: 4 Ant Soldier guards;
+- wave 2: 2 Impalers + 2 Ant Soldier guards;
+- wave 3: 4 Impalers + 2 Ant Soldier guards;
+- if both trial turrets are destroyed, the event fails with a defined Epic-fragment recovery reward;
+- completion removes the trial units and grants 1 deployable Auto-Turret + 3-5 Epic Fragments + 35% chance of one Rare Lucky Block.
+
+The upstream model provides visual art only. Targeting, ammunition, damage, line-of-sight logic, deployment and Fortune Bulwark are Lucky-owned gameplay.

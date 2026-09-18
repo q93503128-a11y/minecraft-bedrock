@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.22.0 Royal Anthill pre-dragon miniboss/exploration package
+Milestone: 0.23.0 Deployable Auto-Turret + Fortune Bulwark defense event
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -490,3 +490,25 @@ Static audit after 0.22.0 Royal Anthill integration:
 - Pre-dragon dispatch now explicitly calls tickFortuneRelay() for fortune_relay and tickRoyalAnthill() for royal_anthill.
 - Runtime BP/RP path scan and changed-runtime-text scan find no placeholder/dummy/temporary-asset markers.
 - This is source/static validation only. Stable Bedrock import/content-log/render, collision, combat timing, mount bonding and multiplayer behavior still require runtime QA.
+
+
+0.23.0 deployable Auto-Turret / Fortune Bulwark:
+- Added `lb:reward_turret` as a Rare deployable combat-tool reward using Loy's Goodies CC0 `220420_turret.bbmodel`; no temporary model or icon is used.
+- Original model conversion preserves all 16 source cubes; the embedded 64x64 PNG is imported unchanged.
+- Interacting with the placed reward converts it into `lb:lucky_turret`, a stationary 72 HP support entity with 96 shots.
+- Turret runtime: 20-block target range, block-aware line-of-sight raycast, target-facing rotation, 9 damage per hit and 15-tick shot cadence. Damage is attributed to the turret entity so hostile hurt-by-target behavior can retaliate where supported.
+- Added Epic `fortune_bulwark`: a permanent 15x15 polished-tuff/copper defense arena with two 128-shot trial turrets and three staged waves using licensed Ant Guard / Impaler encounter assets.
+- Bulwark completion removes trial units and awards one real deployable Auto-Turret, 3-5 Epic Fragments and a 35% Rare Lucky Block bonus. Space failure/time-out uses explicit fragment fallback.
+- Rare and Epic total pool weights remain 100 each; the new outcomes replace weight from existing repeated utility slices rather than inflating total probability.
+- Stable Bedrock runtime/import/render/collision/AI-retaliation/multiplayer behavior is not claimed tested by this source commit.
+
+Static audit after 0.23.0 turret batch:
+- BP/RP manifests and mutual dependencies resolve to 0.23.0; @minecraft/server remains 2.9.0.
+- Seven changed/runtime-critical JSON files and three changed JavaScript files parse successfully.
+- Reward block, turret behavior entity, turret client entity and geometry identifiers resolve consistently.
+- Source `220420_turret.bbmodel` contains 16 cubes and the Bedrock geometry contains the same 16 converted cubes.
+- Recreating the embedded source PNG as a Git blob yields `7e86eab6a64febf0111bb4c5197019addfa6d762`, exactly matching the vendored texture blob.
+- Rare/Epic pool totals are 100/100 after the correction pass; Common/Legendary/Mythic remain 96/122/100.
+- Fortune Bulwark is accepted, site-routed and tick-dispatched by the persisted pre-dragon event system.
+- Canonical vendor audit target after registry update: 10 sources / 42 asset records / 40 unique content IDs with no duplicate explicit target ownership or missing explicit targets.
+- This remains source/static validation only; in-game Bedrock QA is still pending.

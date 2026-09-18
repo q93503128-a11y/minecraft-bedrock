@@ -26,12 +26,12 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant mount, the Tomemancy Amethyst Repeater finite-ammo ranged weapon and a full Tomemancy Mystical Aegis armor set with a non-stat-stick ward mechanic. Broader armor archetypes, ranged variants and minigame families remain thin.
+Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant mount, the Tomemancy Amethyst Repeater finite-ammo ranged weapon, the full Tomemancy Mystical Aegis armor set, and a Loy's Goodies Auto-Turret deployable combat-tool family. Fortune Bulwark binds that deployable into a real three-wave defense outcome instead of counting the model as a cosmetic duplicate. Broader armor archetypes, additional ranged/deployable variants and more minigame families remain thin.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
 
-Implemented P4 slices: Inhabitants Impaler elite, Slayers-Beasts Irk companion, persistent Awakened Grove/Ent-guardian event, Slayers-Beasts War Ant player-controlled mount, pre-dragon Nether Wither Spider ranged/control encounter, the permanent Fortune Relay Vault timed maze/minigame, and the Royal Anthill package with a 19x19 exploration structure, staged brood-seal objective, Ant Queen miniboss and War Ant completion reward. Still thin: additional ranged families, mount families and independent miniboss/exploration families.
+Implemented P4 slices: Inhabitants Impaler elite, Slayers-Beasts Irk companion, persistent Awakened Grove/Ent-guardian event, Slayers-Beasts War Ant player-controlled mount, pre-dragon Nether Wither Spider ranged/control encounter, the permanent Fortune Relay Vault timed maze/minigame, Royal Anthill/Ant Queen, and Fortune Bulwark as a deployable-assisted three-wave defense structure/event. Still thin: additional ranged families, mount families and independent miniboss/exploration families.
 
 ## P5 — First Ender Dragon gate
 Persist a world-level first-kill unlock. After that point, late-game spawn tables, event tables, rewards and encounter pools become eligible.

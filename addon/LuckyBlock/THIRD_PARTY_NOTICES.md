@@ -233,3 +233,11 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Upstream Queen Ant behavior is neutral persistent-anger melee with no summon phase or boss telegraph.
 - Lucky-owned additions: the permanent Royal Anthill structure, always-hostile event binding, three brood-seal objective, Mandible Crush telegraph, health-threshold reinforcements and War Ant completion reward.
 - The Royal Anthill guard reuses the already-vendored Ant Soldier model/animation/wood texture family rather than introducing temporary art.
+
+
+### Loy's Goodies Auto-Turret
+- Source: SL0ANE/Loy-s-Goodies, pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+- License: CC0-1.0.
+- Directly reused/adapted: `models/java-model/tools & weapons/220420_turret.bbmodel`.
+- The source's 16-cube geometry is converted to Bedrock geometry and its embedded 64x64 PNG is extracted unchanged.
+- Lucky-owned additions: block-to-entity deployment, finite 96-shot ammunition, 20-block line-of-sight targeting, 9-damage / 15-tick fire cadence, and the Fortune Bulwark three-wave defense event.
