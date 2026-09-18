@@ -31,6 +31,9 @@
     },
     "tomemancy_mystical_boots": {
       "textures": "textures/items/tomemancy_mystical_boots"
+    },
+    "storm_longbow": {
+      "textures": "textures/items/storm_longbow"
     }
   }
 }

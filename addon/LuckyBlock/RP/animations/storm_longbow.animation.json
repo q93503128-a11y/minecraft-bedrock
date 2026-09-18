@@ -1,0 +1,38 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "animation.lb.storm_longbow.draw": {
+      "loop": true,
+      "bones": {
+        "stage0": {
+          "scale": [
+            "query.item_in_use_duration < 0.15 ? 1.0 : 0.0",
+            "query.item_in_use_duration < 0.15 ? 1.0 : 0.0",
+            "query.item_in_use_duration < 0.15 ? 1.0 : 0.0"
+          ]
+        },
+        "stage1": {
+          "scale": [
+            "query.item_in_use_duration >= 0.15 && query.item_in_use_duration < 0.55 ? 1.0 : 0.0",
+            "query.item_in_use_duration >= 0.15 && query.item_in_use_duration < 0.55 ? 1.0 : 0.0",
+            "query.item_in_use_duration >= 0.15 && query.item_in_use_duration < 0.55 ? 1.0 : 0.0"
+          ]
+        },
+        "stage2": {
+          "scale": [
+            "query.item_in_use_duration >= 0.55 && query.item_in_use_duration < 1.05 ? 1.0 : 0.0",
+            "query.item_in_use_duration >= 0.55 && query.item_in_use_duration < 1.05 ? 1.0 : 0.0",
+            "query.item_in_use_duration >= 0.55 && query.item_in_use_duration < 1.05 ? 1.0 : 0.0"
+          ]
+        },
+        "stage3": {
+          "scale": [
+            "query.item_in_use_duration >= 1.05 ? 1.0 : 0.0",
+            "query.item_in_use_duration >= 1.05 ? 1.0 : 0.0",
+            "query.item_in_use_duration >= 1.05 ? 1.0 : 0.0"
+          ]
+        }
+      }
+    }
+  }
+}

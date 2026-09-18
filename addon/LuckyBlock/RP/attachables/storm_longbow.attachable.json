@@ -1,0 +1,28 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "lb:storm_longbow",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/items/storm_longbow"
+      },
+      "geometry": {
+        "default": "geometry.lb.storm_longbow"
+      },
+      "animations": {
+        "draw": "animation.lb.storm_longbow.draw"
+      },
+      "scripts": {
+        "animate": [
+          "draw"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}

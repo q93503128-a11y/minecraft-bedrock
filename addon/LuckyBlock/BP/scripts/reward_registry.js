@@ -33,9 +33,9 @@ export const weightedPools = {
   epic: [
     { weight: 8, kind: "fragments", id: "lb:epic_fragment", min: 2, max: 4, source: "core" },
     { weight: 7, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" },
-    { weight: 5, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
-    { weight: 4, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
-    { weight: 8, kind: "item", id: "lb:rare_lucky_block", count: 2, source: "core" },
+    { weight: 3, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
+    { weight: 2, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
+    { weight: 5, kind: "item", id: "lb:rare_lucky_block", count: 2, source: "core" },
     { weight: 6, kind: "fragments", id: "lb:legendary_fragment", min: 1, max: 1, source: "core" },
     { weight: 3, kind: "item", id: "lb:epic_lucky_block", source: "core" },
     { weight: 10, kind: "event", id: "awakened_grove", source: "core+inhabitants+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
@@ -43,6 +43,7 @@ export const weightedPools = {
     { weight: 6, kind: "event", id: "fortune_bulwark", source: "core+loys_goodies+licensed_encounters", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 9, kind: "entity", id: "lb:war_ant_mount", nameTag: "War Ant Mount", source: "slayers_beasts", tameToOpener: true, tameEvent: "lb:on_tame" },
     { weight: 10, kind: "bundle", id: "amethyst_repeater_kit", source: "tomemancy", items: [{ id: "lb:amethyst_repeater", count: 1 }, { id: "lb:amethyst_charge", count: 48 }] },
+    { weight: 7, kind: "bundle", id: "storm_longbow_kit", source: "loys_goodies", items: [{ id: "lb:storm_longbow", count: 1 }, { id: "minecraft:arrow", count: 32 }] },
     { weight: 8, kind: "entity", id: "lb:wither_spider", nameTag: "Wither Spider Artillery", source: "slayers_beasts" },
     {
       weight: 8,
