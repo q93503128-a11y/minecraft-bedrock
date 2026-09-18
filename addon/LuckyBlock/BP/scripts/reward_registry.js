@@ -29,7 +29,8 @@ export const weightedPools = {
   ],
   epic: [
     { weight: 32, kind: "fragments", id: "lb:epic_fragment", min: 2, max: 4, source: "core" },
-    { weight: 24, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" },
+    { weight: 20, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" },
+    { weight: 6, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants" },
     { weight: 12, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
     { weight: 10, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
     { weight: 10, kind: "item", id: "lb:rare_lucky_block", count: 2, source: "core" },
@@ -38,8 +39,16 @@ export const weightedPools = {
   ]
 };
 
+weightedPools.legendary = [
+  { weight: 34, kind: "fragments", id: "lb:legendary_fragment", min: 2, max: 4, source: "core" },
+  { weight: 20, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants" },
+  { weight: 18, kind: "item", id: "lb:epic_lucky_block", count: 2, source: "core" },
+  { weight: 12, kind: "fragments", id: "lb:mythic_fragment", min: 1, max: 1, source: "core" },
+  { weight: 10, kind: "item", id: "lb:legendary_lucky_block", source: "core" },
+  { weight: 6, kind: "item", id: "lb:reward_chainsaw", source: "loys_goodies" }
+];
+
 export const tierFallbacks = {
-  legendary: { fragment: "lb:legendary_fragment", min: 3, max: 5, bonus: "lb:epic_lucky_block", bonusChance: 1.0 },
   mythic: { fragment: "lb:mythic_fragment", min: 4, max: 6, bonus: "lb:legendary_lucky_block", bonusChance: 1.0 }
 };
 

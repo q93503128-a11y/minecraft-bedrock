@@ -36,6 +36,51 @@
           "stream": false
         }
       ]
+    },
+    "lb.bogre.roar": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/bogre_roar",
+          "stream": false
+        }
+      ]
+    },
+    "lb.bogre.attack": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/bogre_attack",
+          "stream": false
+        }
+      ]
+    },
+    "lb.bogre.shockwave": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/bogre_shockwave",
+          "stream": false
+        }
+      ]
+    },
+    "lb.bogre.hurt": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/bogre_hurt",
+          "stream": false
+        }
+      ]
+    },
+    "lb.bogre.death": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/bogre_death",
+          "stream": false
+        }
+      ]
     }
   }
 }

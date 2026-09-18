@@ -2,6 +2,7 @@ import { system, BlockPermutation, ItemStack } from "@minecraft/server";
 import "./acquisition.js";
 import "./reward_behaviors.js";
 import "./integrations/inhabitants.js";
+import "./integrations/inhabitants_bogre.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 
 function chooseWeighted(pool) {
@@ -23,6 +24,11 @@ function openWeighted(dimension, pos, tier) {
   if (reward.kind === "fragments") {
     const count = reward.min + Math.floor(Math.random() * (reward.max - reward.min + 1));
     spawnAt(dimension, pos, reward.id, count);
+  } else if (reward.kind === "entity") {
+    try {
+      const spawned = dimension.spawnEntity(reward.id, { x: pos.x, y: pos.y + 0.4, z: pos.z });
+      if (reward.nameTag) spawned.nameTag = reward.nameTag;
+    } catch {}
   } else {
     spawnAt(dimension, pos, reward.id, reward.count ?? 1);
   }
