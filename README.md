@@ -7,12 +7,12 @@ Canonical planning/documentation repository for Minecraft Bedrock projects.
 Active project: a five-tier Lucky Block Add-On with externally licensed real assets, varied rewards/events and a first-Ender-Dragon late-game gate.
 
 Current source milestone:
-- `0.7.0` — post-dragon Legendary/Mythic boss progression
+- `0.8.0` — first native Bedrock 3D Legendary weapon integration
 
 Latest packaged development build:
 - `build/LuckyBlock_0.2.0.mcaddon`
 
-0.7.0 source now contains:
+0.8.0 source now contains:
 - five Lucky Block tiers and five Lucky Fragment tiers;
 - actual Microsoft MIT + CorvaeOboro CC0 production visuals;
 - 15 CC0 Loy's Goodies 3D reward models with original embedded textures;
@@ -57,3 +57,7 @@ Project documents:
 - Bosses of Mass Destruction Obsidilith integrated as a 9000-HP Mythic post-dragon boss;
 - original Obsidilith rune, particle art and combat audio with rune-shield / exposed-window mechanics;
 - no placeholder or assistant-drawn art in the new boss batch.
+
+- LC Studios Slasher Sword Addon vendored as a native Bedrock held Legendary weapon with original icons, FP/TP models, animations, beams, particles, sounds and combat script;
+- Slasher compatibility-ported from @minecraft/server 1.18.0 to 2.9.0 and gated behind first Ender Dragon kill;
+- Slasher Blade repair drops integrated into Bogre and Obsidilith.

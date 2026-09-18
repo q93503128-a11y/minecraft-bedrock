@@ -104,3 +104,24 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
   - original prepare/burst/spike/wave indicator audio.
 - The upstream Kotlin boss implementation is not executed in Bedrock. Its Burst/Spike/Wave/Pillar mechanics were studied and reimplemented in the Bedrock Script API.
 - Modified integration source remains available in this repository.
+
+
+## Slasher Sword Addon
+- Source: https://github.com/lc-studios-mc/slasher-v1
+- Creator: LC Studios
+- Reviewed commit: `24887c71758cf11bba1f419ecdd70b651d2d7d94`
+- License: CC0 1.0 Universal.
+- Directly vendored:
+  - original Slasher and Slasher Blade item definitions/icons;
+  - original first-person and third-person Slasher geometry;
+  - original animation controller and Slasher animation sets;
+  - original beam entities/models/animations/render controllers;
+  - original spark/beam particles and particle textures;
+  - original Slasher texture and all combat OGG files;
+  - original item-extender and Slasher combat state-machine source.
+- Compatibility modifications:
+  - runtime identifiers remapped from `lc:` to `lb:`;
+  - removed deprecated `worldInitialize` startup dependency;
+  - updated deprecated `isValid()` and GameMode enum usage for @minecraft/server 2.9.0;
+  - beam timeout handling moved away from removed dataDrivenEntityTrigger usage;
+  - Lucky late-game damage/durability values increased without replacing the original visual/animation design.

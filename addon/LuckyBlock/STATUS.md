@@ -138,3 +138,16 @@ Static audit after 0.5.0 enemy integration:
 - Obsidilith Mythic scale: 9000 HP / 46 base attack / 12% incoming damage while rune-shielded / 135% during exposed window.
 - Obsidilith uses original BOMD model, texture, rune art, particle art frames and sounds; no temporary visual asset was introduced.
 - Repository filename audit found no temporary/dummy/test-texture files in the Lucky Block source tree.
+
+
+0.8.0 held-weapon milestone:
+- Added Slasher Sword Addon (CC0) as the first true held 3D Legendary Lucky weapon.
+- No assistant-designed or placeholder model/texture/icon/sound is used for Slasher.
+- Original external payload includes item icons, first/third-person geometry, attachable, animation controller, FP/TP/misc animations, beam models/entities, particles, particle textures and eleven original OGG combat sounds.
+- Original combat state machine is vendored and ported from @minecraft/server 1.18.0 to the project 2.9.0 target rather than replaced with a simplified fake weapon.
+- Deprecated worldInitialize, isValid() and lowercase GameMode usage were removed/ported.
+- Removed dataDrivenEntityTrigger timeout dependency and replaced it with Script API timeouts while keeping original beam visuals/projectile hits.
+- Lucky balance: base item damage 32, durability 2200, fast extra swing damage 24, charged slash 150, fast beam direct 10, charged beam direct 70, lock-on chainsaw tick 8, plunge scaling capped at 320.
+- Slasher is a post-Ender-Dragon Legendary reward only.
+- Bogre drops 1–2 Slasher Blades; Obsidilith drops 3–5, establishing a real repair loop.
+- Static compatibility search finds no remaining lc:, worldInitialize, deprecated isValid(), lowercase GameMode or dataDrivenEntityTrigger references inside the vendored Slasher integration.

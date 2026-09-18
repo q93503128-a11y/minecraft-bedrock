@@ -103,3 +103,31 @@ Lucky role:
 - 135% incoming damage during the 4-second exposed window;
 - three telegraphed attack families derived from upstream Burst/Spike/Wave roles;
 - kill reward: 1–2 Legendary Lucky Blocks, 4–7 Mythic Fragments, 28% Mythic Lucky Block.
+
+
+## Slasher Sword Addon — 0.8.0
+
+Status: active vendored Legendary held weapon.
+License: CC0-1.0.
+Pinned upstream: `24887c71758cf11bba1f419ecdd70b651d2d7d94`.
+
+Why this source is important:
+- it is already a native Bedrock add-on rather than a Java model being approximated as an item;
+- it provides its own inventory icons, 3D first/third-person geometry, attachable, animation controllers, combat animations, projectile-beam entities, particles, sounds and Script API combat state machine;
+- therefore no new temporary weapon art is needed.
+
+Lucky role:
+- post-dragon Legendary weapon;
+- 32 base item damage;
+- 2200 durability;
+- fast chained attack and beam;
+- charge/release attack with dash support;
+- sneak lock-on chainsaw behavior;
+- airborne plunge attack;
+- original beam visuals and original combat audio;
+- repair resource: `lb:slasher_blade`, sourced from Bogre/Obsidilith kills.
+
+Porting boundary:
+- visual/animation/audio design remains upstream;
+- namespace is remapped to `lb:`;
+- API compatibility and Lucky balance are project-side modifications.
