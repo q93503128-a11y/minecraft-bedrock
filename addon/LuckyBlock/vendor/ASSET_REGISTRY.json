@@ -32,6 +32,15 @@
       "reviewedRef": "main",
       "reviewedCommit": "afbb7695b09de0ed8ee3aa97732ff7c3d367520c",
       "integrationMode": "vendored"
+    },
+    "frenchkrab": {
+      "url": "https://github.com/FrenchKrab/mc-blockbench-models",
+      "license": "CC-BY-4.0",
+      "author": "FrenchKrab",
+      "reviewedRef": "master",
+      "reviewedCommit": "3a568ceda77434a17e2722459e8becf48a1f6920",
+      "integrationMode": "vendored",
+      "attributionRequired": true
     }
   },
   "assets": [
@@ -315,6 +324,54 @@
       "behaviorComponent": "lb:easel_focus",
       "integrationModule": "BP/scripts/integrations/loys_goodies.js",
       "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
+    },
+    {
+      "key": "frenchkrab_cardboard_sword",
+      "source": "frenchkrab",
+      "upstream": [
+        "tools/cardboard_sword.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_cardboard_sword.json",
+        "RP/models/blocks/reward_cardboard_sword.geo.json",
+        "RP/textures/blocks/lb_reward_cardboard_sword.png"
+      ],
+      "contentId": "lb:reward_cardboard_sword",
+      "behaviorComponent": "lb:cardboard_sword",
+      "integrationModule": "BP/scripts/integrations/frenchkrab.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported; Lucky behavior added"
+    },
+    {
+      "key": "frenchkrab_cardboard_axe",
+      "source": "frenchkrab",
+      "upstream": [
+        "tools/cardboard_axe.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_cardboard_axe.json",
+        "RP/models/blocks/reward_cardboard_axe.geo.json",
+        "RP/textures/blocks/lb_reward_cardboard_axe.png"
+      ],
+      "contentId": "lb:reward_cardboard_axe",
+      "behaviorComponent": "lb:cardboard_axe",
+      "integrationModule": "BP/scripts/integrations/frenchkrab.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported; Lucky behavior added"
+    },
+    {
+      "key": "frenchkrab_cardboard_shield",
+      "source": "frenchkrab",
+      "upstream": [
+        "tools/cardboard_shield.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_cardboard_shield.json",
+        "RP/models/blocks/reward_cardboard_shield.geo.json",
+        "RP/textures/blocks/lb_reward_cardboard_shield.png"
+      ],
+      "contentId": "lb:reward_cardboard_shield",
+      "behaviorComponent": "lb:cardboard_shield",
+      "integrationModule": "BP/scripts/integrations/frenchkrab.js",
+      "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported; Lucky behavior added"
     }
   ]
 }

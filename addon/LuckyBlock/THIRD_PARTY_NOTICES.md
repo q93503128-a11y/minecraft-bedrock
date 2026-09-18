@@ -48,3 +48,20 @@ No placeholder image, model, icon or sound is intentionally included.
 - `230627_easel.bbmodel`
 
 Each selected model had a directly embedded PNG texture in its Blockbench source. The original CC0 model geometry and PNG were converted/imported directly; no placeholder texture was substituted.
+
+
+## FrenchKrab mc-blockbench-models
+- Source: https://github.com/FrenchKrab/mc-blockbench-models
+- Creator: FrenchKrab
+- License: CC BY 4.0
+- Reviewed source commit: 3a568ceda77434a17e2722459e8becf48a1f6920
+- Integrated assets:
+  - `tools/cardboard_sword.bbmodel`
+  - `tools/cardboard_axe.bbmodel`
+  - `tools/cardboard_shield.bbmodel`
+- Modifications:
+  - Java Blockbench geometry converted to Bedrock geometry;
+  - original embedded texture retained;
+  - identifiers remapped into the `lb:` namespace;
+  - original Lucky Block interaction behavior added by this project.
+- Attribution is retained here because CC BY 4.0 requires credit.

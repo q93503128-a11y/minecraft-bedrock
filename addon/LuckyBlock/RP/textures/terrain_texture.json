@@ -66,6 +66,15 @@
     },
     "lb_reward_easel": {
       "textures": "textures/blocks/lb_reward_easel"
+    },
+    "lb_reward_cardboard_sword": {
+      "textures": "textures/blocks/lb_reward_cardboard_sword"
+    },
+    "lb_reward_cardboard_axe": {
+      "textures": "textures/blocks/lb_reward_cardboard_axe"
+    },
+    "lb_reward_cardboard_shield": {
+      "textures": "textures/blocks/lb_reward_cardboard_shield"
     }
   }
 }

@@ -9,6 +9,8 @@ export const weightedPools = {
     { weight: 5, kind: "item", id: "lb:reward_camera", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_moai", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_backpack", source: "loys_goodies" },
+    { weight: 4, kind: "item", id: "lb:reward_cardboard_sword", source: "frenchkrab" },
+    { weight: 4, kind: "item", id: "lb:reward_cardboard_axe", source: "frenchkrab" },
     { weight: 5, kind: "item", id: "lb:common_lucky_block", source: "core" },
     { weight: 5, kind: "fragments", id: "lb:rare_fragment", min: 1, max: 1, source: "core" }
   ],
@@ -21,6 +23,7 @@ export const weightedPools = {
     { weight: 8, kind: "item", id: "lb:reward_easel", source: "loys_goodies" },
     { weight: 8, kind: "item", id: "lb:reward_backpack", source: "loys_goodies" },
     { weight: 8, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
+    { weight: 7, kind: "item", id: "lb:reward_cardboard_shield", source: "frenchkrab" },
     { weight: 7, kind: "item", id: "lb:common_lucky_block", count: 2, source: "core" },
     { weight: 6, kind: "fragments", id: "lb:epic_fragment", min: 1, max: 1, source: "core" }
   ],

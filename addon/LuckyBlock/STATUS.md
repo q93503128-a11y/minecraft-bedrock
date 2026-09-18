@@ -63,3 +63,11 @@ Static audit after 0.4.0 source commit:
 - reward_behaviors.js is now an integration bootstrap rather than a monolithic external-content file.
 - vendor/ASSET_REGISTRY.json pins reviewed upstream commit SHAs and exact source->target mappings.
 - tools/audit_integrations.mjs checks source metadata, duplicate IDs/targets, target existence and lb: namespace ownership.
+
+
+Multi-source integration validation:
+- Added a second active external source, FrenchKrab mc-blockbench-models (CC BY 4.0), through its own integration module.
+- Added Cardboard Sword, Cardboard Axe and Cardboard Shield as real model+texture rewards with distinct one-use behaviors.
+- FrenchKrab source is pinned to reviewed commit 3a568ceda77434a17e2722459e8becf48a1f6920.
+- Attribution is included in THIRD_PARTY_NOTICES.md and the machine-readable vendor registry.
+- The reward registry now records source ownership per external reward entry.
