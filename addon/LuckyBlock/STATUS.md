@@ -379,3 +379,17 @@ Static audit after 0.17.0 ranged combat integration:
 - Full-set Aegis Ward is Lucky-owned: after 6 seconds without taking damage, Absorption II recharges for 8 seconds on a 10-second cycle.
 - Epic reward pool remains exactly 100 weight after adding the 8-weight full-set bundle.
 - No temporary armor texture, placeholder model or recolored vanilla stand-in was introduced.
+
+
+Static audit after 0.18.0 Mystical Aegis integration:
+- BP/RP manifests and mutual dependencies resolve to 0.18.0.
+- Epic reward weights still sum to exactly 100 and the Mystical Aegis full-set bundle is present.
+- All four armor item JSON files use the current `minecraft:wearable.protection` contract rather than the removed legacy `minecraft:armor` component.
+- Item protection profile resolves to 1 / 4 / 3 / 2 and durability resolves to 360 / 520 / 480 / 420.
+- All four attachable identifiers match their BP item identifiers and resolve the original Tomemancy `magic.png` wearable texture.
+- Original Tomemancy icon/wearable texture blob SHAs match upstream exactly.
+- Aegis script, main dispatcher and reward registry pass JavaScript syntax parsing after import/export stripping.
+- Full-set ward constants resolve to 6 seconds out of combat, Absorption II for 8 seconds and a 10-second recharge cycle.
+- Vendor registry resolves 10 external sources / 39 asset records / 37 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- Placeholder/dummy/temp/test-texture filename scan remains zero.
+- This remains source/static validation only; current stable Bedrock still needs actual equip rendering, armor protection, ward timing, multiplayer and balance QA.
