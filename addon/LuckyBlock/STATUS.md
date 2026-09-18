@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.16.0 War Ant mount
+Milestone: 0.17.0 ranged combat expansion
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -345,3 +345,14 @@ Static audit after 0.16.0 War Ant mount integration:
 - Vendor registry resolves 10 external sources / 35 asset records / 33 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
 - Original wood-soldier texture target is present and placeholder/dummy/temp/test-texture filename scan remains zero.
 - This is source/static validation only; current Bedrock riding controls, seat placement, tame ownership, animation scale and multiplayer runtime QA remain untested.
+
+
+0.17.0 ranged combat milestone:
+- Added `lb:amethyst_repeater` + renewable `lb:amethyst_charge`, using original Tomemancy MIT Amethyst Staff/orb artwork.
+- Repeater is an Epic pre-dragon held ranged weapon: 3-shot burst, 4-tick shot spacing, 12 damage per hit, 32-block block-aware raycast range, 24-tick cooldown, finite ammo and 720 durability.
+- The stable Script API raycast design intentionally avoids requiring the Custom Projectiles experimental toggle.
+- Added `lb:wither_spider` from Slayers-Beasts MIT: original 33-bone / 70-cube converted model, 8-channel / 40-keyframe WALK animation and original texture, with the source renderer's 1.2× scale baked into geometry.
+- Source Wither-on-melee identity is retained. Lucky adds a documented 0.8-second telegraphed ranged Wither zone for the missing pre-dragon control role.
+- Wither Spider has low-density Nether ecology spawning (cap 2/64 blocks), an 8% Epic encounter result, and modest Rare/Epic fragment drops.
+- Epic reward pool still sums to exactly 100.
+- No placeholder model, texture, sound, beam or temporary projectile asset was introduced.

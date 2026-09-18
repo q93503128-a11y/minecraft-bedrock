@@ -255,3 +255,24 @@ Lucky role:
 - sugar can tame a manually spawned specimen; sugar/honey bottle heal it.
 
 This fills the first real mount-reward family without introducing a vanilla horse recolor or temporary model.
+
+
+## Ranged combat batch — 0.17.0
+
+### Tomemancy Amethyst Repeater
+- MIT Tomemancy source at `b5a76921e98c06aae9942c705af605e2abcac44c`; original Amethyst Staff icon and amethyst-orb icon.
+- Epic pre-dragon ranged weapon kit: one `lb:amethyst_repeater` + 48 `lb:amethyst_charge`.
+- Three-shot burst, 4 ticks between shots, 12 damage per hit, 32-block maximum block-aware raycast range, 24-tick trigger cooldown.
+- Uses stable Script API entity/block raycasts rather than introducing an experimental custom projectile.
+- Each shot consumes one charge outside Creative. Charges are renewable: one amethyst shard + one glowstone dust -> eight charges.
+- 720 weapon durability; repairs from amethyst shards or Epic Fragments.
+- Reuses already-cleared Obsidilith indicator/burst particles as shot trail/impact presentation; no temporary beam art.
+
+### Slayers-Beasts Wither Spider
+- MIT source at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Original 33-bone / 70-cube converted model, 8-channel / 40-keyframe WALK animation and original texture; the source renderer's 1.2× scale is baked into Bedrock geometry.
+- Source contact identity retained: melee attacks apply Wither.
+- Lucky balance: 96 HP / 10 melee / 0.26 movement / 25% knockback resistance.
+- Pre-dragon Nether ecology spawn, maximum two within 64 blocks, plus an Epic Lucky Block encounter.
+- Lucky-owned ranged/control role: 0.8-second five-point ground telegraph, then 14 damage + 5 seconds Wither I in a 3.2-block impact circle, approximately every 5–8 seconds while the player stays at mid-range.
+- The ranged volley is explicitly not source-original.

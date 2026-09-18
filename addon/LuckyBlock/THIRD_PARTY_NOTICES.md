@@ -196,3 +196,16 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Directly adapted source files: AntSoldier model, WALK + AMBIENT animation data, renderer scale reference and original wood-soldier texture.
 - The upstream 1.5× render scale is baked into the converted Bedrock geometry rather than silently changing the source silhouette.
 - Lucky-owned behavior changes the original neutral combat ant into a tameable Epic mount. Taming, rideable seating, ground input, player-ridden control and owner-defense behavior are Bedrock-side adaptations, not upstream Java behavior.
+
+
+### Amethyst Repeater and Amethyst Charge
+- Source: Tomemancy / MIT, pinned at `b5a76921e98c06aae9942c705af605e2abcac44c`.
+- Direct reuse: original Amethyst Staff icon and original amethyst-orb icon. The source Amethyst Staff and its Amethyst Blast projectile are provenance references for the ranged-staff role.
+- Lucky rebuild: the Repeater uses stable Script API block-aware entity raycasts for a three-shot line-of-sight burst, finite Amethyst Charge ammunition and Lucky-specific durability/cooldown values.
+- The source custom projectile is deliberately not required at runtime, avoiding a new Custom Projectiles experimental dependency.
+
+### Wither Spider
+- Source: Slayers-Beasts / InvictusSlayer / MIT, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Direct reuse/adaptation: original Wither Spider model, WALK animation, original texture and the renderer's 1.2× scale.
+- Source gameplay is melee and applies Wither on contact. Lucky preserves that contact identity.
+- The telegraphed ranged Wither volley is a Lucky-owned mechanic added to fill the pre-dragon ranged/control role. It reuses already-vendored BOMD indicator/burst particles and is not source-original behavior.

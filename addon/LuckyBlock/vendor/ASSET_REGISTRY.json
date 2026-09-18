@@ -903,6 +903,58 @@
       ],
       "contentId": "lb:war_ant_mount",
       "modification": "Original Ant Soldier model, WALK/AMBIENT animation data and wood-soldier texture are ported. The upstream renderer's 1.5x visual scale is baked into Bedrock geometry. Lucky converts the neutral soldier-ant identity into an Epic tameable player-controlled mount using official Bedrock rideable/input_ground_controlled/player_ride_tamed components."
+    },
+    {
+      "key": "tomemancy_amethyst_repeater",
+      "source": "tomemancy",
+      "upstream": [
+        "Tomemancy [B]/items/staves/amethyst_staff.json",
+        "Tomemancy [B]/entities/amethyst_blast.projectile.json",
+        "Tomemancy [R]/textures/items/staves/amethyst_staff.png"
+      ],
+      "targets": [
+        "BP/items/amethyst_repeater.json",
+        "BP/scripts/integrations/tomemancy_amethyst_repeater.js",
+        "RP/textures/items/amethyst_repeater.png"
+      ],
+      "contentId": "lb:amethyst_repeater",
+      "modification": "Original Amethyst Staff visual and ranged-staff concept are reused. Lucky rebuilds firing for stable Script API raycasts: a three-shot line-of-sight burst that does not require the Custom Projectiles experiment. Damage, cooldown and durability are Lucky balance."
+    },
+    {
+      "key": "tomemancy_amethyst_charge",
+      "source": "tomemancy",
+      "upstream": [
+        "Tomemancy [R]/textures/items/orbs/amethyst_orb.png"
+      ],
+      "targets": [
+        "BP/items/amethyst_charge.json",
+        "BP/recipes/amethyst_charge.json",
+        "RP/textures/items/amethyst_charge.png"
+      ],
+      "contentId": "lb:amethyst_charge",
+      "modification": "Original Tomemancy amethyst-orb icon is reused as the finite ammunition identity for Lucky's Amethyst Repeater. The renewable shapeless survival recipe is Lucky-owned."
+    },
+    {
+      "key": "slayers_beasts_wither_spider",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/WitherSpider.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/WitherSpiderModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/WitherSpiderAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/WitherSpiderRenderer.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/wither_spider.png"
+      ],
+      "targets": [
+        "BP/entities/wither_spider.json",
+        "BP/scripts/integrations/slayers_beasts_wither_spider.js",
+        "RP/entity/wither_spider.entity.json",
+        "RP/models/entity/wither_spider.geo.json",
+        "RP/animations/wither_spider.animation.json",
+        "RP/animation_controllers/wither_spider.animation_controllers.json",
+        "RP/textures/entity/wither_spider.png"
+      ],
+      "contentId": "lb:wither_spider",
+      "modification": "Original Wither Spider model, WALK animation, 1.2x renderer scale and texture are ported. Source melee Wither identity remains. Lucky adds a clearly documented dodgeable ranged/control volley and Nether ecology role; that ranged mechanic is not attributed to upstream."
     }
   ]
 }

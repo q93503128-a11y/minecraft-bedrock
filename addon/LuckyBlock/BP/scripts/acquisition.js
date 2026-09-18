@@ -187,6 +187,13 @@ world.afterEvents.entityDie.subscribe((event) => {
     return;
   }
 
+  if (typeId === "lb:wither_spider") {
+    rollReward(dimension, location, 0.40, "lb:rare_fragment", 1, 1);
+    rollReward(dimension, location, 0.09, "lb:epic_fragment", 1, 1);
+    if (postDragon) rollReward(dimension, location, 0.004, "lb:legendary_fragment", 1, 1);
+    return;
+  }
+
   if (typeId === "minecraft:wither") {
     spawnReward(dimension, location, "lb:epic_lucky_block", 1, 1);
     rollReward(dimension, location, postDragon ? 0.30 : 0.15, "lb:legendary_fragment", 1, 2);

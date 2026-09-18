@@ -26,10 +26,12 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
+Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant mount and the Tomemancy Amethyst Repeater finite-ammo ranged weapon. Armor and broader ranged/minigame families remain thin.
+
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
 
-Implemented P4 slices: Inhabitants Impaler elite, Slayers-Beasts Irk companion, persistent Awakened Grove/Ent-guardian event, and the Slayers-Beasts War Ant player-controlled mount. Still thin: ranged encounters, additional mount families, miniboss families and exploration structures.
+Implemented P4 slices: Inhabitants Impaler elite, Slayers-Beasts Irk companion, persistent Awakened Grove/Ent-guardian event, Slayers-Beasts War Ant player-controlled mount, and the pre-dragon Nether Wither Spider ranged/control encounter. Still thin: additional ranged families, mount families, miniboss families and exploration structures.
 
 ## P5 — First Ender Dragon gate
 Persist a world-level first-kill unlock. After that point, late-game spawn tables, event tables, rewards and encounter pools become eligible.
