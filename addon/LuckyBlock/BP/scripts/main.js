@@ -8,6 +8,7 @@ import "./integrations/slasher/index.js";
 import "./integrations/tomemancy.js";
 import "./integrations/tomemancy_amethyst_repeater.js";
 import "./integrations/loys_storm_longbow.js";
+import "./integrations/loys_explorer_kit.js";
 import "./integrations/tomemancy_mystical_aegis.js";
 import "./integrations/slayers_beasts_mantis.js";
 import "./integrations/slayers_beasts_tyrachnid.js";

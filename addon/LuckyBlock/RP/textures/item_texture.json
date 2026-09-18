@@ -34,6 +34,12 @@
     },
     "storm_longbow": {
       "textures": "textures/items/storm_longbow"
+    },
+    "explorer_hat": {
+      "textures": "textures/items/explorer_hat"
+    },
+    "explorer_pack": {
+      "textures": "textures/items/explorer_pack"
     }
   }
 }
