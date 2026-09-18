@@ -35,3 +35,9 @@ entity.lb:slasher_beam_fast_atk.name=슬래셔 빔
 entity.lb:slasher_beam_charged_atk.name=슬래셔 빔
 entity.lb:ground_impact_particle_spawner.name=충격
 slasher.repairNeeded=§c수리가 필요합니다
+
+item.lb:tomemancy_diamond_staff.name=§5토메맨서 다이아몬드 스태프§r
+item.lb:tomemancy_meteor_tome.name=§c메테오 마도서§r
+item.lb:tomemancy_gigavolt_tome.name=§e기가볼트 마도서§r
+item.lb:tomemancy_dragon_fireball_tome.name=§d드래곤 파이어볼 마도서§r
+entity.lb:tomemancy_meteor.name=메테오

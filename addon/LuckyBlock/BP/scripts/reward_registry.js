@@ -49,12 +49,25 @@ weightedPools.legendary = [
 ];
 
 weightedPools.mythic = [
-  { weight: 30, kind: "fragments", id: "lb:mythic_fragment", min: 3, max: 6, source: "core" },
-  { weight: 22, kind: "item", id: "lb:legendary_lucky_block", count: 2, source: "core" },
-  { weight: 18, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
-  { weight: 12, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
-  { weight: 10, kind: "fragments", id: "lb:legendary_fragment", min: 6, max: 10, source: "core" },
-  { weight: 8, kind: "item", id: "lb:mythic_lucky_block", source: "core" }
+  { weight: 18, kind: "fragments", id: "lb:mythic_fragment", min: 3, max: 6, source: "core" },
+  { weight: 12, kind: "item", id: "lb:legendary_lucky_block", count: 2, source: "core" },
+  { weight: 22, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
+  {
+    weight: 22,
+    kind: "bundle",
+    id: "tomemancer_archmage_set",
+    source: "tomemancy",
+    requiresPostDragon: true,
+    items: [
+      { id: "lb:tomemancy_diamond_staff", count: 1 },
+      { id: "lb:tomemancy_meteor_tome", count: 1 },
+      { id: "lb:tomemancy_gigavolt_tome", count: 1 },
+      { id: "lb:tomemancy_dragon_fireball_tome", count: 1 }
+    ]
+  },
+  { weight: 8, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
+  { weight: 8, kind: "fragments", id: "lb:legendary_fragment", min: 6, max: 10, source: "core" },
+  { weight: 10, kind: "item", id: "lb:mythic_lucky_block", source: "core" }
 ];
 
 export const tierFallbacks = {};

@@ -72,6 +72,18 @@
       "attributionRequired": false,
       "originalServerApi": "@minecraft/server 1.18.0",
       "portTargetServerApi": "@minecraft/server 2.9.0"
+    },
+    "tomemancy": {
+      "url": "https://github.com/Sharded-Alex/Tomemancy",
+      "license": "MIT",
+      "author": "Sharded-Alex",
+      "reviewedRef": "main",
+      "reviewedCommit": "b5a76921e98c06aae9942c705af605e2abcac44c",
+      "integrationMode": "vendored",
+      "attributionRequired": true,
+      "licenseFile": "THIRD_PARTY_LICENSES/TOMEMANCY_MIT.txt",
+      "originalBedrockLine": "1.16.x",
+      "portTargetServerApi": "@minecraft/server 2.9.0"
     }
   },
   "assets": [
@@ -668,6 +680,78 @@
       "contentId": "lb:slasher",
       "integrationModule": "BP/scripts/integrations/slasher/index.js",
       "modification": "Original Bedrock item, attachable, first/third-person geometry, animation controller, animations, beam entities, particles, icons, textures, sounds and combat state machine vendored. Namespace remapped lc: -> lb:. Compatibility port updates deprecated 1.18 APIs for 2.9.0 and late-game Lucky balance raises damage/durability without replacing visual design."
+    },
+    {
+      "key": "tomemancy_mythic_staff",
+      "source": "tomemancy",
+      "upstream": [
+        "Tomemancy [B]/items/staves/diamond_staff.json",
+        "Tomemancy [R]/textures/items/staves/diamond_staff.png"
+      ],
+      "targets": [
+        "BP/items/tomemancy_diamond_staff.json",
+        "RP/textures/items/tomemancy_diamond_staff.png"
+      ],
+      "contentId": "lb:tomemancy_diamond_staff",
+      "integrationModule": "BP/scripts/integrations/tomemancy.js",
+      "modification": "Original Diamond Staff inventory art retained; old item definition is ported to current Bedrock item components and used as the offhand 1.20x focus for the Mythic spell set."
+    },
+    {
+      "key": "tomemancy_meteor_tome",
+      "source": "tomemancy",
+      "upstream": [
+        "Tomemancy [B]/items/tomes/[4]/meteor.json",
+        "Tomemancy [B]/entities/meteor.entity.json",
+        "Tomemancy [R]/entity/meteor.entity.json",
+        "Tomemancy [R]/models/entity/meteor.geo.json",
+        "Tomemancy [R]/textures/entity/meteor.png",
+        "Tomemancy [R]/textures/items/spellbook.png",
+        "Tomemancy [R]/particles/flame_summoning.particle.json",
+        "Tomemancy [R]/textures/particle/summon_fire.png"
+      ],
+      "targets": [
+        "BP/items/tomemancy_meteor_tome.json",
+        "BP/entities/tomemancy_meteor.json",
+        "RP/entity/tomemancy_meteor.entity.json",
+        "RP/models/entity/tomemancy_meteor.geo.json",
+        "RP/textures/entity/tomemancy_meteor.png",
+        "RP/textures/items/tomemancy_spellbook.png",
+        "RP/particles/tomemancy_flame_summoning.particle.json",
+        "RP/textures/particle/tomemancy_summon_fire.png"
+      ],
+      "contentId": "lb:tomemancy_meteor_tome",
+      "integrationModule": "BP/scripts/integrations/tomemancy.js",
+      "modification": "Original Meteor model/texture, Spellbook texture and flame-summoning particle art retained. Old summon/explosion event chain is rebuilt in Script API as a falling telegraphed Mythic AoE spell."
+    },
+    {
+      "key": "tomemancy_gigavolt_tome",
+      "source": "tomemancy",
+      "upstream": [
+        "Tomemancy [B]/items/tomes/[4]/gigavolt.json",
+        "Tomemancy [B]/entities/gigavolt.projectile.json",
+        "Tomemancy [B]/entities/boom.entity.json",
+        "Tomemancy [R]/textures/items/spellbook.png"
+      ],
+      "targets": [
+        "BP/items/tomemancy_gigavolt_tome.json"
+      ],
+      "contentId": "lb:tomemancy_gigavolt_tome",
+      "integrationModule": "BP/scripts/integrations/tomemancy.js",
+      "modification": "Original Advanced Gigavolt spell role is rebuilt as aimed chain lightning with current Script API damage and Lucky late-game balance; shared original Spellbook art is owned by the Meteor record."
+    },
+    {
+      "key": "tomemancy_dragon_fireball_tome",
+      "source": "tomemancy",
+      "upstream": [
+        "Tomemancy [B]/items/tomes/[4]/dragon_fireball.json",
+        "Tomemancy [R]/textures/items/spellbook.png"
+      ],
+      "targets": [
+        "BP/items/tomemancy_dragon_fireball_tome.json"
+      ],
+      "contentId": "lb:tomemancy_dragon_fireball_tome",
+      "integrationModule": "BP/scripts/integrations/tomemancy.js",
+      "modification": "Preserves the upstream Advanced Tome concept of firing Minecraft's Dragon Fireball, with Lucky-owned impact damage/cooldown and the post-dragon gate."
     }
   ]
 }

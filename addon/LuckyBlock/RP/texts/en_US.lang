@@ -35,3 +35,9 @@ entity.lb:slasher_beam_fast_atk.name=Slasher Beam
 entity.lb:slasher_beam_charged_atk.name=Slasher Beam
 entity.lb:ground_impact_particle_spawner.name=Impact
 slasher.repairNeeded=§cREPAIR NEEDED
+
+item.lb:tomemancy_diamond_staff.name=§5Tomemancer Diamond Staff§r
+item.lb:tomemancy_meteor_tome.name=§cMeteor Tome§r
+item.lb:tomemancy_gigavolt_tome.name=§eGigavolt Tome§r
+item.lb:tomemancy_dragon_fireball_tome.name=§dDragon Fireball Tome§r
+entity.lb:tomemancy_meteor.name=Meteor

@@ -7,6 +7,12 @@
     },
     "slasher_blade_icon": {
       "textures": "textures/slasher/blade_icon"
+    },
+    "tomemancy_diamond_staff": {
+      "textures": "textures/items/tomemancy_diamond_staff"
+    },
+    "tomemancy_spellbook": {
+      "textures": "textures/items/tomemancy_spellbook"
     }
   }
 }

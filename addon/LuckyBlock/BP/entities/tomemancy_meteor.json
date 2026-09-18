@@ -1,0 +1,73 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:tomemancy_meteor",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false,
+      "runtime_identifier": "minecraft:snowball"
+    },
+    "component_groups": {
+      "lb:despawn": {
+        "minecraft:instant_despawn": {}
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "projectile",
+          "tomemancy_meteor"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 0.7,
+        "height": 0.7
+      },
+      "minecraft:projectile": {
+        "on_hit": {
+          "stick_in_ground": {
+            "shake_time": 0.1
+          }
+        },
+        "power": 1,
+        "gravity": 0.18,
+        "inertia": 0.99,
+        "liquid_inertia": 0.9,
+        "uncertainty_base": 0,
+        "uncertainty_multiplier": 0,
+        "anchor": 1,
+        "offset": [
+          0,
+          0,
+          0
+        ],
+        "reflect_on_hurt": false,
+        "catch_fire": true
+      },
+      "minecraft:physics": {},
+      "minecraft:scale": {
+        "value": 0.8
+      },
+      "minecraft:fire_immune": {},
+      "minecraft:timer": {
+        "looping": false,
+        "randomInterval": false,
+        "time": 6,
+        "time_down_event": {
+          "event": "lb:timeout",
+          "target": "self"
+        }
+      }
+    },
+    "events": {
+      "lb:timeout": {
+        "add": {
+          "component_groups": [
+            "lb:despawn"
+          ]
+        }
+      }
+    }
+  }
+}

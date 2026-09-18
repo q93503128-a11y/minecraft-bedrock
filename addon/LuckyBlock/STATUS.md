@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.4.0 acquisition + functional external reward expansion
+Milestone: 0.9.0 Mythic Tomemancy content-package integration
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -165,3 +165,17 @@ Static audit after 0.8.0 Slasher integration:
 - Post-dragon Legendary reward gating for lb:slasher is active.
 - Bogre drops 1–2 Slasher Blades and Obsidilith drops 3–5.
 - No placeholder/dummy/test-texture filename is present in the Lucky Block source tree.
+
+
+0.9.0 Mythic content-package milestone:
+- Re-read and followed `docs/LUCKY_BLOCK_CANON.md` and `docs/IMPLEMENTATION_ROADMAP.md`; this batch targets P7's “content package, not one huge-stat item” requirement.
+- Added Tomemancy (Sharded-Alex, MIT), pinned to `b5a76921e98c06aae9942c705af605e2abcac44c`, as an eighth active external source.
+- Added a post-Ender-Dragon Tomemancer Archmage Set Mythic bundle: Diamond Staff + Meteor Tome + Gigavolt Tome + Dragon Fireball Tome.
+- No assistant-drawn or placeholder model, texture, icon or particle art was added. Staff, spellbook, meteor and flame-summoning visuals are original vendored Tomemancy assets.
+- Added reusable `kind: "bundle"` reward dispatch for future Mythic sets/content drops.
+- Meteor: 460 outer / 650 inner base AoE, 12 s cooldown.
+- Gigavolt: unique-target chain 420 / 300 / 220 / 160 base damage, 8 s cooldown.
+- Dragon Fireball: source-faithful vanilla dragon-fireball concept, 360 direct + 250 nearby Lucky damage, 9 s cooldown.
+- Offhand Diamond Staff gives 1.20x damage to all three Tome spells, making the set mechanically connected.
+- Spell use stays locked until `lb:post_dragon_unlocked`; the source's obsolete 1.16.x data-driven runtime is ported to @minecraft/server 2.9.0.
+- Full MIT notice and exact source-to-target provenance are included.

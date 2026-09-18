@@ -125,3 +125,23 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
   - updated deprecated `isValid()` and GameMode enum usage for @minecraft/server 2.9.0;
   - beam timeout handling moved away from removed dataDrivenEntityTrigger usage;
   - Lucky late-game damage/durability values increased without replacing the original visual/animation design.
+
+
+## Tomemancy
+- Source: https://github.com/Sharded-Alex/Tomemancy
+- Creator: Sharded-Alex
+- Reviewed commit: `b5a76921e98c06aae9942c705af605e2abcac44c`
+- License: MIT.
+- Full reviewed license text is included at `THIRD_PARTY_LICENSES/TOMEMANCY_MIT.txt`.
+- Directly reused/adapted:
+  - original Diamond Staff inventory texture;
+  - original Spellbook inventory texture used by Advanced Tomes;
+  - original Meteor entity texture and Meteor geometry;
+  - original Flame Summoning particle texture and particle definition;
+  - Advanced Meteor, Gigavolt and Dragon Fireball spell roles and pacing as the gameplay reference.
+- Compatibility / Lucky modifications:
+  - old 1.16.x data-driven item events and scoreboard knowledge gates are replaced by @minecraft/server 2.9.0 Script API behavior;
+  - identifiers are remapped from `tome:` to the `lb:` production namespace;
+  - the first-Ender-Dragon Lucky gate replaces Tomemancy's original player-level/knowledge progression for this reward;
+  - the four pieces are delivered together as a Mythic content set rather than a single high-stat item;
+  - damage, cooldown and durability are rebalanced around Bogre / Obsidilith late-game combat.

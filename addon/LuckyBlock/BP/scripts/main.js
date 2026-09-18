@@ -5,6 +5,7 @@ import "./integrations/inhabitants.js";
 import "./integrations/inhabitants_bogre.js";
 import "./integrations/bomd_obsidilith.js";
 import "./integrations/slasher/index.js";
+import "./integrations/tomemancy.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 
 function chooseWeighted(pool) {
@@ -34,6 +35,15 @@ function openWeighted(dimension, pos, tier) {
       const spawned = dimension.spawnEntity(reward.id, { x: pos.x, y: pos.y + 0.4, z: pos.z });
       if (reward.nameTag) spawned.nameTag = reward.nameTag;
     } catch {}
+  } else if (reward.kind === "bundle") {
+    for (const entry of reward.items ?? []) {
+      const count = entry.count ?? (
+        Number.isInteger(entry.min) && Number.isInteger(entry.max)
+          ? entry.min + Math.floor(Math.random() * (entry.max - entry.min + 1))
+          : 1
+      );
+      spawnAt(dimension, pos, entry.id, count);
+    }
   } else {
     spawnAt(dimension, pos, reward.id, reward.count ?? 1);
   }

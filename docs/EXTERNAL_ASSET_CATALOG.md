@@ -131,3 +131,19 @@ Porting boundary:
 - visual/animation/audio design remains upstream;
 - namespace is remapped to `lb:`;
 - API compatibility and Lucky balance are project-side modifications.
+
+
+## Tomemancy — Mythic Archmage set — 0.9.0
+
+Status: active vendored Mythic content package.  
+License: MIT.  
+Pinned upstream: `b5a76921e98c06aae9942c705af605e2abcac44c`.
+
+This batch is intentionally bound to the canon rule that a Mythic outcome should be a **content package**, not one oversized stat stick. One reward roll grants a coordinated four-piece spell set:
+
+- **Tomemancer Diamond Staff** — original Tomemancy staff art; 38 melee damage; 2400 durability; can be carried in the offhand as a 1.20x spell focus.
+- **Meteor Tome** — original Advanced Meteor role plus original Meteor model/texture and flame-summoning particle art; falling targeted meteor; 12 s cooldown; 460 outer / 650 inner base damage.
+- **Gigavolt Tome** — original Advanced Gigavolt role rebuilt as aimed chain lightning; 8 s cooldown; 420 -> 300 -> 220 -> 160 base chain damage across unique targets.
+- **Dragon Fireball Tome** — preserves Tomemancy's original use of Minecraft's Dragon Fireball; 9 s cooldown; 360 direct plus 250 nearby Lucky impact damage.
+
+All four pieces remain a post-Ender-Dragon Mythic reward. The original Tomemancy level/knowledge-scoreboard gate is replaced by this project's persistent dragon progression contract. The source's 1.16.x data-driven item events are ported to `@minecraft/server 2.9.0`; external visual assets remain the source artwork.

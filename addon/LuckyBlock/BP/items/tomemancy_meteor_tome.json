@@ -1,0 +1,51 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:item": {
+    "description": {
+      "identifier": "lb:tomemancy_meteor_tome",
+      "menu_category": {
+        "category": "equipment",
+        "is_hidden_in_commands": false
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "tomemancy_spellbook"
+        }
+      },
+      "minecraft:glint": false,
+      "minecraft:rarity": "epic",
+      "minecraft:display_name": {
+        "value": "item.lb:tomemancy_meteor_tome.name"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:can_destroy_in_creative": {
+        "value": false
+      },
+      "minecraft:durability": {
+        "damage_chance": {
+          "min": 0,
+          "max": 0
+        },
+        "max_durability": 900
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "lb:mythic_fragment"
+            ],
+            "repair_amount": 120
+          }
+        ]
+      },
+      "minecraft:hand_equipped": false,
+      "minecraft:allow_off_hand": false,
+      "minecraft:use_modifiers": {
+        "movement_modifier": 0.8,
+        "use_duration": 3600
+      }
+    }
+  }
+}
