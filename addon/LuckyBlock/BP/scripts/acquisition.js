@@ -160,6 +160,12 @@ world.afterEvents.entityDie.subscribe((event) => {
     return;
   }
 
+  if (typeId === "lb:ent_guardian") {
+    spawnReward(dimension, location, "lb:rare_fragment", 1, 1);
+    rollReward(dimension, location, 0.25, "lb:epic_fragment", 1, 1);
+    return;
+  }
+
   if (typeId === "lb:warped_clam") {
     rollReward(dimension, location, 0.75, "lb:epic_fragment", 1, 2);
     rollReward(dimension, location, 0.18, "lb:legendary_fragment", 1, 1);

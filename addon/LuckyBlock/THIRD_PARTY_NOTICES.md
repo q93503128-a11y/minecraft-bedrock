@@ -182,3 +182,10 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
   - handles either item-use/entity-spawn ordering;
   - matches simultaneous multiplayer casts by dimension and nearest same-tick cast;
   - tracks recent item spawns so reeling an empty hook does not count as a catch.
+
+
+### Irk companion and Ent guardian
+- Same Slayers-Beasts MIT source and pinned commit as the Mantis/Tyrachnid integrations.
+- Irk: original model dimensions/pivots, WALK keyframes and `textures/entity/irk.png` are ported; Lucky adds the Bedrock companion/taming behavior.
+- Ent: original medium-Ent model dimensions/pivots, WALK keyframes and oak texture are ported; Lucky preserves its retaliatory identity and adds the Awakened Grove encounter.
+- Awakened Grove layout/rewards are Lucky-owned and use final vanilla building materials rather than temporary art.

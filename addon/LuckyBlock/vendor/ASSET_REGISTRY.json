@@ -838,6 +838,50 @@
       ],
       "integrationModule": "BP/scripts/integrations/minecraft_custom_events_fishing.js",
       "modification": "The upstream fishing-hook lifecycle/custom-event pattern is adapted for @minecraft/server 2.9.0: custom EventSignal dependency removed, deprecated isValid() polling removed, hook/cast matching hardened for same-tick ordering and multiplayer, and catch confirmation still requires an actual spawned item near a water-entered fishing hook."
+    },
+    {
+      "key": "slayers_beasts_irk_companion",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/IrkModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/IrkAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/IrkRenderer.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/Irk.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/irk.png"
+      ],
+      "targets": [
+        "BP/entities/irk_companion.json",
+        "RP/entity/irk_companion.entity.json",
+        "RP/models/entity/irk_companion.geo.json",
+        "RP/animations/irk_companion.animation.json",
+        "RP/animation_controllers/irk_companion.animation_controllers.json",
+        "RP/textures/entity/irk_companion.png"
+      ],
+      "contentId": "lb:irk_companion",
+      "modification": "Original Irk model, WALK animation and texture are ported. Lucky adds a companion/taming role using official Bedrock tameable/follow-owner components; Rare Lucky Blocks spawn the companion and Script API tames it to the opener."
+    },
+    {
+      "key": "slayers_beasts_ent_guardian",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/EntMediumModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/EntMediumAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/EntMediumRenderer.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/EntMedium.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/AbstractEnt.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/ent/oak.png"
+      ],
+      "targets": [
+        "BP/entities/ent_guardian.json",
+        "BP/scripts/events/pre_dragon_events.js",
+        "RP/entity/ent_guardian.entity.json",
+        "RP/models/entity/ent_guardian.geo.json",
+        "RP/animations/ent_guardian.animation.json",
+        "RP/animation_controllers/ent_guardian.animation_controllers.json",
+        "RP/textures/entity/ent_guardian_oak.png"
+      ],
+      "contentId": "lb:ent_guardian",
+      "modification": "Original medium Ent model, WALK animation and oak texture are ported. Source retaliatory melee identity is preserved; Lucky binds it to the permanent pre-dragon Awakened Grove structure event."
     }
   ]
 }

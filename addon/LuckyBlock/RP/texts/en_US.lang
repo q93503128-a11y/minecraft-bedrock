@@ -45,3 +45,6 @@ entity.lb:tomemancy_meteor.name=Meteor
 entity.lb:mantis.name=Mantis
 
 entity.lb:tyrachnid.name=Tyrachnid
+
+entity.lb:irk_companion.name=Irk Companion
+entity.lb:ent_guardian.name=Ent Guardian

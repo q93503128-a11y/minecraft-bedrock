@@ -45,3 +45,6 @@ entity.lb:tomemancy_meteor.name=메테오
 entity.lb:mantis.name=맨티스
 
 entity.lb:tyrachnid.name=타이라크니드
+
+entity.lb:irk_companion.name=이르크 동료
+entity.lb:ent_guardian.name=엔트 수호자

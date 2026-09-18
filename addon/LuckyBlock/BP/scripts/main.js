@@ -10,6 +10,7 @@ import "./integrations/slayers_beasts_mantis.js";
 import "./integrations/slayers_beasts_tyrachnid.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 import { startMythicEvent } from "./events/mythic_events.js";
+import { startPreDragonEvent } from "./events/pre_dragon_events.js";
 
 function chooseWeighted(pool) {
   const postDragon = world.getDynamicProperty("lb:post_dragon_unlocked") === true;
@@ -28,7 +29,7 @@ function spawnAt(dimension, pos, id, count = 1) {
   dimension.spawnItem(new ItemStack(id, count), pos);
 }
 
-function openWeighted(dimension, pos, tier) {
+function openWeighted(dimension, pos, tier, player) {
   const reward = chooseWeighted(weightedPools[tier]);
   if (reward.kind === "fragments") {
     const count = reward.min + Math.floor(Math.random() * (reward.max - reward.min + 1));
@@ -37,6 +38,9 @@ function openWeighted(dimension, pos, tier) {
     try {
       const spawned = dimension.spawnEntity(reward.id, { x: pos.x, y: pos.y + 0.4, z: pos.z });
       if (reward.nameTag) spawned.nameTag = reward.nameTag;
+      if (reward.tameToOpener && player?.typeId === "minecraft:player") {
+        try { spawned.getComponent("minecraft:tameable")?.tame(player); } catch {}
+      }
     } catch {}
   } else if (reward.kind === "bundle") {
     for (const entry of reward.items ?? []) {
@@ -48,9 +52,16 @@ function openWeighted(dimension, pos, tier) {
       spawnAt(dimension, pos, entry.id, count);
     }
   } else if (reward.kind === "event") {
-    const started = startMythicEvent(dimension, pos, reward.id);
+    const started = startMythicEvent(dimension, pos, reward.id) ||
+      startPreDragonEvent(dimension, pos, reward.id);
     if (!started) {
-      spawnAt(dimension, pos, "lb:mythic_fragment", 4);
+      const fallback = reward.fallback ?? {
+        id: tier === "mythic" ? "lb:mythic_fragment" : "lb:" + tier + "_fragment",
+        min: tier === "mythic" ? 4 : 3,
+        max: tier === "mythic" ? 4 : 4
+      };
+      const count = fallback.min + Math.floor(Math.random() * ((fallback.max ?? fallback.min) - fallback.min + 1));
+      spawnAt(dimension, pos, fallback.id, count);
     }
   } else {
     spawnAt(dimension, pos, reward.id, reward.count ?? 1);
@@ -69,7 +80,7 @@ function openTier(event, tier) {
   const dimension = event.dimension;
   const pos = { x: block.location.x + 0.5, y: block.location.y + 0.65, z: block.location.z + 0.5 };
   block.setPermutation(BlockPermutation.resolve("minecraft:air"));
-  if (weightedPools[tier]) openWeighted(dimension, pos, tier);
+  if (weightedPools[tier]) openWeighted(dimension, pos, tier, event.player);
   else openFallback(dimension, pos, tier);
 }
 
