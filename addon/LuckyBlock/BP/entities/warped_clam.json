@@ -1,0 +1,50 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:warped_clam",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "monster",
+          "lb_hostile",
+          "lb_warped_clam",
+          "post_dragon"
+        ]
+      },
+      "minecraft:health": {
+        "value": 130,
+        "max": 130
+      },
+      "minecraft:attack": {
+        "damage": 12
+      },
+      "minecraft:movement": {
+        "value": 0
+      },
+      "minecraft:collision_box": {
+        "width": 1.8,
+        "height": 1.2
+      },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": {
+        "value": 1
+      },
+      "minecraft:follow_range": {
+        "value": 20
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 1,
+        "look_distance": 16,
+        "probability": 1
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 2
+      }
+    }
+  }
+}

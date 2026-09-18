@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:warped_clam",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/warped_clam"
+      },
+      "geometry": {
+        "default": "geometry.lb.warped_clam"
+      },
+      "animations": {
+        "opening": "animation.lb.warped_clam.opening",
+        "closing": "animation.lb.warped_clam.closing",
+        "opened": "animation.lb.warped_clam.opened",
+        "pushing": "animation.lb.warped_clam.pushing"
+      },
+      "scripts": {
+        "animate": [
+          "opened"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#35204f",
+        "overlay_color": "#43b4b8"
+      }
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:impaler",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/impaler"
+      },
+      "geometry": {
+        "default": "geometry.lb.impaler"
+      },
+      "animations": {
+        "idle": "animation.lb.impaler.idle",
+        "walk": "animation.lb.impaler.walk",
+        "bite": "animation.lb.impaler.bite",
+        "hurt": "animation.lb.impaler.hurt",
+        "scream": "animation.lb.impaler.scream",
+        "spike_throw": "animation.lb.impaler.spike_throw",
+        "run": "animation.lb.impaler.run",
+        "locomotion": "controller.animation.lb.impaler.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#4c3b2d",
+        "overlay_color": "#8e1717"
+      }
+    }
+  }
+}

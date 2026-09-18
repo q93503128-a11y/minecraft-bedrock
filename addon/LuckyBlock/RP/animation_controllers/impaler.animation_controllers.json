@@ -1,0 +1,32 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.lb.impaler.locomotion": {
+      "initial_state": "idle",
+      "states": {
+        "idle": {
+          "animations": [
+            "idle"
+          ],
+          "transitions": [
+            {
+              "moving": "query.modified_move_speed > 0.05"
+            }
+          ],
+          "blend_transition": 0.12
+        },
+        "moving": {
+          "animations": [
+            "walk"
+          ],
+          "transitions": [
+            {
+              "idle": "query.modified_move_speed <= 0.05"
+            }
+          ],
+          "blend_transition": 0.12
+        }
+      }
+    }
+  }
+}
