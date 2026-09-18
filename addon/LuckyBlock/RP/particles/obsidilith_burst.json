@@ -28,15 +28,15 @@
         ],
         "facing_camera_mode": "lookat_xyz",
         "uv": {
-          "texture_width": 16,
-          "texture_height": 16,
+          "texture_width": 8,
+          "texture_height": 8,
           "uv": [
             0,
             0
           ],
           "uv_size": [
-            16,
-            16
+            8,
+            8
           ]
         }
       },
