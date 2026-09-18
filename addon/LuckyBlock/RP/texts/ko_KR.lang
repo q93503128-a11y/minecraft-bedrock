@@ -28,3 +28,10 @@ entity.lb:warped_clam.name=뒤틀린 조개
 entity.lb:bogre.name=보그르
 entity.lb:obsidilith.name=옵시딜리스
 tile.lb:obsidilith_rune.name=옵시딜리스 룬
+
+item.lb:slasher.name=슬래셔
+item.lb:slasher_blade.name=슬래셔 블레이드
+entity.lb:slasher_beam_fast_atk.name=슬래셔 빔
+entity.lb:slasher_beam_charged_atk.name=슬래셔 빔
+entity.lb:ground_impact_particle_spawner.name=충격
+slasher.repairNeeded=§c수리가 필요합니다

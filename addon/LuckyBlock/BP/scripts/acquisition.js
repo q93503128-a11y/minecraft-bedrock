@@ -139,6 +139,7 @@ world.afterEvents.entityDie.subscribe((event) => {
   if (typeId === "lb:obsidilith") {
     spawnReward(dimension, location, "lb:legendary_lucky_block", 1, 2);
     spawnReward(dimension, location, "lb:mythic_fragment", 4, 7);
+    spawnReward(dimension, location, "lb:slasher_blade", 3, 5);
     rollReward(dimension, location, 0.28, "lb:mythic_lucky_block", 1, 1);
     return;
   }
@@ -146,6 +147,7 @@ world.afterEvents.entityDie.subscribe((event) => {
   if (typeId === "lb:bogre") {
     spawnReward(dimension, location, "lb:epic_lucky_block", 1, 1);
     spawnReward(dimension, location, "lb:legendary_fragment", 6, 10);
+    spawnReward(dimension, location, "lb:slasher_blade", 1, 2);
     rollReward(dimension, location, 0.35, "lb:mythic_fragment", 1, 1);
     return;
   }

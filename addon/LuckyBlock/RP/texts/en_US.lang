@@ -28,3 +28,10 @@ entity.lb:warped_clam.name=Warped Clam
 entity.lb:bogre.name=Bogre
 entity.lb:obsidilith.name=Obsidilith
 tile.lb:obsidilith_rune.name=Obsidilith Rune
+
+item.lb:slasher.name=Slasher
+item.lb:slasher_blade.name=Slasher Blade
+entity.lb:slasher_beam_fast_atk.name=Slasher Beam
+entity.lb:slasher_beam_charged_atk.name=Slasher Beam
+entity.lb:ground_impact_particle_spawner.name=Impact
+slasher.repairNeeded=§cREPAIR NEEDED
