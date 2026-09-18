@@ -71,8 +71,7 @@ function telegraphShockwave(bogre, target, phase) {
       const horizontal=Math.sqrt(dx*dx+dz*dz);
       if (horizontal > radius) continue;
 
-      const jumped = player.location.y > bogre.location.y + 0.72;
-      if (jumped) continue;
+      if (!player.isOnGround) continue;
 
       const damage = phase === 3 ? 13 : phase === 2 ? 10 : 8;
       try { player.applyDamage(damage); } catch {}
