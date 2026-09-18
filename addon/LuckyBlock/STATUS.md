@@ -27,3 +27,14 @@ Still not complete:
 10. refreshed packaged mcaddon after the 0.3 source set is sufficiently complete.
 
 No project-completion claim is made.
+
+
+Static audit after 0.3 source commit:
+- 39/39 Add-On JSON files parse successfully.
+- BP/RP source versions both report 0.3.0.
+- @minecraft/server dependency is 2.9.0.
+- acquisition.js is imported by main.js.
+- playerBreakBlock and entityDie hooks are present.
+- persistent lb:post_dragon_unlocked gate is present.
+- all five external reward identifiers referenced by the opening pool resolve to committed reward block files.
+- no repeat-action decay/streak mechanic is present.
