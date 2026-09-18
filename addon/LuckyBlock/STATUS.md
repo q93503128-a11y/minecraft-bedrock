@@ -236,3 +236,16 @@ Static audit after 0.11.0 Mantis integration:
 - The source's `RangedAttackMob` hook is empty upstream; Silk Snare is explicitly not misrepresented as original source behavior.
 - Rift Siege stage 3 now includes one Tyrachnid while reducing the raw number of other mobs to keep the wave role-based rather than merely denser.
 - Kill rewards: guaranteed 1–2 Legendary Fragments, 25% Epic Lucky Block and 8% Mythic Fragment.
+
+
+Static audit after 0.12.0 Tyrachnid integration:
+- BP/RP manifests and mutual dependencies resolve to 0.12.0.
+- Repository tree scan completed without truncation.
+- Integration registry resolves 9 external sources / 31 asset records / 30 unique content IDs with no duplicate explicit target ownership or missing explicit target files.
+- `main.js`, `acquisition.js`, `reward_registry.js`, `events/mythic_events.js` and `integrations/slayers_beasts_tyrachnid.js` pass JavaScript syntax parsing after module-import stripping.
+- `lb:tyrachnid` behavior/client identifiers match; client geometry, WALK animation and locomotion controller resolve.
+- Converted Tyrachnid geometry contains all 43 parsed source parts / 90 cubes; all 40 WALK animation bone targets resolve.
+- Original Tyrachnid PNG is present and tracked by the Slayers-Beasts vendor record.
+- Post-dragon cave gate, Legendary encounter entry, acquisition rewards, Silk Snare telegraph and Rift Siege binding are present.
+- Placeholder/dummy/temp/test-texture filename scan returns zero.
+- This remains source/static validation; Bedrock import/content-log/render/combat/multiplayer runtime QA is still release-stage validation.
