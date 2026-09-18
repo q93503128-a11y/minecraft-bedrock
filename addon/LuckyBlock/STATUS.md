@@ -90,3 +90,14 @@ Multi-source integration validation:
 - Warped Clam spawn eligibility is explicitly gated by the persistent first-Ender-Dragon world property.
 - Both custom enemies have Lucky-specific fragment drop tables.
 - No recolored vanilla entity or placeholder enemy model is used.
+
+
+Static audit after 0.5.0 enemy integration:
+- BP/RP versions both resolve to 0.5.0; RP pack_scope remains world.
+- Vendor registry: 5 pinned external sources, 22 asset records, 21 unique content IDs.
+- No duplicate vendor content IDs, duplicate explicit target ownership or missing explicit target files were found.
+- main.js and integrations/inhabitants.js pass JavaScript syntax parsing; inhabitants runtime is imported by main.js.
+- lb:impaler behavior/client identifiers match, geometry reference resolves, texture exists, all 7 imported animation identifiers resolve, and a natural spawn rule exists.
+- lb:warped_clam behavior/client identifiers match, geometry reference resolves, texture exists and all 4 imported animation identifiers resolve.
+- Warped Clam intentionally has no normal spawn rule; its runtime spawn path is guarded by lb:post_dragon_unlocked.
+- Inhabitants original combat sound definitions resolve for Impaler scream/spike and Warped Clam open/hit.
