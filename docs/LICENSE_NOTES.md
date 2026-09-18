@@ -72,3 +72,11 @@ A source's top-level license does not override restrictions attached to embedded
 - Direct reused material is the source geometry and each model's embedded texture.
 - The backpack source's three inverted duplicate/backface elements are not treated as independent physical cuboids in Bedrock entity geometry; the seven physical cuboids are ported and the conversion boundary is documented.
 - Wearable slots, protection/durability, set effects, multiplayer link logic and Lucky reward weights are project-owned additions.
+
+
+## Fortune Gallery composition note — 0.27.0
+- No new third-party asset license enters the project in this milestone.
+- Physical targets reuse the already-cleared Loy's Goodies CC0 Vase asset at the pinned `afbb7695b09de0ed8ee3aa97732ff7c3d367520c` source.
+- The optional Sharpshooter reward reuses the already-cleared Loy's Goodies CC0 Storm Longbow.
+- Arena materials are vanilla Minecraft content and projectile-hit handling is implemented against the documented stable `@minecraft/server` API.
+- Fortune Gallery structure layout, scoring, target reset, trial-ammo rules, multiplayer contribution tracking and reward thresholds are Lucky-owned gameplay.

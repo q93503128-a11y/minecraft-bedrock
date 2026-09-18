@@ -269,3 +269,11 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Explorer Hat preserves all 7 source cubes. The Field Pack source contains 7 physical cuboids plus 3 inverted duplicate/backface elements; the Bedrock attachable ports the 7 physical cuboids and relies on entity rendering rather than duplicating inverted Java-block backfaces.
 - Both embedded 32x32 source PNGs are imported unchanged.
 - Lucky-owned additions: wearable slots, low protection/durability balance, Epic bundle binding, full-kit Night Vision/Speed, and the 12-block multiplayer Haste link between separately evaluated full-kit wearers.
+
+
+### Fortune Gallery composition — 0.27.0
+- No new third-party asset source is introduced by this milestone.
+- The gallery's twelve physical targets reuse the already-cleared Loy's Goodies CC0 `230217_vase.bbmodel` integration (`lb:reward_vase`).
+- The Sharpshooter completion reward reuses the already-cleared Loy's Goodies CC0 Storm Longbow integration.
+- Projectile detection uses the stable Mojang `@minecraft/server` `world.afterEvents.projectileHitBlock` API. No copied third-party minigame runtime is bundled.
+- Arena construction uses final vanilla Minecraft blocks; no temporary target model, placeholder art or project-drawn substitute is added.

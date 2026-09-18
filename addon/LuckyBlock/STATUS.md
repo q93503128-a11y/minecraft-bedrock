@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.26.0 Explorer Field Kit multiplayer-aware utility armor
+Milestone: 0.27.0 Fortune Gallery cooperative projectile minigame
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -33,7 +33,7 @@ Implemented:
 - Script syntax audit passes for main.js, acquisition.js and reward_behaviors.js.
 
 Still not complete:
-1. much larger reward library, especially more minigames, additional wearable/accessory archetypes and more specialized utility/combat outcomes;
+1. much larger reward library, especially additional minigame variants, wearable/accessory archetypes and more specialized utility/combat outcomes;
 2. more structures, traps, chained Lucky events, dungeons and additional minigames;
 3. more pre-dragon encounter breadth, especially miniboss families and exploration structures;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
@@ -584,4 +584,33 @@ Static audit after 0.26.0:
 - Field Pack source/target texture Git blob SHA is `210a555c2b69cd0cc432d8d17c4b4044755837e2`.
 - Multiplayer-static checks confirm per-player full-kit detection, same-dimension filtering, self-exclusion, 12-block link range and linked Haste path.
 - Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- This remains source/static validation only; stable Bedrock runtime QA is still pending.
+
+
+0.27.0 Fortune Gallery:
+- Added a second dedicated Lucky minigame family, mechanically separate from Fortune Relay's timed traversal/maze play.
+- Epic Lucky Blocks can now create a permanent 19x21 projectile gallery with a final smooth-stone/andesite/copper/deepslate arena and twelve real `lb:reward_vase` targets.
+- The target visual is the already-vendored Loy's Goodies CC0 Vase model/texture; no temporary target mesh or project-drawn target texture was introduced.
+- Three target rows increase both distance and elevation: four near, four middle and four far/high targets.
+- Start condition is a bounded south firing line rather than a broad arena-radius trigger.
+- Each attempt lasts 45 seconds and resets the twelve targets on timeout; the persistent structure remains available for immediate retry until the event expires.
+- Every player on the start line receives 24 snowballs. Players joining an active attempt receive 16 snowballs once, so multiplayer participation does not depend on one player's inventory.
+- Stable `world.afterEvents.projectileHitBlock` detection counts only snowballs that actually hit an unbroken gallery Vase.
+- A global 12-target hit mask prevents two simultaneous projectiles from scoring the same target twice.
+- `scoreByPlayer` records each participant independently. Dimension compatibility and start-line bounds are checked explicitly; no single global player owner/cooldown controls the event.
+- Manually broken/unexpectedly missing unhit targets are restored by the event tick, so block-breaking does not bypass projectile scoring.
+- Completion gives 4-5 Epic Fragments + one Rare Lucky Block. Three or fewer misses also gives 32 arrows. Clearing in 25 seconds or less with at most one miss grants the already-cleared Storm Longbow as a Sharpshooter bonus.
+- Epic weight 6 is funded by reducing repeated generic/utility slices; total Epic weight remains exactly 100.
+- No new external runtime dependency is added. The existing vendored-merge architecture remains one BP + one RP under the `lb` namespace.
+- Actual Bedrock projectile timing, simultaneous-hit ordering, block restoration, multiplayer joins and balance remain P8 runtime QA items.
+
+Static audit after 0.27.0:
+- BP/RP manifests and mutual dependencies resolve to 0.27.0; @minecraft/server remains 2.9.0.
+- `pre_dragon_events.js` and `reward_registry.js` parse successfully after ESM import/export stripping.
+- Fortune Gallery is registered in start routing, site routing, persisted tick dispatch and the Epic reward registry.
+- Static checks resolve twelve target offsets, 900-tick / 45-second attempts, timeout reset, target restoration, mid-run ammo grants, per-player scoring, duplicate-hit masking and the precision bonus path.
+- Stable Creator documentation confirms `ProjectileHitBlockAfterEvent` exposes projectile, optional source, dimension and `getBlockHit()`, and that `world.afterEvents.projectileHitBlock` is the stable signal used here.
+- Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- Vendor inventory remains unchanged at 10 sources / 46 asset records / 44 unique content IDs because this milestone recombines already-cleared production assets rather than importing a new source.
+- Placeholder/dummy/temp target assets added by this milestone: zero.
 - This remains source/static validation only; stable Bedrock runtime QA is still pending.

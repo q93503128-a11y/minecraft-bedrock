@@ -472,3 +472,37 @@ Integration architecture:
 - runtime lives in its own `loys_explorer_kit.js` module;
 - the final pack remains one BP + one RP with mutual dependencies and no external add-on dependency;
 - this follows the project's established multi-add-on merge pattern: isolate provenance and logic by source while merging licensed content into a single distributable namespace.
+
+
+## Fortune Gallery — 0.27.0
+
+Status: active Epic pre-dragon cooperative projectile minigame.
+
+External production assets reused:
+- twelve targets use the existing Loy's Goodies CC0 `230217_vase.bbmodel` port as `lb:reward_vase`;
+- the precision-completion reward can grant the existing Loy's Goodies CC0 Storm Longbow;
+- existing imported Obsidilith/Slasher production FX and stable vanilla sounds provide hit/finish feedback;
+- no new temporary target art or project-drawn target model is introduced.
+
+Arena/gameplay:
+- permanent 19x21 final-material shooting gallery;
+- 12 Vase targets in three rows of increasing distance/elevation;
+- bounded south firing line starts a 45-second attempt;
+- every starting participant receives 24 trial snowballs; later entrants receive 16 once;
+- stable `ProjectileHitBlockAfterEvent` data supplies the projectile, optional source player, hit dimension and block hit information;
+- only snowball hits on an unhit target score;
+- a shared 12-bit target mask prevents duplicate scoring while `scoreByPlayer` keeps participant contribution separate;
+- unhit Vase targets are restored if manually broken or otherwise removed;
+- timeout restores all targets and permits immediate retry while the persistent event remains active;
+- completion: 4-5 Epic Fragments + one Rare Lucky Block;
+- precision: <=3 misses adds 32 arrows;
+- Sharpshooter: <=25 seconds and <=1 miss adds one Storm Longbow.
+
+Multiplayer boundary:
+- target progress is intentionally shared because the arena is cooperative;
+- contribution counts are player-keyed;
+- start/join ammunition is granted per player;
+- state is stored in the existing persisted event record rather than process-global player variables;
+- simultaneous hits cannot award the same Vase twice because the bit is set before state is persisted after each accepted hit.
+
+This expands the minigame category without cloning Fortune Relay's route/checkpoint mechanic and without creating a new visual design internally.
