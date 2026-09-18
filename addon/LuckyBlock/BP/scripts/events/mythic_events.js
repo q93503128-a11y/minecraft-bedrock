@@ -320,6 +320,12 @@ function tickSiege(state, dimension) {
 function tickRain(state, dimension) {
   state.elapsed = (state.elapsed ?? 0) + TICK_STEP;
 
+  if (state.elapsed > 24000) {
+    cleanupEnemies(state, dimension);
+    messageNear(dimension, state.center, "§8[신화 럭키] 럭키 레인이 소멸했습니다.");
+    return true;
+  }
+
   if ((state.stage ?? 0) === 0) {
     state.stage = 1;
     state.nextPulse = 0;
@@ -346,10 +352,6 @@ function tickRain(state, dimension) {
     return true;
   }
 
-  if (state.elapsed > 24000) {
-    cleanupEnemies(state, dimension);
-    return true;
-  }
   return false;
 }
 
