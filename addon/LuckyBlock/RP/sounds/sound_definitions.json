@@ -1,0 +1,41 @@
+{
+  "format_version": "1.14.0",
+  "sound_definitions": {
+    "lb.impaler.scream": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/impaler_scream",
+          "stream": false
+        }
+      ]
+    },
+    "lb.impaler.spike": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/impaler_spike",
+          "stream": false
+        }
+      ]
+    },
+    "lb.warped_clam.open": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/clam_open",
+          "stream": false
+        }
+      ]
+    },
+    "lb.warped_clam.hit": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/clam_hit",
+          "stream": false
+        }
+      ]
+    }
+  }
+}
