@@ -28,9 +28,34 @@ First-kill grant:
 
 This is the transition from part one into the late-game content pool.
 
+## Fishing — 0.14.0
+
+Fishing now uses an event-based hook-lifecycle adapter derived from MIT-licensed MinecraftCustomEvents rather than granting rewards merely because a fishing rod was clicked.
+
+A catch is eligible only when:
+- a fishing-rod use is paired with an actual spawned `minecraft:fishing_hook`;
+- that hook is observed in water;
+- the hook is removed and an actual newly spawned item entity is observed at the catch point.
+
+Empty reel-ins therefore do not count. Simultaneous player casts are paired by dimension and nearest same-tick hook/cast position.
+
+Normal successful catch rolls:
+- Common Fragment: 10%
+- Rare Fragment: 1.2%
+- Epic Fragment: 0.10%
+- Post-dragon Legendary Fragment: 0.02%
+
+Vanilla treasure-category catches (bow, enchanted book, fishing rod, name tag, nautilus shell, saddle):
+- Common Fragment: 25%, 1–2
+- Rare Fragment: 5%
+- Epic Fragment: 0.8%
+- Post-dragon Legendary Fragment: 0.12%
+
+There is still no repeat-action probability decay.
+
 ## Deferred acquisition channels
 
-Fishing and block-container chest discovery are not faked through unreliable heuristics. They remain required work and will be attached using a robust implementation rather than temporary detection.
+No core acquisition channel from the canonical list is intentionally deferred after 0.14.0. Future work may still rebalance probabilities after real-game telemetry.
 
 
 ## Exploration containers — 0.4.0

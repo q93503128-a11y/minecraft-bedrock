@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.13.0 Rift Vault Mythic dungeon
+Milestone: 0.14.0 robust fishing acquisition
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -33,11 +33,11 @@ Implemented:
 - Script syntax audit passes for main.js, acquisition.js and reward_behaviors.js.
 
 Still not complete:
-1. robust fishing acquisition;
-2. much larger reward library, especially true held weapons, ranged weapons, armor, pets and mounts;
-3. more structures, traps, chained Lucky events, dungeons and minigames;
+1. much larger reward library, especially true held weapons, ranged weapons, armor, pets and mounts;
+2. more structures, traps, chained Lucky events, dungeons and minigames;
+3. more pre-dragon encounter/event/structure breadth;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
-5. boss mechanics/phases/telegraphs and late-game stat rebalance;
+5. tier-specific opening presentation plus fusion expected-value/catalyst tuning;
 6. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
 8. refreshed packaged .mcaddon after the next packaging checkpoint.
@@ -273,3 +273,14 @@ Static audit after 0.13.0 Rift Vault integration:
 - Integration registry remains at 9 external sources / 31 asset records / 30 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
 - Repository placeholder/dummy/temp/test-texture filename scan returns zero.
 - Source/static validation is complete for this milestone; Bedrock import/content-log/render/combat/multiplayer runtime QA has not yet been performed.
+
+
+0.14.0 fishing acquisition milestone:
+- Closed the canonical fishing acquisition gap using an adapted MIT-licensed MinecraftCustomEvents hook-lifecycle implementation pinned to `7321663e75d501adee961d60bc346afc3341b449`.
+- Fishing rewards are not granted on rod use alone. The adapter requires a paired fishing hook, observes that hook entering water, and requires a real spawned item at hook removal.
+- Same-tick item-use/entity-spawn ordering and simultaneous multiplayer casts are explicitly paired instead of relying on one global hook cache.
+- Empty reel-ins do not qualify.
+- Normal catch rolls: 10% Common Fragment, 1.2% Rare, 0.10% Epic and post-dragon 0.02% Legendary.
+- Vanilla treasure catches receive a higher risk/time reward profile: 25% Common (1–2), 5% Rare, 0.8% Epic and post-dragon 0.12% Legendary.
+- No anti-farming decay was added.
+- Full upstream MIT license/provenance is bundled and the source-to-target code mapping is registered.

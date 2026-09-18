@@ -166,3 +166,19 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
   - the original 40-channel / 200-keyframe WALK animation.
 - The source entity's actual implemented combat is fast, high-knockback melee. Its `RangedAttackMob` method is empty upstream, so this project does **not** present a ranged projectile as source-original behavior.
 - Lucky-specific addition: a telegraphed Silk Snare zone reusing already-vendored BOMD indicator/burst particles; this is a project-side late-game elite mechanic.
+
+
+## MinecraftCustomEvents — fishing event adapter
+- Source: https://github.com/yuki2825624/MinecraftCustomEvents
+- Creator: yuki2825624
+- Reviewed commit: `7321663e75d501adee961d60bc346afc3341b449`
+- License: MIT.
+- Full reviewed MIT text is included at `THIRD_PARTY_LICENSES/MINECRAFT_CUSTOM_EVENTS_MIT.txt`.
+- Adapted source: `scripts/player/fish.js`.
+- Preserved idea: associate a fishing-hook lifecycle with the casting player, require the hook to have entered water, and only emit a catch when a real item entity is produced at the hook's removal.
+- Lucky port changes:
+  - removes the upstream custom EventSignal dependency;
+  - removes deprecated `isValid()` polling;
+  - handles either item-use/entity-spawn ordering;
+  - matches simultaneous multiplayer casts by dimension and nearest same-tick cast;
+  - tracks recent item spawns so reeling an empty hook does not count as a catch.

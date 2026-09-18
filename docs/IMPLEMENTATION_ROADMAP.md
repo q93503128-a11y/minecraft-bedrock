@@ -15,7 +15,7 @@ Exit condition: no placeholder visuals anywhere in the first importable pack.
 
 ## P2 — Acquisition and opening core
 - Register five Lucky Block tiers and fragment items/blocks.
-- Hook acquisition sources: mining, logging, farming, fishing, mob kills, exploration/chests, elites and bosses.
+- Hook acquisition sources: mining, logging, farming, fishing, mob kills, exploration/chests, elites and bosses. (implemented; fishing completed in 0.14.0)
 - No probability decay from repeating an activity.
 - Implement weighted opening dispatcher by tier.
 - Add tier-specific opening sound/particle presentation.

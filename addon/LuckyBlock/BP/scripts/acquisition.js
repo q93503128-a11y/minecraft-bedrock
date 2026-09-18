@@ -1,4 +1,5 @@
 import { world, ItemStack } from "@minecraft/server";
+import { subscribeFishingCatch } from "./integrations/minecraft_custom_events_fishing.js";
 
 const POST_DRAGON_KEY = "lb:post_dragon_unlocked";
 
@@ -254,4 +255,34 @@ world.afterEvents.blockContainerOpened.subscribe((event) => {
   if (Math.random() < 0.012) {
     spawnReward(event.dimension, location, "lb:common_lucky_block", 1, 1);
   }
+});
+
+
+const FISHING_TREASURE = new Set([
+  "minecraft:bow",
+  "minecraft:enchanted_book",
+  "minecraft:fishing_rod",
+  "minecraft:name_tag",
+  "minecraft:nautilus_shell",
+  "minecraft:saddle"
+]);
+
+subscribeFishingCatch(({ player, dimension, location, itemStack }) => {
+  if (!player || !itemStack) return;
+
+  const postDragon = world.getDynamicProperty(POST_DRAGON_KEY) === true;
+  const treasure = FISHING_TREASURE.has(itemStack.typeId);
+
+  if (treasure) {
+    rollReward(dimension, location, 0.25, "lb:common_fragment", 1, 2);
+    rollReward(dimension, location, 0.050, "lb:rare_fragment", 1, 1);
+    rollReward(dimension, location, 0.0080, "lb:epic_fragment", 1, 1);
+    if (postDragon) rollReward(dimension, location, 0.0012, "lb:legendary_fragment", 1, 1);
+    return;
+  }
+
+  rollReward(dimension, location, 0.10, "lb:common_fragment", 1, 1);
+  rollReward(dimension, location, 0.012, "lb:rare_fragment", 1, 1);
+  rollReward(dimension, location, 0.0010, "lb:epic_fragment", 1, 1);
+  if (postDragon) rollReward(dimension, location, 0.0002, "lb:legendary_fragment", 1, 1);
 });

@@ -96,6 +96,16 @@
       "licenseFile": "THIRD_PARTY_LICENSES/SLAYERS_BEASTS_MIT.txt",
       "sourcePlatform": "Minecraft Java",
       "portTarget": "Minecraft Bedrock / @minecraft/server 2.9.0"
+    },
+    "minecraft_custom_events": {
+      "url": "https://github.com/yuki2825624/MinecraftCustomEvents",
+      "license": "MIT",
+      "author": "yuki2825624",
+      "reviewedRef": "main",
+      "reviewedCommit": "7321663e75d501adee961d60bc346afc3341b449",
+      "integrationMode": "vendored",
+      "attributionRequired": true,
+      "licenseFile": "THIRD_PARTY_LICENSES/MINECRAFT_CUSTOM_EVENTS_MIT.txt"
     }
   },
   "assets": [
@@ -816,6 +826,18 @@
       "contentId": "lb:tyrachnid",
       "integrationModule": "BP/scripts/integrations/slayers_beasts_tyrachnid.js",
       "modification": "Original 43-part / 90-cube Java model and 40-channel WALK animation are converted to Bedrock coordinates; original texture is vendored unchanged. Source melee stats/large-body identity are Lucky-rebalanced. Upstream RangedAttackMob hook is empty, so the telegraphed Silk Snare is explicitly Lucky-owned and reuses already-vendored BOMD indicator/burst particles."
+    },
+    {
+      "key": "minecraft_custom_events_fishing",
+      "source": "minecraft_custom_events",
+      "upstream": [
+        "scripts/player/fish.js"
+      ],
+      "targets": [
+        "BP/scripts/integrations/minecraft_custom_events_fishing.js"
+      ],
+      "integrationModule": "BP/scripts/integrations/minecraft_custom_events_fishing.js",
+      "modification": "The upstream fishing-hook lifecycle/custom-event pattern is adapted for @minecraft/server 2.9.0: custom EventSignal dependency removed, deprecated isValid() polling removed, hook/cast matching hardened for same-tick ordering and multiplayer, and catch confirmation still requires an actual spawned item near a water-entered fishing hook."
     }
   ]
 }
