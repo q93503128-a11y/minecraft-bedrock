@@ -36,7 +36,7 @@ Still not complete:
 1. robust fishing acquisition;
 2. much larger reward library, especially true held weapons, ranged weapons, armor, pets and mounts;
 3. more structures, traps, chained Lucky events, dungeons and minigames;
-4. post-dragon custom normal mobs/elites/minibosses/bosses;
+4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
 5. boss mechanics/phases/telegraphs and late-game stat rebalance;
 6. more Mythic dungeon/structure packages beyond the implemented set/invasion/Lucky Rain outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
@@ -209,3 +209,16 @@ Static audit after 0.8.0 Slasher integration:
 - Habitat spawning prefers vegetation-heavy grass/mud/moss/podzol surfaces after the Dragon gate and caps nearby Mantis density at 3.
 - Rift Siege now uses Mantis reinforcements in the first three waves.
 - Kill rewards: 45% Epic Fragment (1–2), 8% Legendary Fragment, 0.2% Mythic Fragment.
+
+
+Static audit after 0.11.0 Mantis integration:
+- BP/RP manifests and mutual pack dependencies all resolve to 0.11.0.
+- Full repository tree scan completed with no truncated tree result.
+- Integration registry resolves 9 external sources / 30 asset records / 29 unique content IDs with no duplicate explicit target ownership or missing explicit target files.
+- `main.js`, `acquisition.js`, `events/mythic_events.js` and `integrations/slayers_beasts_mantis.js` pass JavaScript syntax parsing after module-import stripping.
+- `lb:mantis` behavior/client identifiers match; client geometry, all four animation identifiers and the locomotion controller resolve.
+- Converted Mantis geometry contains all 25 parsed upstream source parts; every animation bone target resolves to an existing converted bone.
+- Original Mantis PNG plus ambient/hurt/death OGG target files and the full Slayers-Beasts MIT license are present.
+- Runtime import, post-dragon gate, vegetation habitat selection, acquisition drops and three Rift Siege Mantis bindings are present.
+- No placeholder/dummy/temp/test-texture filename is present under the Lucky Block source tree.
+- This is source/static validation only; current stable Bedrock import, content-log, render, combat-balance and multiplayer runtime QA remain release-stage work.
