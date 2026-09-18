@@ -217,3 +217,10 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Source armor protection profile is retained exactly at helmet/chest/legs/boots = 1/4/3/2.
 - Lucky modification: durability and repair values are raised so the set works as persistent Lucky gear rather than disposable spell output.
 - The full-set **Aegis Ward** is Lucky-owned behavior inspired by Tomemancy's original Aegis spell: after 6 seconds without taking damage, the equipped full set can recharge Absorption II for 8 seconds on a 10-second ward cycle. This behavior is not claimed to be source-original.
+
+
+### Wudu Binder
+- Source: Slayers-Beasts / InvictusSlayer / MIT, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Direct reuse/adaptation: original Wudu model, CRAWL animation and original oak Wudu texture.
+- Upstream source currently contains `WuduGrabGoal`, but `canUse()` returns false and no functional grab AI is implemented there.
+- Lucky therefore does **not** attribute the implemented grasp mechanic to upstream. The 0.9-second telegraphed pull/slow attack and nearby-ally Resistance aura are Lucky-owned post-dragon mechanics added to fill the missing control/support ecosystem role.

@@ -57,7 +57,8 @@ export const weightedPools = {
 };
 
 weightedPools.legendary = [
-  { weight: 28, kind: "fragments", id: "lb:legendary_fragment", min: 2, max: 4, source: "core" },
+  { weight: 20, kind: "fragments", id: "lb:legendary_fragment", min: 2, max: 4, source: "core" },
+  { weight: 8, kind: "entity", id: "lb:wudu_binder", nameTag: "Wudu Binder", source: "slayers_beasts", requiresPostDragon: true },
   { weight: 12, kind: "entity", id: "lb:tyrachnid", nameTag: "Tyrachnid Elite", source: "slayers_beasts", requiresPostDragon: true },
   { weight: 20, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
   { weight: 16, kind: "item", id: "lb:slasher", source: "slasher_v1", requiresPostDragon: true },

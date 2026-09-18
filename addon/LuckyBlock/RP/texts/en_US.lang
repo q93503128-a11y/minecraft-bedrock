@@ -59,3 +59,5 @@ item.lb:tomemancy_mystical_helmet.name=§dMystical Helmet§r
 item.lb:tomemancy_mystical_chestplate.name=§dMystical Chestplate§r
 item.lb:tomemancy_mystical_leggings.name=§dMystical Leggings§r
 item.lb:tomemancy_mystical_boots.name=§dMystical Boots§r
+
+entity.lb:wudu_binder.name=Wudu Binder

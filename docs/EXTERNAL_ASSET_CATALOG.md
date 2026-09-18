@@ -296,3 +296,28 @@ Lucky role:
 - ward presentation reuses already-cleared amethyst sound and Obsidilith indicator particle rather than introducing temporary FX.
 
 The Aegis Ward is a Lucky-owned gameplay adaptation inspired by the source Aegis spell. It is not attributed to upstream armor behavior.
+
+
+## Slayers-Beasts Wudu Binder — 0.21.0
+
+Status: active post-dragon control/support enemy. License: MIT. Pinned upstream: `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+
+Direct source payload:
+- original Wudu body/arm/finger geometry converted to Bedrock;
+- original CRAWL animation converted from Java keyframes;
+- original oak Wudu texture.
+
+Source fidelity boundary:
+- upstream attributes are 50 HP, 1 attack and 0.12 movement;
+- upstream defines a `WuduGrabGoal`, but that goal's `canUse()` is hardcoded false;
+- therefore no working source-original grab behavior is claimed.
+
+Lucky late-game role:
+- 520 HP / 20 melee / 0.18 movement / 78% knockback resistance;
+- post-dragon low-density wooded Overworld spawn, cap 1 within 96 blocks;
+- Legendary Lucky Block post-dragon encounter at 8 weight;
+- **Binding Grasp**: five-point 0.9-second telegraph, then 18 damage + Slowness II + pull if the player remains within the marked 3.25-block zone;
+- **Bark Ward**: every two seconds nearby Impaler/Mantis/Tyrachnid allies receive short Resistance I, making the Wudu a priority support target rather than another HP sponge;
+- modest Epic/Legendary/Mythic fragment kill rolls.
+
+The grasp and support aura are Lucky-owned mechanics and are intentionally documented as such.

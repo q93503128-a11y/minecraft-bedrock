@@ -39,7 +39,7 @@ Persist a world-level first-kill unlock. After that point, late-game spawn table
 ## P6 — Late game
 Port/rebuild verified high-quality enemies and bosses. Every major boss receives encounter mechanics: telegraphs, phases, vulnerability windows, mobility, area denial and/or adds. Raw HP inflation cannot be the primary difficulty mechanism.
 
-Implemented P6 slices: Bogre late-game miniboss, Obsidilith Mythic boss, End Warped Clam, Slayers-Beasts Mantis post-dragon normal predator and Slayers-Beasts Tyrachnid rare cave elite. Continue expanding role variety rather than adding raw boss HP.
+Implemented P6 slices: Bogre late-game miniboss, Obsidilith Mythic boss, End Warped Clam, Slayers-Beasts Mantis post-dragon predator, Tyrachnid rare cave elite, and Wudu Binder control/support enemy with a dodgeable pull plus ally ward. Continue expanding ranged/support/control and encounter-family variety rather than adding raw boss HP.
 
 ## P7 — Mythic outcomes
 Mythic Lucky Blocks award content packages: boss/event/dungeon/set/invasion/Lucky Rain-style experiences rather than merely one huge-stat item.

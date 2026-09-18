@@ -993,6 +993,28 @@
       ],
       "contentId": "lb:tomemancy_mystical_aegis_set",
       "modification": "Original Tomemancy Mystical Armor item icons, wearable texture and vanilla-humanoid attachable layout are directly reused under lb IDs. Source protection profile 1/4/3/2 is retained. Lucky increases durability/repairability for persistent gear and adds the documented full-set Aegis Ward recharge mechanic inspired by the source Aegis armor-replacement spell."
+    },
+    {
+      "key": "slayers_beasts_wudu_binder",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/Wudu.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/WuduModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/WuduAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/WuduRenderer.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/ent/wudu/oak.png"
+      ],
+      "targets": [
+        "BP/entities/wudu_binder.json",
+        "BP/scripts/integrations/slayers_beasts_wudu.js",
+        "RP/entity/wudu_binder.entity.json",
+        "RP/models/entity/wudu_binder.geo.json",
+        "RP/animations/wudu_binder.animation.json",
+        "RP/animation_controllers/wudu_binder.animation_controllers.json",
+        "RP/textures/entity/wudu_binder_oak.png"
+      ],
+      "contentId": "lb:wudu_binder",
+      "modification": "Original Wudu model, CRAWL animation and oak texture are ported from the MIT source. Upstream Wudu currently defines an empty WuduGrabGoal whose canUse() always returns false, so Lucky does not claim an upstream grab attack. The telegraphed grasp/pull and nearby ally Resistance aura are explicitly Lucky-owned post-dragon control/support mechanics."
     }
   ]
 }

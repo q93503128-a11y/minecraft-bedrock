@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.20.0 Fortune Relay Vault
+Milestone: 0.21.0 Wudu Binder late-game support
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -439,3 +439,15 @@ Static audit after 0.20.0 Fortune Relay integration:
 - Vendor registry remains 10 external sources / 39 asset records / 37 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
 - Placeholder/dummy/temp/test-texture filename scan remains zero.
 - Runtime QA is still required for real-world terrain site selection, checkpoint detection height tolerances, cooperative multiplayer timing and Bedrock persistence.
+
+
+0.21.0 Wudu Binder milestone:
+- Added `lb:wudu_binder` as the first dedicated post-dragon support/control normal-enemy role.
+- Direct visual source is the pinned Slayers-Beasts MIT Wudu: original 32-bone / 31-cube geometry, 30-channel / 148-keyframe CRAWL animation and original oak texture.
+- Source audit found the upstream `WuduGrabGoal.canUse()` hardcoded to false; the project explicitly does not mislabel Lucky's grasp as upstream behavior.
+- Lucky balance: 520 HP / 20 melee / 0.18 movement / 78% knockback resistance.
+- Binding Grasp marks a five-point target zone for 18 ticks, then deals 18 damage, Slowness II and a pull only if the player failed to dodge the marked area.
+- Bark Ward refreshes short Resistance I on nearby Impaler/Mantis/Tyrachnid allies, making target priority matter in mixed encounters.
+- Natural spawn is post-dragon only, low-density, wooded Overworld only, capped at one Wudu within 96 blocks.
+- Legendary pool adds Wudu at 8 weight while reducing the generic fragment slice by the same 8, so the full post-dragon Legendary weight total stays unchanged.
+- No placeholder asset or source-invented behavior claim was introduced.
