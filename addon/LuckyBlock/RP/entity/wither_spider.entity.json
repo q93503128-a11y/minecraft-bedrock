@@ -1,0 +1,33 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:wither_spider",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/wither_spider"
+      },
+      "geometry": {
+        "default": "geometry.lb.wither_spider"
+      },
+      "animations": {
+        "walk": "animation.lb.wither_spider.walk",
+        "locomotion": "controller.animation.lb.wither_spider.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#28222d",
+        "overlay_color": "#6e526f"
+      }
+    }
+  }
+}
