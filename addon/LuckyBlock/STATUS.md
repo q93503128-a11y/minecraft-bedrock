@@ -402,3 +402,15 @@ Static audit after 0.18.0 Mystical Aegis integration:
 - Added `docs/FUSION_EV_MODEL.md`. Because pets/events/bosses cannot be honestly scalarized, the simulation uses next-tier progression-currency EV and explicitly counts the unique reward rolls sacrificed by fusion.
 - Current catalyst cost is 8.1–10× the next-tier-fragment EV expected from opening the consumed source blocks, preserving opening as the content/variance route while fusion remains deterministic but expensive.
 - No new catalyst item or visual asset was introduced; destination-tier fragments are the catalysts.
+
+
+Static audit after 0.19.0 opening/fusion integration:
+- BP/RP manifests and mutual dependencies resolve to 0.19.0.
+- `main.js` passes JavaScript syntax parsing after import stripping.
+- All five tier presentation configs are bound to `openTier`; every referenced custom particle ID resolves to a committed production particle definition.
+- Referenced custom opening sounds (`slasher.critical`, Obsidilith indicator/prepare/burst) resolve in the committed sound definitions; Common/Rare also use stable vanilla sounds.
+- Four upward fusion recipes parse with exact 4+2 / 4+2 / 5+3 / 5+4 source+catalyst counts and never exceed the 3×3 crafting-table limit.
+- `docs/FUSION_EV_MODEL.md` records the progression-currency EV check: catalyst cost is approximately 9.60× / 10.00× / 10.00× / 8.13× the next-tier fragments expected from opening the consumed source blocks.
+- Vendor registry remains 10 external sources / 39 asset records / 37 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
+- Placeholder/dummy/temp/test-texture filename scan remains zero.
+- P2 source implementation is now treated as 96% complete; only real Bedrock runtime/balance QA remains for this phase.
