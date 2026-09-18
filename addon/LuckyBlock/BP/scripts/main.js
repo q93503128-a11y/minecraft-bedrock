@@ -1,6 +1,7 @@
 import { system, BlockPermutation, ItemStack } from "@minecraft/server";
 import "./acquisition.js";
 import "./reward_behaviors.js";
+import "./integrations/inhabitants.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 
 function chooseWeighted(pool) {

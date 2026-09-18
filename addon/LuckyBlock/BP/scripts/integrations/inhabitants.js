@@ -41,6 +41,8 @@ function runImpalerSpecials() {
       if (!target) continue;
       if (target.distanceSq <= 25 || target.distanceSq > 324) continue;
 
+      try { impaler.dimension.playSound("lb.impaler.spike", impaler.location, { volume: 1.0, pitch: 0.95 + Math.random() * 0.1 }); } catch {}
+      if (Math.random() < 0.22) { try { impaler.dimension.playSound("lb.impaler.scream", impaler.location, { volume: 1.0, pitch: 1.0 }); } catch {} }
       try { target.player.applyDamage(6); } catch {}
       shoveFrom(impaler, target.player, 0.55, 0.22);
     }
@@ -52,6 +54,7 @@ function runClamPulse() {
   for (const clam of end.getEntities({ type: "lb:warped_clam" })) {
     const target = nearestPlayer(clam, 8);
     if (!target) continue;
+    try { clam.dimension.playSound("lb.warped_clam.hit", clam.location, { volume: 1.1, pitch: 1.0 }); } catch {}
     try { target.player.applyDamage(10); } catch {}
     shoveFrom(clam, target.player, 1.15, 0.48);
   }
@@ -85,7 +88,10 @@ function trySpawnPostDragonClam() {
     const y = findEndGround(end, x, player.location.y, z);
     if (y === undefined) continue;
 
-    try { end.spawnEntity("lb:warped_clam", { x: x + 0.5, y, z: z + 0.5 }); } catch {}
+    try {
+      const clam = end.spawnEntity("lb:warped_clam", { x: x + 0.5, y, z: z + 0.5 });
+      end.playSound("lb.warped_clam.open", clam.location, { volume: 1.0, pitch: 1.0 });
+    } catch {}
   }
 }
 

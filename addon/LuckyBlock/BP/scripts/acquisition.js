@@ -136,6 +136,20 @@ world.afterEvents.entityDie.subscribe((event) => {
   const location = dead.location;
   const postDragon = world.getDynamicProperty(POST_DRAGON_KEY) === true;
 
+  if (typeId === "lb:impaler") {
+    rollReward(dimension, location, 0.70, "lb:rare_fragment", 1, 2);
+    rollReward(dimension, location, 0.15, "lb:epic_fragment", 1, 1);
+    if (postDragon) rollReward(dimension, location, 0.020, "lb:legendary_fragment", 1, 1);
+    return;
+  }
+
+  if (typeId === "lb:warped_clam") {
+    rollReward(dimension, location, 0.75, "lb:epic_fragment", 1, 2);
+    rollReward(dimension, location, 0.18, "lb:legendary_fragment", 1, 1);
+    rollReward(dimension, location, 0.015, "lb:mythic_fragment", 1, 1);
+    return;
+  }
+
   if (typeId === "minecraft:wither") {
     spawnReward(dimension, location, "lb:epic_lucky_block", 1, 1);
     rollReward(dimension, location, postDragon ? 0.30 : 0.15, "lb:legendary_fragment", 1, 2);
