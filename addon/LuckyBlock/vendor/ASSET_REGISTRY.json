@@ -1077,6 +1077,29 @@
       "contentId": "lb:storm_longbow",
       "integrationModule": "BP/scripts/integrations/loys_storm_longbow.js",
       "modification": "All four source draw-state models are converted into four bones in one Bedrock attachable (16/19/19/19 cubes preserved) and switched by stable query.item_in_use_duration. The shared embedded 32x32 bow_1.png is vendored unchanged. Charge timing, arrow consumption, raycast hit logic, damage/range tiers and piercing are Lucky-owned gameplay."
+    },
+    {
+      "key": "slayers_beasts_sky_damselfly",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/Damselfly.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/DamselflyModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/DamselflyAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/DamselflyRenderer.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/damselfly/blue.png"
+      ],
+      "targets": [
+        "BP/entities/sky_damselfly_mount.json",
+        "BP/scripts/integrations/slayers_beasts_damselfly.js",
+        "RP/entity/sky_damselfly_mount.entity.json",
+        "RP/models/entity/sky_damselfly_mount.geo.json",
+        "RP/animations/sky_damselfly_mount.animation.json",
+        "RP/animation_controllers/sky_damselfly_mount.animation_controller.json",
+        "RP/textures/entity/sky_damselfly_mount.png"
+      ],
+      "contentId": "lb:sky_damselfly_mount",
+      "integrationModule": "BP/scripts/integrations/slayers_beasts_damselfly.js",
+      "modification": "Source Damselfly 10-cube body/wing silhouette and four-wing FLY/PERCH animation data are converted to Bedrock; original blue texture is vendored unchanged. Lucky scales the model to mount size and adds post-dragon taming, riding, 3D air control, 30-second flight energy, dismount recharge and reward gating. Upstream flight/perch identity and fall-damage immunity are preserved; rideability/stamina are project-owned."
     }
   ]
 }

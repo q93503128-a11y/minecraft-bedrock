@@ -250,3 +250,12 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - The four original draw-state geometries are preserved as 16 / 19 / 19 / 19 cube stages in one Bedrock attachable.
 - All four source files share the same embedded 32x32 `bow_1.png`; that PNG is imported unchanged.
 - Lucky-owned additions: charge thresholds, arrow consumption, line-of-sight raycast combat, damage/range scaling, full-draw piercing, durability and reward-tier binding.
+
+
+### Slayers-Beasts Sky Damselfly Mount
+- Source: InvictusSlayer/Slayers-Beasts, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- License: MIT.
+- Directly reused/adapted: `Damselfly.java`, `DamselflyModel.java`, `DamselflyAnimation.java`, `DamselflyRenderer.java` and original `textures/entity/damselfly/blue.png`.
+- Source visual payload is 10 model cubes and four animated wing bones; the original blue PNG is vendored byte-identically.
+- Source behavior is a small 8 HP flying/perching ambient creature with 0.25 movement and 0.4 flying speed and no fall damage.
+- Lucky-owned additions: mount-scale conversion, 84 HP balance, taming/ownership, rider seat, 3D air controls, 30-second flight energy, exhaustion/forced landing, dismount recharge and post-Ender-Dragon Legendary reward binding.

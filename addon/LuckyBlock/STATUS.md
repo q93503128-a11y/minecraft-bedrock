@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.24.0 Storm Longbow four-stage charge weapon
+Milestone: 0.25.0 Sky Damselfly post-dragon flight mount
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -33,7 +33,7 @@ Implemented:
 - Script syntax audit passes for main.js, acquisition.js and reward_behaviors.js.
 
 Still not complete:
-1. much larger reward library, especially true held/ranged weapons, armor and mounts;
+1. much larger reward library, especially additional armor archetypes, minigames and more specialized utility/combat outcomes;
 2. more structures, traps, chained Lucky events, dungeons and additional minigames;
 3. more pre-dragon encounter breadth, especially miniboss families and exploration structures;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
@@ -536,3 +536,26 @@ Static audit after 0.24.0:
 - Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
 - Runtime-static checks confirm charge start/release/stop wiring, vanilla-arrow consumption, block/entity raycasts, durability use, 30-tick full draw, 26-damage max profile, 56-block max range and two additional pierced targets.
 - This remains source/static validation only; in-game Bedrock QA is still pending.
+
+
+0.25.0 Sky Damselfly flight mount:
+- Added `lb:sky_damselfly_mount` as the second real mount family and the first player-controlled flight mount.
+- Direct visual source is Slayers-Beasts MIT Damselfly: original 10-cube body/wing model, four-wing FLY/PERCH animation family and original blue texture. No temporary/model-generated stand-in is used.
+- The source renderer displays Damselfly at 0.8x; Lucky deliberately scales the source geometry to mount size while keeping the original silhouette and texture.
+- Source identity preserved: flying/perching behavior family and fall-damage immunity.
+- Lucky late-game role: 84 HP / 0.46 movement, one-player seat, post-Ender-Dragon Legendary-only reward and direct tame-to-opener binding.
+- Uses stable `minecraft:input_air_controlled` + `minecraft:movement.hover` for rider-controlled 3D movement. Ground/exhausted state falls back to `minecraft:input_ground_controlled`.
+- Flight energy is 600 ticks = 30 seconds. While ridden it drains at real tick rate; at zero, air control is removed and the mount must descend. Dismounted recharge is 20 energy every 10 ticks, restoring full energy in about 15 seconds.
+- Legendary weight 6 replaces the old duplicate Legendary Chainsaw slice, keeping total Legendary weight 122 while increasing reward breadth.
+- Runtime import, actual air-control feel, camera radius, collision, multiplayer riding and exhaustion landing are not claimed tested.
+
+Static audit after 0.25.0:
+- BP/RP manifests and mutual dependencies resolve to 0.25.0; @minecraft/server remains 2.9.0.
+- Seven changed/runtime-critical JSON files and three changed JavaScript files parse successfully.
+- Behavior/client/geometry IDs resolve consistently to the Sky Damselfly.
+- Converted geometry contains exactly 10 cubes; FLY animation targets exactly the four source wing bones.
+- Original `blue.png` and vendored texture share the exact Git blob SHA `6863770f5b36ea4736b18c4db907e294b921f5fb`.
+- Stable Creator references confirm `minecraft:input_air_controlled`, `minecraft:movement.hover`, `minecraft:rideable`, `minecraft:navigation.fly`, `minecraft:behavior.random_fly` and Script API `EntityRideableComponent.getRiders()`.
+- Source fall-immunity behavior is retained with a fall-only damage sensor.
+- Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- This remains source/static validation only; stable Bedrock runtime QA is still pending.

@@ -1,6 +1,6 @@
 # Lucky Block Completion Audit — 2026-09-18
 
-Baseline reviewed through the 0.24.0 Storm Longbow milestone.
+Baseline reviewed through the 0.25.0 Sky Damselfly flight-mount milestone.
 
 This document separates **source/gameplay implementation completeness** from **full-content vision** and **release readiness**. A single percentage without that separation would be misleading because the project already has a substantial runtime architecture but is intentionally targeting hundreds of materially different outcomes.
 
@@ -11,7 +11,7 @@ This document separates **source/gameplay implementation completeness** from **f
 | P0 Canon/legal inventory | 100% | Canon, license notes, external catalog, provenance registry and license bundle are established. |
 | P1 Real visual foundation | 85% | Five tiers/fragments use real licensed production assets and placeholder scans are clean; final in-game render/display QA is still missing. |
 | P2 Acquisition/opening core | 96% | Five tiers, weighted dispatcher, all canonical acquisition channels, tier-specific opening presentation, same-tier fragment crafting and EV-checked upward catalyst fusion are implemented. Remaining work is real-game balance/runtime QA. |
-| P3 Reward library | 70% | The library now covers utility/decor, melee, Mythic magic, pet, mount, burst ranged combat, a separate deep-draw/piercing Longbow archetype, wearable armor, non-combat minigame, staged miniboss/exploration and a deployable Auto-Turret family tied to defense gameplay. More armor archetypes, another mount family, more minigames and sheer outcome count remain thin. |
+| P3 Reward library | 73% | The library now covers utility/decor, melee, Mythic magic, pet, distinct ground and post-dragon flight mounts, burst ranged combat, a separate deep-draw/piercing Longbow archetype, wearable armor, non-combat minigame, staged miniboss/exploration and a deployable Auto-Turret family tied to defense gameplay. More armor archetypes, more minigames and sheer outcome count remain thin. |
 | P4 Pre-dragon encounters | 78% | Impaler, Irk, Awakened Grove/Ent, War Ant, Nether Wither Spider, Fortune Relay, Royal Anthill/Ant Queen and Fortune Bulwark now cover elite + pet + combat structure + mount + ranged/control + non-combat minigame + staged miniboss/exploration + deployable-assisted wave-defense roles. More independent miniboss, ranged, mount and exploration families remain sparse. |
 | P5 Ender Dragon gate | 95% | Persistent first-kill unlock and late-game gating are implemented; real-world Bedrock runtime persistence testing remains. |
 | P6 Late game | 72% | Bogre, Obsidilith, Warped Clam, Mantis, Tyrachnid and Wudu Binder now cover boss/miniboss, predator, elite and explicit support/control roles. More ranged families and encounter combinations remain. |
@@ -21,8 +21,8 @@ This document separates **source/gameplay implementation completeness** from **f
 ## Practical reading
 
 - Core systems / architecture: roughly **85%+**.
-- Full content vision from the canon: roughly **64–68%** because the target is hundreds of materially different rewards and broad category coverage.
-- Overall project against the complete roadmap after 0.24.0: roughly **78–82%**.
+- Full content vision from the canon: roughly **65–69%** because the target is hundreds of materially different rewards and broad category coverage.
+- Overall project against the complete roadmap after 0.25.0: roughly **79–83%**.
 - Release readiness: roughly **35%** at best until current Bedrock runtime/import/content-log/render/multiplayer tests are actually performed.
 
-The largest remaining work is not another boss with more HP. Fishing, Royal Anthill, deployable defense and now two mechanically distinct ranged archetypes are covered; the major remaining work is still content breadth: another mount family, broader armor archetypes, additional independent pre-dragon encounter families, more late-game encounter combinations, additional structures/dungeons/chained events, and then P8 real-game QA/packaging.
+The largest remaining work is not another boss with more HP. Fishing, Royal Anthill, deployable defense, two mechanically distinct ranged archetypes and both ground/flight mount roles are now covered; the major remaining work is still content breadth: broader armor archetypes, additional independent pre-dragon encounter families, more minigames, more late-game encounter combinations, additional structures/dungeons/chained events, and then P8 real-game QA/packaging.

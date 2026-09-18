@@ -11,7 +11,7 @@ This file records licensing decisions that affect Lucky Block production. It is 
 - CorvaeOboro minecraft_botania_pylon_crystal — CC0-1.0. Direct-use candidate for crystal geometry/texture language and Lucky Fragment production.
 - FrenchKrab mc-blockbench-models — CC BY 4.0. Direct use requires attribution; individual models still need IP/provenance screening before selection.
 - Team-Synapse-MC Inhabitants — MIT. Source contains model geometry, animations, textures, glow masks and gameplay logic for Bogre, Impaler and Warped Clam.
-- InvictusSlayer Slayers-Beasts — MIT. Active direct-use source after per-asset review for Mantis, Tyrachnid, Irk, Ent, Ant Soldier/War Ant, Wither Spider, Wudu and Ant Queen assets; Java AI is still reimplemented or explicitly separated when Lucky adds mechanics.
+- InvictusSlayer Slayers-Beasts — MIT. Active direct-use source after per-asset review for Mantis, Tyrachnid, Irk, Ent, Ant Soldier/War Ant, Wither Spider, Wudu, Ant Queen and Damselfly assets; Java AI is still reimplemented or explicitly separated when Lucky adds mechanics.
 - SigmundGranaas forgero — MIT. Candidate primarily for modular tool/weapon-system ideas and usable assets after per-file review.
 - PinkGoosik visuality — MIT. Useful for visual-effect implementation patterns; Java-specific logic must be recreated for Bedrock.
 
@@ -57,3 +57,10 @@ A source's top-level license does not override restrictions attached to embedded
 - Selected direct-use files: `230419_bow_1_0.bbmodel` through `230419_bow_1_3.bbmodel`.
 - The four original draw-state geometries and their single shared embedded texture are the external payload.
 - Charge thresholds, ammunition/durability handling, raycast combat, damage/range scaling and piercing are Lucky-owned additions.
+
+
+## Active Slayers-Beasts Sky Damselfly port — 0.25.0
+- Source: InvictusSlayer/Slayers-Beasts, reviewed commit `ffc1f6480a60598797c63150c0d0fe66b65697ff`, MIT.
+- Direct reused/adapted material is the Damselfly model, FLY/PERCH animation definitions, renderer scale/texture mapping reference and original blue texture.
+- The source is a non-rideable ambient flying/perching creature. Mount sizing, taming, rider controls, flight-energy limits, recharge and Legendary reward placement are Lucky-owned additions.
+- Source fall-damage immunity is preserved rather than reinterpreted as a Lucky ability.

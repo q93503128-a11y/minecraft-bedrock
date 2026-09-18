@@ -26,7 +26,7 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant mount, the Tomemancy Amethyst Repeater burst/finite-ammo ranged weapon, the full Tomemancy Mystical Aegis armor set, a Loy's Goodies Auto-Turret deployable combat-tool family, and the four-state Storm Longbow precision/charge/pierce ranged archetype. Fortune Bulwark binds the deployable into a real defense outcome. Broader armor archetypes, another mount family and more minigame families remain thin.
+Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant ground mount, the post-dragon Sky Damselfly 3D flight mount, the Tomemancy Amethyst Repeater burst/finite-ammo ranged weapon, the full Tomemancy Mystical Aegis armor set, a Loy's Goodies Auto-Turret deployable combat-tool family, and the four-state Storm Longbow precision/charge/pierce ranged archetype. Fortune Bulwark binds the deployable into a real defense outcome. Ground and flight mount roles are now both represented; broader armor archetypes and more minigame families remain thin.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.

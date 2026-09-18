@@ -411,3 +411,34 @@ Lucky combat role:
 - 640 durability, repairable with string or Epic Fragments.
 
 This is intentionally separated from the Amethyst Repeater: Repeater is fast three-shot pressure with dedicated charges; Storm Longbow is slow timing/precision with vanilla-arrow economy and reward for deep draw.
+
+
+## Slayers-Beasts Sky Damselfly Mount — 0.25.0
+
+Status: active post-Ender-Dragon Legendary mobility reward. License: MIT. Pinned upstream: `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+
+Direct source payload:
+- `DamselflyModel.java`: 10 total cubes across body + four wings;
+- `DamselflyAnimation.java`: FLY and PERCH states, with four animated wing bones;
+- `DamselflyRenderer.java`: blue/green/yellow texture mapping and source 0.8x render scale reference;
+- original `textures/entity/damselfly/blue.png`, vendored unchanged;
+- `Damselfly.java`: source behavior/attribute reference.
+
+Source fidelity boundary:
+- source Damselfly has 8 HP, 0.25 movement and 0.4 flying speed;
+- source identity is free flight, hover/wander and periodic perching;
+- source explicitly ignores fall damage;
+- source has no rider/tame/stamina gameplay.
+
+Lucky role:
+- source geometry is enlarged to mount scale without redesigning the silhouette;
+- 84 HP / 0.46 movement;
+- one-player tamed seat;
+- Legendary weight 6 and `requiresPostDragon=true`;
+- reward spawn is tamed to the Lucky Block opener;
+- rider movement uses the stable Bedrock air-input component for camera-directed 3D control;
+- 30 seconds of flight energy, then forced transition to non-air-controlled ground/exhausted movement;
+- energy recharges only while dismounted, taking about 15 seconds from empty to full;
+- source fall immunity is preserved so stamina exhaustion means forced landing rather than arbitrary fall-death.
+
+This deliberately replaces the duplicate Legendary Chainsaw reward slice at equal weight. It expands the mount family from one ground combat mount to a separate post-dragon aerial exploration/mobility archetype.
