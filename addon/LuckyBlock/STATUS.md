@@ -43,3 +43,11 @@ Still not complete:
 8. refreshed packaged .mcaddon after the next packaging checkpoint.
 
 No project-completion claim is made and no placeholder assets are intentionally included.
+
+
+Static audit after 0.4.0 source commit:
+- BP/RP manifest versions both resolve to 0.4.0.
+- main.js, acquisition.js and reward_behaviors.js all pass JavaScript syntax parsing after module-import stripping.
+- All 15 reward IDs referenced by weighted pools resolve to committed block JSON, Bedrock geometry, PNG texture and terrain-atlas entries.
+- First-open exploration hook exists and includes both player-placed exclusion and already-opened persistence.
+- Current stable API choices were checked against @minecraft/server 2.9.0 documentation.
