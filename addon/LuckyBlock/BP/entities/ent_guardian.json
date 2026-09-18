@@ -1,0 +1,71 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:ent_guardian",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "mob",
+          "lb_guardian",
+          "lb_ent"
+        ]
+      },
+      "minecraft:health": {
+        "value": 160,
+        "max": 160
+      },
+      "minecraft:attack": {
+        "damage": 14
+      },
+      "minecraft:movement": {
+        "value": 0.22
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "avoid_water": true,
+        "can_walk": true
+      },
+      "minecraft:collision_box": {
+        "width": 1.8,
+        "height": 3.4
+      },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.65
+      },
+      "minecraft:follow_range": {
+        "value": 24
+      },
+      "minecraft:nameable": {},
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 2,
+        "speed_multiplier": 1,
+        "track_target": true,
+        "reach_multiplier": 1.5
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 6,
+        "speed_multiplier": 0.75
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 12,
+        "probability": 0.06
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 8
+      }
+    }
+  }
+}

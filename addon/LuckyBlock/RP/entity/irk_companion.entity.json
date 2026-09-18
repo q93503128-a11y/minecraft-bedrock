@@ -1,0 +1,33 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:irk_companion",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/irk_companion"
+      },
+      "geometry": {
+        "default": "geometry.lb.irk_companion"
+      },
+      "animations": {
+        "walk": "animation.lb.irk_companion.walk",
+        "locomotion": "controller.animation.lb.irk_companion.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#5a4934",
+        "overlay_color": "#d5bf79"
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:ent_guardian",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/ent_guardian_oak"
+      },
+      "geometry": {
+        "default": "geometry.lb.ent_guardian"
+      },
+      "animations": {
+        "walk": "animation.lb.ent_guardian.walk",
+        "locomotion": "controller.animation.lb.ent_guardian.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#5d4b2f",
+        "overlay_color": "#5f8b43"
+      }
+    }
+  }
+}
