@@ -151,3 +151,17 @@ Static audit after 0.5.0 enemy integration:
 - Slasher is a post-Ender-Dragon Legendary reward only.
 - Bogre drops 1–2 Slasher Blades; Obsidilith drops 3–5, establishing a real repair loop.
 - Static compatibility search finds no remaining lc:, worldInitialize, deprecated isValid(), lowercase GameMode or dataDrivenEntityTrigger references inside the vendored Slasher integration.
+
+
+Static audit after 0.8.0 Slasher integration:
+- Slasher vendor source is pinned to commit 24887c71758cf11bba1f419ecdd70b651d2d7d94 under CC0-1.0.
+- Vendor registry records 61 Slasher target files; missing target count = 0.
+- All 10 vendored Slasher JavaScript modules parse successfully after module import/export stripping.
+- Item / attachable identifiers both resolve to lb:slasher.
+- FP geometry geometry.slasher.fp and TP geometry geometry.slasher.tp both resolve to imported geometry files.
+- Beam behavior/client entity pairs, beam geometry, render controller and all five Slasher particle definitions are present.
+- All 13 required Slasher sound-definition IDs resolve to imported original OGG files.
+- Original Slasher and Slasher Blade icons are registered in atlas.items.
+- Post-dragon Legendary reward gating for lb:slasher is active.
+- Bogre drops 1–2 Slasher Blades and Obsidilith drops 3–5.
+- No placeholder/dummy/test-texture filename is present in the Lucky Block source tree.
