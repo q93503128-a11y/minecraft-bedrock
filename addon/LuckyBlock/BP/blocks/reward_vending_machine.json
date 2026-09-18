@@ -5,6 +5,13 @@
       "identifier": "lb:reward_vending_machine",
       "menu_category": {
         "category": "items"
+      },
+      "states": {
+        "lb:uses_left": [
+          3,
+          2,
+          1
+        ]
       }
     },
     "components": {
@@ -15,11 +22,10 @@
           "render_method": "alpha_test"
         }
       },
-      "minecraft:collision_box": true,
-      "minecraft:selection_box": true,
       "minecraft:destructible_by_mining": {
         "seconds_to_destroy": 0.35
-      }
+      },
+      "lb:vending_machine": {}
     }
   }
 }

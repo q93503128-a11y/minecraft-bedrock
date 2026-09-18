@@ -4,16 +4,68 @@
   "padding": 8,
   "num_mip_levels": 4,
   "texture_data": {
-    "lb_common_lucky": { "textures": "textures/blocks/lb_common_lucky" },
-    "lb_fragment_mana": { "textures": "textures/blocks/lb_fragment_mana" },
-    "lb_crystal_natura": { "textures": "textures/blocks/lb_crystal_natura" },
-    "lb_crystal_gaia": { "textures": "textures/blocks/lb_crystal_gaia" },
-    "lb_ring_natura": { "textures": "textures/blocks/lb_ring_natura" },
-    "lb_ring_gaia": { "textures": "textures/blocks/lb_ring_gaia" },
-    "lb_reward_burger": { "textures": "textures/blocks/lb_reward_burger" },
-    "lb_reward_plunger": { "textures": "textures/blocks/lb_reward_plunger" },
-    "lb_reward_backpack": { "textures": "textures/blocks/lb_reward_backpack" },
-    "lb_reward_snow_globe": { "textures": "textures/blocks/lb_reward_snow_globe" },
-    "lb_reward_vending_machine": { "textures": "textures/blocks/lb_reward_vending_machine" }
+    "lb_common_lucky": {
+      "textures": "textures/blocks/lb_common_lucky"
+    },
+    "lb_fragment_mana": {
+      "textures": "textures/blocks/lb_fragment_mana"
+    },
+    "lb_crystal_natura": {
+      "textures": "textures/blocks/lb_crystal_natura"
+    },
+    "lb_crystal_gaia": {
+      "textures": "textures/blocks/lb_crystal_gaia"
+    },
+    "lb_ring_natura": {
+      "textures": "textures/blocks/lb_ring_natura"
+    },
+    "lb_ring_gaia": {
+      "textures": "textures/blocks/lb_ring_gaia"
+    },
+    "lb_reward_burger": {
+      "textures": "textures/blocks/lb_reward_burger"
+    },
+    "lb_reward_plunger": {
+      "textures": "textures/blocks/lb_reward_plunger"
+    },
+    "lb_reward_backpack": {
+      "textures": "textures/blocks/lb_reward_backpack"
+    },
+    "lb_reward_snow_globe": {
+      "textures": "textures/blocks/lb_reward_snow_globe"
+    },
+    "lb_reward_vending_machine": {
+      "textures": "textures/blocks/lb_reward_vending_machine"
+    },
+    "lb_reward_noodles": {
+      "textures": "textures/blocks/lb_reward_noodles"
+    },
+    "lb_reward_moai": {
+      "textures": "textures/blocks/lb_reward_moai"
+    },
+    "lb_reward_pc": {
+      "textures": "textures/blocks/lb_reward_pc"
+    },
+    "lb_reward_cctv": {
+      "textures": "textures/blocks/lb_reward_cctv"
+    },
+    "lb_reward_wrench": {
+      "textures": "textures/blocks/lb_reward_wrench"
+    },
+    "lb_reward_chainsaw": {
+      "textures": "textures/blocks/lb_reward_chainsaw"
+    },
+    "lb_reward_camera": {
+      "textures": "textures/blocks/lb_reward_camera"
+    },
+    "lb_reward_golden_hammer": {
+      "textures": "textures/blocks/lb_reward_golden_hammer"
+    },
+    "lb_reward_vase": {
+      "textures": "textures/blocks/lb_reward_vase"
+    },
+    "lb_reward_easel": {
+      "textures": "textures/blocks/lb_reward_easel"
+    }
   }
 }

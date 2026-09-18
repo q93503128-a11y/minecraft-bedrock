@@ -15,11 +15,10 @@
           "render_method": "alpha_test"
         }
       },
-      "minecraft:collision_box": true,
-      "minecraft:selection_box": true,
       "minecraft:destructible_by_mining": {
         "seconds_to_destroy": 0.35
-      }
+      },
+      "lb:open_backpack": {}
     }
   }
 }
