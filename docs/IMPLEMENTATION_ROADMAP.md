@@ -18,8 +18,8 @@ Exit condition: no placeholder visuals anywhere in the first importable pack.
 - Hook acquisition sources: mining, logging, farming, fishing, mob kills, exploration/chests, elites and bosses. (implemented; fishing completed in 0.14.0)
 - No probability decay from repeating an activity.
 - Implement weighted opening dispatcher by tier.
-- Add tier-specific opening sound/particle presentation.
-- Add fusion recipes and catalysts after expected-value simulation.
+- Tier-specific opening presentation implemented in 0.19.0 using already-vendored production particles/audio with increasing pulse/ring complexity by tier.
+- Upward fusion implemented in 0.19.0 after a progression-currency EV check: 4+2 / 4+2 / 5+3 / 5+4 source-block + next-tier-fragment catalyst recipes. See `docs/FUSION_EV_MODEL.md`.
 
 ## P3 — Reward library
 Build materially distinct outcomes in batches. Each batch must mix item, encounter and world-event categories instead of inflating count with stat/name variants.

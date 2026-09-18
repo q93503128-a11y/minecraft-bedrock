@@ -1,0 +1,44 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:recipe_shapeless": {
+    "description": {
+      "identifier": "lb:fuse_mythic_lucky_block"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "ingredients": [
+      {
+        "item": "lb:legendary_lucky_block"
+      },
+      {
+        "item": "lb:legendary_lucky_block"
+      },
+      {
+        "item": "lb:legendary_lucky_block"
+      },
+      {
+        "item": "lb:legendary_lucky_block"
+      },
+      {
+        "item": "lb:legendary_lucky_block"
+      },
+      {
+        "item": "lb:mythic_fragment"
+      },
+      {
+        "item": "lb:mythic_fragment"
+      },
+      {
+        "item": "lb:mythic_fragment"
+      },
+      {
+        "item": "lb:mythic_fragment"
+      }
+    ],
+    "result": {
+      "item": "lb:mythic_lucky_block",
+      "count": 1
+    }
+  }
+}

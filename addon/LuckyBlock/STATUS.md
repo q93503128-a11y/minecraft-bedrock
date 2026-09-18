@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.18.0 Mystical Aegis armor
+Milestone: 0.19.0 opening presentation + fusion
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -37,8 +37,7 @@ Still not complete:
 2. more structures, traps, chained Lucky events, dungeons and minigames;
 3. more pre-dragon encounter breadth, especially ranged enemies, miniboss families and exploration structures;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
-5. tier-specific opening presentation plus fusion expected-value/catalyst tuning;
-6. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
+5. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
 8. refreshed packaged .mcaddon after the next packaging checkpoint.
 
@@ -393,3 +392,13 @@ Static audit after 0.18.0 Mystical Aegis integration:
 - Vendor registry resolves 10 external sources / 39 asset records / 37 unique content IDs with no missing explicit targets or duplicate explicit target ownership.
 - Placeholder/dummy/temp/test-texture filename scan remains zero.
 - This remains source/static validation only; current stable Bedrock still needs actual equip rendering, armor protection, ward timing, multiplayer and balance QA.
+
+
+0.19.0 opening presentation + fusion milestone:
+- Closed the two remaining designed P2 feature gaps: tier-specific opening presentation and deterministic upward fusion.
+- Opening presentation now scales structurally by tier rather than recolor-only: Common spark pop; Rare spark + indicator; Epic summoning flame + indicator ring; Legendary burst + six-point ring + delayed wave; Mythic wave + eight-point ring + delayed burst/spark/wave sequence.
+- No opening FX asset was drawn or stubbed for this milestone. Presentation recombines already-vendored Slasher, Tomemancy and BOMD production particles/audio plus stable vanilla sounds.
+- Added four upward fusion recipes: 4 Common + 2 Rare Fragments -> Rare; 4 Rare + 2 Epic Fragments -> Epic; 5 Epic + 3 Legendary Fragments -> Legendary; 5 Legendary + 4 Mythic Fragments -> Mythic.
+- Added `docs/FUSION_EV_MODEL.md`. Because pets/events/bosses cannot be honestly scalarized, the simulation uses next-tier progression-currency EV and explicitly counts the unique reward rolls sacrificed by fusion.
+- Current catalyst cost is 8.1–10× the next-tier-fragment EV expected from opening the consumed source blocks, preserving opening as the content/variance route while fusion remains deterministic but expensive.
+- No new catalyst item or visual asset was introduced; destination-tier fragments are the catalysts.

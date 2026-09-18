@@ -32,6 +32,74 @@ function spawnAt(dimension, pos, id, count = 1) {
   dimension.spawnItem(new ItemStack(id, count), pos);
 }
 
+const OPEN_PRESENTATION = {
+  common: { sound: "random.pop", volume: 0.55, pitch: 1.22 },
+  rare: { sound: "break.amethyst_cluster", volume: 0.62, pitch: 1.08 },
+  epic: { sound: "slasher.critical", volume: 0.72, pitch: 1.0 },
+  legendary: { sound: "lb.obsidilith.spike_indicator", volume: 0.82, pitch: 0.94 },
+  mythic: { sound: "lb.obsidilith.prepare", volume: 0.95, pitch: 0.88 }
+};
+
+function particle(dimension, id, pos) {
+  try { dimension.spawnParticle(id, pos); } catch {}
+}
+
+function ring(dimension, id, pos, radius, count, yOffset = 0) {
+  for (let i = 0; i < count; i++) {
+    const a = Math.PI * 2 * i / count;
+    particle(dimension, id, {
+      x: pos.x + Math.cos(a) * radius,
+      y: pos.y + yOffset,
+      z: pos.z + Math.sin(a) * radius
+    });
+  }
+}
+
+function presentOpening(dimension, pos, tier) {
+  const cfg = OPEN_PRESENTATION[tier];
+  if (!cfg) return;
+  try { dimension.playSound(cfg.sound, pos, { volume: cfg.volume, pitch: cfg.pitch }); } catch {}
+
+  if (tier === "common") {
+    particle(dimension, "lb:slasher_spark_particle", pos);
+    ring(dimension, "lb:slasher_spark_particle", pos, 0.45, 3, 0.1);
+    return;
+  }
+
+  if (tier === "rare") {
+    ring(dimension, "lb:slasher_spark_particle", pos, 0.65, 4, 0.12);
+    particle(dimension, "lb:obsidilith_indicator", { x: pos.x, y: pos.y + 0.12, z: pos.z });
+    return;
+  }
+
+  if (tier === "epic") {
+    particle(dimension, "lb:tomemancy_flame_summoning", { x: pos.x, y: pos.y + 0.05, z: pos.z });
+    ring(dimension, "lb:obsidilith_indicator", pos, 0.85, 4, 0.1);
+    return;
+  }
+
+  if (tier === "legendary") {
+    particle(dimension, "lb:obsidilith_burst", { x: pos.x, y: pos.y + 0.2, z: pos.z });
+    ring(dimension, "lb:obsidilith_indicator", pos, 1.05, 6, 0.08);
+    system.runTimeout(() => {
+      particle(dimension, "lb:obsidilith_wave", { x: pos.x, y: pos.y + 0.1, z: pos.z });
+      try { dimension.playSound("lb.obsidilith.burst", pos, { volume: 0.62, pitch: 1.04 }); } catch {}
+    }, 4);
+    return;
+  }
+
+  particle(dimension, "lb:obsidilith_wave", { x: pos.x, y: pos.y + 0.08, z: pos.z });
+  ring(dimension, "lb:obsidilith_indicator", pos, 1.25, 8, 0.08);
+  system.runTimeout(() => {
+    particle(dimension, "lb:obsidilith_burst", { x: pos.x, y: pos.y + 0.3, z: pos.z });
+    ring(dimension, "lb:slasher_spark_particle", pos, 1.0, 8, 0.2);
+    try { dimension.playSound("lb.obsidilith.burst", pos, { volume: 0.85, pitch: 0.92 }); } catch {}
+  }, 4);
+  system.runTimeout(() => {
+    particle(dimension, "lb:obsidilith_wave", { x: pos.x, y: pos.y + 0.12, z: pos.z });
+  }, 8);
+}
+
 function openWeighted(dimension, pos, tier, player) {
   const reward = chooseWeighted(weightedPools[tier]);
   if (reward.kind === "fragments") {
@@ -86,6 +154,7 @@ function openTier(event, tier) {
   const dimension = event.dimension;
   const pos = { x: block.location.x + 0.5, y: block.location.y + 0.65, z: block.location.z + 0.5 };
   block.setPermutation(BlockPermutation.resolve("minecraft:air"));
+  presentOpening(dimension, pos, tier);
   if (weightedPools[tier]) openWeighted(dimension, pos, tier, event.player);
   else openFallback(dimension, pos, tier);
 }

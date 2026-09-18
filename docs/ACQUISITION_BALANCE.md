@@ -80,3 +80,18 @@ First-open rolls:
 - After the Ender Dragon gate, Legendary Fragment: 0.10%
 
 These rolls do not use repeat-action decay; the finite first-open rule represents exploration scarcity rather than punishment for repetition.
+
+
+## Upward Lucky Block fusion — 0.19.0
+
+The existing recipe of six same-tier fragments -> one same-tier Lucky Block remains unchanged.
+
+Deterministic upward fusion is now:
+- 4 Common Lucky Blocks + 2 Rare Fragments -> 1 Rare Lucky Block;
+- 4 Rare Lucky Blocks + 2 Epic Fragments -> 1 Epic Lucky Block;
+- 5 Epic Lucky Blocks + 3 Legendary Fragments -> 1 Legendary Lucky Block;
+- 5 Legendary Lucky Blocks + 4 Mythic Fragments -> 1 Mythic Lucky Block.
+
+The catalyst is always the destination tier's fragment, so no redundant catalyst item or temporary asset was introduced. The Legendary -> Mythic route is practically late-game-gated because normal Mythic Fragment supply begins at the first Ender Dragon transition and post-dragon rewards.
+
+The full progression-EV rationale lives in `docs/FUSION_EV_MODEL.md`.
