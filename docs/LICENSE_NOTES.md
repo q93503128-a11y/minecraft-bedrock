@@ -11,7 +11,7 @@ This file records licensing decisions that affect Lucky Block production. It is 
 - CorvaeOboro minecraft_botania_pylon_crystal — CC0-1.0. Direct-use candidate for crystal geometry/texture language and Lucky Fragment production.
 - FrenchKrab mc-blockbench-models — CC BY 4.0. Direct use requires attribution; individual models still need IP/provenance screening before selection.
 - Team-Synapse-MC Inhabitants — MIT. Source contains model geometry, animations, textures, glow masks and gameplay logic for Bogre, Impaler and Warped Clam.
-- InvictusSlayer Slayers-Beasts — MIT. Candidate pending per-asset extraction and Bedrock port review.
+- InvictusSlayer Slayers-Beasts — MIT. Active direct-use source after per-asset review for Mantis, Tyrachnid, Irk, Ent, Ant Soldier/War Ant, Wither Spider, Wudu and Ant Queen assets; Java AI is still reimplemented or explicitly separated when Lucky adds mechanics.
 - SigmundGranaas forgero — MIT. Candidate primarily for modular tool/weapon-system ideas and usable assets after per-file review.
 - PinkGoosik visuality — MIT. Useful for visual-effect implementation patterns; Java-specific logic must be recreated for Bedrock.
 

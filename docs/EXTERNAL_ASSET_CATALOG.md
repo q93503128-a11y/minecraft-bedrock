@@ -248,7 +248,7 @@ Direct source payload:
 Lucky role:
 - `lb:war_ant_mount`;
 - 90 HP / 12 melee / 0.38 movement / 60% knockback resistance;
-- Epic Lucky Block 10% outcome;
+- Epic Lucky Block 9% outcome;
 - spawned reward is tamed to the opener and its data-driven tame group is explicitly activated;
 - one-player seat with `minecraft:input_ground_controlled` and `minecraft:behavior.player_ride_tamed`;
 - follows/teleports to its owner while unmounted and defends its owner;

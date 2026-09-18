@@ -476,3 +476,17 @@ Static audit after 0.21.0 Wudu Binder integration:
 - Epic pool gives Royal Anthill 8 weight while reducing the generic Epic-fragment slice by 8, preserving the pre-existing total Epic weight of 100.
 - Fixed the pre-dragon event dispatcher regression that caused Fortune Relay states to complete without calling tickFortuneRelay().
 - Stable Bedrock runtime/import/render/collision/multiplayer behavior is not claimed tested by this source commit.
+
+
+Static audit after 0.22.0 Royal Anthill integration:
+- BP/RP manifests and mutual dependencies resolve to 0.22.0; @minecraft/server remains pinned to 2.9.0.
+- 10 changed/runtime-critical JSON files parse successfully.
+- main.js, reward_registry.js, pre_dragon_events.js and slayers_beasts_ant_queen.js pass JavaScript syntax parsing after ESM import/export stripping.
+- Queen behavior/client identifiers both resolve to lb:ant_queen; guard behavior/client identifiers both resolve to lb:ant_soldier_guard.
+- Converted Queen geometry contains 17 bones / 33 cubes; all 6 WALK animation bone targets resolve to geometry bones.
+- Original Slayers-Beasts wood_queen.png and the vendored Bedrock texture share the exact Git blob SHA 732ed3242e6c864365811e42c0e33b9f893d0d70.
+- The canonical integration audit passes: 10 external sources / 41 asset records / 39 unique content IDs, with no duplicate content IDs, duplicate explicit target ownership or missing explicit targets.
+- Reward-pool totals are unchanged from 0.21.0: Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100. Royal Anthill takes 8 Epic weight from the generic Epic-fragment slice.
+- Pre-dragon dispatch now explicitly calls tickFortuneRelay() for fortune_relay and tickRoyalAnthill() for royal_anthill.
+- Runtime BP/RP path scan and changed-runtime-text scan find no placeholder/dummy/temporary-asset markers.
+- This is source/static validation only. Stable Bedrock import/content-log/render, collision, combat timing, mount bonding and multiplayer behavior still require runtime QA.
