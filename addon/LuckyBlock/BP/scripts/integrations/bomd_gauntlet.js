@@ -219,7 +219,7 @@ mc.world.afterEvents.entityHurt.subscribe(event=>{
  g.setDynamicProperty("lb:gauntlet_hurt_sound",clock+24);sound(g,"lb.gauntlet.hurt",.7,.96+Math.random()*.08);
 });
 mc.system.runInterval(()=>{
- clock+=STEP;
+ clock=mc.world.getAbsoluteTime();
  for(const id of ["overworld","nether","the_end"]){
   let dimension;try{dimension=mc.world.getDimension(id);}catch{continue;}
   for(const g of dimension.getEntities({type:GAUNTLET})){try{tickGauntlet(g);}catch{}}
