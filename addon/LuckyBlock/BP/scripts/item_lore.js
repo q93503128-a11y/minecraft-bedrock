@@ -28,6 +28,7 @@ const LORE=new Map([
 ["lb:flashbang",["§d[Flashbang]","§f투척: 실명·감속·약화","§7PvP OFF 시 다른 플레이어 보호"]],
 ["lb:smoke_grenade",["§7[Smoke Grenade]","§f연막 내 플레이어 은신","§f적 실명 + 감속"]],
 ["lb:lucky_guitar",["§6[Lucky Guitar]","§f사용: 10m 아군 재생 + 신속","§715초 재사용"]],
+["lb:tomemancy_diamond_staff",["§b[Diamond Staff Focus]","§f보조손 장착: Tomemancy 위력 +20%","§fWizard Hat과 곱연산으로 중첩"]],
 ["lb:tomemancy_meteor_tome",["§c[Meteor Tome]","§f후반 주문: 대형 낙하 폭발","§7Wizard Hat/Staff로 강화"]],
 ["lb:tomemancy_gigavolt_tome",["§e[Gigavolt Tome]","§f후반 주문: 최대 4연쇄 번개","§7Wizard Hat/Staff로 강화"]],
 ["lb:tomemancy_dragon_fireball_tome",["§d[Dragon Fireball Tome]","§f후반 주문: 드래곤 화염탄","§7Wizard Hat/Staff로 강화"]],
