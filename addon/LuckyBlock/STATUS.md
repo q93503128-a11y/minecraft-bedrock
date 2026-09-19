@@ -873,7 +873,7 @@ Reviewed scope:
 - 44 client entity/attachable definitions and their geometry/animation/render/texture references.
 - 9 core crafting/fusion recipes.
 - 54 Lucky item/block reward IDs, 13 custom entity reward IDs, and 14 event reward IDs.
-- 11 vendored sources / 70 asset records / 68 content IDs / 440 explicit registered targets.
+- 11 vendored sources / 70 asset records / 68 content IDs / 439 explicit registered targets (the former Impaler vanilla spawn-rule target was intentionally removed to preserve the post-dragon gate).
 - External reward lore coverage now resolves 54/54 reward IDs; Gallery Slug and Slasher Blade also have dedicated utility lore.
 - Runtime custom sound calls were manually cross-checked against sound definitions with no missing custom IDs found.
 
@@ -893,4 +893,24 @@ Defects found and repaired during the manual audit:
 Manual review conclusion:
 - No remaining source-level blocker was found in the inspected BP/RP/runtime graph after the fixes above.
 - This is not yet a claim of real Bedrock runtime success. A complete local preflight/build still needs to execute from a full checkout, followed only then by final Bedrock import/play/multiplayer verification.
+
+## Full-tree connector verification — 2026-09-19
+
+Follow-up verification against the current GitHub `main` tree after the manual audit:
+
+- Current tree contains 510 files under `addon/LuckyBlock/`: BP 161, RP 335, tools 4, licenses/notices/registry/status/build helper 10.
+- No zero-byte files and no Thumbs.db/.DS_Store/.bak/.tmp/editor-backup junk files were found.
+- No files remain under `BP/spawn_rules/`; gated Lucky Block enemies therefore cannot bypass progression through a vanilla custom spawn rule.
+- All 439 explicit ASSET_REGISTRY targets resolve in the current tree. Four Slasher registry targets are intentional directories; there are no missing targets.
+- 155 binary RP assets (.png/.tga/.ogg/.fsb) are present and non-empty.
+- All 51 JavaScript/MJS files were fetched from current `main`, independently syntax-checked, and every relative import was resolved against the current tree: 0 syntax failures, 0 missing relative imports.
+- BP/RP manifest version/dependency linkage is consistent at 0.39.0; @minecraft/server is 2.9.0 and RP pack_scope is world.
+- The deterministic acquisition simulation was re-executed locally at 200,000 actions for each of 8 acquisition paths and passed all starter/pity bounds.
+- No TODO/FIXME/placeholder/stub/NOT IMPLEMENTED/temporary markers were found for LuckyBlock in repository search.
+- `BUILD_TEST_MCADDON.cmd` and `tools/build_mcaddon.mjs` were re-read: packaging remains gated by preflight, generates BP/RP mcpack files, wraps exactly those two packs into the test mcaddon, verifies manifests/top-level entries, and emits SHA-256.
+
+Environment limitation:
+- This execution environment cannot reach GitHub from the local container (DNS/network blocked), so the exact filesystem invocation of `node tools/preflight.mjs` and `node tools/build_mcaddon.mjs` still cannot be executed here from a full checkout.
+- GitHub Actions was not used as a substitute build authority.
+- Source/tree-level internal verification is now exhausted; the remaining internal gate is one real full-checkout preflight/build execution before asking for final Bedrock import/play/multiplayer QA.
 
