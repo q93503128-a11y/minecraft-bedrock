@@ -527,6 +527,64 @@
           "stream": false
         }
       ]
+    },
+    "lb.cave_dweller.spotted": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/cave_dweller_spotted",
+          "stream": false
+        }
+      ]
+    },
+    "lb.cave_dweller.chase": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/cave_dweller_chase_1",
+          "stream": false
+        },
+        {
+          "name": "sounds/entity/cave_dweller_chase_2",
+          "stream": false
+        }
+      ]
+    },
+    "lb.cave_dweller.flee": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/cave_dweller_flee_1",
+          "stream": false
+        }
+      ]
+    },
+    "lb.cave_dweller.disappear": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/cave_dweller_disappear",
+          "stream": false
+        }
+      ]
+    },
+    "lb.cave_dweller.hurt": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/cave_dweller_hurt_1",
+          "stream": false
+        }
+      ]
+    },
+    "lb.cave_dweller.death": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/cave_dweller_death",
+          "stream": false
+        }
+      ]
     }
   }
 }
