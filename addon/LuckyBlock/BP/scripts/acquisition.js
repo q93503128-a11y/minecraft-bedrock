@@ -2,6 +2,9 @@ import { world, ItemStack } from "@minecraft/server";
 import { subscribeFishingCatch } from "./integrations/minecraft_custom_events_fishing.js";
 
 const POST_DRAGON_KEY = "lb:post_dragon_unlocked";
+const STARTER_COMMON_DONE_KEY = "lb:starter_common_done";
+const STARTER_COMMON_PROGRESS_KEY = "lb:starter_common_progress";
+const STARTER_COMMON_THRESHOLD = 6;
 
 const COMMON_ORES = new Set([
   "minecraft:coal_ore","minecraft:deepslate_coal_ore",
@@ -50,13 +53,45 @@ function spawnReward(dimension, location, itemId, min = 1, max = min) {
 }
 
 function rollReward(dimension, location, chance, itemId, min = 1, max = min) {
-  if (Math.random() < chance) spawnReward(dimension, location, itemId, min, max);
+  if (Math.random() >= chance) return false;
+  spawnReward(dimension, location, itemId, min, max);
+  return true;
+}
+
+function markStarterCommonDone(player) {
+  try {
+    player.setDynamicProperty(STARTER_COMMON_DONE_KEY, true);
+    player.setDynamicProperty(STARTER_COMMON_PROGRESS_KEY, 0);
+  } catch {}
+}
+
+function advanceStarterCommon(player, dimension, location, activePityKey) {
+  try {
+    if (player.getDynamicProperty(STARTER_COMMON_DONE_KEY) === true) return false;
+  } catch {}
+
+  let count = 0;
+  try { count = Number(player.getDynamicProperty(STARTER_COMMON_PROGRESS_KEY) ?? 0); } catch {}
+  count++;
+
+  if (count >= STARTER_COMMON_THRESHOLD) {
+    spawnReward(dimension, location, "lb:common_fragment", 1, 1);
+    markStarterCommonDone(player);
+    if (activePityKey) {
+      try { player.setDynamicProperty(activePityKey, 0); } catch {}
+    }
+    return true;
+  }
+
+  try { player.setDynamicProperty(STARTER_COMMON_PROGRESS_KEY, count); } catch {}
+  return false;
 }
 
 function rollRewardWithPity(player, dimension, location, chance, itemId, pityKey, threshold, min = 1, max = min) {
   if (Math.random() < chance) {
     spawnReward(dimension, location, itemId, min, max);
     try { player.setDynamicProperty(pityKey, 0); } catch {}
+    if (itemId === "lb:common_fragment") markStarterCommonDone(player);
     return true;
   }
   let count = 0;
@@ -65,6 +100,7 @@ function rollRewardWithPity(player, dimension, location, chance, itemId, pityKey
   if (count >= threshold) {
     spawnReward(dimension, location, itemId, min, max);
     try { player.setDynamicProperty(pityKey, 0); } catch {}
+    if (itemId === "lb:common_fragment") markStarterCommonDone(player);
     return true;
   }
   try { player.setDynamicProperty(pityKey, count); } catch {}
@@ -102,30 +138,35 @@ world.afterEvents.playerBreakBlock.subscribe((event) => {
   const location = event.block.location;
 
   if (RICH_ORES.has(id)) {
-    rollRewardWithPity(event.player, dimension, location, 0.120, "lb:common_fragment", "lb:pity_mining_common", 5, 1, 2);
+    const gotCommon = rollRewardWithPity(event.player, dimension, location, 0.120, "lb:common_fragment", "lb:pity_mining_common", 5, 1, 2);
+    if (!gotCommon) advanceStarterCommon(event.player, dimension, location, "lb:pity_mining_common");
     rollReward(dimension, location, 0.015, "lb:rare_fragment", 1, 1);
     rollReward(dimension, location, 0.0015, "lb:epic_fragment", 1, 1);
     return;
   }
 
   if (COMMON_ORES.has(id)) {
-    rollRewardWithPity(event.player, dimension, location, 0.060, "lb:common_fragment", "lb:pity_mining_common", 12, 1, 1);
+    const gotCommon = rollRewardWithPity(event.player, dimension, location, 0.060, "lb:common_fragment", "lb:pity_mining_common", 12, 1, 1);
+    if (!gotCommon) advanceStarterCommon(event.player, dimension, location, "lb:pity_mining_common");
     rollReward(dimension, location, 0.0025, "lb:rare_fragment", 1, 1);
     return;
   }
 
   if (isLog(id)) {
-    rollRewardWithPity(event.player, dimension, location, 0.020, "lb:common_fragment", "lb:pity_logging_common", 32, 1, 1);
+    const gotCommon = rollRewardWithPity(event.player, dimension, location, 0.020, "lb:common_fragment", "lb:pity_logging_common", 32, 1, 1);
+    if (!gotCommon) advanceStarterCommon(event.player, dimension, location, "lb:pity_logging_common");
     return;
   }
 
   if (FARM_BLOCKS.has(id) && isMatureEnough(id, event.brokenBlockPermutation)) {
-    rollRewardWithPity(event.player, dimension, location, 0.030, "lb:common_fragment", "lb:pity_farming_common", 24, 1, 1);
+    const gotCommon = rollRewardWithPity(event.player, dimension, location, 0.030, "lb:common_fragment", "lb:pity_farming_common", 24, 1, 1);
+    if (!gotCommon) advanceStarterCommon(event.player, dimension, location, "lb:pity_farming_common");
     return;
   }
 
   if (isBulkStone(id)) {
-    rollRewardWithPity(event.player, dimension, location, 0.0015, "lb:common_fragment", "lb:pity_quarry_common", 256, 1, 1);
+    const gotCommon = rollRewardWithPity(event.player, dimension, location, 0.0015, "lb:common_fragment", "lb:pity_quarry_common", 256, 1, 1);
+    if (!gotCommon) advanceStarterCommon(event.player, dimension, location, "lb:pity_quarry_common");
   }
 });
 
@@ -233,7 +274,8 @@ world.afterEvents.entityDie.subscribe((event) => {
   }
 
   if (HOSTILES.has(typeId)) {
-    rollRewardWithPity(killer, dimension, location, 0.040, "lb:common_fragment", "lb:pity_combat_common", 20, 1, 1);
+    const gotCommon = rollRewardWithPity(killer, dimension, location, 0.040, "lb:common_fragment", "lb:pity_combat_common", 20, 1, 1);
+    if (!gotCommon) advanceStarterCommon(killer, dimension, location, "lb:pity_combat_common");
     rollReward(dimension, location, 0.0018, "lb:rare_fragment", 1, 1);
     if (postDragon) rollReward(dimension, location, 0.00025, "lb:epic_fragment", 1, 1);
   }
@@ -282,7 +324,9 @@ world.afterEvents.blockContainerOpened.subscribe((event) => {
   const postDragon = world.getDynamicProperty(POST_DRAGON_KEY) === true;
   const location = event.block.location;
 
-  rollReward(event.dimension, location, 0.35, "lb:common_fragment", 1, 2);
+  const gotCommon = rollReward(event.dimension, location, 0.35, "lb:common_fragment", 1, 2);
+  if (gotCommon) markStarterCommonDone(opener);
+  else advanceStarterCommon(opener, event.dimension, location);
   rollReward(event.dimension, location, 0.045, "lb:rare_fragment", 1, 1);
   rollReward(event.dimension, location, 0.006, "lb:epic_fragment", 1, 1);
 
@@ -312,14 +356,16 @@ subscribeFishingCatch(({ player, dimension, location, itemStack }) => {
   const treasure = FISHING_TREASURE.has(itemStack.typeId);
 
   if (treasure) {
-    rollRewardWithPity(player, dimension, location, 0.35, "lb:common_fragment", "lb:pity_fishing_common", 4, 1, 2);
+    const gotCommon = rollRewardWithPity(player, dimension, location, 0.35, "lb:common_fragment", "lb:pity_fishing_common", 4, 1, 2);
+    if (!gotCommon) advanceStarterCommon(player, dimension, location, "lb:pity_fishing_common");
     rollReward(dimension, location, 0.050, "lb:rare_fragment", 1, 1);
     rollReward(dimension, location, 0.0080, "lb:epic_fragment", 1, 1);
     if (postDragon) rollReward(dimension, location, 0.0012, "lb:legendary_fragment", 1, 1);
     return;
   }
 
-  rollRewardWithPity(player, dimension, location, 0.15, "lb:common_fragment", "lb:pity_fishing_common", 8, 1, 1);
+  const gotCommon = rollRewardWithPity(player, dimension, location, 0.15, "lb:common_fragment", "lb:pity_fishing_common", 8, 1, 1);
+  if (!gotCommon) advanceStarterCommon(player, dimension, location, "lb:pity_fishing_common");
   rollReward(dimension, location, 0.012, "lb:rare_fragment", 1, 1);
   rollReward(dimension, location, 0.0010, "lb:epic_fragment", 1, 1);
   if (postDragon) rollReward(dimension, location, 0.0002, "lb:legendary_fragment", 1, 1);
