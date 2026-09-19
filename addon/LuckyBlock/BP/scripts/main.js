@@ -7,6 +7,7 @@ import "./integrations/inhabitants_arsenal.js";
 import "./integrations/bomd_obsidilith.js";
 import "./integrations/bomd_gauntlet.js";
 import "./integrations/bomd_void_blossom.js";
+import "./integrations/slayers_beasts_rift_spitter.js";
 import "./integrations/slasher/index.js";
 import "./integrations/tomemancy.js";
 import "./integrations/tomemancy_amethyst_repeater.js";

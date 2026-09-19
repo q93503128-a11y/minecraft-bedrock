@@ -1,0 +1,35 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:rift_spitter_ant",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/rift_spitter_ant"
+      },
+      "geometry": {
+        "default": "geometry.lb.war_ant_mount"
+      },
+      "animations": {
+        "walk": "animation.lb.war_ant_mount.walk",
+        "ambient": "animation.lb.war_ant_mount.ambient",
+        "locomotion": "controller.animation.lb.war_ant_mount.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "ambient",
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#6e4b22",
+        "overlay_color": "#b8d45b"
+      }
+    }
+  }
+}

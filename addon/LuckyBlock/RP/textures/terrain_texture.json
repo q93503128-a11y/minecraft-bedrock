@@ -87,6 +87,9 @@
     },
     "lb_archive_codex": {
       "textures": "textures/blocks/lb_archive_codex"
+    },
+    "lb_fortune_bomb": {
+      "textures": "textures/blocks/lb_fortune_bomb"
     }
   }
 }

@@ -728,11 +728,12 @@ function tickRiftArsenal(state, dimension) {
     if((state.targetMask??0)!==7) return false;
     spawnVaultWave(state,dimension,[
       {id:"lb:wudu_binder",count:1},
-      {id:"lb:mantis",count:2},
-      {id:"lb:tyrachnid",count:1}
+      {id:"lb:mantis",count:1},
+      {id:"lb:tyrachnid",count:1},
+      {id:"lb:rift_spitter_ant",count:2}
     ]);
     state.stage=2;
-    messageNear(dimension,state.center,"§5[Rift Arsenal] 2단계 — Wudu Binder의 지원 아래 사냥대가 진입합니다.");
+    messageNear(dimension,state.center,"§5[Rift Arsenal] 2단계 — Wudu Binder의 지원 아래 근접 사냥대와 Rift Spitter 원거리 포격대가 진입합니다.");
     return false;
   }
   if(eventEnemies(state,dimension).length>0) return false;
@@ -740,10 +741,11 @@ function tickRiftArsenal(state, dimension) {
     spawnVaultWave(state,dimension,[
       {id:"lb:bogre",count:1},
       {id:"lb:wudu_binder",count:1},
-      {id:"lb:tyrachnid",count:2}
+      {id:"lb:tyrachnid",count:1},
+      {id:"lb:rift_spitter_ant",count:2}
     ]);
     state.stage=3;
-    messageNear(dimension,state.center,"§c[Rift Arsenal] 최종 단계 — Bogre와 지원/제압 조합을 동시에 돌파하세요!");
+    messageNear(dimension,state.center,"§c[Rift Arsenal] 최종 단계 — Bogre를 중심으로 지원·제압·원거리 포격 조합을 동시에 돌파하세요!");
     sound(dimension,"lb.bogre.roar",state.center,{volume:1.3,pitch:0.86});
     return false;
   }

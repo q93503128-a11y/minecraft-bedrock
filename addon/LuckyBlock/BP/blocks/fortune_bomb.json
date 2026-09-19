@@ -1,0 +1,26 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:fortune_bomb",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.fortune_bomb",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_fortune_bomb",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.45
+      },
+      "minecraft:explosion_resistance": {
+        "value": 6
+      }
+    }
+  }
+}

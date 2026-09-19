@@ -15,24 +15,25 @@ export const weightedPools = {
     { weight: 5, kind: "fragments", id: "lb:rare_fragment", min: 1, max: 1, source: "core" }
   ],
   rare: [
-    { weight: 6, kind: "fragments", id: "lb:rare_fragment", min: 2, max: 4, source: "core" },
+    { weight: 4, kind: "fragments", id: "lb:rare_fragment", min: 2, max: 4, source: "core" },
     { weight: 4, kind: "item", id: "lb:reward_vending_machine", source: "loys_goodies" },
     { weight: 4, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_cctv", source: "loys_goodies" },
-    { weight: 7, kind: "item", id: "lb:reward_wrench", source: "loys_goodies" },
-    { weight: 7, kind: "item", id: "lb:reward_easel", source: "loys_goodies" },
+    { weight: 6, kind: "item", id: "lb:reward_wrench", source: "loys_goodies" },
+    { weight: 6, kind: "item", id: "lb:reward_easel", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_backpack", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
     { weight: 6, kind: "item", id: "lb:reward_cardboard_shield", source: "frenchkrab" },
     { weight: 6, kind: "item", id: "lb:reward_turret", source: "loys_goodies" },
-    { weight: 7, kind: "bundle", id: "inhabitants_javelin_bundle", source: "inhabitants", items: [{ id: "lb:javelin", count: 6 }] },
+    { weight: 6, kind: "bundle", id: "inhabitants_javelin_bundle", source: "inhabitants", items: [{ id: "lb:javelin", count: 6 }] },
     { weight: 6, kind: "item", id: "lb:threat_sunglasses", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:fortune_tonic", count: 2, source: "loys_goodies" },
     { weight: 3, kind: "item", id: "lb:common_lucky_block", count: 2, source: "core" },
     { weight: 3, kind: "fragments", id: "lb:epic_fragment", min: 1, max: 1, source: "core" },
-    { weight: 6, kind: "entity", id: "lb:irk_companion", nameTag: "Irk Companion", source: "slayers_beasts", tameToOpener: true },
+    { weight: 5, kind: "entity", id: "lb:irk_companion", nameTag: "Irk Companion", source: "slayers_beasts", tameToOpener: true },
     { weight: 8, kind: "event", id: "fortune_relay", source: "core+licensed_external_fx", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } },
-    { weight: 7, kind: "event", id: "fortune_archive", source: "core+loys_goodies", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } }
+    { weight: 7, kind: "event", id: "fortune_archive", source: "core+loys_goodies", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } },
+    { weight: 6, kind: "event", id: "fortune_minefield", source: "core+loys_goodies", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } }
   ],
   epic: [
     { weight: 2, kind: "fragments", id: "lb:epic_fragment", min: 2, max: 4, source: "core" },

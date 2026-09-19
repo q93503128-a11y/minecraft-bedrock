@@ -1108,8 +1108,132 @@ mc.world.afterEvents.playerInteractWithBlock.subscribe(event=>{
   saveStates(states);
 });
 
+
+function minefieldOffsets(){
+  return [[-5,-5],[0,-5],[5,-5],[-5,0],[5,0],[-5,5],[0,5],[5,5],[-2,-2],[2,-2],[-2,2],[2,2]];
+}
+function minefieldSiteClear(dimension,center){
+  const bx=Math.floor(center.x),by=Math.floor(center.y),bz=Math.floor(center.z);
+  for(const [dx,dz] of [[-7,-7],[-7,7],[7,-7],[7,7],[0,0],[-7,0],[7,0],[0,-7],[0,7]]){
+    const g=groundAt(dimension,bx+dx,by,bz+dz);if(!g||Math.abs(g.y-by)>1)return false;
+  }
+  for(let dx=-7;dx<=7;dx+=2)for(let dz=-7;dz<=7;dz+=2)for(let dy=0;dy<=4;dy++){
+    try{if(dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz})?.typeId!=="minecraft:air")return false;}catch{return false;}
+  }
+  return true;
+}
+function findMinefieldSite(dimension,center){
+  for(const [dx,dz] of [[0,0],[22,0],[-22,0],[0,22],[0,-22],[22,22],[-22,22],[22,-22],[-22,-22],[34,0],[-34,0],[0,34],[0,-34]]){
+    const g=groundAt(dimension,center.x+dx,center.y,center.z+dz);if(!g)continue;
+    const p={x:g.x+0.5,y:g.y,z:g.z+0.5};if(minefieldSiteClear(dimension,p))return p;
+  }
+}
+function minefieldBombPoint(state,index){
+  const [dx,dz]=minefieldOffsets()[index]??[0,0];
+  return{x:Math.floor(state.center.x+dx),y:Math.floor(state.center.y),z:Math.floor(state.center.z+dz)};
+}
+function buildFortuneMinefield(state,dimension){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const P={
+    floor:mc.BlockPermutation.resolve("minecraft:polished_deepslate"),
+    trim:mc.BlockPermutation.resolve("minecraft:copper_block"),
+    edge:mc.BlockPermutation.resolve("minecraft:deepslate_tiles"),
+    light:mc.BlockPermutation.resolve("minecraft:sea_lantern"),
+    bomb:mc.BlockPermutation.resolve("lb:fortune_bomb")
+  };
+  let placed=0;
+  function put(dx,dy,dz,p){try{const b=dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz});if(!b)return;b.setPermutation(p);placed++;}catch{}}
+  for(let dx=-7;dx<=7;dx++)for(let dz=-7;dz<=7;dz++)put(dx,-1,dz,(Math.abs(dx)===7||Math.abs(dz)===7)?P.edge:P.floor);
+  for(const [dx,dz] of [[-7,-7],[-7,7],[7,-7],[7,7]]){for(let y=0;y<=2;y++)put(dx,y,dz,P.trim);put(dx,3,dz,P.light);}
+  for(const [dx,dz] of minefieldOffsets())put(dx,0,dz,P.bomb);
+  state.structureBuilt=placed>=245;return state.structureBuilt;
+}
+function minefieldActiveSet(state){return new Set(Array.isArray(state.activeBombs)?state.activeBombs:[]);}
+function restoreInactiveBombs(state,dimension){
+  const active=minefieldActiveSet(state),spent=Number(state.spentMask??0);
+  for(let i=0;i<12;i++){
+    if((spent&(1<<i))!==0||active.has(i))continue;
+    const p=minefieldBombPoint(state,i);
+    try{const b=dimension.getBlock(p);if(b?.typeId!=="lb:fortune_bomb")b?.setPermutation(mc.BlockPermutation.resolve("lb:fortune_bomb"));}catch{}
+  }
+}
+function chooseMinefieldWave(state,dimension){
+  const spent=Number(state.spentMask??0),pool=[];
+  for(let i=0;i<12;i++){
+    if((spent&(1<<i))!==0)continue;
+    const p=minefieldBombPoint(state,i);
+    try{if(dimension.getBlock(p)?.typeId==="lb:fortune_bomb")pool.push(i);}catch{}
+  }
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  state.activeBombs=pool.slice(0,Math.min(3,pool.length));
+  state.detonateAt=(state.elapsed??0)+30;
+  state.wave=(state.wave??0)+1;
+  if(state.activeBombs.length)messageNear(dimension,state.center,"§c[Fortune Minefield] "+state.wave+"차 기폭 — 빛나는 폭탄을 빨리 부수거나 폭발 반경에서 벗어나세요!");
+}
+function pulseMinefieldBomb(dimension,p){
+  const c={x:p.x+.5,y:p.y+.45,z:p.z+.5};
+  try{dimension.spawnParticle("lb:obsidilith_indicator",c);}catch{}
+  for(const [dx,dz] of [[.7,0],[-.7,0],[0,.7],[0,-.7]])try{dimension.spawnParticle("lb:slasher_spark_particle",{x:c.x+dx,y:c.y+.05,z:c.z+dz});}catch{}
+  try{dimension.playSound("random.fuse",c,{volume:.45,pitch:1.2});}catch{}
+}
+function detonateMinefieldBomb(state,dimension,index){
+  const p=minefieldBombPoint(state,index),center={x:p.x+.5,y:p.y+.25,z:p.z+.5};
+  try{dimension.getBlock(p)?.setPermutation(mc.BlockPermutation.resolve("minecraft:air"));}catch{}
+  state.spentMask=(Number(state.spentMask??0)|(1<<index));
+  try{dimension.spawnParticle("lb:obsidilith_burst",center);}catch{}
+  try{dimension.playSound("random.explode",center,{volume:.72,pitch:1.08});}catch{}
+  for(const player of playersNear(dimension,center,4.5)){
+    const d2=distSq(player.location,center);if(d2>3.4*3.4)continue;
+    try{player.applyDamage(d2<1.7*1.7?16:10,{cause:mc.EntityDamageCause.entityExplosion});}catch{try{player.applyDamage(d2<1.7*1.7?16:10);}catch{}}
+    const dx=player.location.x-center.x,dz=player.location.z-center.z,len=Math.max(.001,Math.hypot(dx,dz));
+    try{player.applyImpulse({x:dx/len*.72,y:.24,z:dz/len*.72});}catch{}
+  }
+}
+function finishFortuneMinefield(state,dimension){
+  spawnItem(dimension,state.center,"lb:rare_fragment",3+Math.floor(Math.random()*3));
+  spawnItem(dimension,state.center,"lb:fortune_tonic",1);
+  const disarmed=Number(state.disarmed??0);
+  if(disarmed>=6)spawnItem(dimension,state.center,"lb:epic_fragment",1);
+  if(disarmed>=9)spawnItem(dimension,state.center,"lb:rare_lucky_block",1);
+  messageNear(dimension,state.center,"§6[레어 럭키] Fortune Minefield 생존 완료! 해체 "+disarmed+"/12.");
+}
+function cleanupMinefield(state,dimension){
+  for(let i=0;i<12;i++){const p=minefieldBombPoint(state,i);try{const b=dimension.getBlock(p);if(b?.typeId==="lb:fortune_bomb")b.setPermutation(mc.BlockPermutation.resolve("minecraft:air"));}catch{}}
+}
+function tickFortuneMinefield(state,dimension){
+  state.elapsed=(state.elapsed??0)+STEP;
+  if(state.elapsed>18000){cleanupMinefield(state,dimension);spawnItem(dimension,state.center,"lb:rare_fragment",2);messageNear(dimension,state.center,"§8[레어 럭키] Fortune Minefield가 비활성화되었습니다.");return true;}
+  if((state.stage??0)===0){
+    if(!buildFortuneMinefield(state,dimension)){spawnItem(dimension,state.center,"lb:rare_fragment",3);messageNear(dimension,state.center,"§8[레어 럭키] 지뢰장을 만들 공간이 없어 레어 조각 3개로 보상했습니다.");return true;}
+    state.stage=1;state.wave=0;state.spentMask=0;state.disarmed=0;state.activeBombs=[];state.nextWaveAt=state.elapsed+35;
+    messageNear(dimension,state.center,"§6[레어 럭키] Fortune Minefield — 네 차례 기폭을 버티세요. 경고 중인 폭탄은 직접 부숴 해체할 수 있습니다.");
+    return false;
+  }
+  restoreInactiveBombs(state,dimension);
+  const active=Array.isArray(state.activeBombs)?state.activeBombs:[];
+  if(active.length){
+    const still=[];
+    for(const i of active){
+      const p=minefieldBombPoint(state,i),live=(()=>{try{return dimension.getBlock(p)?.typeId==="lb:fortune_bomb";}catch{return false;}})();
+      if(!live){state.spentMask=(Number(state.spentMask??0)|(1<<i));state.disarmed=(state.disarmed??0)+1;continue;}
+      if((state.elapsed%10)===0)pulseMinefieldBomb(dimension,p);
+      still.push(i);
+    }
+    state.activeBombs=still;
+    if((state.elapsed??0)>=(state.detonateAt??Infinity)){
+      for(const i of still)detonateMinefieldBomb(state,dimension,i);
+      state.activeBombs=[];state.nextWaveAt=state.elapsed+35;
+    }
+  }
+  if(Number(state.spentMask??0)===4095&&(!state.activeBombs||state.activeBombs.length===0)){finishFortuneMinefield(state,dimension);return true;}
+  if((!state.activeBombs||state.activeBombs.length===0)&&(state.elapsed??0)>=(state.nextWaveAt??0)){
+    chooseMinefieldWave(state,dimension);
+  }
+  return false;
+}
+
 export function startPreDragonEvent(dimension,center,type){
-  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark"&&type!=="fortune_gallery"&&type!=="butterfly_sanctuary"&&type!=="void_garden"&&type!=="fortune_archive")return false;
+  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark"&&type!=="fortune_gallery"&&type!=="butterfly_sanctuary"&&type!=="void_garden"&&type!=="fortune_archive"&&type!=="fortune_minefield")return false;
   if(!dimension.id.includes("overworld"))return false;
   const site=type==="awakened_grove"
     ?findGroveSite(dimension,center)
@@ -1125,10 +1249,12 @@ export function startPreDragonEvent(dimension,center,type){
               ?findSanctuarySite(dimension,center)
               :type==="void_garden"
                 ?findVoidGardenSite(dimension,center)
-                :findArchiveSite(dimension,center);
+                :type==="fortune_archive"
+                  ?findArchiveSite(dimension,center)
+                  :findMinefieldSite(dimension,center);
   if(!site)return false;
   const states=loadStates();if(states.length>=MAX_ACTIVE)return false;
-  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:type==="fortune_gallery"?58:type==="butterfly_sanctuary"?52:type==="void_garden"?58:type==="fortune_archive"?50:48;
+  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:type==="fortune_gallery"?58:type==="butterfly_sanctuary"?52:type==="void_garden"?58:type==="fortune_archive"?50:type==="fortune_minefield"?50:48;
   for(const s of states)if(s.dimension==="overworld"&&distSq(s.center,site)<overlap*overlap)return false;
   states.push({id:nextId(),type,dimension:"overworld",center:site,stage:0,elapsed:0});saveStates(states);return true;
 }
@@ -1155,7 +1281,9 @@ mc.system.runInterval(()=>{
                     ?tickVoidGarden(state,dimension)
                     :state.type==="fortune_archive"
                       ?tickFortuneArchive(state,dimension)
-                      :true;
+                      :state.type==="fortune_minefield"
+                        ?tickFortuneMinefield(state,dimension)
+                        :true;
     }catch{done=false;}
     if(!done)next.push(state);
   }
