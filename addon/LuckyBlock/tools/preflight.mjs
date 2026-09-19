@@ -207,15 +207,15 @@ if(fs.existsSync(rewardPath)){
       for(const entry of pool??[]){
         assert(Number.isFinite(entry?.weight)&&entry.weight>0,`reward tier ${tier} has invalid weight for ${entry?.id}`);
         if(entry.kind==="item"||entry.kind==="fragments"){
-          assert(typeof entry.id==="string"&&(entry.id.startsWith("minecraft:")||itemDefs.has(entry.id)),`reward tier ${tier} unresolved ${entry.kind} ${entry.id}`);
+          assert(typeof entry.id==="string"&&(entry.id.startsWith("minecraft:")||itemDefs.has(entry.id)||blockDefs.has(entry.id)),`reward tier ${tier} unresolved ${entry.kind} ${entry.id}`);
         }else if(entry.kind==="entity"){
           assert(typeof entry.id==="string"&&entityDefs.has(entry.id),`reward tier ${tier} unresolved entity ${entry.id}`);
         }else if(entry.kind==="bundle"){
           assert(Array.isArray(entry.items)&&entry.items.length>0,`reward tier ${tier} bundle ${entry.id} is empty`);
-          for(const part of entry.items??[])assert(typeof part?.id==="string"&&(part.id.startsWith("minecraft:")||itemDefs.has(part.id)),`reward tier ${tier} bundle ${entry.id} unresolved item ${part?.id}`);
+          for(const part of entry.items??[])assert(typeof part?.id==="string"&&(part.id.startsWith("minecraft:")||itemDefs.has(part.id)||blockDefs.has(part.id)),`reward tier ${tier} bundle ${entry.id} unresolved item ${part?.id}`);
         }else if(entry.kind==="event"){
           assert(typeof entry.id==="string"&&eventSources.includes(`"${entry.id}"`),`reward tier ${tier} unresolved event handler ${entry.id}`);
-          if(entry.fallback?.id)assert(entry.fallback.id.startsWith("minecraft:")||itemDefs.has(entry.fallback.id),`reward tier ${tier} event ${entry.id} unresolved fallback ${entry.fallback.id}`);
+          if(entry.fallback?.id)assert(entry.fallback.id.startsWith("minecraft:")||itemDefs.has(entry.fallback.id)||blockDefs.has(entry.fallback.id),`reward tier ${tier} event ${entry.id} unresolved fallback ${entry.fallback.id}`);
         }else{
           errors.push(`reward tier ${tier} unsupported kind ${entry?.kind} for ${entry?.id}`);
         }
