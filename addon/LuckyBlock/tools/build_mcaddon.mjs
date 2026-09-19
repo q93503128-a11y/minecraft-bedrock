@@ -80,8 +80,8 @@ const rpEntries=packEntries(path.join(root,"RP"));
 const bpPack=zip(bpEntries),rpPack=zip(rpEntries);
 if(!names(bpPack).includes("manifest.json")||!names(rpPack).includes("manifest.json"))throw new Error("mcpack manifest verification failed");
 
-const bpName=\`LuckyBlock_BP_\${version}.mcpack\`,rpName=\`LuckyBlock_RP_\${version}.mcpack\`;
-const addonName=\`LuckyBlock_\${version}_TEST.mcaddon\`;
+const bpName=`LuckyBlock_BP_${version}.mcpack`,rpName=`LuckyBlock_RP_${version}.mcpack`;
+const addonName=`LuckyBlock_${version}_TEST.mcaddon`;
 fs.writeFileSync(path.join(dist,bpName),bpPack);
 fs.writeFileSync(path.join(dist,rpName),rpPack);
 const addon=zip([{name:bpName,data:bpPack},{name:rpName,data:rpPack}]);
@@ -92,11 +92,11 @@ const sha=crypto.createHash("sha256").update(addon).digest("hex");
 fs.writeFileSync(path.join(dist,addonName+".sha256"),sha+"  "+addonName+"\n");
 const info=[
   "Lucky Block Bedrock test build",
-  \`Version: \${version}\`,
-  \`BP files: \${bpEntries.length}\`,
-  \`RP files: \${rpEntries.length}\`,
-  \`MCADDON: \${addonName}\`,
-  \`SHA-256: \${sha}\`,
+  `Version: ${version}`,
+  `BP files: ${bpEntries.length}`,
+  `RP files: ${rpEntries.length}`,
+  `MCADDON: ${addonName}`,
+  `SHA-256: ${sha}`,
   "Status: static preflight passed; real Bedrock import/play/multiplayer QA still required."
 ].join("\n")+"\n";
 fs.writeFileSync(path.join(dist,"TEST_BUILD_INFO.txt"),info);
