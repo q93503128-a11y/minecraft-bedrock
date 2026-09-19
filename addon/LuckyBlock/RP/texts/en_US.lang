@@ -91,3 +91,4 @@ entity.lb:rift_burrower_ant.name=Rift Burrower Ant
 tile.lb:reward_mirror.name=Fortune Mirror
 tile.lb:reward_gravestone.name=Recall Gravestone
 tile.lb:reward_air_conditioner.name=Lucky Air Conditioner
+entity.lb:lich.name=Lich

@@ -1,0 +1,97 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:lich",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "monster",
+          "lb_hostile",
+          "lb_boss",
+          "lb_lich",
+          "post_dragon"
+        ]
+      },
+      "minecraft:boss": {
+        "name": "Lich",
+        "hud_range": 64,
+        "should_darken_sky": true
+      },
+      "minecraft:health": {
+        "value": 2800,
+        "max": 2800
+      },
+      "minecraft:attack": {
+        "damage": 18
+      },
+      "minecraft:movement": {
+        "value": 0.27
+      },
+      "minecraft:movement.hover": {
+        "max_turn": 28
+      },
+      "minecraft:navigation.fly": {
+        "can_path_over_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:physics": {},
+      "minecraft:collision_box": {
+        "width": 1.4,
+        "height": 2.8
+      },
+      "minecraft:knockback_resistance": {
+        "value": 0.72
+      },
+      "minecraft:follow_range": {
+        "value": 48
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "within_radius": 48,
+        "reselect_targets": true,
+        "must_see": false,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "player"
+            },
+            "max_dist": 48
+          }
+        ]
+      },
+      "minecraft:behavior.move_towards_target": {
+        "priority": 3,
+        "speed_multiplier": 0.9,
+        "within_radius": 9
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 40,
+        "probability": 1
+      },
+      "minecraft:behavior.random_fly": {
+        "priority": 8,
+        "xz_dist": 10,
+        "y_dist": 5,
+        "y_offset": 2,
+        "speed_multiplier": 0.5
+      },
+      "minecraft:damage_sensor": {
+        "triggers": {
+          "cause": "fall",
+          "deals_damage": false
+        }
+      }
+    }
+  }
+}

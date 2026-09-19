@@ -1,0 +1,45 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:lich",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/lich"
+      },
+      "geometry": {
+        "default": "geometry.lb.lich"
+      },
+      "animations": {
+        "float": "animation.lb.lich.float",
+        "skull_float": "animation.lb.lich.skull_float",
+        "idle": "animation.lb.lich.idle",
+        "book_idle": "animation.lb.lich.book_idle",
+        "summon_fireball": "animation.lb.lich.summon_fireball",
+        "summon_missiles": "animation.lb.lich.summon_missiles",
+        "summon_minions": "animation.lb.lich.summon_minions",
+        "teleport": "animation.lb.lich.teleport",
+        "teleporting": "animation.lb.lich.teleporting",
+        "unteleport": "animation.lb.lich.unteleport",
+        "rage_mode": "animation.lb.lich.rage_mode"
+      },
+      "scripts": {
+        "animate": [
+          "float",
+          "skull_float",
+          "idle",
+          "book_idle"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#1c1730",
+        "overlay_color": "#67d8ff"
+      }
+    }
+  }
+}

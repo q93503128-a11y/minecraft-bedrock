@@ -6,6 +6,7 @@ import "./integrations/inhabitants_bogre.js";
 import "./integrations/inhabitants_arsenal.js";
 import "./integrations/bomd_obsidilith.js";
 import "./integrations/bomd_gauntlet.js";
+import "./integrations/bomd_lich.js";
 import "./integrations/bomd_void_blossom.js";
 import "./integrations/slayers_beasts_rift_spitter.js";
 import "./integrations/slayers_beasts_rift_charger.js";

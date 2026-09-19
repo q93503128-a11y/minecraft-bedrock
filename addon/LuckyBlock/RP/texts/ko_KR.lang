@@ -91,3 +91,4 @@ entity.lb:rift_burrower_ant.name=균열 잠복 일개미
 tile.lb:reward_mirror.name=포춘 거울
 tile.lb:reward_gravestone.name=귀환 묘비
 tile.lb:reward_air_conditioner.name=럭키 에어컨
+entity.lb:lich.name=리치
