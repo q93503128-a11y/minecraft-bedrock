@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.28.0 Butterfly Sanctuary ecological exploration event
+Milestone: 0.29.0 Inhabitants Arsenal + Rift Arsenal completion-jump batch
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -33,10 +33,10 @@ Implemented:
 - Script syntax audit passes for main.js, acquisition.js and reward_behaviors.js.
 
 Still not complete:
-1. much larger reward library, especially additional minigame variants, wearable/accessory archetypes and more specialized utility/combat outcomes;
+1. larger reward library, especially additional wearable/accessory archetypes, consumable/status roles and remaining specialized utility/combat outcomes;
 2. more structures, traps, chained Lucky events, dungeons and additional minigames;
 3. more pre-dragon encounter breadth, especially additional miniboss families and alternate exploration structures;
-4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
+4. more post-dragon normal-mob/elite role variety and a few additional miniboss/boss families;
 5. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
 8. refreshed packaged .mcaddon after the next packaging checkpoint.
@@ -642,3 +642,28 @@ Static audit after 0.28.0:
 - Stable Creator documentation confirms `Entity.teleport(location, teleportOptions?)` is a supported Script API method used for the event-only soft boundary.
 - Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
 - Runtime QA is still required; no Bedrock playtest claim is made.
+
+
+0.29.0 completion-jump batch — Inhabitants Arsenal + Rift Arsenal:
+- This batch intentionally combines three substantial content additions rather than one narrow feature: Javelin, Spike Drill, and a new post-dragon Mythic chained event.
+- Added `lb:javelin` as a Rare six-pack reward using the original Inhabitants 5-cube held model, 5-cube thrown model, item/entity textures, bounce/in-air animations and six original sounds.
+- Javelin keeps the source 10-tick minimum draw / 60-tick full charge / stack-16 / block-stick / crouch-recovery / bounce-platform identity.
+- Javelin runtime does **not** enable the experimental Custom Projectiles toggle. A normal `lb:javelin_thrown` entity is launched with stable Script API impulse and uses block/entity raycasts for impact.
+- Lucky Javelin damage is 8-18 by charge. It is consumed on throw outside Creative, lost on entity hit like the source projectile, recoverable by crouching when stuck in a block, and returns as an item if its supporting block disappears.
+- Stuck Javelins function as short-cooldown bounce platforms; repeated bounces within 40 ticks increase upward launch up to a capped impulse.
+- Javelin owner state is stored on each thrown entity and charge-start/cooldown maps are keyed by player ID, so simultaneous players do not share one weapon state.
+- Added `lb:spike_drill` as an Epic specialized mining tool using the original Inhabitants base icon and six original drill sounds.
+- Drill keeps exact source durability 2342, heat cap 120, 15-second/300-tick momentum ramp, 2-second/40-tick overheat lockout, 2 overheat damage, delayed passive cooling and snowball -30 quench identity.
+- Continuous drilling accelerates from roughly one break every 14 ticks toward one every 3 ticks as momentum ramps. Each successful break adds one heat and one durability damage.
+- Stable Bedrock block-form salvage replaces Java loot-table mining. Containers, all Lucky custom blocks, bedrock/barrier/command/structure blocks, portal infrastructure, reinforced deepslate, obsidian/crying obsidian, ancient debris, netherite blocks and respawn anchors are excluded from Drill destruction.
+- Sneak + offhand snowball performs the source-inspired quench without needing a Java inventory-click hook.
+- The original Java Drill has temperature-specific sprite overrides; this port does not claim those state sprites are rendered. It uses the real original base asset plus actionbar heat/momentum instead of generated temporary art.
+- Added **Rift Arsenal** as a fourth Mythic event family and a real chained objective/combat package.
+- Rift Arsenal creates a permanent 17x17 tuff/copper/blackstone armory. Each participating player receives six Javelins once.
+- Stage 1 requires actual stuck `lb:javelin_thrown` entities to hit three spatial target seals; a shared three-bit mask prevents duplicate seal credit and supports cooperative players.
+- Stage 2 is Wudu Binder + two Mantis + one Tyrachnid, intentionally exercising support/control/predator interaction.
+- Final stage is Bogre + Wudu Binder + two Tyrachnids, making the difficulty come from role combination as well as stats.
+- Completion awards one Spike Drill, 12 Javelins, 7-10 Mythic Fragments and one Legendary Lucky Block.
+- New reward weights are funded entirely by reductions to existing generic/repeated slices: Rare/Epic/Mythic totals remain 100.
+- BP/RP version is now 0.29.0; @minecraft/server remains 2.9.0.
+- This is still source/static implementation. Stable Bedrock import, held alignment, thrown-entity physics, actual drilling feel, multiplayer and long-session event behavior remain P8 runtime QA.

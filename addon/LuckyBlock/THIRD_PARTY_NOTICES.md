@@ -288,3 +288,16 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Source identity retained: 6 HP, 0.25 movement, free flight/hover, periodic perching intent and fall-damage immunity.
 - Lucky-owned additions: persistent Butterfly Sanctuary structure, event-only soft boundary/population recovery, four observation stations, 2-second observation holds, cooperative shared survey state and Lucky rewards.
 - No source behavior is claimed for the sanctuary objective itself.
+
+
+### Inhabitants Javelin + Spike Drill / Rift Arsenal — 0.29.0
+- Source: Team-Synapse-MC/Inhabitants, pinned at `2da25600eb052862d34818b4a2a458afea83e868`.
+- License: MIT.
+- Javelin direct source payload: `JavelinItem.java`, `JavelinEntity.java`, 5-cube thrown geometry, 5-cube held geometry, source bounce/in-air animation JSON, item/entity textures, and six original Javelin OGG files.
+- Spike Drill direct source payload: `SpikeDrillItem.java`, `DrillDamagePacketC2S.java`, original base item texture, and six original start/loop/stop/dig OGG files.
+- Javelin source identities retained: stack 16, minimum 10-tick draw, 60-tick full charge, block sticking, crouch recovery, and stuck-Javelin bounce-platform play.
+- Bedrock Javelin deliberately uses a normal entity plus stable Script API impulse/raycasts, not the current experimental Custom Projectiles toggle. Lucky adapts trajectory constants and balances impact damage to 8-18.
+- Spike Drill source identities retained: 2342 durability, 120 heat cap, 300-tick momentum ramp, 40-tick overheat lockout, 2 damage overheat penalty, delayed passive cooling, and snowball -30 quench behavior.
+- Bedrock Drill mining is a documented adaptation: stable block-form salvage via `Block.getItemStack`, with containers, Lucky custom blocks, unbreakables and progression-protected blocks excluded. It is not claimed to reproduce Java loot-table mining exactly.
+- The source Java temperature model uses multiple item-model/texture overrides. The current Bedrock port uses the exact original base Drill texture and original production sounds, while heat/momentum state is communicated by the actionbar; no assistant-drawn heat placeholder is substituted.
+- Rift Arsenal structure, Javelin seal objective, cooperative participant grants, mixed encounter composition and rewards are Lucky-owned gameplay.

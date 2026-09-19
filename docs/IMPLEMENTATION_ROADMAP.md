@@ -26,7 +26,7 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant ground mount, the post-dragon Sky Damselfly 3D flight mount, the Tomemancy Amethyst Repeater burst/finite-ammo ranged weapon, the self-defense Mystical Aegis full armor set, the two-piece Explorer Field Kit utility/support wearable archetype, a Loy's Goodies Auto-Turret deployable combat-tool family, and the four-state Storm Longbow precision/charge/pierce ranged archetype. Fortune Bulwark binds the deployable into a real defense outcome. Two distinct minigame roles are present: Fortune Relay timed traversal and Fortune Gallery projectile accuracy/co-op scoring. Butterfly Sanctuary now adds a non-combat moving-wildlife observation/exploration outcome using a real external creature. Ground/flight mount and defense/exploration wearable roles are represented; additional minigame variants, wearable/accessory roles and sheer outcome count remain thin.
+Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant ground mount, the post-dragon Sky Damselfly 3D flight mount, Amethyst Repeater burst ranged combat, Storm Longbow precision/charge combat, the recoverable/bounce-platform Inhabitants Javelin, Mystical Aegis defense armor, Explorer Field Kit support wearables, the Inhabitants heat/momentum Spike Drill, Auto-Turret deployable combat support, two mechanically distinct minigames, and Butterfly Sanctuary moving-wildlife exploration. The new arsenal batch closes two previously thin specialized weapon/tool roles at once. Additional wearable/accessory, consumable/status and sheer outcome-count breadth remain.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
@@ -39,12 +39,12 @@ Persist a world-level first-kill unlock. After that point, late-game spawn table
 ## P6 — Late game
 Port/rebuild verified high-quality enemies and bosses. Every major boss receives encounter mechanics: telegraphs, phases, vulnerability windows, mobility, area denial and/or adds. Raw HP inflation cannot be the primary difficulty mechanism.
 
-Implemented P6 slices: Bogre late-game miniboss, Obsidilith Mythic boss, End Warped Clam, Slayers-Beasts Mantis post-dragon predator, Tyrachnid rare cave elite, and Wudu Binder control/support enemy with a dodgeable pull plus ally ward. Continue expanding ranged/support/control and encounter-family variety rather than adding raw boss HP.
+Implemented P6 slices: Bogre late-game miniboss, Obsidilith Mythic boss, End Warped Clam, Slayers-Beasts Mantis post-dragon predator, Tyrachnid rare cave elite, and Wudu Binder control/support enemy with a dodgeable pull plus ally ward. Rift Arsenal now binds these previously separate roles into deliberate mixed encounters: Wudu + Mantis + Tyrachnid, followed by Bogre + Wudu + Tyrachnids. Continue expanding a smaller remaining set of normal-mob/ranged families and encounter combinations rather than raw HP.
 
 ## P7 — Mythic outcomes
 Mythic Lucky Blocks award content packages: boss/event/dungeon/set/invasion/Lucky Rain-style experiences rather than merely one huge-stat item.
 
-Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, persistent Rift Siege invasion/wave event, persistent Lucky Rain event and the persistent Rift Vault structure/dungeon package. Still missing: additional chained event families, more dungeon variants and broader reward-family coverage.
+Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, persistent Rift Siege invasion/wave event, persistent Lucky Rain event, persistent Rift Vault structure/dungeon package, and Rift Arsenal as a chained equipment-objective → mixed support/control encounter → miniboss finale. More dungeon variants and a smaller number of additional chained-event families remain.
 
 ## P8 — Packaging and release validation
 - Package BP + RP as one .mcaddon.

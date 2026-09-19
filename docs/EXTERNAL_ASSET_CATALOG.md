@@ -542,3 +542,67 @@ Source fidelity boundary:
 
 Rejected adjacent candidate:
 - Slayers-Beasts Sporetrap was reviewed but not integrated because its pinned renderer references `textures/entity/sporetrap.png` while that file is absent from the pinned tree. A differently named `venus_flytrap.png` exists, but the project will not infer that it is the intended production texture without explicit source linkage.
+
+
+## Inhabitants Arsenal — Javelin + Spike Drill + Rift Arsenal — 0.29.0
+
+Status: active Rare/Epic gear package plus post-dragon Mythic chained event. License: MIT. Pinned upstream: `2da25600eb052862d34818b4a2a458afea83e868`.
+
+### Javelin direct source payload
+- `JavelinItem.java` and `JavelinEntity.java`;
+- source held geometry: 5 cubes;
+- source thrown geometry: 5 cubes;
+- source `bounce` and `in_air` animations;
+- exact original item and thrown-entity PNGs;
+- exact original aiming, bounce, two launch, block-hit and entity-hit OGG files.
+
+Source behavior contract:
+- stack size 16;
+- minimum throw charge 10 ticks;
+- full charge at 60 ticks;
+- source Java launch speed formula: 0.75 + charge * 4.5;
+- block sticking;
+- crouch-to-recover;
+- stuck Javelin acts as a bounce launcher.
+
+Bedrock/Lucky adaptation:
+- no Custom Projectiles experimental toggle;
+- normal entity + stable `Entity.applyImpulse`, `clearVelocity`, block ray and entity ray;
+- Bedrock impulse scale is deliberately adapted to the different engine trajectory;
+- Lucky pre-dragon hit profile is 8-18 damage with charge-dependent knockback;
+- owner stored per thrown entity, PvP obeys world gamerule and player state is keyed by player ID;
+- support-block deletion returns the Javelin item rather than orphaning an invisible projectile.
+
+### Spike Drill direct source payload
+- `SpikeDrillItem.java` and `DrillDamagePacketC2S.java`;
+- exact source base item PNG;
+- exact original start, loop, stop and three dig OGG files.
+
+Source behavior contract retained:
+- durability 2342;
+- heat cap 120;
+- 300-tick full momentum ramp;
+- overheat lockout 40 ticks and 2 damage;
+- passive cooling after an initial delay;
+- snowball cooling by 30.
+
+Bedrock/Lucky adaptation:
+- continuous held-use mining with a 5.25-block stable raycast;
+- momentum maps to a break cadence improving from ~14 to ~3 ticks;
+- one heat + one durability per successful break;
+- block-form salvage uses stable `Block.getItemStack`;
+- destructive safety deny-list protects containers, Lucky content, unbreakables and progression-critical blocks;
+- source Java temperature sprite/model overrides are not falsely claimed as rendered; exact base art + production sound + actionbar heat/momentum is used until a stable production item-state visual binding is selected.
+
+### Rift Arsenal
+- fourth Mythic event family;
+- permanent 17x17 final-material arsenal;
+- each participant receives six Javelins once;
+- three seals require real stuck Javelin entities, not button presses or simulated score;
+- cooperative shared target mask prevents double credit;
+- wave composition intentionally tests existing enemy role interaction;
+- stage 2: Wudu Binder + 2 Mantis + Tyrachnid;
+- final: Bogre + Wudu Binder + 2 Tyrachnids;
+- completion package: Spike Drill + 12 Javelins + 7-10 Mythic Fragments + Legendary Lucky Block.
+
+This batch follows the established vendored merge architecture: one BP + one RP, `lb:` namespace, source-specific integration module, exact provenance, no outside runtime pack dependency, and no placeholder art.

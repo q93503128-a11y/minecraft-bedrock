@@ -87,3 +87,12 @@ A source's top-level license does not override restrictions attached to embedded
 - Direct reused/adapted material: Butterfly entity behavior reference, model, IDLE_CLOSED/FLYING animations, renderer scale/texture mapping and original tortoiseshell texture.
 - Lucky-owned material: sanctuary structure, event population stabilization/soft tether, observation-station rules, cooperative event state and rewards.
 - Sporetrap was explicitly not selected in this milestone because the renderer's referenced `sporetrap.png` is absent from the pinned source tree. The presence of a differently named `venus_flytrap.png` is insufficient provenance to substitute it automatically.
+
+
+## Active Inhabitants Arsenal port — 0.29.0
+- Source: Team-Synapse-MC/Inhabitants, reviewed commit `2da25600eb052862d34818b4a2a458afea83e868`, MIT.
+- Javelin direct material: source Java behavior references, both original geometry JSON files, original animation JSON, original item/entity textures and six original sounds.
+- Spike Drill direct material: source Java item/mining logic references, original base item texture and six original sounds.
+- Javelin Bedrock Script API entity/raycast implementation, Lucky 8-18 damage profile, exact participant state handling and Rift Arsenal objective are project-side adaptations.
+- Spike Drill block-form salvage, deny-list and actionbar state display are project-side adaptations. The source's temperature-specific model override art is not claimed active in the current Bedrock port.
+- Rift Arsenal structure/staging/rewards are Lucky-owned and only reuse already-cleared Inhabitants/Slayers-Beasts production entities plus the newly-cleared arsenal gear.

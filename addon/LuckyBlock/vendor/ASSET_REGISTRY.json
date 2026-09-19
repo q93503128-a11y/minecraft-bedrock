@@ -1155,6 +1155,74 @@
       "contentId": "lb:tortoiseshell_butterfly",
       "integrationModule": "BP/scripts/events/pre_dragon_events.js",
       "modification": "Source 7-cube Butterfly model, tortoiseshell texture, 0.8 renderer scale and IDLE_CLOSED/FLYING animation identity are converted to Bedrock. Source 6 HP / 0.25 movement / free-flight / perch identity is retained as the behavior reference. Lucky-owned additions are sanctuary event spawning, event-only population stabilization/tethering, four observation stations, cooperative shared survey state and rewards."
+    },
+    {
+      "key": "inhabitants_javelin_arsenal",
+      "source": "inhabitants",
+      "upstream": [
+        "src/main/java/com/jeremyseq/inhabitants/items/javelin/JavelinItem.java",
+        "src/main/java/com/jeremyseq/inhabitants/entities/javelin/JavelinEntity.java",
+        "src/main/resources/assets/inhabitants/geo/javelin.geo.json",
+        "src/main/resources/assets/inhabitants/geo/javelin_hand.geo.json",
+        "src/main/resources/assets/inhabitants/animations/javelin.animation.json",
+        "src/main/resources/assets/inhabitants/textures/item/javelin.png",
+        "src/main/resources/assets/inhabitants/textures/entity/javelin_texture.png",
+        "src/main/resources/assets/inhabitants/sounds/item/javelin/aiming.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/javelin/bounce.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/javelin/launching_01.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/javelin/launching_02.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/javelin/on_block_hit.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/javelin/on_entity_hit.ogg"
+      ],
+      "targets": [
+        "BP/items/javelin.json",
+        "BP/entities/javelin_thrown.json",
+        "BP/scripts/integrations/inhabitants_arsenal.js",
+        "RP/entity/javelin_thrown.entity.json",
+        "RP/models/entity/javelin_thrown.geo.json",
+        "RP/models/entity/javelin_hand.geo.json",
+        "RP/animations/javelin.animation.json",
+        "RP/animation_controllers/javelin_thrown.animation_controller.json",
+        "RP/attachables/javelin.attachable.json",
+        "RP/textures/items/javelin.png",
+        "RP/textures/entity/javelin_thrown.png",
+        "RP/sounds/items/javelin_aiming.ogg",
+        "RP/sounds/items/javelin_bounce.ogg",
+        "RP/sounds/items/javelin_launch_01.ogg",
+        "RP/sounds/items/javelin_launch_02.ogg",
+        "RP/sounds/items/javelin_block_hit.ogg",
+        "RP/sounds/items/javelin_entity_hit.ogg"
+      ],
+      "contentId": "lb:javelin",
+      "modification": "Source 5-cube thrown geometry, 5-cube held geometry, bounce/in_air animation data, both textures and six Javelin sounds are directly ported. Source 10-tick minimum draw, 60-tick full charge, stack-16 economy, block sticking, crouch recovery and bounce-platform identity are retained. Bedrock uses a normal entity plus stable Script API impulse/raycast rather than the experimental Custom Projectiles toggle. Lucky balance raises hit damage to 8-18 and adapts Java velocity to Bedrock impulse. The shared inhabitants_arsenal.js also implements Spike Drill behavior."
+    },
+    {
+      "key": "inhabitants_spike_drill",
+      "source": "inhabitants",
+      "upstream": [
+        "src/main/java/com/jeremyseq/inhabitants/items/SpikeDrillItem.java",
+        "src/main/java/com/jeremyseq/inhabitants/networking/DrillDamagePacketC2S.java",
+        "src/main/resources/assets/inhabitants/models/item/spike_drill.json",
+        "src/main/resources/assets/inhabitants/textures/item/spike_drill/spike_drill.png",
+        "src/main/resources/assets/inhabitants/sounds/item/spike_drill/drilling_start.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/spike_drill/drilling_loop.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/spike_drill/drilling_stopped.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/spike_drill/dig_0.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/spike_drill/dig_1.ogg",
+        "src/main/resources/assets/inhabitants/sounds/item/spike_drill/dig_2.ogg"
+      ],
+      "targets": [
+        "BP/items/spike_drill.json",
+        "RP/textures/items/spike_drill.png",
+        "RP/sounds/items/spike_drill_start.ogg",
+        "RP/sounds/items/spike_drill_loop.ogg",
+        "RP/sounds/items/spike_drill_stop.ogg",
+        "RP/sounds/items/spike_drill_dig_0.ogg",
+        "RP/sounds/items/spike_drill_dig_1.ogg",
+        "RP/sounds/items/spike_drill_dig_2.ogg"
+      ],
+      "contentId": "lb:spike_drill",
+      "modification": "Source 2342 durability, 120 heat cap, 300-tick momentum ramp, 40-tick overheat lockout, 2 damage overheat penalty, delayed passive cooling and snowball -30 quench identity are retained in the Bedrock port. Original base item texture and start/loop/stop/dig sounds are direct-use assets. Java loot-table mining becomes explicit Bedrock block-form salvage using stable Block.getItemStack; containers, custom Lucky blocks and protected/unbreakable progression blocks are excluded. Source temperature sprite overrides are not claimed ported; heat/momentum are surfaced in actionbar until a stable non-placeholder item-state visual path is bound."
     }
   ]
 }
