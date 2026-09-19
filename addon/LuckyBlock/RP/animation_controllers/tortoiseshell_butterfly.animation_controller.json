@@ -1,0 +1,30 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.lb.tortoiseshell_butterfly.locomotion": {
+      "initial_state": "flight",
+      "states": {
+        "flight": {
+          "animations": [
+            "flying"
+          ],
+          "transitions": [
+            {
+              "perch": "query.is_on_ground"
+            }
+          ]
+        },
+        "perch": {
+          "animations": [
+            "idle_closed"
+          ],
+          "transitions": [
+            {
+              "flight": "!query.is_on_ground"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

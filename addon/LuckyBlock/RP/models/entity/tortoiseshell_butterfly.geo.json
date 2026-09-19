@@ -1,0 +1,224 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.lb.tortoiseshell_butterfly",
+        "texture_width": 32,
+        "texture_height": 32,
+        "visible_bounds_width": 2.8,
+        "visible_bounds_height": 2.2,
+        "visible_bounds_offset": [
+          0,
+          0.9,
+          0
+        ]
+      },
+      "bones": [
+        {
+          "name": "body",
+          "pivot": [
+            0,
+            0.8,
+            -1.58
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -0.8,
+                0,
+                -4
+              ],
+              "size": [
+                1.6,
+                1.6,
+                7.2
+              ],
+              "uv": [
+                6,
+                14
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Lower_R",
+          "parent": "body",
+          "pivot": [
+            -0.8,
+            1.2,
+            -2.4
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -6.4,
+                1.2,
+                -2.4
+              ],
+              "size": [
+                5.6,
+                0,
+                8.8
+              ],
+              "uv": [
+                -11,
+                11
+              ],
+              "inflate": 0.008,
+              "mirror": true
+            }
+          ]
+        },
+        {
+          "name": "Upper_R",
+          "parent": "body",
+          "pivot": [
+            -0.8,
+            1.4,
+            -3.2
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -11.2,
+                1.4,
+                -4.8
+              ],
+              "size": [
+                10.4,
+                0,
+                8
+              ],
+              "uv": [
+                -10,
+                0
+              ],
+              "inflate": 0.008
+            }
+          ]
+        },
+        {
+          "name": "Antennae",
+          "parent": "body",
+          "pivot": [
+            0,
+            1.6,
+            -4
+          ]
+        },
+        {
+          "name": "Antenna_R",
+          "parent": "Antennae",
+          "pivot": [
+            -0.8,
+            1.6,
+            -4
+          ],
+          "cubes": [
+            {
+              "origin": [
+                -0.8,
+                1.6,
+                -9.6
+              ],
+              "size": [
+                0,
+                1.6,
+                5.6
+              ],
+              "uv": [
+                15,
+                4
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Antenna_L",
+          "parent": "Antennae",
+          "pivot": [
+            0.8,
+            1.6,
+            -4
+          ],
+          "cubes": [
+            {
+              "origin": [
+                0.8,
+                1.6,
+                -9.6
+              ],
+              "size": [
+                0,
+                1.6,
+                5.6
+              ],
+              "uv": [
+                15,
+                4
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Lower_L",
+          "parent": "body",
+          "pivot": [
+            0.8,
+            1.2,
+            -2.4
+          ],
+          "cubes": [
+            {
+              "origin": [
+                0.8,
+                1.2,
+                -2.4
+              ],
+              "size": [
+                5.6,
+                0,
+                8.8
+              ],
+              "uv": [
+                -11,
+                11
+              ],
+              "inflate": 0.008
+            }
+          ]
+        },
+        {
+          "name": "Upper_L",
+          "parent": "body",
+          "pivot": [
+            0.8,
+            1.4,
+            -3.2
+          ],
+          "cubes": [
+            {
+              "origin": [
+                0.8,
+                1.4,
+                -4.8
+              ],
+              "size": [
+                10.4,
+                0,
+                8
+              ],
+              "uv": [
+                -10,
+                0
+              ],
+              "inflate": 0.008,
+              "mirror": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

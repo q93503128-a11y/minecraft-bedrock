@@ -709,8 +709,171 @@ mc.world.afterEvents.projectileHitBlock.subscribe(event=>{
   if(changed)saveStates(states);
 });
 
+
+function sanctuarySiteClear(dimension,center){
+  const bx=Math.floor(center.x),by=Math.floor(center.y),bz=Math.floor(center.z);
+  for(const [dx,dz] of [[-8,-8],[-8,8],[8,-8],[8,8],[0,0],[-8,0],[8,0],[0,-8],[0,8]]){
+    const g=groundAt(dimension,bx+dx,by,bz+dz);
+    if(!g||Math.abs(g.y-by)>1)return false;
+  }
+  for(let dx=-8;dx<=8;dx+=2)for(let dz=-8;dz<=8;dz+=2)for(let dy=0;dy<=6;dy++){
+    try{if(dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz})?.typeId!=="minecraft:air")return false;}catch{return false;}
+  }
+  return true;
+}
+function findSanctuarySite(dimension,center){
+  for(const [dx,dz] of [[0,0],[24,0],[-24,0],[0,24],[0,-24],[24,24],[-24,24],[24,-24],[-24,-24],[36,0],[-36,0],[0,36],[0,-36]]){
+    const g=groundAt(dimension,center.x+dx,center.y,center.z+dz);if(!g)continue;
+    const c={x:g.x+0.5,y:g.y,z:g.z+0.5};if(sanctuarySiteClear(dimension,c))return c;
+  }
+}
+function sanctuaryStations(state){
+  return [[6,0],[0,6],[-6,0],[0,-6]].map(([dx,dz])=>relayPoint(state,[dx,dz]));
+}
+function buildButterflySanctuary(state,dimension){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const P={
+    moss:mc.BlockPermutation.resolve("minecraft:moss_block"),
+    stone:mc.BlockPermutation.resolve("minecraft:mossy_cobblestone"),
+    log:mc.BlockPermutation.resolve("minecraft:oak_log"),
+    leaves:mc.BlockPermutation.resolve("minecraft:oak_leaves"),
+    light:mc.BlockPermutation.resolve("minecraft:glowstone"),
+    observe:mc.BlockPermutation.resolve("minecraft:smooth_stone"),
+    gold:mc.BlockPermutation.resolve("minecraft:gold_block"),
+    emerald:mc.BlockPermutation.resolve("minecraft:emerald_block"),
+    lapis:mc.BlockPermutation.resolve("minecraft:lapis_block"),
+    amethyst:mc.BlockPermutation.resolve("minecraft:amethyst_block")
+  };
+  let placed=0;
+  function put(dx,dy,dz,p){try{const b=dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz});if(!b)return;b.setPermutation(p);placed++;}catch{}}
+  for(let dx=-8;dx<=8;dx++)for(let dz=-8;dz<=8;dz++){
+    const r=Math.sqrt(dx*dx+dz*dz);
+    if(r<=8.4)put(dx,-1,dz,((dx*dx+dz*dz)%9===0)?P.stone:P.moss);
+  }
+  for(const [dx,dz] of [[-8,-8],[-8,8],[8,-8],[8,8]]){
+    for(let y=0;y<=3;y++)put(dx,y,dz,P.log);
+    for(let ox=-2;ox<=2;ox++)for(let oz=-2;oz<=2;oz++)if(Math.abs(ox)+Math.abs(oz)<=3)put(dx+ox,4,dz+oz,P.leaves);
+    put(dx,5,dz,P.light);
+  }
+  const colors=[P.gold,P.emerald,P.lapis,P.amethyst];
+  const offsets=[[6,0],[0,6],[-6,0],[0,-6]];
+  for(let i=0;i<offsets.length;i++){
+    const [dx,dz]=offsets[i];
+    for(let ox=-1;ox<=1;ox++)for(let oz=-1;oz<=1;oz++)put(dx+ox,-1,dz+oz,P.observe);
+    put(dx,-1,dz,colors[i]);
+    for(const [fx,fz] of [[2,0],[-2,0],[0,2],[0,-2]])put(dx+fx,-1,dz+fz,P.moss);
+  }
+  for(const [dx,dz] of [[0,0],[3,3],[-3,3],[3,-3],[-3,-3]])put(dx,-1,dz,P.light);
+  state.structureBuilt=placed>=300;
+  return state.structureBuilt;
+}
+function sanctuaryButterflies(state,dimension){
+  try{
+    return dimension.getEntities({location:state.center,maxDistance:48,type:"lb:tortoiseshell_butterfly"}).filter(e=>{try{return e.hasTag(tagFor(state.id));}catch{return false;}});
+  }catch{return[];}
+}
+function spawnSanctuaryButterflies(state,dimension,count=8){
+  const tag=tagFor(state.id);
+  const offsets=[[-4,-2],[-2,4],[3,3],[5,-2],[-5,3],[1,-5],[-1,1],[4,5]];
+  let spawned=0;
+  for(let i=0;i<count;i++){
+    const [dx,dz]=offsets[i%offsets.length];
+    try{
+      const e=dimension.spawnEntity("lb:tortoiseshell_butterfly",{x:state.center.x+dx,y:state.center.y+2+(i%3)*0.45,z:state.center.z+dz});
+      e.addTag(tag);
+      e.setDynamicProperty("lb:pre_event_id",state.id);
+      spawned++;
+    }catch{}
+  }
+  return spawned;
+}
+function stabilizeSanctuaryButterflies(state,dimension){
+  let list=sanctuaryButterflies(state,dimension);
+  if(list.length<6){
+    spawnSanctuaryButterflies(state,dimension,6-list.length);
+    list=sanctuaryButterflies(state,dimension);
+  }
+  for(let i=0;i<list.length;i++){
+    const e=list[i];
+    const far=distSq(e.location,state.center)>13*13||e.location.y<state.center.y-1||e.location.y>state.center.y+8;
+    if(!far)continue;
+    const a=(Math.PI*2*i)/Math.max(1,list.length);
+    try{e.teleport({x:state.center.x+Math.cos(a)*4,y:state.center.y+2+(i%2),z:state.center.z+Math.sin(a)*4},{dimension});}catch{}
+  }
+  return list;
+}
+function butterflyNearPoint(list,point,radius=5.5){
+  const r2=radius*radius;
+  return list.some(e=>{try{return distSq(e.location,point)<=r2;}catch{return false;}});
+}
+function releaseSanctuaryButterflies(state,dimension,keep=4){
+  const list=sanctuaryButterflies(state,dimension);
+  for(let i=0;i<list.length;i++){
+    const e=list[i];
+    if(i>=keep){try{e.remove();}catch{};continue;}
+    try{e.removeTag(tagFor(state.id));}catch{}
+    try{e.nameTag="Tortoiseshell Butterfly";}catch{}
+  }
+}
+function finishButterflySanctuary(state,dimension){
+  spawnItem(dimension,state.center,"lb:epic_fragment",4+Math.floor(Math.random()*3));
+  spawnItem(dimension,state.center,"lb:reward_camera",1);
+  if(Math.random()<0.30)spawnItem(dimension,state.center,"lb:rare_lucky_block",1);
+  if(Math.random()<0.25){
+    spawnItem(dimension,state.center,"lb:explorer_hat",1);
+    spawnItem(dimension,state.center,"lb:explorer_pack",1);
+  }
+  releaseSanctuaryButterflies(state,dimension,4);
+  try{dimension.playSound("break.amethyst_cluster",state.center,{volume:0.78,pitch:1.25});}catch{}
+  try{dimension.spawnParticle("lb:obsidilith_burst",{x:state.center.x,y:state.center.y+0.7,z:state.center.z});}catch{}
+  messageNear(dimension,state.center,"§d[에픽 럭키] Butterfly Sanctuary 조사 완료! 나비 네 마리가 보호구역에 남았습니다.");
+}
+function tickButterflySanctuary(state,dimension){
+  state.elapsed=(state.elapsed??0)+STEP;
+  if(state.elapsed>18000){
+    releaseSanctuaryButterflies(state,dimension,0);
+    spawnItem(dimension,state.center,"lb:epic_fragment",3);
+    messageNear(dimension,state.center,"§8[에픽 럭키] Butterfly Sanctuary 조사가 종료되었습니다. 에픽 조각 3개를 남겼습니다.");
+    return true;
+  }
+  if((state.stage??0)===0){
+    if(!buildButterflySanctuary(state,dimension)){
+      spawnItem(dimension,state.center,"lb:epic_fragment",3);
+      messageNear(dimension,state.center,"§8[에픽 럭키] 보호구역을 만들 공간이 없어 에픽 조각 3개로 보상했습니다.");
+      return true;
+    }
+    state.observeMask=0;
+    state.observeHolds=[0,0,0,0];
+    spawnSanctuaryButterflies(state,dimension,8);
+    state.stage=1;
+    messageNear(dimension,state.center,"§d[에픽 럭키] Butterfly Sanctuary — 네 관찰 지점에서 나비가 가까이 왔을 때 2초간 머물러 생태 조사를 완료하세요. 순서는 자유입니다.");
+    return false;
+  }
+  const butterflies=stabilizeSanctuaryButterflies(state,dimension);
+  const players=playersNear(dimension,state.center,28);
+  const stations=sanctuaryStations(state);
+  state.observeHolds=Array.isArray(state.observeHolds)&&state.observeHolds.length===4?state.observeHolds:[0,0,0,0];
+  for(let i=0;i<stations.length;i++){
+    const bit=1<<i;if(((state.observeMask??0)&bit)!==0)continue;
+    const point=stations[i];
+    if((state.elapsed%20)===0)pulseRelayTarget(dimension,point);
+    const observer=players.find(p=>playerOnPoint(p,point,1.75));
+    const valid=!!observer&&butterflyNearPoint(butterflies,point,5.5);
+    state.observeHolds[i]=valid?state.observeHolds[i]+STEP:0;
+    if(state.observeHolds[i]<40)continue;
+    state.observeMask=(state.observeMask??0)|bit;
+    state.observeHolds[i]=0;
+    const done=[1,2,4,8].filter(b=>(state.observeMask&b)!==0).length;
+    try{dimension.playSound("break.amethyst_cluster",point,{volume:0.64,pitch:0.96+done*0.08});}catch{}
+    try{dimension.spawnParticle("lb:obsidilith_burst",{x:point.x,y:point.y+0.45,z:point.z});}catch{}
+    messageNear(dimension,state.center,"§d[Butterfly Sanctuary] 관찰 기록 "+done+"/4 완료 — 남은 지점은 순서와 무관하게 조사할 수 있습니다.");
+  }
+  if((state.observeMask??0)===15){finishButterflySanctuary(state,dimension);return true;}
+  return false;
+}
+
 export function startPreDragonEvent(dimension,center,type){
-  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark"&&type!=="fortune_gallery")return false;
+  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark"&&type!=="fortune_gallery"&&type!=="butterfly_sanctuary")return false;
   if(!dimension.id.includes("overworld"))return false;
   const site=type==="awakened_grove"
     ?findGroveSite(dimension,center)
@@ -720,10 +883,12 @@ export function startPreDragonEvent(dimension,center,type){
         ?findAnthillSite(dimension,center)
         :type==="fortune_bulwark"
           ?findBulwarkSite(dimension,center)
-          :findGallerySite(dimension,center);
+          :type==="fortune_gallery"
+            ?findGallerySite(dimension,center)
+            :findSanctuarySite(dimension,center);
   if(!site)return false;
   const states=loadStates();if(states.length>=MAX_ACTIVE)return false;
-  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:type==="fortune_gallery"?58:48;
+  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:type==="fortune_gallery"?58:type==="butterfly_sanctuary"?52:48;
   for(const s of states)if(s.dimension==="overworld"&&distSq(s.center,site)<overlap*overlap)return false;
   states.push({id:nextId(),type,dimension:"overworld",center:site,stage:0,elapsed:0});saveStates(states);return true;
 }
@@ -744,7 +909,9 @@ mc.system.runInterval(()=>{
               ?tickFortuneBulwark(state,dimension)
               :state.type==="fortune_gallery"
                 ?tickFortuneGallery(state,dimension)
-                :true;
+                :state.type==="butterfly_sanctuary"
+                  ?tickButterflySanctuary(state,dimension)
+                  :true;
     }catch{done=false;}
     if(!done)next.push(state);
   }
