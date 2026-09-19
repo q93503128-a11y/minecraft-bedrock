@@ -67,6 +67,36 @@
     },
     "lucky_guitar": {
       "textures": "textures/items/lucky_guitar"
+    },
+    "lb_common_fragment_item": {
+      "textures": "textures/blocks/lb_fragment_mana"
+    },
+    "lb_common_lucky_block_item": {
+      "textures": "textures/blocks/lb_common_lucky"
+    },
+    "lb_rare_fragment_item": {
+      "textures": "textures/blocks/lb_fragment_mana"
+    },
+    "lb_rare_lucky_block_item": {
+      "textures": "textures/blocks/lb_fragment_mana"
+    },
+    "lb_epic_fragment_item": {
+      "textures": "textures/blocks/lb_crystal_natura"
+    },
+    "lb_epic_lucky_block_item": {
+      "textures": "textures/blocks/lb_crystal_natura"
+    },
+    "lb_legendary_fragment_item": {
+      "textures": "textures/blocks/lb_crystal_gaia"
+    },
+    "lb_legendary_lucky_block_item": {
+      "textures": "textures/blocks/lb_ring_natura"
+    },
+    "lb_mythic_fragment_item": {
+      "textures": "textures/blocks/lb_ring_gaia"
+    },
+    "lb_mythic_lucky_block_item": {
+      "textures": "textures/blocks/lb_ring_gaia"
     }
   }
 }

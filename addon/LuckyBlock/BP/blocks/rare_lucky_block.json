@@ -2,10 +2,7 @@
   "format_version": "1.26.0",
   "minecraft:block": {
     "description": {
-      "identifier": "lb:rare_lucky_block",
-      "menu_category": {
-        "category": "items"
-      }
+      "identifier": "lb:rare_lucky_block_placed"
     },
     "components": {
       "minecraft:geometry": "geometry.lb.rare_lucky_block",

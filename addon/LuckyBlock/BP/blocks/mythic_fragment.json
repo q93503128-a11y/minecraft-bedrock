@@ -2,10 +2,7 @@
   "format_version": "1.26.0",
   "minecraft:block": {
     "description": {
-      "identifier": "lb:mythic_fragment",
-      "menu_category": {
-        "category": "items"
-      }
+      "identifier": "lb:mythic_fragment_display"
     },
     "components": {
       "minecraft:geometry": "geometry.lb.mythic_fragment",

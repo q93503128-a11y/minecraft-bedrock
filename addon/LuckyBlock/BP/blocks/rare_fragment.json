@@ -2,10 +2,7 @@
   "format_version": "1.26.0",
   "minecraft:block": {
     "description": {
-      "identifier": "lb:rare_fragment",
-      "menu_category": {
-        "category": "items"
-      }
+      "identifier": "lb:rare_fragment_display"
     },
     "components": {
       "minecraft:geometry": "geometry.lb.rare_fragment",
@@ -42,7 +39,7 @@
       "minecraft:destructible_by_mining": {
         "seconds_to_destroy": 0.15
       },
-      "minecraft:light_emission": 2
+      "minecraft:light_emission": 4
     }
   }
 }

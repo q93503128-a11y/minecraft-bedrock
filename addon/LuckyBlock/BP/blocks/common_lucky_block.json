@@ -2,8 +2,7 @@
   "format_version": "1.26.0",
   "minecraft:block": {
     "description": {
-      "identifier": "lb:common_lucky_block",
-      "menu_category": { "category": "items" }
+      "identifier": "lb:common_lucky_block_placed"
     },
     "components": {
       "minecraft:geometry": "geometry.lb.common_lucky_block",
