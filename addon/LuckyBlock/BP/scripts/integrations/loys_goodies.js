@@ -91,7 +91,7 @@ function fireTurret(turret, target) {
 }
 
 function runTurrets() {
-  turretTick += TURRET_STEP;
+  turretTick = world.getAbsoluteTime();
   for (const dimensionId of ["overworld", "nether", "the_end"]) {
     let dimension;
     try { dimension = world.getDimension(dimensionId); } catch { continue; }
