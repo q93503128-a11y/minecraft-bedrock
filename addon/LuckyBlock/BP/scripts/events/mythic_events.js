@@ -600,8 +600,159 @@ function tickRain(state, dimension) {
   return false;
 }
 
+
+function buildRiftArsenal(state, dimension) {
+  const bx = Math.floor(state.center.x), by = Math.floor(state.center.y), bz = Math.floor(state.center.z);
+  const p = {
+    floor: mc.BlockPermutation.resolve("minecraft:tuff_bricks"),
+    trim: mc.BlockPermutation.resolve("minecraft:polished_tuff"),
+    copper: mc.BlockPermutation.resolve("minecraft:oxidized_copper"),
+    cut: mc.BlockPermutation.resolve("minecraft:cut_copper"),
+    light: mc.BlockPermutation.resolve("minecraft:sea_lantern"),
+    target: mc.BlockPermutation.resolve("minecraft:target"),
+    dark: mc.BlockPermutation.resolve("minecraft:polished_blackstone_bricks")
+  };
+  let placed = 0;
+  function put(dx, dy, dz, perm) {
+    try {
+      const block = dimension.getBlock({ x: bx + dx, y: by + dy, z: bz + dz });
+      if (!block) return;
+      block.setPermutation(perm);
+      placed++;
+    } catch {}
+  }
+  for (let dx = -8; dx <= 8; dx++) for (let dz = -8; dz <= 8; dz++) {
+    const ring = Math.max(Math.abs(dx), Math.abs(dz));
+    put(dx, -1, dz, ring >= 7 ? p.dark : (((dx + dz) & 1) === 0 ? p.floor : p.trim));
+  }
+  for (const [dx,dz] of [[-8,-8],[-8,8],[8,-8],[8,8]]) {
+    for (let y = 0; y <= 5; y++) put(dx,y,dz,y % 2 ? p.copper : p.cut);
+    put(dx,6,dz,p.light);
+  }
+  for (let x = -8; x <= 8; x++) {
+    if (Math.abs(x) > 1) { put(x,0,-8,p.dark); put(x,1,-8,p.dark); }
+    put(x,0,8,p.dark);
+  }
+  for (let z = -7; z <= 7; z++) { put(-8,0,z,p.dark); put(8,0,z,p.dark); }
+  const targets = [[-5,0],[5,0],[0,-5]];
+  for (const [dx,dz] of targets) {
+    put(dx,0,dz,p.copper); put(dx,1,dz,p.cut); put(dx,2,dz,p.target);
+    put(dx-1,0,dz,p.trim); put(dx+1,0,dz,p.trim); put(dx,0,dz-1,p.trim); put(dx,0,dz+1,p.trim);
+  }
+  for (let dx=-2;dx<=2;dx++) for (let dz=-2;dz<=2;dz++) put(dx,0,dz,Math.abs(dx)+Math.abs(dz)<=2?p.copper:p.trim);
+  put(0,1,0,p.light);
+  state.structureBuilt = placed >= 360;
+  return state.structureBuilt;
+}
+function arsenalTargets(state) {
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  return [[-5,2,0],[5,2,0],[0,2,-5]].map(([dx,dy,dz])=>({x:bx+dx+0.5,y:by+dy+0.5,z:bz+dz+0.5}));
+}
+function arsenalJavelins(dimension, center) {
+  try {
+    return dimension.getEntities({ type:"lb:javelin_thrown", location:center, maxDistance:36 })
+      .filter(e => { try { return e.getDynamicProperty("lb:javelin_stuck") === true; } catch { return false; } });
+  } catch { return []; }
+}
+function grantArsenalJavelins(state, dimension) {
+  state.arsenalGranted = Array.isArray(state.arsenalGranted) ? state.arsenalGranted : [];
+  for (const player of playersNear(dimension, state.center, 36)) {
+    if (state.arsenalGranted.includes(player.id)) continue;
+    try {
+      const inv = player.getComponent("minecraft:inventory")?.container;
+      if (!inv) continue;
+      const leftover = inv.addItem(new mc.ItemStack("lb:javelin", 6));
+      if (leftover) dimension.spawnItem(leftover, {x:player.location.x,y:player.location.y+0.5,z:player.location.z});
+      state.arsenalGranted.push(player.id);
+      player.sendMessage("§6[Rift Arsenal] Javelin 6개 지급 — 세 개의 표적 봉인을 꿰뚫으세요.");
+    } catch {}
+  }
+}
+function pulseArsenalTargets(state, dimension) {
+  const mask=state.targetMask??0,targets=arsenalTargets(state);
+  for(let i=0;i<targets.length;i++){
+    if((mask&(1<<i))!==0) continue;
+    const p=targets[i];
+    particle(dimension,"lb:obsidilith_indicator",{x:p.x,y:p.y+0.8,z:p.z});
+    particle(dimension,"lb:slasher_spark_particle",{x:p.x,y:p.y,z:p.z});
+  }
+}
+function detectArsenalHits(state, dimension) {
+  const targets=arsenalTargets(state);
+  const javelins=arsenalJavelins(dimension,state.center);
+  for(let i=0;i<targets.length;i++){
+    const bit=1<<i;
+    if(((state.targetMask??0)&bit)!==0) continue;
+    const hit=javelins.find(e=>distSq(e.location,targets[i])<=1.45*1.45);
+    if(!hit) continue;
+    state.targetMask=(state.targetMask??0)|bit;
+    try{hit.remove();}catch{}
+    particle(dimension,"lb:obsidilith_burst",targets[i]);
+    sound(dimension,"lb.javelin.block_hit",targets[i],{volume:0.9,pitch:1.1+i*0.08});
+    const done=[1,2,4].filter(b=>(state.targetMask&b)!==0).length;
+    messageNear(dimension,state.center,"§6[Rift Arsenal] 표적 봉인 "+done+"/3 해제.");
+  }
+}
+function completeArsenal(state, dimension) {
+  cleanupEnemies(state, dimension);
+  spawnItem(dimension,state.center,"lb:spike_drill",1);
+  spawnItem(dimension,state.center,"lb:javelin",12);
+  spawnItem(dimension,state.center,"lb:mythic_fragment",7+Math.floor(Math.random()*4));
+  spawnItem(dimension,state.center,"lb:legendary_lucky_block",1);
+  particle(dimension,"lb:obsidilith_burst",{x:state.center.x,y:state.center.y+1.2,z:state.center.z});
+  sound(dimension,"lb.bogre.roar",state.center,{volume:1.0,pitch:1.18});
+  messageNear(dimension,state.center,"§d[신화 럭키] Rift Arsenal 정복! Spike Drill과 Javelin 전리품이 개방되었습니다.");
+}
+function tickRiftArsenal(state, dimension) {
+  state.elapsed=(state.elapsed??0)+TICK_STEP;
+  if(state.elapsed>30000){
+    cleanupEnemies(state,dimension);
+    messageNear(dimension,state.center,"§8[신화 럭키] Rift Arsenal의 균열이 닫혔습니다.");
+    return true;
+  }
+  if((state.stage??0)===0){
+    if(!buildRiftArsenal(state,dimension)){
+      spawnItem(dimension,state.center,"lb:mythic_fragment",4);
+      messageNear(dimension,state.center,"§8[신화 럭키] Rift Arsenal을 형성할 공간이 없어 신화 조각 4개로 보상했습니다.");
+      return true;
+    }
+    state.targetMask=0; state.arsenalGranted=[]; state.stage=1;
+    grantArsenalJavelins(state,dimension);
+    messageNear(dimension,state.center,"§6[신화 럭키] Rift Arsenal — 지급된 Javelin을 세 개의 표적 블록에 박아 무기고 봉인을 해제하세요.");
+    return false;
+  }
+  if(state.stage===1){
+    grantArsenalJavelins(state,dimension);
+    if((state.elapsed%20)===0) pulseArsenalTargets(state,dimension);
+    detectArsenalHits(state,dimension);
+    if((state.targetMask??0)!==7) return false;
+    spawnVaultWave(state,dimension,[
+      {id:"lb:wudu_binder",count:1},
+      {id:"lb:mantis",count:2},
+      {id:"lb:tyrachnid",count:1}
+    ]);
+    state.stage=2;
+    messageNear(dimension,state.center,"§5[Rift Arsenal] 2단계 — Wudu Binder의 지원 아래 사냥대가 진입합니다.");
+    return false;
+  }
+  if(eventEnemies(state,dimension).length>0) return false;
+  if(state.stage===2){
+    spawnVaultWave(state,dimension,[
+      {id:"lb:bogre",count:1},
+      {id:"lb:wudu_binder",count:1},
+      {id:"lb:tyrachnid",count:2}
+    ]);
+    state.stage=3;
+    messageNear(dimension,state.center,"§c[Rift Arsenal] 최종 단계 — Bogre와 지원/제압 조합을 동시에 돌파하세요!");
+    sound(dimension,"lb.bogre.roar",state.center,{volume:1.3,pitch:0.86});
+    return false;
+  }
+  if(state.stage===3){ completeArsenal(state,dimension); return true; }
+  return false;
+}
+
 export function startMythicEvent(dimension, center, type) {
-  if (type !== "rift_siege" && type !== "lucky_rain" && type !== "rift_vault") return false;
+  if (type !== "rift_siege" && type !== "lucky_rain" && type !== "rift_vault" && type !== "rift_arsenal") return false;
   if (mc.world.getDynamicProperty("lb:post_dragon_unlocked") !== true) return false;
 
   const states = loadStates();
@@ -612,7 +763,7 @@ export function startMythicEvent(dimension, center, type) {
     y: Math.floor(center.y),
     z: Math.floor(center.z) + 0.5
   };
-  if (type === "rift_vault") {
+  if (type === "rift_vault" || type === "rift_arsenal") {
     const site = findVaultSite(dimension, normalizedCenter);
     if (!site) return false;
     normalizedCenter = site;
@@ -663,6 +814,7 @@ mc.system.runInterval(() => {
       if (state.type === "rift_siege") done = tickSiege(state, dimension);
       else if (state.type === "lucky_rain") done = tickRain(state, dimension);
       else if (state.type === "rift_vault") done = tickVault(state, dimension);
+      else if (state.type === "rift_arsenal") done = tickRiftArsenal(state, dimension);
       else done = true;
     } catch {
       done = false;

@@ -326,6 +326,99 @@
           "stream": false
         }
       ]
+    },
+    "lb.javelin.aiming": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/items/javelin_aiming",
+          "stream": false
+        }
+      ]
+    },
+    "lb.javelin.bounce": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/items/javelin_bounce",
+          "stream": false
+        }
+      ]
+    },
+    "lb.javelin.launch": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/items/javelin_launch_01",
+          "stream": false
+        },
+        {
+          "name": "sounds/items/javelin_launch_02",
+          "stream": false
+        }
+      ]
+    },
+    "lb.javelin.block_hit": {
+      "category": "neutral",
+      "sounds": [
+        {
+          "name": "sounds/items/javelin_block_hit",
+          "stream": false
+        }
+      ]
+    },
+    "lb.javelin.entity_hit": {
+      "category": "neutral",
+      "sounds": [
+        {
+          "name": "sounds/items/javelin_entity_hit",
+          "stream": false
+        }
+      ]
+    },
+    "lb.spike_drill.start": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/items/spike_drill_start",
+          "stream": false
+        }
+      ]
+    },
+    "lb.spike_drill.loop": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/items/spike_drill_loop",
+          "stream": false
+        }
+      ]
+    },
+    "lb.spike_drill.stop": {
+      "category": "player",
+      "sounds": [
+        {
+          "name": "sounds/items/spike_drill_stop",
+          "stream": false
+        }
+      ]
+    },
+    "lb.spike_drill.dig": {
+      "category": "block",
+      "sounds": [
+        {
+          "name": "sounds/items/spike_drill_dig_0",
+          "stream": false
+        },
+        {
+          "name": "sounds/items/spike_drill_dig_1",
+          "stream": false
+        },
+        {
+          "name": "sounds/items/spike_drill_dig_2",
+          "stream": false
+        }
+      ]
     }
   }
 }

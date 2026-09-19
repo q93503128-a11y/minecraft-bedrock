@@ -15,17 +15,18 @@ export const weightedPools = {
     { weight: 5, kind: "fragments", id: "lb:rare_fragment", min: 1, max: 1, source: "core" }
   ],
   rare: [
-    { weight: 18, kind: "fragments", id: "lb:rare_fragment", min: 2, max: 4, source: "core" },
+    { weight: 14, kind: "fragments", id: "lb:rare_fragment", min: 2, max: 4, source: "core" },
     { weight: 6, kind: "item", id: "lb:reward_vending_machine", source: "loys_goodies" },
     { weight: 6, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
     { weight: 7, kind: "item", id: "lb:reward_cctv", source: "loys_goodies" },
     { weight: 7, kind: "item", id: "lb:reward_wrench", source: "loys_goodies" },
     { weight: 7, kind: "item", id: "lb:reward_easel", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_backpack", source: "loys_goodies" },
-    { weight: 7, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
+    { weight: 5, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
     { weight: 6, kind: "item", id: "lb:reward_cardboard_shield", source: "frenchkrab" },
     { weight: 6, kind: "item", id: "lb:reward_turret", source: "loys_goodies" },
-    { weight: 6, kind: "item", id: "lb:common_lucky_block", count: 2, source: "core" },
+    { weight: 7, kind: "bundle", id: "inhabitants_javelin_bundle", source: "inhabitants", items: [{ id: "lb:javelin", count: 6 }] },
+    { weight: 5, kind: "item", id: "lb:common_lucky_block", count: 2, source: "core" },
     { weight: 5, kind: "fragments", id: "lb:epic_fragment", min: 1, max: 1, source: "core" },
     { weight: 6, kind: "entity", id: "lb:irk_companion", nameTag: "Irk Companion", source: "slayers_beasts", tameToOpener: true },
     { weight: 8, kind: "event", id: "fortune_relay", source: "core+licensed_external_fx", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } }
@@ -38,18 +39,19 @@ export const weightedPools = {
     { weight: 2, kind: "item", id: "lb:rare_lucky_block", count: 2, source: "core" },
     { weight: 5, kind: "fragments", id: "lb:legendary_fragment", min: 1, max: 1, source: "core" },
     { weight: 2, kind: "item", id: "lb:epic_lucky_block", source: "core" },
-    { weight: 10, kind: "event", id: "awakened_grove", source: "core+inhabitants+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
-    { weight: 8, kind: "event", id: "royal_anthill", source: "core+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
+    { weight: 9, kind: "event", id: "awakened_grove", source: "core+inhabitants+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
+    { weight: 7, kind: "event", id: "royal_anthill", source: "core+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 6, kind: "event", id: "fortune_bulwark", source: "core+loys_goodies+licensed_encounters", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 6, kind: "event", id: "fortune_gallery", source: "core+loys_goodies", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 5, kind: "event", id: "butterfly_sanctuary", source: "core+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
-    { weight: 9, kind: "entity", id: "lb:war_ant_mount", nameTag: "War Ant Mount", source: "slayers_beasts", tameToOpener: true, tameEvent: "lb:on_tame" },
-    { weight: 9, kind: "bundle", id: "amethyst_repeater_kit", source: "tomemancy", items: [{ id: "lb:amethyst_repeater", count: 1 }, { id: "lb:amethyst_charge", count: 48 }] },
-    { weight: 7, kind: "bundle", id: "storm_longbow_kit", source: "loys_goodies", items: [{ id: "lb:storm_longbow", count: 1 }, { id: "minecraft:arrow", count: 32 }] },
+    { weight: 6, kind: "item", id: "lb:spike_drill", source: "inhabitants" },
+    { weight: 8, kind: "entity", id: "lb:war_ant_mount", nameTag: "War Ant Mount", source: "slayers_beasts", tameToOpener: true, tameEvent: "lb:on_tame" },
+    { weight: 8, kind: "bundle", id: "amethyst_repeater_kit", source: "tomemancy", items: [{ id: "lb:amethyst_repeater", count: 1 }, { id: "lb:amethyst_charge", count: 48 }] },
+    { weight: 6, kind: "bundle", id: "storm_longbow_kit", source: "loys_goodies", items: [{ id: "lb:storm_longbow", count: 1 }, { id: "minecraft:arrow", count: 32 }] },
     { weight: 7, kind: "bundle", id: "explorer_field_kit", source: "loys_goodies", items: [{ id: "lb:explorer_hat", count: 1 }, { id: "lb:explorer_pack", count: 1 }, { id: "minecraft:compass", count: 1 }] },
     { weight: 8, kind: "entity", id: "lb:wither_spider", nameTag: "Wither Spider Artillery", source: "slayers_beasts" },
     {
-      weight: 8,
+      weight: 7,
       kind: "bundle",
       id: "tomemancy_mystical_aegis_set",
       source: "tomemancy",
@@ -78,9 +80,9 @@ weightedPools.legendary = [
 weightedPools.mythic = [
   { weight: 6, kind: "fragments", id: "lb:mythic_fragment", min: 3, max: 6, source: "core" },
   { weight: 4, kind: "item", id: "lb:legendary_lucky_block", count: 2, source: "core" },
-  { weight: 16, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
+  { weight: 14, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
   {
-    weight: 16,
+    weight: 14,
     kind: "bundle",
     id: "tomemancer_archmage_set",
     source: "tomemancy",
@@ -92,11 +94,12 @@ weightedPools.mythic = [
       { id: "lb:tomemancy_dragon_fireball_tome", count: 1 }
     ]
   },
-  { weight: 15, kind: "event", id: "rift_siege", source: "core+inhabitants+bomd+slayers_beasts", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
-  { weight: 13, kind: "event", id: "lucky_rain", source: "core+licensed_external_rewards", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
-  { weight: 18, kind: "event", id: "rift_vault", source: "core+licensed_external_encounters", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
-  { weight: 3, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
-  { weight: 4, kind: "fragments", id: "lb:legendary_fragment", min: 6, max: 10, source: "core" },
+  { weight: 13, kind: "event", id: "rift_siege", source: "core+inhabitants+bomd+slayers_beasts", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
+  { weight: 11, kind: "event", id: "lucky_rain", source: "core+licensed_external_rewards", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
+  { weight: 16, kind: "event", id: "rift_vault", source: "core+licensed_external_encounters", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
+  { weight: 12, kind: "event", id: "rift_arsenal", source: "core+inhabitants+slayers_beasts", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
+  { weight: 2, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
+  { weight: 3, kind: "fragments", id: "lb:legendary_fragment", min: 6, max: 10, source: "core" },
   { weight: 5, kind: "item", id: "lb:mythic_lucky_block", source: "core" }
 ]
 

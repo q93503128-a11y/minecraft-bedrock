@@ -1,0 +1,30 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:javelin_thrown",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/javelin_thrown"
+      },
+      "geometry": {
+        "default": "geometry.lb.javelin_thrown"
+      },
+      "animations": {
+        "in_air": "animation.lb.javelin.in_air",
+        "bounce": "animation.lb.javelin.bounce",
+        "state": "controller.animation.lb.javelin_thrown.state"
+      },
+      "scripts": {
+        "animate": [
+          "state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}

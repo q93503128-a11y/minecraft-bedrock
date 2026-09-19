@@ -66,3 +66,6 @@ entity.lb:sky_damselfly_mount.name=하늘 실잠자리 탈것
 item.lb:explorer_hat.name=§6탐험가 모자§r
 item.lb:explorer_pack.name=§6탐험가 필드팩§r
 entity.lb:tortoiseshell_butterfly.name=작은멋쟁이나비
+item.lb:javelin.name=재블린
+item.lb:spike_drill.name=스파이크 드릴
+entity.lb:javelin_thrown.name=재블린

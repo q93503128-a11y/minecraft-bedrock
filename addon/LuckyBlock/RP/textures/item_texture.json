@@ -40,6 +40,12 @@
     },
     "explorer_pack": {
       "textures": "textures/items/explorer_pack"
+    },
+    "javelin": {
+      "textures": "textures/items/javelin"
+    },
+    "spike_drill": {
+      "textures": "textures/items/spike_drill"
     }
   }
 }

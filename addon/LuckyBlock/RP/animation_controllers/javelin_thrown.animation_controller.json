@@ -1,0 +1,30 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.lb.javelin_thrown.state": {
+      "initial_state": "flight",
+      "states": {
+        "flight": {
+          "animations": [
+            "in_air"
+          ],
+          "transitions": [
+            {
+              "stuck": "q.property('lb:stuck')"
+            }
+          ]
+        },
+        "stuck": {
+          "animations": [
+            "bounce"
+          ],
+          "transitions": [
+            {
+              "flight": "!q.property('lb:stuck')"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

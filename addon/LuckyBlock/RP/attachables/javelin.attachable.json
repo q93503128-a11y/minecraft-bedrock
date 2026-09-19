@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "lb:javelin",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/javelin_thrown"
+      },
+      "geometry": {
+        "default": "geometry.lb.javelin_hand"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}

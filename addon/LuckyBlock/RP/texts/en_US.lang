@@ -66,3 +66,6 @@ entity.lb:sky_damselfly_mount.name=Sky Damselfly Mount
 item.lb:explorer_hat.name=§6Explorer Hat§r
 item.lb:explorer_pack.name=§6Explorer Field Pack§r
 entity.lb:tortoiseshell_butterfly.name=Tortoiseshell Butterfly
+item.lb:javelin.name=Javelin
+item.lb:spike_drill.name=Spike Drill
+entity.lb:javelin_thrown.name=Javelin

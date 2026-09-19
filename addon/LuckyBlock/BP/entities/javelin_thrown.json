@@ -1,0 +1,79 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:javelin_thrown",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false,
+      "properties": {
+        "lb:stuck": {
+          "type": "bool",
+          "default": false,
+          "client_sync": true
+        }
+      }
+    },
+    "component_groups": {
+      "lb:flying": {
+        "minecraft:physics": {
+          "has_gravity": true,
+          "has_collision": false
+        }
+      },
+      "lb:stuck": {
+        "minecraft:physics": {
+          "has_gravity": false,
+          "has_collision": false
+        }
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "projectile",
+          "lb_javelin"
+        ]
+      },
+      "minecraft:collision_box": {
+        "width": 0.75,
+        "height": 0.75
+      },
+      "minecraft:push_through": {
+        "value": 1
+      },
+      "minecraft:damage_sensor": {
+        "triggers": {
+          "deals_damage": false
+        }
+      }
+    },
+    "events": {
+      "minecraft:entity_spawned": {
+        "set_property": {
+          "lb:stuck": false
+        },
+        "add": {
+          "component_groups": [
+            "lb:flying"
+          ]
+        }
+      },
+      "lb:stick": {
+        "set_property": {
+          "lb:stuck": true
+        },
+        "remove": {
+          "component_groups": [
+            "lb:flying"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:stuck"
+          ]
+        }
+      }
+    }
+  }
+}
