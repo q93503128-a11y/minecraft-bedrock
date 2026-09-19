@@ -194,7 +194,14 @@ if(fs.existsSync(rewardPath)){
   const exp={common:96,rare:100,epic:100,legendary:122,mythic:100};
   for(const [k,v] of Object.entries(exp))assert(sums[k]===v,`reward total ${k}: expected ${v}, got ${sums[k]}`);
   console.log("reward totals:",sums);
+  for(const token of [
+    'id: "lb:slasher", source: "slasher_v1", requiresPostDragon: true',
+    'id: "lb:wizard_hat", source: "loys_goodies", requiresPostDragon: true',
+    'id: "tomemancer_archmage_set"',
+    'requiresPostDragon: true'
+  ])assert(s.includes(token),`reward_registry.js missing post-dragon contract token: ${token}`);
 }
+
 
 const mainPath=path.join(bpRoot,"scripts","main.js");
 if(fs.existsSync(mainPath)){
@@ -230,7 +237,7 @@ if(fs.existsSync(lorePath)){
   assert(loreSource.includes(".setLore("),"item_lore.js must apply ItemStack.setLore");
   const requiredLoreIds=[
     ...coreItemIds,
-    "lb:slasher","lb:slasher_blade","lb:amethyst_repeater","lb:amethyst_charge",
+    "lb:slasher","lb:slasher_blade","lb:amethyst_repeater","lb:amethyst_charge","lb:gallery_slug",
     "lb:storm_longbow","lb:javelin","lb:spike_drill",
     "lb:fortune_tonic","lb:flashbang","lb:smoke_grenade","lb:lucky_guitar",
     "lb:tomemancy_diamond_staff","lb:tomemancy_meteor_tome","lb:tomemancy_gigavolt_tome","lb:tomemancy_dragon_fireball_tome",
@@ -291,6 +298,42 @@ const scriptedDurabilityItems=[
 for(const id of scriptedDurabilityItems){
   const chance=itemDefs.get(id)?.j?.components?.["minecraft:durability"]?.damage_chance;
   assert(chance?.min===0&&chance?.max===0,`${id}: scripted durability item must keep vanilla durability loss disabled`);
+}
+
+const slasherItem=itemDefs.get("lb:slasher")?.j;
+assert(slasherItem?.components?.["minecraft:damage"]?.value===32,"Slasher base damage must remain 32");
+assert(slasherItem?.components?.["minecraft:durability"]?.max_durability===2200,"Slasher durability must remain 2200");
+const slasherRepair=(slasherItem?.components?.["minecraft:repairable"]?.repair_items??[]).find(x=>x?.items?.includes("lb:slasher_blade"));
+assert(slasherRepair?.repair_amount===320,"Slasher Blade repair amount must remain 320");
+
+const staff=itemDefs.get("lb:tomemancy_diamond_staff")?.j;
+assert(staff?.components?.["minecraft:damage"]?.value===38,"Diamond Staff melee damage must remain 38");
+assert(staff?.components?.["minecraft:durability"]?.max_durability===2400,"Diamond Staff durability must remain 2400");
+
+const expectedDurability={
+  "lb:amethyst_repeater":720,
+  "lb:storm_longbow":640,
+  "lb:spike_drill":2342,
+  "lb:tomemancy_meteor_tome":900,
+  "lb:tomemancy_gigavolt_tome":900,
+  "lb:tomemancy_dragon_fireball_tome":900
+};
+for(const [id,value] of Object.entries(expectedDurability)){
+  const actual=itemDefs.get(id)?.j?.components?.["minecraft:durability"]?.max_durability;
+  assert(actual===value,`${id}: expected max durability ${value}, got ${actual}`);
+}
+
+const portableRuntimeContracts=[
+  ["integrations/tomemancy_amethyst_repeater.js",["const SHOTS=3","const SHOT_DAMAGE=12","ammoCount(player)>=SHOTS"]],
+  ["integrations/loys_storm_longbow.js",["damage:26","pierce:2","minecraft:arrow"]],
+  ["integrations/inhabitants_arsenal.js",["const HEAT_MAX = 120","Math.round(8+charge*10)","lb:javelin_thrown"]],
+  ["integrations/tomemancy.js",["postDragonUnlocked()","420,300,220,160","360*power","250*power"]],
+  ["events/pre_dragon_events.js",['const GALLERY_AMMO_ID="lb:gallery_slug"',"cleanupGalleryAmmo","stripGalleryAmmo"]]
+];
+for(const [relPath,tokens] of portableRuntimeContracts){
+  const p=path.join(bpRoot,"scripts",relPath),src=fs.existsSync(p)?fs.readFileSync(p,"utf8"):"";
+  assert(Boolean(src),`missing portable runtime ${relPath}`);
+  for(const token of tokens)assert(src.includes(token),`${relPath} missing runtime contract token: ${token}`);
 }
 
 const geometryIds=new Set();
