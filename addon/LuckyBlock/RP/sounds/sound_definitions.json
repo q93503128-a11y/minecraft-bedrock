@@ -572,7 +572,7 @@
       "category": "hostile",
       "sounds": [
         {
-          "name": "sounds/entity/cave_dweller_hurt_1",
+          "name": "sounds/entity/cave_dweller_dweller_hurt_1",
           "stream": false
         }
       ]
@@ -581,7 +581,7 @@
       "category": "hostile",
       "sounds": [
         {
-          "name": "sounds/entity/cave_dweller_death",
+          "name": "sounds/entity/cave_dweller_dweller_death",
           "stream": false
         }
       ]

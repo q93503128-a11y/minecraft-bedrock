@@ -804,3 +804,8 @@ Static audit after 0.28.0:
 - Added docs/RUNTIME_TEST_CHECKLIST.md as the authoritative P8 runtime/multiplayer gate.
 - BP/RP version is 0.37.0; @minecraft/server remains 2.9.0.
 - This milestone is test preparation, not a real Bedrock runtime pass. Completion must not be declared until import/content-log/gameplay/multiplayer checks pass.
+
+0.37.0 preflight repair pass:
+- First GitHub runner preflight exposed two real Cave Dweller sound binding mismatches. The source-exact vendored files are cave_dweller_dweller_hurt_1.ogg and cave_dweller_dweller_death.ogg, while sound_definitions referenced non-existent shorter paths. Definitions now target the actual vendored files.
+- The same run also reported eight false-positive missing textures for textures/misc/enchanted_item_glint. That path is a Minecraft vanilla resource, so preflight now explicitly treats only that known built-in texture reference as external-to-pack.
+- Test-build workflow must rerun cleanly before the package is handed off for Bedrock import.

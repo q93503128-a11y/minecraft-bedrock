@@ -124,12 +124,13 @@ for(const p of walk(path.join(rpRoot,"animations")).filter(p=>p.endsWith(".json"
   const j=readJson(p);if(!j)continue;
   for(const k of Object.keys(j.animations??{}))animationIds.add(k);
 }
+const vanillaTextureRefs=new Set(["textures/misc/enchanted_item_glint"]);
 function checkClientDescription(p,j){
   const d=j?.["minecraft:client_entity"]?.description??j?.["minecraft:attachable"]?.description;
   if(!d)return;
   for(const g of Object.values(d.geometry??{}))if(typeof g==="string"&&g.startsWith("geometry.lb."))assert(geometryIds.has(g),`${rel(p)} missing geometry ${g}`);
   for(const a of Object.values(d.animations??{}))if(typeof a==="string"&&a.startsWith("animation.lb."))assert(animationIds.has(a),`${rel(p)} missing animation ${a}`);
-  for(const t of Object.values(d.textures??{}))if(typeof t==="string"&&t.startsWith("textures/"))assert(existsAsset(t),`${rel(p)} missing texture ${t}`);
+  for(const t of Object.values(d.textures??{}))if(typeof t==="string"&&t.startsWith("textures/")&&!vanillaTextureRefs.has(t))assert(existsAsset(t),`${rel(p)} missing texture ${t}`);
 }
 for(const dir of ["entity","attachables"]){
   for(const p of walk(path.join(rpRoot,dir)).filter(p=>p.endsWith(".json"))){const j=readJson(p);if(j)checkClientDescription(p,j);}
