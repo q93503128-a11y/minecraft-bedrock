@@ -36,6 +36,11 @@ function sumBetween(s,a,b){
 }
 
 const all=[...walk(bpRoot),...walk(rpRoot)];
+for(const p of all.filter(p=>/\.(png|tga|ogg|fsb)$/i.test(p))){
+  let size=0;try{size=fs.statSync(p).size;}catch{}
+  assert(size>0,`empty binary asset: ${rel(p)}`);
+}
+
 const itemDefs=new Map();
 for(const p of walk(path.join(bpRoot,"items")).filter(p=>p.endsWith(".json"))){
   const j=readJson(p),def=j?.["minecraft:item"];if(def?.description?.identifier)itemDefs.set(def.description.identifier,{p,j:def});
@@ -82,6 +87,16 @@ for(const p of all.filter(p=>p.endsWith(".json")))readJson(p);
 for(const p of all.filter(p=>/\.(m?js)$/.test(p))){
   const r=spawnSync(process.execPath,["--check",p],{encoding:"utf8"});
   if(r.status!==0)errors.push(`JS syntax ${rel(p)}: ${(r.stderr||r.stdout||"syntax error").trim()}`);
+  const src=fs.readFileSync(p,"utf8");
+  for(const m of src.matchAll(/^\s*import\s+(?:[^"']*from\s+)?["']([^"']+)["'];?/gm)){
+    const spec=m[1];if(!spec.startsWith("."))continue;
+    let target=path.resolve(path.dirname(p),spec);
+    if(!/\.(m?js)$/.test(target)){
+      if(fs.existsSync(target+".js"))target+=".js";
+      else if(fs.existsSync(target+".mjs"))target+=".mjs";
+    }
+    assert(fs.existsSync(target),`${rel(p)} missing relative import target: ${spec}`);
+  }
 }
 
 const bp=readJson(path.join(bpRoot,"manifest.json"));
@@ -255,8 +270,8 @@ if(fs.existsSync(rewardPath)){
 }
 
 
-const impalerSpawnRule=path.join(bpRoot,"spawn_rules","impaler.json");
-assert(!fs.existsSync(impalerSpawnRule),"Impaler must not have an ungated vanilla spawn_rule; use scripted post-dragon spawns");
+const customSpawnRules=walk(path.join(bpRoot,"spawn_rules")).filter(p=>p.endsWith(".json"));
+assert(customSpawnRules.length===0,`custom vanilla spawn_rules are forbidden for gated Lucky Block enemies: ${customSpawnRules.map(rel).join(", ")}`);
 const witherSpiderPath=path.join(bpRoot,"scripts","integrations","slayers_beasts_wither_spider.js");
 if(fs.existsSync(witherSpiderPath)){
   const src=fs.readFileSync(witherSpiderPath,"utf8");
