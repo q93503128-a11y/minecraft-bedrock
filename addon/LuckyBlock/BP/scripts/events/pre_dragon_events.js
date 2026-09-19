@@ -542,7 +542,7 @@ function buildFortuneGallery(state,dimension){
     copper:mc.BlockPermutation.resolve("minecraft:copper_block"),
     light:mc.BlockPermutation.resolve("minecraft:sea_lantern"),
     start:mc.BlockPermutation.resolve("minecraft:quartz_block"),
-    target:mc.BlockPermutation.resolve("lb:reward_vase")
+    target:mc.BlockPermutation.resolve("lb:gallery_target")
   };
   let placed=0;
   function put(dx,dy,dz,p){try{const b=dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz});if(!b)return;b.setPermutation(p);placed++;}catch{}}
@@ -563,7 +563,7 @@ function buildFortuneGallery(state,dimension){
   return state.structureBuilt;
 }
 function restoreGalleryTargets(state,dimension){
-  const target=mc.BlockPermutation.resolve("lb:reward_vase");
+  const target=mc.BlockPermutation.resolve("lb:gallery_target");
   const mask=state.hitMask??0;
   const targets=galleryTargetOffsets();
   for(let i=0;i<targets.length;i++){
@@ -571,7 +571,7 @@ function restoreGalleryTargets(state,dimension){
     const loc=galleryTargetLocation(state,i);
     try{
       const block=dimension.getBlock(loc);
-      if(block&&block.typeId!=="lb:reward_vase")block.setPermutation(target);
+      if(block&&block.typeId!=="lb:gallery_target")block.setPermutation(target);
     }catch{}
   }
 }
