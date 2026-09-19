@@ -76,7 +76,7 @@ function telegraphSnare(tyra,target){
 }
 
 function runTyrachnidCombat(){
-  tyraTick+=STEP;
+  tyraTick=mc.world.getAbsoluteTime();
   for(const dimensionId of ["overworld","nether","the_end"]){
     const dimension=mc.world.getDimension(dimensionId);
     for(const tyra of dimension.getEntities({type:"lb:tyrachnid"})){
