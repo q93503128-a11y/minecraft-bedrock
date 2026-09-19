@@ -26,7 +26,7 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, Slasher melee, Tomemancy Mythic magic, Irk pet, War Ant ground mount, the post-dragon Sky Damselfly 3D flight mount, Amethyst Repeater burst ranged combat, Storm Longbow precision/charge combat, the recoverable/bounce-platform Inhabitants Javelin, Mystical Aegis defense armor, Explorer Field Kit support wearables, the Inhabitants heat/momentum Spike Drill, Auto-Turret deployable combat support, two mechanically distinct minigames, and Butterfly Sanctuary moving-wildlife exploration. The new arsenal batch closes two previously thin specialized weapon/tool roles at once. Additional wearable/accessory, consumable/status and sheer outcome-count breadth remain.
+Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, two minigames and ecological exploration. 0.30.0 adds two distinct head-accessory roles (Tomemancy Arcane Focus and monster-family Threat Lens) plus the portable Fortune Tonic defensive consumable, closing most of the previously thin wearable/accessory/status niches. Remaining P3 weakness is now dominated by sheer materially-distinct outcome count, structures/dungeons and a smaller number of specialist consumable/utility roles.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
@@ -39,12 +39,12 @@ Persist a world-level first-kill unlock. After that point, late-game spawn table
 ## P6 — Late game
 Port/rebuild verified high-quality enemies and bosses. Every major boss receives encounter mechanics: telegraphs, phases, vulnerability windows, mobility, area denial and/or adds. Raw HP inflation cannot be the primary difficulty mechanism.
 
-Implemented P6 slices: Bogre late-game miniboss, Obsidilith Mythic boss, End Warped Clam, Slayers-Beasts Mantis post-dragon predator, Tyrachnid rare cave elite, and Wudu Binder control/support enemy with a dodgeable pull plus ally ward. Rift Arsenal now binds these previously separate roles into deliberate mixed encounters: Wudu + Mantis + Tyrachnid, followed by Bogre + Wudu + Tyrachnids. Continue expanding a smaller remaining set of normal-mob/ranged families and encounter combinations rather than raw HP.
+Implemented P6 slices: Bogre late-game miniboss, Obsidilith Mythic boss, End Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, mixed-role Rift Arsenal waves, and now BOMD Gauntlet as a second mechanically complete boss family. Gauntlet adds delayed tracking laser, dodge-reward punch, multi-pulse area denial, blindness pressure and two breakable-anchor shield/vulnerability phases. Remaining P6 work is primarily broader normal-mob/ranged-family variety and more encounter combinations, not another raw-HP boss.
 
 ## P7 — Mythic outcomes
 Mythic Lucky Blocks award content packages: boss/event/dungeon/set/invasion/Lucky Rain-style experiences rather than merely one huge-stat item.
 
-Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, persistent Rift Siege invasion/wave event, persistent Lucky Rain event, persistent Rift Vault structure/dungeon package, and Rift Arsenal as a chained equipment-objective → mixed support/control encounter → miniboss finale. More dungeon variants and a smaller number of additional chained-event families remain.
+Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, Rift Siege, Lucky Rain, Rift Vault, chained Rift Arsenal, and now Gauntlet as a second direct Mythic boss outcome with source-faithful multi-pattern combat and shield counterplay. More dungeon variants and a smaller number of chained-event/package families remain.
 
 ## P8 — Packaging and release validation
 - Package BP + RP as one .mcaddon.

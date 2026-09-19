@@ -606,3 +606,56 @@ Bedrock/Lucky adaptation:
 - completion package: Spike Drill + 12 Javelins + 7-10 Mythic Fragments + Legendary Lucky Block.
 
 This batch follows the established vendored merge architecture: one BP + one RP, `lb:` namespace, source-specific integration module, exact provenance, no outside runtime pack dependency, and no placeholder art.
+
+
+## Loy's accessory/status suite — 0.30.0
+
+Source: `SL0ANE/Loy-s-Goodies`, CC0-1.0, pinned commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+
+### Wizard Hat
+- upstream `models/java-model/armor & costumes/hats/230418_wizard_hat.bbmodel`;
+- 10 source elements, one embedded 64x64 production texture;
+- source head display scale 2.0x; converted to `geometry.lb.wizard_hat` head attachable;
+- Lucky role: post-dragon Legendary Arcane Focus, +15% Tomemancy damage multiplier and 15% cooldown reduction.
+
+### Threat Sunglasses
+- upstream `models/java-model/armor & costumes/glasses/230516_sunglasses.bbmodel`;
+- 3 source elements, one embedded production texture, source head scale 1.625x;
+- Lucky role: Rare Threat Lens, persistent Night Vision, Blindness/Darkness removal and per-wearer 24-block `monster` family count/nearest-distance scan.
+
+### Fortune Tonic
+- upstream `models/java-model/foods & drinks/230923_pop_can_blue.bbmodel`;
+- source model has 2 elements but uses one embedded texture for all faces, so the original production texture is complete as a flat portable icon;
+- Rare reward gives two cans; drink completion applies Absorption I 60 s, Resistance I 8 s and Regeneration I 4 s.
+- Zongzi was investigated and rejected because its source five-element model references two distinct textures. No one-texture shortcut or generated composite entered the pack.
+
+## BOMD Gauntlet boss family — 0.30.0
+
+Source: `barribob/bosses-of-mass-destruction`, LGPL-3.0, pinned commit `2fbd0dc79bea498bcad755c4ad9969055dc452c7`.
+
+Direct production payload:
+- `geo/gauntlet.geo.json`: 26 bones / 42 cubes;
+- `animations/gauntlet.animation.json`: 10 source animations;
+- exact `textures/entity/gauntlet.png`;
+- exact `textures/block/gauntlet_blackstone.png`;
+- exact source OGG: cast, idle, hurt, death, laser charge, spin punch and energy shield.
+
+Source behavior references:
+- `GauntletEntity.kt`;
+- `GauntletAttacks.kt`;
+- `LaserAction.kt`;
+- `PunchAction.kt`;
+- `GauntletConfig.kt`.
+
+Bedrock/Lucky adaptation:
+- post-dragon Mythic boss, 6000 HP;
+- punch: 16-tick telegraph/acceleration, dodge miss opens a 42-tick 1.5x vulnerability;
+- laser: source-style charge plus six pulses with an 8-tick target-history lag, so lateral movement is the counterplay;
+- swirl punch: three separated radius pulses rather than unavoidable contact DPS;
+- cast: Blindness pressure; Threat Sunglasses explicitly counter the visual-control effect;
+- source poison/wither immunity retained through stable effect clearing;
+- at 65% and 30% HP, boss enters an 0.18x incoming-damage shield and creates three Gauntlet Blackstone anchors;
+- destroying all three source-textured anchors removes the shield and opens a 55-tick 1.5x vulnerability;
+- Gauntlet death produces a content reward package rather than only XP/stat inflation.
+
+The external model/animation data are not simplified copies: geometry is data-identical after identifier remapping and animation tracks are data-identical after namespace key remapping.

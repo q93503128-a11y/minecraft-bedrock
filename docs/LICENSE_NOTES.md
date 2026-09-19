@@ -96,3 +96,18 @@ A source's top-level license does not override restrictions attached to embedded
 - Javelin Bedrock Script API entity/raycast implementation, Lucky 8-18 damage profile, exact participant state handling and Rift Arsenal objective are project-side adaptations.
 - Spike Drill block-form salvage, deny-list and actionbar state display are project-side adaptations. The source's temperature-specific model override art is not claimed active in the current Bedrock port.
 - Rift Arsenal structure/staging/rewards are Lucky-owned and only reuse already-cleared Inhabitants/Slayers-Beasts production entities plus the newly-cleared arsenal gear.
+
+
+## Active Loy's accessory/status ports — 0.30.0
+- Source: SL0ANE/Loy-s-Goodies, reviewed commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Wizard Hat and Sunglasses use source Blockbench element/UV data and directly decoded embedded production PNGs.
+- Fortune Tonic uses the single embedded production texture from the Blue Pop Can source model.
+- Arcane Focus, Threat Lens and tonic status effects are project-side gameplay behaviors; no upstream gameplay behavior is claimed.
+- The inspected Zongzi source is not shipped because a complete representation would require both of its textures.
+
+## Active BOMD Gauntlet port — 0.30.0
+- Source: barribob/bosses-of-mass-destruction, reviewed commit `2fbd0dc79bea498bcad755c4ad9969055dc452c7`, LGPL-3.0.
+- Direct material: Gauntlet geometry, all ten animation tracks, entity texture, Gauntlet Blackstone texture and seven original sound files.
+- Geometry/animation port changes are namespace/identifier remaps only; source binary texture/sound payloads are vendored byte-identically.
+- Java/Kotlin combat implementation is not copied as Bedrock code. Its documented behavior is re-expressed through `@minecraft/server 2.9.0` mechanics: telegraphed punch, delayed laser, swirl pulses, blindness, immunity and counterable shield phases.
+- Source-availability compliance continues under the existing BOMD entry and `THIRD_PARTY_LICENSES/BOMD_LGPL-3.0.txt`.

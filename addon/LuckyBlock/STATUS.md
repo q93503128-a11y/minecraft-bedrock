@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.29.0 Inhabitants Arsenal + Rift Arsenal completion-jump batch
+Milestone: 0.30.0 Accessory Suite + Gauntlet completion-jump batch
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -33,7 +33,7 @@ Implemented:
 - Script syntax audit passes for main.js, acquisition.js and reward_behaviors.js.
 
 Still not complete:
-1. larger reward library, especially additional wearable/accessory archetypes, consumable/status roles and remaining specialized utility/combat outcomes;
+1. larger reward library, now mainly sheer outcome count plus a smaller set of additional consumable/status, structure and specialist utility roles;
 2. more structures, traps, chained Lucky events, dungeons and additional minigames;
 3. more pre-dragon encounter breadth, especially additional miniboss families and alternate exploration structures;
 4. more post-dragon normal-mob/elite role variety and a few additional miniboss/boss families;
@@ -667,3 +667,22 @@ Static audit after 0.28.0:
 - New reward weights are funded entirely by reductions to existing generic/repeated slices: Rare/Epic/Mythic totals remain 100.
 - BP/RP version is now 0.29.0; @minecraft/server remains 2.9.0.
 - This is still source/static implementation. Stable Bedrock import, held alignment, thrown-entity physics, actual drilling feel, multiplayer and long-session event behavior remain P8 runtime QA.
+
+
+0.30.0 completion-jump batch — Accessory Suite + Gauntlet:
+- Added three materially different portable reward roles rather than recolor/stat variants.
+- `lb:wizard_hat`: post-dragon Legendary head accessory using Loy's Goodies CC0 10-element Wizard Hat model and embedded production texture. Lucky Arcane Focus multiplies Tomemancy spell power by 1.15 and reduces tome cooldowns to 85% of normal; it stacks multiplicatively with the existing Diamond Staff focus.
+- `lb:threat_sunglasses`: Rare head accessory using the source three-element Sunglasses model/texture. Threat Lens refreshes Night Vision, clears Blindness/Darkness and scans the stable entity `monster` family within 24 blocks, reporting count and nearest distance per wearer rather than using one shared global state.
+- `lb:fortune_tonic`: Rare two-can reward using the single production texture from Loy's Goodies Blue Pop Can model. It is a portable always-usable drink rather than a placed food block; completion gives 60 s Absorption I, 8 s Resistance I and 4 s Regeneration I.
+- The earlier Zongzi candidate was deliberately discarded before commit because its five-element model uses two separate source textures; using only one as a flat icon would have been an incomplete external-asset port.
+- Added `lb:gauntlet`, a second full post-dragon BOMD boss family. The 26-bone / 42-cube source geometry and all ten source combat animations are direct namespace-remapped ports; default texture and seven Gauntlet/energy-shield sounds are byte-identical upstream assets.
+- Source boss identity retained: punch, delayed laser, swirl punch, blindness/cast role, poison/wither immunity and energy-shield phases. Lucky Bedrock implementation is mechanic-oriented rather than an HP sponge.
+- Gauntlet has 6000 HP and uses four telegraphed attacks: dodge-rewarding charge punch, six-pulse laser whose aim is delayed by 8 ticks, three-pulse swirl punch and a blindness cast.
+- Missing a charge punch opens a vulnerability window; completing a laser sequence also opens a shorter window.
+- At 65% and 30% health, Gauntlet enters 18%-damage shield state and creates three real `lb:gauntlet_blackstone` anchors. Breaking all source-textured anchors collapses the shield and opens a 150%-damage vulnerability window.
+- Gauntlet death awards 8-12 Mythic Fragments, 4-7 Legendary Fragments, four Fortune Tonics and one Legendary Lucky Block.
+- Mythic direct-boss weight 10 is funded from existing repeated Mythic slices; Rare/Legendary additions are likewise funded without changing tier totals.
+- Existing 0.29.0 `main.js` had a literal backslash-n between the Bogre and Arsenal imports. This batch fixes it to a real line break and adds an explicit import-line audit so the previous stripping-based syntax check cannot hide the same defect again.
+- Sporetrap was evaluated as a pre-dragon encounter candidate but rejected: its pinned renderer requests `textures/entity/sporetrap.png`, while that texture is absent from both the pinned tree and the path history. No guessed Venus Flytrap texture or temporary replacement was used.
+- BP/RP version is 0.30.0; @minecraft/server remains 2.9.0.
+- Stable Bedrock import/render, Wizard Hat/Sunglasses head alignment, Gauntlet flight/pathing, attack timing, anchor destruction, multiplayer target selection and balance are still P8 runtime QA and are not claimed tested.

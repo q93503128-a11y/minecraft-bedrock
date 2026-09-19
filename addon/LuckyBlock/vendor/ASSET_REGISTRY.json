@@ -1223,6 +1223,105 @@
       ],
       "contentId": "lb:spike_drill",
       "modification": "Source 2342 durability, 120 heat cap, 300-tick momentum ramp, 40-tick overheat lockout, 2 damage overheat penalty, delayed passive cooling and snowball -30 quench identity are retained in the Bedrock port. Original base item texture and start/loop/stop/dig sounds are direct-use assets. Java loot-table mining becomes explicit Bedrock block-form salvage using stable Block.getItemStack; containers, custom Lucky blocks and protected/unbreakable progression blocks are excluded. Source temperature sprite overrides are not claimed ported; heat/momentum are surfaced in actionbar until a stable non-placeholder item-state visual path is bound."
+    },
+    {
+      "key": "loys_wizard_hat",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/armor & costumes/hats/230418_wizard_hat.bbmodel"
+      ],
+      "targets": [
+        "BP/items/wizard_hat.json",
+        "RP/attachables/wizard_hat.attachable.json",
+        "RP/models/entity/wizard_hat.geo.json",
+        "RP/textures/items/wizard_hat.png"
+      ],
+      "contentId": "lb:wizard_hat",
+      "integrationModule": "BP/scripts/integrations/loys_accessories.js + BP/scripts/integrations/tomemancy.js",
+      "modification": "CC0 Blockbench 10-element hat geometry converted to a Bedrock head attachable using the source head scale; embedded wizard_hat.png decoded directly. Lucky-owned Arcane Focus grants +15% Tomemancy spell power and 15% cooldown reduction."
+    },
+    {
+      "key": "loys_threat_sunglasses",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/armor & costumes/glasses/230516_sunglasses.bbmodel"
+      ],
+      "targets": [
+        "BP/items/threat_sunglasses.json",
+        "RP/attachables/threat_sunglasses.attachable.json",
+        "RP/models/entity/threat_sunglasses.geo.json",
+        "RP/textures/items/threat_sunglasses.png",
+        "BP/scripts/integrations/loys_accessories.js"
+      ],
+      "contentId": "lb:threat_sunglasses",
+      "modification": "CC0 three-element glasses geometry converted to a Bedrock head attachable using the source head scale; embedded PNG decoded directly. Lucky-owned Threat Lens provides night vision, clears blindness/darkness, and reports monster-family threats within 24 blocks."
+    },
+    {
+      "key": "loys_fortune_tonic",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/foods & drinks/230923_pop_can_blue.bbmodel"
+      ],
+      "targets": [
+        "BP/items/fortune_tonic.json",
+        "RP/textures/items/fortune_tonic.png"
+      ],
+      "contentId": "lb:fortune_tonic",
+      "integrationModule": "BP/scripts/integrations/loys_accessories.js",
+      "modification": "CC0 Blue Pop Can uses one source texture across the complete source model; that embedded production PNG is decoded directly as the portable item icon. Lucky-owned consumable behavior adds short defensive status effects."
+    },
+    {
+      "key": "bomd_gauntlet",
+      "source": "bosses_of_mass_destruction",
+      "upstream": [
+        "src/main/resources/assets/bosses_of_mass_destruction/geo/gauntlet.geo.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/animations/gauntlet.animation.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/entity/gauntlet.png",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/gauntlet_cast.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/gauntlet_idle.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/gauntlet_hurt.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/gauntlet_death.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/gauntlet_laser_charge.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/gauntlet_spin_punch.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/energy_shield.ogg",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/gauntlet/GauntletEntity.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/gauntlet/GauntletAttacks.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/gauntlet/LaserAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/gauntlet/PunchAction.kt",
+        "src/main/kotlin/net/barribob/boss/config/GauntletConfig.kt"
+      ],
+      "targets": [
+        "BP/entities/gauntlet.json",
+        "BP/scripts/integrations/bomd_gauntlet.js",
+        "RP/entity/gauntlet.entity.json",
+        "RP/models/entity/gauntlet.geo.json",
+        "RP/animations/gauntlet.animation.json",
+        "RP/textures/entity/gauntlet.png",
+        "RP/sounds/entity/gauntlet_cast.ogg",
+        "RP/sounds/entity/gauntlet_idle.ogg",
+        "RP/sounds/entity/gauntlet_hurt.ogg",
+        "RP/sounds/entity/gauntlet_death.ogg",
+        "RP/sounds/entity/gauntlet_laser_charge.ogg",
+        "RP/sounds/entity/gauntlet_spin_punch.ogg",
+        "RP/sounds/entity/gauntlet_energy_shield.ogg"
+      ],
+      "contentId": "lb:gauntlet",
+      "modification": "LGPL Gauntlet 26-bone/42-cube geometry and all ten source combat animations are direct ports with identifier/key namespace remapping only; entity texture and seven source sounds are byte-identical. Lucky Bedrock mechanics preserve punch, delayed laser, spin punch, blindness, poison/wither immunity and energy-shield identities with telegraphs/counterplay instead of copying Java implementation code."
+    },
+    {
+      "key": "bomd_gauntlet_blackstone",
+      "source": "bosses_of_mass_destruction",
+      "upstream": [
+        "src/main/resources/assets/bosses_of_mass_destruction/models/block/gauntlet_blackstone.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/block/gauntlet_blackstone.png"
+      ],
+      "targets": [
+        "BP/blocks/gauntlet_blackstone.json",
+        "RP/models/blocks/gauntlet_blackstone.geo.json",
+        "RP/textures/blocks/lb_gauntlet_blackstone.png"
+      ],
+      "contentId": "lb:gauntlet_blackstone",
+      "modification": "Source block is cube_all with gauntlet_blackstone texture. Bedrock port keeps that cube identity and exact source texture; Lucky uses three temporary breakable anchors to expose the boss during 65% and 30% shield phases."
     }
   ]
 }

@@ -301,3 +301,20 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Bedrock Drill mining is a documented adaptation: stable block-form salvage via `Block.getItemStack`, with containers, Lucky custom blocks, unbreakables and progression-protected blocks excluded. It is not claimed to reproduce Java loot-table mining exactly.
 - The source Java temperature model uses multiple item-model/texture overrides. The current Bedrock port uses the exact original base Drill texture and original production sounds, while heat/momentum state is communicated by the actionbar; no assistant-drawn heat placeholder is substituted.
 - Rift Arsenal structure, Javelin seal objective, cooperative participant grants, mixed encounter composition and rewards are Lucky-owned gameplay.
+
+
+### Loy's Goodies accessory/status suite — 0.30.0
+- Source: SL0ANE/Loy-s-Goodies, pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Wizard Hat upstream: `models/java-model/armor & costumes/hats/230418_wizard_hat.bbmodel`. Ten source elements and the embedded production PNG are converted directly into a Bedrock head attachable. Lucky-owned Arcane Focus adds +15% Tomemancy spell power and 15% cooldown reduction.
+- Threat Sunglasses upstream: `models/java-model/armor & costumes/glasses/230516_sunglasses.bbmodel`. Three source elements and its embedded production PNG are converted directly. Lucky-owned Threat Lens uses the stable `monster` family query, Night Vision and Blindness/Darkness clearing.
+- Fortune Tonic upstream: `models/java-model/foods & drinks/230923_pop_can_blue.bbmodel`. The source model uses one embedded texture across all faces; that exact production PNG is used as the portable drink icon. Defensive status effects are Lucky-owned behavior.
+- A Zongzi candidate was inspected but deliberately not shipped: its source model uses two separate textures, so using a single one as an inventory icon would have been an incomplete source representation. No guessed composite or placeholder was produced.
+
+### Bosses of Mass Destruction Gauntlet — 0.30.0
+- Source: barribob/bosses-of-mass-destruction, pinned at `2fbd0dc79bea498bcad755c4ad9969055dc452c7`, LGPL-3.0.
+- Direct source payload: 26-bone / 42-cube `gauntlet.geo.json`, all ten animations from `gauntlet.animation.json`, `gauntlet.png`, Gauntlet Blackstone texture, and seven original Gauntlet/energy-shield OGG files.
+- Geometry data is identical after changing only the geometry identifier to `geometry.lb.gauntlet`; animation data is identical after prefixing source keys with `animation.lb.gauntlet.`.
+- Source behavior references reviewed: `GauntletEntity.kt`, `GauntletAttacks.kt`, `LaserAction.kt`, `PunchAction.kt`, and `GauntletConfig.kt` (source defaults: 250 health, 8 armor, 16 attack).
+- Source identities retained in the Bedrock design: floating boss, punch, delayed laser, swirl punch, blindness cast, poison/wither immunity, energy shield and idle healing concept. Lucky balance/mechanics adapt these to post-dragon progression: 6000 HP, explicit telegraphs, dodge-created vulnerability and two shield-anchor objectives.
+- Shield anchors use the source Gauntlet Blackstone cube-all visual and exact source texture; no temporary shield node model was created.
+- Existing LGPL source-availability/license bundle obligations remain covered by the pinned upstream link, vendored modified integration source, and `THIRD_PARTY_LICENSES/BOMD_LGPL-3.0.txt`.
