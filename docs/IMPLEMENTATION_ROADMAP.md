@@ -65,3 +65,6 @@ Three portable outcomes and one late-game enemy family were added without changi
 
 ### 0.36.0 oddity + summoner note
 Common/Rare/Epic each gain a non-duplicate strange utility while Legendary gains a mechanically distinct post-dragon Lich. Tier totals remain fixed. This batch deliberately reduces generic fragments and repeated established events/rewards to fund new outcomes instead of inflating probability mass.
+
+### 0.37.0 P8 transition note
+Feature expansion is paused for the first comprehensive runtime pass. The repository now contains a static release preflight, a dependency-free test .mcaddon builder, a Windows one-click launcher, a GitHub artifact workflow and an explicit runtime/multiplayer checklist. Further content breadth is deferred until critical import/render/script/persistence/concurrency defects are resolved.

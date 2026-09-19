@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.36.0 Oddities + BOMD Lich batch
+Milestone: 0.37.0 P8 test-candidate prep
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -795,3 +795,12 @@ Static audit after 0.28.0:
 - Tier totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
 - BP/RP version is 0.36.0; @minecraft/server remains 2.9.0.
 - No real Bedrock runtime test is claimed. Import/render, block interaction feel, cross-dimension recall, multiplayer Lich target/add behavior, boss animation timing and balance remain P8 QA.
+
+0.37.0 P8 test-candidate prep:
+- Content expansion is intentionally paused; the project is transitioning into real Bedrock runtime QA.
+- Added a self-contained Node preflight that parses pack JSON/JS, checks BP/RP manifest/version/dependency consistency, @minecraft/server 2.9.0, registry ownership/targets/licenses, reward totals, main imports, geometry/animation/texture/sound references, localization duplicates and placeholder-like production texture paths.
+- Added a dependency-free deterministic ZIP/.mcpack/.mcaddon builder. It packages BP and RP separately, embeds THIRD_PARTY_NOTICES + bundled licenses into the BP package, nests both .mcpacks into one .mcaddon, verifies top-level structure, and emits SHA-256 + TEST_BUILD_INFO.
+- Added BUILD_TEST_MCADDON.cmd for one-click Windows packaging and a GitHub Actions test-build workflow using the same Node builder.
+- Added docs/RUNTIME_TEST_CHECKLIST.md as the authoritative P8 runtime/multiplayer gate.
+- BP/RP version is 0.37.0; @minecraft/server remains 2.9.0.
+- This milestone is test preparation, not a real Bedrock runtime pass. Completion must not be declared until import/content-log/gameplay/multiplayer checks pass.

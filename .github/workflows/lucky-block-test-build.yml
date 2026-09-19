@@ -1,0 +1,29 @@
+name: Lucky Block Test Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "addon/LuckyBlock/**"
+      - ".github/workflows/lucky-block-test-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Preflight and package
+        run: node addon/LuckyBlock/tools/build_mcaddon.mjs
+      - name: Upload test build
+        uses: actions/upload-artifact@v4
+        with:
+          name: LuckyBlock-test-build
+          path: addon/LuckyBlock/dist/*
+          if-no-files-found: error
