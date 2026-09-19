@@ -387,6 +387,18 @@
       "modification": "Blockbench Java-block geometry converted to Bedrock geometry; embedded PNG imported unchanged"
     },
     {
+      "key": "loys_gallery_target",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/230217_vase.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/gallery_target.json"
+      ],
+      "contentId": "lb:gallery_target",
+      "modification": "Event-only non-dropping Fortune Gallery target reusing the vendored CC0 vase geometry and texture without assistant-authored visual assets"
+    },
+    {
       "key": "loys_easel",
       "source": "loys_goodies",
       "upstream": [
