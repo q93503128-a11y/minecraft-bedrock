@@ -277,3 +277,14 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - The Sharpshooter completion reward reuses the already-cleared Loy's Goodies CC0 Storm Longbow integration.
 - Projectile detection uses the stable Mojang `@minecraft/server` `world.afterEvents.projectileHitBlock` API. No copied third-party minigame runtime is bundled.
 - Arena construction uses final vanilla Minecraft blocks; no temporary target model, placeholder art or project-drawn substitute is added.
+
+
+### Slayers-Beasts Tortoiseshell Butterfly / Butterfly Sanctuary — 0.28.0
+- Source: InvictusSlayer/Slayers-Beasts, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- License: MIT.
+- Directly reused/adapted: `Butterfly.java`, `ButterflyModel.java`, `ButterflyAnimation.java`, `ButterflyRenderer.java`, and `textures/entity/butterfly/tortoiseshell.png`.
+- The source model contains 7 cubes; the Bedrock geometry contains the same 7 cubes with the renderer's original 0.8× display scale baked into the conversion.
+- The original 32×32 tortoiseshell texture is vendored byte-identically.
+- Source identity retained: 6 HP, 0.25 movement, free flight/hover, periodic perching intent and fall-damage immunity.
+- Lucky-owned additions: persistent Butterfly Sanctuary structure, event-only soft boundary/population recovery, four observation stations, 2-second observation holds, cooperative shared survey state and Lucky rewards.
+- No source behavior is claimed for the sanctuary objective itself.

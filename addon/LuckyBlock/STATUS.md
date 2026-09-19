@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.27.0 Fortune Gallery cooperative projectile minigame
+Milestone: 0.28.0 Butterfly Sanctuary ecological exploration event
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -35,7 +35,7 @@ Implemented:
 Still not complete:
 1. much larger reward library, especially additional minigame variants, wearable/accessory archetypes and more specialized utility/combat outcomes;
 2. more structures, traps, chained Lucky events, dungeons and additional minigames;
-3. more pre-dragon encounter breadth, especially miniboss families and exploration structures;
+3. more pre-dragon encounter breadth, especially additional miniboss families and alternate exploration structures;
 4. more post-dragon normal-mob/elite role variety and additional miniboss/boss families;
 5. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
@@ -614,3 +614,31 @@ Static audit after 0.27.0:
 - Vendor inventory remains unchanged at 10 sources / 46 asset records / 44 unique content IDs because this milestone recombines already-cleared production assets rather than importing a new source.
 - Placeholder/dummy/temp target assets added by this milestone: zero.
 - This remains source/static validation only; stable Bedrock runtime QA is still pending.
+
+
+0.28.0 Butterfly Sanctuary:
+- Added a new Epic pre-dragon ecological exploration event centered on a real Slayers-Beasts MIT Butterfly port rather than another combat wave or maze.
+- Direct external payload is complete and pinned: Butterfly entity source, 7-cube model, IDLE_CLOSED/FLYING animation definitions, renderer scale reference and original `tortoiseshell.png`.
+- Source model -> Bedrock model cube count is exactly 7 -> 7; source renderer's 0.8x visual scale is baked into geometry.
+- Source and vendored texture Git blob SHA are both `ff5317e9a5ab611360777fd666c76921e0ef85ae`.
+- Lucky Butterfly behavior keeps the source 6 HP / 0.25 movement / free-flight identity and fall immunity. No combat role was invented for it.
+- The permanent 17x17 sanctuary uses final vanilla moss/stone/log/leaves/light materials; no temporary structure texture or custom placeholder art is introduced.
+- Eight event butterflies begin the survey. Event logic maintains at least six and softly returns butterflies that drift more than 13 blocks from the center, preventing a random-flight softlock.
+- Four observation stations are order-free. A station completes only when a player remains on it for 2 seconds while an event butterfly is within 5.5 blocks.
+- Multiplayer state is intentionally cooperative: the four-station mask is shared, while any nearby player may satisfy any unfinished station and separate players can progress different stations in the same tick.
+- Completion leaves four source butterflies living in the permanent sanctuary, grants 4-6 Epic Fragments + one Camera, with 30% Rare Lucky Block and 25% full Explorer Field Kit bonus rolls.
+- Epic event weight 5 is funded by reducing repeated/general-purpose slices; Epic total remains exactly 100.
+- The earlier Sporetrap candidate was not used because the pinned renderer references `sporetrap.png` while that file is absent and the repository instead contains `venus_flytrap.png`. The project does not guess or manufacture the missing production texture.
+- Stable Bedrock import, real random-flight/perch feel, event soft-boundary teleport, simultaneous multiplayer observation and long-session entity behavior remain P8 runtime QA items.
+
+Static audit after 0.28.0:
+- BP/RP manifests and mutual dependencies resolve to 0.28.0; @minecraft/server remains 2.9.0.
+- Changed/runtime-critical JSON and JavaScript parse successfully.
+- Butterfly behavior/client/geometry identifiers resolve consistently.
+- Source model `.addBox` count is 7 and target geometry cube count is 7.
+- Source IDLE_CLOSED targets 6 child bones; converted idle animation targets 6. Source FLYING covers body + 6 child bones; converted flying animation targets 7.
+- Original renderer references the exact vendored tortoiseshell texture path and its source/target Git blob SHA is identical.
+- Event start routing, site routing, persisted tick dispatch, eight-spawn path, four stations, 40-tick observation hold, minimum-six population recovery, 13-block soft tether and completion release-to-four paths all resolve.
+- Stable Creator documentation confirms `Entity.teleport(location, teleportOptions?)` is a supported Script API method used for the event-only soft boundary.
+- Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- Runtime QA is still required; no Bedrock playtest claim is made.

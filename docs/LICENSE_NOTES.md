@@ -80,3 +80,10 @@ A source's top-level license does not override restrictions attached to embedded
 - The optional Sharpshooter reward reuses the already-cleared Loy's Goodies CC0 Storm Longbow.
 - Arena materials are vanilla Minecraft content and projectile-hit handling is implemented against the documented stable `@minecraft/server` API.
 - Fortune Gallery structure layout, scoring, target reset, trial-ammo rules, multiplayer contribution tracking and reward thresholds are Lucky-owned gameplay.
+
+
+## Active Slayers-Beasts Butterfly port — 0.28.0
+- Source: InvictusSlayer/Slayers-Beasts, reviewed commit `ffc1f6480a60598797c63150c0d0fe66b65697ff`, MIT.
+- Direct reused/adapted material: Butterfly entity behavior reference, model, IDLE_CLOSED/FLYING animations, renderer scale/texture mapping and original tortoiseshell texture.
+- Lucky-owned material: sanctuary structure, event population stabilization/soft tether, observation-station rules, cooperative event state and rewards.
+- Sporetrap was explicitly not selected in this milestone because the renderer's referenced `sporetrap.png` is absent from the pinned source tree. The presence of a differently named `venus_flytrap.png` is insufficient provenance to substitute it automatically.

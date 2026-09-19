@@ -506,3 +506,39 @@ Multiplayer boundary:
 - simultaneous hits cannot award the same Vase twice because the bit is set before state is persisted after each accepted hit.
 
 This expands the minigame category without cloning Fortune Relay's route/checkpoint mechanic and without creating a new visual design internally.
+
+
+## Slayers-Beasts Tortoiseshell Butterfly / Butterfly Sanctuary — 0.28.0
+
+Status: active Epic pre-dragon ecological exploration package. License: MIT. Pinned upstream: `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+
+Direct source payload:
+- `Butterfly.java`: 6 HP, 0.25 ground movement, 0.2 flying speed, free-flight/hover/perch lifecycle and no fall damage;
+- `ButterflyModel.java`: 7 total cubes across body, four wings and two antennae;
+- `ButterflyAnimation.java`: source IDLE_CLOSED and FLYING animation channels;
+- `ButterflyRenderer.java`: exact tortoiseshell texture mapping and 0.8× render scale;
+- `textures/entity/butterfly/tortoiseshell.png`: original 32×32 texture retained unchanged.
+
+Bedrock conversion:
+- 7 source cubes -> 7 target cubes;
+- source renderer's 0.8× scale baked into geometry rather than silently changing silhouette;
+- IDLE_CLOSED preserves six child-bone channels;
+- FLYING preserves body bob/rotation plus six wing/antenna channels;
+- original texture Git blob `ff5317e9a5ab611360777fd666c76921e0ef85ae` is the target texture blob.
+
+Lucky event role:
+- permanent 17x17 sanctuary made from final vanilla materials;
+- eight source-faithful butterflies begin the survey;
+- event runtime keeps at least six active and applies a 13-block soft boundary so random flight cannot make the objective impossible;
+- four order-free observation stations;
+- a station requires a player to remain for 2 seconds while a butterfly is within 5.5 blocks;
+- shared station mask makes the survey cooperative without assigning a single event owner;
+- completion leaves four butterflies living in the sanctuary and awards 4-6 Epic Fragments + Camera, with Rare Lucky Block / Explorer Field Kit bonus rolls.
+
+Source fidelity boundary:
+- the source has no Lucky sanctuary, survey stations, multiplayer scoring, tethering or rewards;
+- those are project-owned event mechanics;
+- the Butterfly's appearance, animation identity and base ecological behavior are external source material.
+
+Rejected adjacent candidate:
+- Slayers-Beasts Sporetrap was reviewed but not integrated because its pinned renderer references `textures/entity/sporetrap.png` while that file is absent from the pinned tree. A differently named `venus_flytrap.png` exists, but the project will not infer that it is the intended production texture without explicit source linkage.

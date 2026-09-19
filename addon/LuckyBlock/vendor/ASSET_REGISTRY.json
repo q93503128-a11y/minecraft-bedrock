@@ -1133,6 +1133,28 @@
       "contentId": "lb:explorer_pack",
       "integrationModule": "BP/scripts/integrations/loys_explorer_kit.js",
       "modification": "The source contains 10 Blockbench cube elements: 7 forward-visible cuboids plus 3 inverted duplicate/backface elements. Bedrock entity geometry ports the 7 physical cuboids and uses entity rendering for the backfaces rather than duplicating inverted cubes. The embedded 32x32 PNG is vendored unchanged. Chest-slot wearability and multiplayer-aware set effects are Lucky-owned."
+    },
+    {
+      "key": "slayers_beasts_tortoiseshell_butterfly",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/Butterfly.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/ButterflyModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/ButterflyAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/ButterflyRenderer.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/butterfly/tortoiseshell.png"
+      ],
+      "targets": [
+        "BP/entities/tortoiseshell_butterfly.json",
+        "RP/entity/tortoiseshell_butterfly.entity.json",
+        "RP/models/entity/tortoiseshell_butterfly.geo.json",
+        "RP/animations/tortoiseshell_butterfly.animation.json",
+        "RP/animation_controllers/tortoiseshell_butterfly.animation_controller.json",
+        "RP/textures/entity/tortoiseshell_butterfly.png"
+      ],
+      "contentId": "lb:tortoiseshell_butterfly",
+      "integrationModule": "BP/scripts/events/pre_dragon_events.js",
+      "modification": "Source 7-cube Butterfly model, tortoiseshell texture, 0.8 renderer scale and IDLE_CLOSED/FLYING animation identity are converted to Bedrock. Source 6 HP / 0.25 movement / free-flight / perch identity is retained as the behavior reference. Lucky-owned additions are sanctuary event spawning, event-only population stabilization/tethering, four observation stations, cooperative shared survey state and rewards."
     }
   ]
 }
