@@ -305,6 +305,15 @@ function containerKey(prefix, dimension, block) {
 world.afterEvents.playerPlaceBlock.subscribe((event) => {
   if (!EXPLORATION_CONTAINERS.has(event.block.typeId)) return;
   world.setDynamicProperty(containerKey("placed_container", event.dimension, event.block), true);
+  world.setDynamicProperty(containerKey("opened_container", event.dimension, event.block), undefined);
+});
+
+world.afterEvents.playerBreakBlock.subscribe((event) => {
+  const id = event.brokenBlockPermutation.type.id;
+  if (!EXPLORATION_CONTAINERS.has(id)) return;
+  const dimension = event.player.dimension;
+  world.setDynamicProperty(containerKey("placed_container", dimension, event.block), undefined);
+  world.setDynamicProperty(containerKey("opened_container", dimension, event.block), undefined);
 });
 
 world.afterEvents.blockContainerOpened.subscribe((event) => {
