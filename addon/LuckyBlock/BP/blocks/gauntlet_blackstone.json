@@ -21,7 +21,8 @@
       "minecraft:explosion_resistance": {
         "value": 3600000
       },
-      "minecraft:light_emission": 4
+      "minecraft:light_emission": 4,
+      "minecraft:loot": "loot_tables/blocks/objective_empty.json"
     }
   }
 }
