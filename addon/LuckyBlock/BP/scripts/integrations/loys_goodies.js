@@ -8,7 +8,9 @@ const HOSTILES = new Set([
   "minecraft:shulker","minecraft:phantom","minecraft:pillager","minecraft:vindicator",
   "minecraft:evocation_illager","minecraft:ravager","minecraft:breeze","minecraft:warden",
   "lb:impaler","lb:wither_spider","lb:ant_soldier_guard","lb:ant_queen",
-  "lb:mantis","lb:tyrachnid","lb:wudu_binder","lb:bogre","lb:warped_clam","lb:obsidilith","lb:gauntlet"
+  "lb:mantis","lb:tyrachnid","lb:wudu_binder","lb:bogre","lb:warped_clam","lb:obsidilith","lb:gauntlet",
+  "lb:rift_spitter_ant","lb:rift_charger_ant","lb:rift_burrower_ant",
+  "lb:cave_dweller","lb:lich","lb:void_blossom"
 ]);
 
 function center(block) {
@@ -154,9 +156,9 @@ export function registerLoysGoodiesIntegration(registry) {
     onPlayerInteract(event) {
       const p = center(event.block);
       for (const entity of event.dimension.getEntities({ location: p, maxDistance: 8 })) {
-        if (entity.id !== event.player.id) {
-          try { entity.addEffect("slowness", 120, { amplifier: 1 }); } catch {}
-        }
+        if (entity.id === event.player.id) continue;
+        if (entity.typeId === "minecraft:player" && world.gameRules.pvp !== true) continue;
+        try { entity.addEffect("slowness", 120, { amplifier: 1 }); } catch {}
       }
       spawn(event, "minecraft:snowball", 8);
     }
