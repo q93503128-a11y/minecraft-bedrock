@@ -8,6 +8,7 @@ import "./integrations/bomd_obsidilith.js";
 import "./integrations/bomd_gauntlet.js";
 import "./integrations/bomd_void_blossom.js";
 import "./integrations/slayers_beasts_rift_spitter.js";
+import "./integrations/slayers_beasts_rift_charger.js";
 import "./integrations/slasher/index.js";
 import "./integrations/tomemancy.js";
 import "./integrations/tomemancy_amethyst_repeater.js";
@@ -23,6 +24,7 @@ import "./integrations/slayers_beasts_damselfly.js";
 import "./integrations/slayers_beasts_ant_queen.js";
 import { weightedPools, tierFallbacks, activeTiers } from "./reward_registry.js";
 import { startMythicEvent } from "./events/mythic_events.js";
+import { startRiftReliquaryEvent } from "./events/rift_reliquary.js";
 import { startPreDragonEvent } from "./events/pre_dragon_events.js";
 
 function chooseWeighted(pool) {
@@ -137,6 +139,7 @@ function openWeighted(dimension, pos, tier, player) {
     }
   } else if (reward.kind === "event") {
     const started = startMythicEvent(dimension, pos, reward.id) ||
+      startRiftReliquaryEvent(dimension, pos, reward.id) ||
       startPreDragonEvent(dimension, pos, reward.id);
     if (!started) {
       const fallback = reward.fallback ?? {

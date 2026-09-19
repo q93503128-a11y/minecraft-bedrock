@@ -1,0 +1,65 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:rift_charger_ant",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "lb:charger_vulnerable": {
+        "minecraft:damage_sensor": {
+          "triggers": {
+            "cause": "all",
+            "damage_multiplier": 1.35,
+            "deals_damage": "yes"
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:type_family": { "family": ["monster", "lb_hostile", "lb_rift_charger"] },
+      "minecraft:health": { "value": 420, "max": 420 },
+      "minecraft:attack": { "damage": 16 },
+      "minecraft:movement": { "value": 0.34 },
+      "minecraft:movement.basic": { "max_turn": 34 },
+      "minecraft:navigation.walk": {
+        "avoid_water": true,
+        "can_walk": true,
+        "can_path_over_water": false,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:jump.static": {},
+      "minecraft:collision_box": { "width": 1.8, "height": 0.9 },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": { "value": 0.65 },
+      "minecraft:follow_range": { "value": 36 },
+      "minecraft:behavior.float": { "priority": 0 },
+      "minecraft:behavior.hurt_by_target": { "priority": 1 },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": true,
+        "reselect_targets": true,
+        "within_radius": 36,
+        "entity_types": [{
+          "filters": { "test": "is_family", "subject": "other", "value": "player" },
+          "max_dist": 36
+        }]
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 4,
+        "speed_multiplier": 1.08,
+        "track_target": true,
+        "reach_multiplier": 1.15
+      },
+      "minecraft:behavior.random_stroll": { "priority": 7, "speed_multiplier": 0.75 },
+      "minecraft:behavior.look_at_player": { "priority": 8, "look_distance": 14, "probability": 0.08 },
+      "minecraft:behavior.random_look_around": { "priority": 9 }
+    },
+    "events": {
+      "lb:charger_vulnerable_on": { "add": { "component_groups": ["lb:charger_vulnerable"] } },
+      "lb:charger_vulnerable_off": { "remove": { "component_groups": ["lb:charger_vulnerable"] } }
+    }
+  }
+}

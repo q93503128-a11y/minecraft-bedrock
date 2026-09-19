@@ -1,0 +1,19 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:rift_charger_ant",
+      "materials": { "default": "entity_alphatest" },
+      "textures": { "default": "textures/entity/rift_charger_ant" },
+      "geometry": { "default": "geometry.lb.war_ant_mount" },
+      "animations": {
+        "walk": "animation.lb.war_ant_mount.walk",
+        "ambient": "animation.lb.war_ant_mount.ambient",
+        "locomotion": "controller.animation.lb.war_ant_mount.locomotion"
+      },
+      "scripts": { "animate": ["ambient", "locomotion"] },
+      "render_controllers": ["controller.render.default"],
+      "spawn_egg": { "base_color": "#7f6a3d", "overlay_color": "#d9d07d" }
+    }
+  }
+}
