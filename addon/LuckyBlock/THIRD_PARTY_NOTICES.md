@@ -393,3 +393,16 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Lucky-owned adaptation: post-dragon 300 HP phase/teleport ambusher, restart-safe burrow cooldown, short invisibility/relocation, emergence slow/damage zone, gated natural spawning and Legendary direct encounter.
 - Rift Reliquary final composition now replaces the second Charger with Burrower, giving charge + phase + ranged + support/control + elite roles.
 - Cave Dweller also gains partial source-parity vertical pursuit: the preserved source `crawl` animation is played while stable `applyImpulse` provides short climb pressure. Door-breaking/full source climbing is still not claimed.
+
+### 0.36.0 Oddities + BOMD Lich
+- No new license family is introduced.
+- Loy's Goodies CC0-1.0 at the existing pin supplies three complete single-texture production models:
+  - Mirror: 11 source elements;
+  - Gravestone: 8 source elements;
+  - Air Conditioner: 11 source elements.
+- Each model's embedded 64×64 PNG is decoded unchanged and all source element transforms/per-face UVs are directly converted.
+- Lucky-owned behavior is distinct: Mirror converts supported negative effects into paired positive effects, Gravestone performs a safe one-use last-death recall using bounded world-persisted records, and Air Conditioner clears nearby fire/soul fire, extinguishes entities and grants temporary Fire Resistance.
+- Bosses of Mass Destruction LGPL-3.0 at the existing pin supplies Lich: 161 bones / 233 cubes, all 11 animations, exact entity texture, and eight exact OGG files used by comet/missile/teleport/minion/rage presentation.
+- Upstream Lich config defaults to 300 HP and its combat identity includes missile volleys, comet, Phantom summons, teleport and rage. Lucky's Bedrock adaptation is a 2800 HP post-dragon Legendary summoner/miniboss retaining those roles with telegraphs, minion caps, owner cleanup and restart-safe countdowns.
+- Upstream global eternal-night world-time mutation is deliberately not reproduced; the Lucky boss uses dark-sky HUD presentation without globally changing multiplayer world time.
+- No placeholder, temporary, guessed or assistant-drawn asset enters this batch.

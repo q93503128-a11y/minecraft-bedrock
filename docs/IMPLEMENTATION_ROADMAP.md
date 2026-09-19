@@ -26,7 +26,7 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, minigames, ecological/spatial exploration, persistent structures and a dedicated trap family. 0.35.0 adds three materially different portable outcomes—non-combat Guitar support, persistent Smoke concealment and Flash control—plus a separate AntWorker-based late-game ambusher. Remaining P3 weakness is now primarily sheer absolute materially-distinct outcome count and a smaller tail of odd structures/chained packages.
+Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, minigames, ecological/spatial exploration, persistent structures and a dedicated trap family. 0.36.0 adds three more genuinely different odd utilities—debuff-reflecting Mirror, safe last-death Recall Gravestone and environmental Air Conditioner—while reducing repeated event/generic weights. Remaining P3 weakness is still the canon's much larger absolute outcome-count target rather than a missing basic category.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
@@ -39,7 +39,7 @@ Persist a world-level first-kill unlock. After that point, late-game spawn table
 ## P6 — Late game
 Port/rebuild verified high-quality enemies and bosses. Every major boss receives encounter mechanics: telegraphs, phases, vulnerability windows, mobility, area denial and/or adds. Raw HP inflation cannot be the primary difficulty mechanism.
 
-Implemented P6 slices: Bogre miniboss, Obsidilith boss, Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, Gauntlet boss, Rift Spitter ranged pressure, Rift Charger movement pressure, Cave Dweller gaze-reactive stalking, and **Rift Burrower** phase/teleport pressure using a separate AntWorker silhouette. Cave Dweller also now uses its preserved crawl animation for limited vertical pursuit. Remaining P6 work is mainly sheer normal/elite count, full specialist movement parity where stable, and more role combinations.
+Implemented P6 slices: Bogre miniboss, Obsidilith boss, Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, Gauntlet boss, Rift Spitter ranged pressure, Rift Charger movement pressure, Cave Dweller gaze-reactive stalking, Rift Burrower phase pressure, and now **BOMD Lich** as a summon/teleport/comet Legendary miniboss. Lich uses a fully distinct 161-bone / 233-cube visual chain and owner-capped Phantom adds rather than another ant/melee variant. Remaining P6 work is mostly absolute normal/elite breadth and final runtime tuning.
 
 ## P7 — Mythic outcomes
 Mythic Lucky Blocks award content packages: boss/event/dungeon/set/invasion/Lucky Rain-style experiences rather than merely one huge-stat item.
@@ -62,3 +62,6 @@ The old vanilla-snowball trial-ammo path is removed. Fortune Gallery now grants 
 
 ### 0.35.0 breadth note
 Three portable outcomes and one late-game enemy family were added without changing any tier total. Common gains Lucky Guitar; Rare gains Smoke Grenades; Epic gains Flashbangs; Legendary gains Rift Burrower. Rift Reliquary exchanges a duplicate Charger for Burrower so the final encounter has five distinct roles instead of duplicating movement pressure.
+
+### 0.36.0 oddity + summoner note
+Common/Rare/Epic each gain a non-duplicate strange utility while Legendary gains a mechanically distinct post-dragon Lich. Tier totals remain fixed. This batch deliberately reduces generic fragments and repeated established events/rewards to fund new outcomes instead of inflating probability mass.

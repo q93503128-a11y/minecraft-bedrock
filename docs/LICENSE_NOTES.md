@@ -165,3 +165,11 @@ A source's top-level license does not override restrictions attached to embedded
 - `meadow_worker.png` is vendored byte-identically. AntWorker Java model/animation/renderer data are ported into Bedrock geometry/animation data; Java gameplay code is not copied as Bedrock runtime code.
 - Vanilla `minecraft:basic_smoke_particle` is used for smoke presentation; no project-drawn temporary smoke texture is introduced.
 - No placeholder, temp, dummy or inferred third-party asset enters this milestone.
+
+## 0.36.0 reuse / license note
+- Mirror, Gravestone and Air Conditioner reuse the already-cleared Loy's Goodies CC0-1.0 pin `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+- Lich reuses the already-cleared Bosses of Mass Destruction LGPL-3.0 pin `2fbd0dc79bea498bcad755c4ad9969055dc452c7`; the existing bundled BOMD license remains authoritative.
+- Lich geometry/animation data are ported with identifier/key namespace remapping only; texture and eight selected OGGs are byte-identical. Modified Bedrock integration source remains in this repository and upstream source remains linked through the registry.
+- Java/Kotlin combat implementation is not copied as Bedrock runtime code. The source behavior is used as a documented design reference for missile/comet/minion/teleport/rage roles.
+- A source whose README claimed MIT but lacked a repository LICENSE file was explicitly rejected during this batch; public availability alone was not treated as redistribution permission.
+- No temporary or substitute art is used.

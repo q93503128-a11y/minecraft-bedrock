@@ -797,3 +797,25 @@ Source/Lucky boundary:
 ### Cave Dweller parity step
 - During chase, a player 1.4–6.5 blocks above and within 7.5 horizontal blocks triggers the already-vendored source crawl animation and a small upward/toward-target impulse.
 - This is deliberately described as partial vertical-pursuit parity, not a full Java wall-climb or door-breaking reproduction.
+
+## 0.36.0 Oddity / summoner breadth batch
+
+### Portable / strange outcomes
+- **Recall Gravestone (Common)** — 8-element CC0 source model. Player deaths are recorded in bounded world state. Interaction searches for a safe standable position around the most recent death, supports dimension changes, clears the record only after a successful return, and then consumes the block.
+- **Lucky Air Conditioner (Rare)** — 11-element CC0 source model. One-use environmental utility removes nearby fire and soul fire, extinguishes burning entities and grants nearby players temporary Fire Resistance.
+- **Fortune Mirror (Epic)** — 11-element CC0 source model. It consumes only when at least one supported debuff exists, then converts that status family into a useful positive counterpart instead of being another raw-stat reward.
+- Weights are funded by reductions to generic/repeated slices: Common generic fragments -4, Rare Fortune Relay 8→4, Epic Awakened Grove 9→5.
+
+### BOMD Lich
+- Existing verified LGPL source, no new repository/license family.
+- Visual chain: exact 161-bone / 233-cube geometry after identifier-only remap, 11/11 source animation tracks after namespace-only remap, exact 196×128 entity texture, and eight exact BOMD OGG files.
+- Source combat roles reviewed from LichEntity, LichActions, MinionAction, TeleportAction, VolleyAction and CometAction.
+- Lucky adaptation: post-dragon Legendary direct encounter, 2800 HP, no natural spawn.
+- Role cycle: telegraphed slowing missile volley, owner-tagged Phantom summons with cap/cleanup, safe relocation teleport, telegraphed non-terrain-destroying comet AoE, and a faster rage cycle below 45% HP.
+- The source's global eternal-night mutation is intentionally excluded because it would be an unnecessarily global multiplayer side effect.
+- Legendary Lich weight 6 is funded by Slasher 16→12 and repeated Epic Lucky Block 10→8; total remains 122.
+
+### Candidate rejection note
+- A Wildlife Mod candidate was not imported because its repository README mentioned MIT but the inspected pin did not contain a repository LICENSE file.
+- A second MIT candidate was rejected because the repository did not contain the promised production mob model/texture chain.
+- The batch therefore stays entirely on already-cleared Loy's Goodies and BOMD sources rather than weakening provenance standards.

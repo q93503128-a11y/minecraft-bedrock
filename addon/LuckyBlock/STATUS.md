@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.35.0 Tactical breadth + Rift Burrower batch
+Milestone: 0.36.0 Oddities + BOMD Lich batch
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -773,3 +773,25 @@ Static audit after 0.28.0:
 - Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
 - BP/RP version is 0.35.0; @minecraft/server remains 2.9.0.
 - Stable Bedrock import/render, grenade held alignment/physics/fuse feel, smoke-zone multiplayer interaction, Guitar spam/cooldown feel, Burrower teleport/pathing and Cave Dweller vertical pursuit still require real P8 runtime QA.
+
+0.36.0 Oddities + BOMD Lich batch:
+- Added three complete Loy's Goodies CC0 oddity outcomes with direct source model/texture ports:
+  - `lb:reward_gravestone`: 8-element Recall Gravestone; bounded world-persisted last-death record + safe one-use cross-dimension return;
+  - `lb:reward_air_conditioner`: 11-element environmental cooling utility; clears fire/soul fire, extinguishes nearby entities and grants player Fire Resistance;
+  - `lb:reward_mirror`: 11-element Fortune Mirror; only consumes when it actually removes a supported debuff and grants the paired positive effect.
+- Source geometry/UV and all three embedded 64×64 textures pass exact source-to-target fidelity checks.
+- Added `lb:lich` from Bosses of Mass Destruction LGPL-3.0:
+  - source geometry 161 bones / 233 cubes, identifier-only remap;
+  - all 11 source animation tracks, namespace-key-only remap;
+  - exact source entity texture;
+  - exact OGG: comet prepare/shoot, missile prepare/shoot, teleport prepare, minion rune/summon, rage prepare.
+- Source Lich identity is missile/comet/Phantom summon/teleport/rage. Lucky adaptation is a 2800 HP post-dragon Legendary direct encounter with telegraphs, owner-tagged Phantom cap, orphan/death cleanup, safe relocation and restart-safe countdown cooldowns.
+- Source global eternal-night world-time mutation is intentionally omitted; boss dark-sky presentation avoids globally changing multiplayer time.
+- Weight funding:
+  - Common generic fragments 24→20 for Gravestone weight 4;
+  - Rare Fortune Relay 8→4 for Air Conditioner weight 4;
+  - Epic Awakened Grove 9→5 for Mirror weight 4;
+  - Legendary Slasher 16→12 and repeated Epic Lucky Block 10→8 for Lich weight 6.
+- Tier totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- BP/RP version is 0.36.0; @minecraft/server remains 2.9.0.
+- No real Bedrock runtime test is claimed. Import/render, block interaction feel, cross-dimension recall, multiplayer Lich target/add behavior, boss animation timing and balance remain P8 QA.

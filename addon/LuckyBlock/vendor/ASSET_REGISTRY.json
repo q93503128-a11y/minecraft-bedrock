@@ -1580,6 +1580,98 @@
       "contentId": "lb:rift_burrower_ant",
       "integrationModule": "BP/scripts/integrations/slayers_beasts_rift_burrower.js",
       "modification": "Uses the separate AntWorker model rather than shared AntSoldier geometry. Source worker is 5 HP / 0.22 movement with a 12-cube model, six-bone WALK animation and renderer scale 1.2; meadow_worker.png is vendored byte-identically. Lucky-owned post-dragon role is a 300 HP phase/burrow ambusher with restart-safe countdowns, temporary invisibility, relocation, slow-zone emergence, sparse gated spawning and Reliquary role integration. Optional upstream cargo layer is not claimed active."
+    },
+    {
+      "key": "loys_reward_mirror",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/230604_mirror.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_mirror.json",
+        "BP/scripts/integrations/loys_oddities.js",
+        "RP/models/blocks/reward_mirror.geo.json",
+        "RP/textures/blocks/lb_reward_mirror.png"
+      ],
+      "contentId": "lb:reward_mirror",
+      "behaviorComponent": "lb:fortune_mirror",
+      "integrationModule": "BP/scripts/integrations/loys_oddities.js",
+      "modification": "CC0 Mirror source is 11 elements with one embedded 64x64 production texture. All element transforms and per-face UVs are directly converted and the embedded PNG is decoded unchanged. Lucky-owned interaction removes supported negative status effects and grants paired positive effects, consuming only when an inversion actually occurs."
+    },
+    {
+      "key": "loys_reward_gravestone",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/230728_gravestone.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_gravestone.json",
+        "RP/models/blocks/reward_gravestone.geo.json",
+        "RP/textures/blocks/lb_reward_gravestone.png"
+      ],
+      "contentId": "lb:reward_gravestone",
+      "behaviorComponent": "lb:recall_gravestone",
+      "integrationModule": "BP/scripts/integrations/loys_oddities.js",
+      "modification": "CC0 Gravestone source is 8 elements with one embedded 64x64 production texture. Geometry/UV data and embedded PNG are directly ported. Lucky-owned behavior keeps bounded world-persisted last-death records and consumes the Gravestone only after a safe cross-dimension recall succeeds."
+    },
+    {
+      "key": "loys_reward_air_conditioner",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/230611_air_conditioner_unit.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/reward_air_conditioner.json",
+        "RP/models/blocks/reward_air_conditioner.geo.json",
+        "RP/textures/blocks/lb_reward_air_conditioner.png"
+      ],
+      "contentId": "lb:reward_air_conditioner",
+      "behaviorComponent": "lb:air_conditioner",
+      "integrationModule": "BP/scripts/integrations/loys_oddities.js",
+      "modification": "CC0 Air Conditioner source is 11 elements with one embedded 64x64 production texture. Geometry/UVs and texture are direct ports. Lucky-owned one-use cooling clears nearby fire/soul fire, extinguishes burning entities, and gives nearby players temporary Fire Resistance."
+    },
+    {
+      "key": "bomd_lich",
+      "source": "bosses_of_mass_destruction",
+      "upstream": [
+        "src/main/resources/assets/bosses_of_mass_destruction/geo/lich.geo.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/animations/lich.animation.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/entity/lich.png",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/comet_prepare.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/comet_shoot.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/missile_prepare.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/missile_shoot.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/teleport_prepare.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/minion_rune.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/minion_summon.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/rage_prepare.ogg",
+        "src/main/kotlin/net/barribob/boss/config/LichConfig.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/lich/LichEntity.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/lich/LichActions.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/lich/MinionAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/lich/TeleportAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/lich/VolleyAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/lich/CometAction.kt"
+      ],
+      "targets": [
+        "BP/entities/lich.json",
+        "BP/scripts/integrations/bomd_lich.js",
+        "RP/entity/lich.entity.json",
+        "RP/models/entity/lich.geo.json",
+        "RP/animations/lich.animation.json",
+        "RP/textures/entity/lich.png",
+        "RP/sounds/entity/lich_comet_prepare.ogg",
+        "RP/sounds/entity/lich_comet_shoot.ogg",
+        "RP/sounds/entity/lich_missile_prepare.ogg",
+        "RP/sounds/entity/lich_missile_shoot.ogg",
+        "RP/sounds/entity/lich_teleport_prepare.ogg",
+        "RP/sounds/entity/lich_minion_rune.ogg",
+        "RP/sounds/entity/lich_minion_summon.ogg",
+        "RP/sounds/entity/lich_rage_prepare.ogg"
+      ],
+      "contentId": "lb:lich",
+      "integrationModule": "BP/scripts/integrations/bomd_lich.js",
+      "modification": "LGPL Lich geometry is 161 bones / 233 cubes and is data-identical after geometry-identifier remap; all 11 source animation tracks are preserved with namespace-key remap only. Entity texture and eight directly used BOMD OGG files are byte-identical. Source identity includes missiles, comet, phantom summons, teleport and rage; Lucky reimplements those roles in stable Bedrock Script API at 2800 HP as a post-dragon Legendary summoner/miniboss. Source global eternal-night time mutation is intentionally not reproduced; boss HUD dark-sky presentation avoids global multiplayer time grief."
     }
   ]
 }
