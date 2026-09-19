@@ -585,6 +585,78 @@
           "stream": false
         }
       ]
+    },
+    "lb.lich.comet_prepare": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/lich_comet_prepare",
+          "stream": false
+        }
+      ]
+    },
+    "lb.lich.comet_shoot": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/lich_comet_shoot",
+          "stream": false
+        }
+      ]
+    },
+    "lb.lich.missile_prepare": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/lich_missile_prepare",
+          "stream": false
+        }
+      ]
+    },
+    "lb.lich.missile_shoot": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/lich_missile_shoot",
+          "stream": false
+        }
+      ]
+    },
+    "lb.lich.teleport_prepare": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/lich_teleport_prepare",
+          "stream": false
+        }
+      ]
+    },
+    "lb.lich.minion_rune": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/lich_minion_rune",
+          "stream": false
+        }
+      ]
+    },
+    "lb.lich.minion_summon": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/lich_minion_summon",
+          "stream": false
+        }
+      ]
+    },
+    "lb.lich.rage_prepare": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/lich_rage_prepare",
+          "stream": false
+        }
+      ]
     }
   }
 }
