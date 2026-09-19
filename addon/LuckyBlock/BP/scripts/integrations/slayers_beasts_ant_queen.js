@@ -61,7 +61,7 @@ function tickQueen(queen){
   queen.setDynamicProperty("lb:ant_queen_next_crush",combatTick+120+Math.floor(Math.random()*51));
 }
 mc.system.runInterval(()=>{
-  combatTick+=STEP;
+  combatTick=mc.world.getAbsoluteTime();
   for(const id of ["overworld","nether","the_end"]){
     let dimension;try{dimension=mc.world.getDimension(id);}catch{continue;}
     for(const queen of dimension.getEntities({type:"lb:ant_queen"})){try{tickQueen(queen);}catch{}}
