@@ -862,3 +862,35 @@ Reward graph hardening:
 
 Remaining release work is still internal. Do not ask the user to import/playtest until the remaining full-pack runtime/content/balance/package audits are complete and only final Bedrock real-run verification remains.
 
+## Full manual source audit — 2026-09-19
+
+Manual source review was performed against current `main`, not by relying on GitHub Actions. This audit covered the runtime entry graph, core acquisition/crafting/opening path, external reward interactions, late-game mobs/bosses, multiplayer safety, event persistence/occupancy, BP/RP references, localization, provenance, and packaging script.
+
+Reviewed scope:
+- 36 core/runtime JavaScript modules manually re-read and syntax-checked.
+- 37 core/external block definitions and their custom-component contracts.
+- 29 vendored/custom entity definitions.
+- 44 client entity/attachable definitions and their geometry/animation/render/texture references.
+- 9 core crafting/fusion recipes.
+- 54 Lucky item/block reward IDs, 13 custom entity reward IDs, and 14 event reward IDs.
+- 11 vendored sources / 70 asset records / 68 content IDs / 440 explicit registered targets.
+- External reward lore coverage now resolves 54/54 reward IDs; Gallery Slug and Slasher Blade also have dedicated utility lore.
+- Runtime custom sound calls were manually cross-checked against sound definitions with no missing custom IDs found.
+
+Defects found and repaired during the manual audit:
+- Fixed a broken string in the Loy's Goodies hostile registry that could break JavaScript parsing/runtime load.
+- Added a one-open multiplayer lock around Lucky Block interaction to prevent double reward claims.
+- Coordinated pre-dragon, mythic, and Rift Reliquary event occupancy so independent systems cannot overlap structures or exceed the shared active-event budget.
+- Added late-game Rift/Cave/BOMD enemies to Lucky Turret/CCTV hostile coverage and made Snow Globe respect PvP-off multiplayer.
+- Added a shared empty objective loot table and assigned it to Archive Codex, Fortune Bomb, Gauntlet Blackstone, Obsidilith Rune, and Gallery Target so event objectives cannot duplicate themselves when broken/restored.
+- Filled missing user-facing localization for Lucky Auto-Turret and Ant Queen.
+- Added hover lore for all remaining external 3D reward blocks so their scripted behavior is visible to the player.
+- Made crop maturity checks fail closed instead of treating a missing age/growth state as mature.
+- Removed the ungated vanilla Impaler spawn rule.
+- Added a post-dragon gate to Wither Spider natural Nether spawning.
+- Expanded preflight to validate all custom geometry/animation/controller/render-controller references, runtime custom sounds/particles, objective no-drop loot, localization, event occupancy, late hostile coverage, and post-dragon natural-spawn gates.
+
+Manual review conclusion:
+- No remaining source-level blocker was found in the inspected BP/RP/runtime graph after the fixes above.
+- This is not yet a claim of real Bedrock runtime success. A complete local preflight/build still needs to execute from a full checkout, followed only then by final Bedrock import/play/multiplayer verification.
+
