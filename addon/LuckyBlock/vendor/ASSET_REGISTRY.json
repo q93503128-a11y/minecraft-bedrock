@@ -1410,6 +1410,26 @@
       "contentId": "lb:rift_spitter_ant",
       "integrationModule": "BP/scripts/integrations/slayers_beasts_rift_spitter.js + BP/scripts/events/mythic_events.js",
       "modification": "Uses the already-verified Ant Soldier geometry/WALK+AMBIENT conversion shared with lb:war_ant_mount instead of duplicating geometry ownership, while vendoring the exact leafcutter_soldier.png source texture. Upstream Ant Soldier is a neutral 15 HP / 5 attack melee mob; Lucky-owned post-dragon role is explicitly different: 260 HP ranged pressure, three-shot telegraphed corrosive salvos, close-range retreat, natural gated spawning, Lucky fragment drops and mixed-role Rift Arsenal placement."
+    },
+    {
+      "key": "slayers_beasts_rift_charger_ant",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/AntSoldier.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/AntSoldierModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/AntSoldierAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/AntSoldierRenderer.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/ant/meadow_soldier.png"
+      ],
+      "targets": [
+        "BP/entities/rift_charger_ant.json",
+        "BP/scripts/integrations/slayers_beasts_rift_charger.js",
+        "RP/entity/rift_charger_ant.entity.json",
+        "RP/textures/entity/rift_charger_ant.png"
+      ],
+      "contentId": "lb:rift_charger_ant",
+      "integrationModule": "BP/scripts/integrations/slayers_beasts_rift_charger.js + BP/scripts/events/rift_reliquary.js",
+      "modification": "Shares the already-audited Ant Soldier geometry/WALK+AMBIENT conversion used by War Ant Mount and Rift Spitter, and vendors the exact upstream meadow_soldier.png texture. Upstream Ant Soldier is neutral 15 HP / 5 attack melee. Lucky-owned post-dragon adaptation is a 420 HP charge-pressure role with a telegraphed dash, impact knockback, dodge-created 1.35x vulnerability window, gated sparse spawning, Lucky progression drops, Legendary encounter binding and Rift Reliquary placement."
     }
   ]
 }

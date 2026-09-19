@@ -81,3 +81,4 @@ entity.lb:void_blossom.name=보이드 블로섬
 tile.lb:archive_codex.name=기록의 고서
 tile.lb:fortune_bomb.name=포춘 폭탄
 entity.lb:rift_spitter_ant.name=균열 포격 개미
+entity.lb:rift_charger_ant.name=균열 돌진 개미
