@@ -167,9 +167,21 @@ function openFallback(dimension, pos, tier) {
   if (Math.random() <= cfg.bonusChance) spawnAt(dimension, pos, cfg.bonus, 1);
 }
 
+const openingLocks = new Set();
+
+function openingKey(dimension, block) {
+  return dimension.id + "|" + block.location.x + "|" + block.location.y + "|" + block.location.z;
+}
+
 function openTier(event, tier) {
   const block = event.block;
   const dimension = event.dimension;
+  if (block?.typeId !== `lb:${tier}_lucky_block`) return;
+  const key = openingKey(dimension, block);
+  if (openingLocks.has(key)) return;
+  openingLocks.add(key);
+  system.run(() => openingLocks.delete(key));
+
   const pos = { x: block.location.x + 0.5, y: block.location.y + 0.65, z: block.location.z + 0.5 };
   block.setPermutation(BlockPermutation.resolve("minecraft:air"));
   presentOpening(dimension, pos, tier);
