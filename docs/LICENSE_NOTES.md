@@ -146,3 +146,13 @@ A source's top-level license does not override restrictions attached to embedded
 - The Ant Soldier geometry/animation conversion is shared from existing audited targets; it is not duplicated under a second asset owner.
 - Rift Reliquary reuses already-cleared Loy's Goodies CC0 Archive Codex/Fortune Bomb assets and the existing BOMD LGPL Obsidilith Rune asset. No new third-party license family is introduced by the dungeon layout.
 - Source-original behavior and Lucky-owned gameplay remain explicitly separated in THIRD_PARTY_NOTICES and the vendor registry.
+
+## 0.34.0 license / provenance note
+
+- Gallery Slug adds no new license family: its exact source is the already-cleared Loy's Goodies CC0-1.0 repository pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+- Cave Dweller adds one MIT source, `Thiov/cave_dweller-fabric`, pinned at `fc14dd9a228a332878b9419b77b6125302b5e861`.
+- The pinned repository LICENSE preserves copyright for SiverDX's original Cave Dweller Evolved and 2026 Fabric-port contributors; a copy is vendored at `THIRD_PARTY_LICENSES/CAVE_DWELLER_MIT.txt`.
+- The repository README explicitly attributes gameplay design, model, animations and sounds to the original authors; the port adapts code to Fabric. Lucky therefore treats the model/animations/textures/sounds as MIT-covered source material under that preserved notice.
+- Cave Dweller PNG/OGG binaries are byte-identical. Geometry/animation JSON changes are identifier/namespace remaps only.
+- Java source logic is not copied as Bedrock JavaScript. Lucky's gaze state machine, progression balance, spawn policy and rewards are Bedrock-side adaptations informed by documented source behavior.
+- No placeholder, inferred texture substitution or unverified binary is introduced in this batch.

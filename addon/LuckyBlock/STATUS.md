@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.33.0 Rift Reliquary + Rift Charger completion-jump batch
+Milestone: 0.34.0 Gallery Slug + Cave Dweller stalker batch
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -743,3 +743,17 @@ Static audit after 0.28.0:
 - BP/RP version is now 0.33.0; @minecraft/server remains 2.9.0.
 - Static lifecycle review also replaced absolute session-tick combat deadlines in both Rift Charger and the existing Rift Spitter with small persisted countdown cooldowns, preventing a world restart from inheriting a very large stale attack deadline.
 - Stable Bedrock import/render, charge physics, multiplayer simultaneous Codex interaction/bomb mining, dungeon gate repair, long-session persistence and final encounter balance remain P8 runtime QA. No runtime-playtest claim is made.
+
+0.34.0 Gallery Slug + Cave Dweller stalker batch:
+- Fortune Gallery no longer grants or scores vanilla snowballs. The old farmable-ammo path is fully removed.
+- Added `lb:gallery_slug` from the Loy's Goodies CC0 Shotgun Shell: exact two source elements -> two Bedrock cubes, with directly decoded embedded 16×16 production texture.
+- Gallery Slug is event-only. itemStartUse performs a block-view raycast shot, scoring the first block in the sightline. Trial ammo is reclaimed on reset, completion, timeout and periodically when a player no longer belongs to an active run; legitimate vanilla snowballs are never modified.
+- Added `lb:cave_dweller` from `Thiov/cave_dweller-fabric` MIT pin `fc14dd9a228a332878b9419b77b6125302b5e861`.
+- Cave Dweller visual fidelity: all 18 bones / 83 cubes retained with geometry-identifier-only remap; all 13 source animations retained with namespace-only key remap.
+- Source body/eyes PNG plus spotted/chase×2/flee/disappear/hurt/death OGG subset are byte-identical to the pinned source.
+- Source Java defaults are 60 HP / 6 attack / 0.3 movement / 100 follow range. Lucky's post-dragon adaptation is 340 HP with harmless stalk state, watched freeze, repeated-stare threshold, 20-damage chase or flee/disappear response.
+- Natural spawning is first-Dragon gated, underground-only around players at Y<=50, sparse, and capped at one within 96 blocks. Legendary Lucky Blocks also gain a direct Cave Dweller outcome.
+- Source wall-climb/crawl/door-breaking code is not falsely claimed implemented in this milestone; source crawl animations remain preserved for later parity work.
+- Legendary Cave Dweller weight 8 is funded by reducing generic fragment weight by 4 and repeated Bogre weight by 4. Tier totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- BP/RP version is 0.34.0 and @minecraft/server remains 2.9.0.
+- Stable Bedrock import/render, eye-layer appearance, chargeable Gallery Slug input feel, multiplayer simultaneous gallery shooting, Cave Dweller gaze/chase behavior and balance still require P8 real runtime QA.

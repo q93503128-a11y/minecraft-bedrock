@@ -26,7 +26,7 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, minigames, ecological/spatial exploration, persistent structures and a dedicated trap family. 0.33.0 adds Rift Reliquary as a room-gated exploration/trap/objective/combat dungeon rather than another wave arena, and Rift Charger as a distinct movement-pressure enemy. Remaining P3 weakness is mainly sheer materially-distinct outcome count and a smaller specialist utility/odd-event tail.
+Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, minigames, ecological/spatial exploration, persistent structures and a dedicated trap family. 0.34.0 adds a gaze-reactive Cave Dweller stalker as a materially different post-dragon result and replaces Fortune Gallery's generic snowball trial with a real external-source event-only 3D ammo object. Remaining P3 weakness is still sheer materially-distinct outcome count and a smaller specialist utility/odd-event tail.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
@@ -39,7 +39,7 @@ Persist a world-level first-kill unlock. After that point, late-game spawn table
 ## P6 — Late game
 Port/rebuild verified high-quality enemies and bosses. Every major boss receives encounter mechanics: telegraphs, phases, vulnerability windows, mobility, area denial and/or adds. Raw HP inflation cannot be the primary difficulty mechanism.
 
-Implemented P6 slices: Bogre miniboss, Obsidilith boss, Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, Gauntlet boss, Rift Spitter ranged pressure, and now **Rift Charger Ant** as a dedicated telegraphed mobility/charge role. A missed charge creates a vulnerability window, so the role rewards dodging rather than only adding health/damage. Rift Reliquary then combines Charger movement pressure with Spitter/Wudu/Tyrachnid roles. Remaining P6 work is mainly more sheer normal/elite count and a few additional role combinations.
+Implemented P6 slices: Bogre miniboss, Obsidilith boss, Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, Gauntlet boss, Rift Spitter ranged pressure, Rift Charger movement pressure, and now **Cave Dweller** as a gaze-reactive underground stalker. The new role cycles harmless stalking, watched freeze, chase and flee/disappear behavior instead of another damage-delivery variant. Remaining P6 work is mainly sheer normal/elite count, source-parity polish for specialist movement such as crawl/climb, and additional role combinations.
 
 ## P7 — Mythic outcomes
 Mythic Lucky Blocks award content packages: boss/event/dungeon/set/invasion/Lucky Rain-style experiences rather than merely one huge-stat item.
@@ -56,3 +56,6 @@ Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, Rift 
 ## Current production note
 
 As of 2026-09-18 the current stable Bedrock release line is 26.51. Script/module dependencies must be rechecked against stable creator documentation immediately before each distributable build. The current stable creator docs expose @minecraft/server 2.x, with 2.9.0 listed on the stable module page.
+
+### 0.34.0 Fortune Gallery exploit closure
+The old vanilla-snowball trial-ammo path is removed. Fortune Gallery now grants only `lb:gallery_slug`, a 2-cube CC0 source port with no valid reward/economy use outside the trial. Stable item-start-use + block raycast scoring replaces projectileHitBlock snowball scoring. Reset/completion/timeout and periodic cleanup reclaim the custom trial ID without touching legitimate player-owned snowballs.

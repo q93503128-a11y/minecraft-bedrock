@@ -106,6 +106,18 @@
       "integrationMode": "vendored",
       "attributionRequired": true,
       "licenseFile": "THIRD_PARTY_LICENSES/MINECRAFT_CUSTOM_EVENTS_MIT.txt"
+    },
+    "cave_dweller_fabric": {
+      "url": "https://github.com/Thiov/cave_dweller-fabric",
+      "license": "MIT",
+      "author": "SiverDX (original) / Thiov and Fabric port contributors",
+      "reviewedRef": "main",
+      "reviewedCommit": "fc14dd9a228a332878b9419b77b6125302b5e861",
+      "integrationMode": "vendored",
+      "attributionRequired": true,
+      "licenseFile": "THIRD_PARTY_LICENSES/CAVE_DWELLER_MIT.txt",
+      "sourcePlatform": "Minecraft Java / Fabric / GeckoLib",
+      "portTarget": "Minecraft Bedrock / @minecraft/server 2.9.0"
     }
   },
   "assets": [
@@ -1430,6 +1442,67 @@
       "contentId": "lb:rift_charger_ant",
       "integrationModule": "BP/scripts/integrations/slayers_beasts_rift_charger.js + BP/scripts/events/rift_reliquary.js",
       "modification": "Shares the already-audited Ant Soldier geometry/WALK+AMBIENT conversion used by War Ant Mount and Rift Spitter, and vendors the exact upstream meadow_soldier.png texture. Upstream Ant Soldier is neutral 15 HP / 5 attack melee. Lucky-owned post-dragon adaptation is a 420 HP charge-pressure role with a telegraphed dash, impact knockback, dodge-created 1.35x vulnerability window, gated sparse spawning, Lucky progression drops, Legendary encounter binding and Rift Reliquary placement."
+    },
+    {
+      "key": "loys_gallery_slug",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/firearms/230503_shotgun_shell.bbmodel"
+      ],
+      "targets": [
+        "BP/items/gallery_slug.json",
+        "RP/models/entity/gallery_slug.geo.json",
+        "RP/attachables/gallery_slug.attachable.json",
+        "RP/textures/items/gallery_slug.png"
+      ],
+      "contentId": "lb:gallery_slug",
+      "integrationModule": "BP/scripts/events/pre_dragon_events.js",
+      "modification": "CC0 Shotgun Shell source has exactly two elements and one embedded 16x16 production texture. Both elements and per-face UVs are converted directly into the two-cube Gallery Slug attachable; the embedded PNG is decoded directly. Lucky-owned Fortune Gallery uses it only as temporary trial ammunition with stable itemStartUse + block raycast scoring and cleanup, replacing farmable vanilla snowballs without touching player-owned snowballs."
+    },
+    {
+      "key": "cave_dweller_stalker",
+      "source": "cave_dweller_fabric",
+      "upstream": [
+        "src/main/resources/assets/cave_dweller/geckolib/models/cave_dweller.geo.json",
+        "src/main/resources/assets/cave_dweller/geckolib/animations/cave_dweller.animation.json",
+        "src/main/resources/assets/cave_dweller/textures/entity/cave_dweller_texture.png",
+        "src/main/resources/assets/cave_dweller/textures/entity/cave_dweller_eyes_texture.png",
+        "src/main/resources/assets/cave_dweller/sounds/spotted.ogg",
+        "src/main/resources/assets/cave_dweller/sounds/chase_1.ogg",
+        "src/main/resources/assets/cave_dweller/sounds/chase_2.ogg",
+        "src/main/resources/assets/cave_dweller/sounds/flee_1.ogg",
+        "src/main/resources/assets/cave_dweller/sounds/disappear.ogg",
+        "src/main/resources/assets/cave_dweller/sounds/dweller_hurt_1.ogg",
+        "src/main/resources/assets/cave_dweller/sounds/dweller_death.ogg",
+        "src/main/java/de/cadentem/cave_dweller/entities/CaveDwellerEntity.java",
+        "src/main/java/de/cadentem/cave_dweller/entities/goals/CaveDwellerStareGoal.java",
+        "src/main/java/de/cadentem/cave_dweller/entities/goals/CaveDwellerChaseGoal.java",
+        "src/main/java/de/cadentem/cave_dweller/entities/goals/CaveDwellerFleeGoal.java",
+        "src/main/java/de/cadentem/cave_dweller/client/CaveDwellerRenderer.java",
+        "src/main/java/de/cadentem/cave_dweller/client/CaveDwellerModel.java",
+        "src/main/java/de/cadentem/cave_dweller/client/CaveDwellerEyesLayer.java"
+      ],
+      "targets": [
+        "BP/entities/cave_dweller.json",
+        "BP/scripts/integrations/cave_dweller.js",
+        "RP/entity/cave_dweller.entity.json",
+        "RP/models/entity/cave_dweller.geo.json",
+        "RP/animations/cave_dweller.animation.json",
+        "RP/animation_controllers/cave_dweller.animation_controllers.json",
+        "RP/render_controllers/cave_dweller.render_controllers.json",
+        "RP/textures/entity/cave_dweller.png",
+        "RP/textures/entity/cave_dweller_eyes.png",
+        "RP/sounds/entity/cave_dweller_spotted.ogg",
+        "RP/sounds/entity/cave_dweller_chase_1.ogg",
+        "RP/sounds/entity/cave_dweller_chase_2.ogg",
+        "RP/sounds/entity/cave_dweller_flee_1.ogg",
+        "RP/sounds/entity/cave_dweller_disappear.ogg",
+        "RP/sounds/entity/cave_dweller_dweller_hurt_1.ogg",
+        "RP/sounds/entity/cave_dweller_dweller_death.ogg"
+      ],
+      "contentId": "lb:cave_dweller",
+      "integrationModule": "BP/scripts/integrations/cave_dweller.js",
+      "modification": "MIT visual/audio chain port. Source geometry is 18 bones / 83 cubes and differs only by geometry identifier; all 13 source animation tracks are preserved with namespace-only key remaps. Body/eyes PNG and seven selected OGG files are byte-identical. Source Java defaults are 60 HP, 6 attack, 0.3 movement and 100 follow range, with stare/chase/flee plus crawling/climbing/door interaction. Lucky-owned adaptation is a post-dragon 340 HP / 20 chase-damage underground stalker using stable Bedrock Script API gaze detection and shared stalk/spotted/chase/flee phases. Full source wall-climb/crawl/door-breaking behavior is not claimed implemented."
     }
   ]
 }

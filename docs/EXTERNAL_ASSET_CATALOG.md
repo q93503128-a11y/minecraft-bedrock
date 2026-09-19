@@ -759,3 +759,21 @@ Source/Lucky boundary:
 - Final role composition: two Rift Chargers + Rift Spitter + Wudu Binder + Tyrachnid.
 - Objective blocks are restored while their stage is locked, preventing pre-clear/softlock bypass; closed gates are also repaired until legitimately opened.
 - The event pauses while unattended and uses world-persisted shared state, so multiplayer participants progress one cooperative dungeon rather than separate player copies.
+
+## 0.34.0 Gallery / stalker batch
+
+### Gallery Slug
+- Loy's Goodies CC0 Shotgun Shell at the existing pinned commit.
+- 2 source elements -> 2 Bedrock cubes; embedded 16×16 source PNG is decoded directly.
+- Used only inside Fortune Gallery. The old vanilla snowball trial grant/hit path is removed.
+- ItemStartUse fires the trial shot; a stable block-view raycast selects the first block in the sightline.
+- Reset, completion, timeout and periodic participant cleanup remove the custom trial ID, while legitimate vanilla snowballs are untouched.
+
+### Cave Dweller
+- New MIT source: `Thiov/cave_dweller-fabric@fc14dd9a228a332878b9419b77b6125302b5e861`.
+- Full source geometry preserved: 18 bones / 83 cubes; geometry identifier only is renamed.
+- Full source animation file preserved: 13 tracks; animation keys only are moved into the `animation.lb.cave_dweller.*` namespace.
+- Body/eye textures and seven selected combat/state sounds are byte-identical.
+- Source behavior identity reviewed from CaveDwellerEntity + Stare/Chase/Flee goals.
+- Lucky role is deliberately not another ranged or charge enemy: post-dragon underground stalker that changes state based on player gaze, then commits to chase or flee.
+- Direct Legendary encounter weight 8 is funded by reducing generic Legendary fragments and repeated Bogre weight; the Legendary pool remains exactly 122.

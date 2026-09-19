@@ -360,3 +360,19 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Its three unique physical objective families reuse cleared production assets already in this pack: Loy's Goodies CC0 Archive Codex and Fortune Bomb, plus Bosses of Mass Destruction LGPL Obsidilith Rune.
 - Lucky-owned content is the permanent 17×29 final-material dungeon layout and progression logic: three order-free Codex keys with guarded activation, a six-Bomb timed trap corridor, a four-Rune sealed sanctum, then a mixed final role encounter.
 - The final encounter combines Rift Charger movement pressure, Rift Spitter ranged pressure, Wudu support/control and Tyrachnid elite pressure. The structure/puzzle flow is Lucky-owned and is not attributed to any upstream mod.
+
+### Loy's Goodies Gallery Slug — 0.34.0
+- Source: `SL0ANE/Loy-s-Goodies`, pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Upstream: `models/java-model/tools & weapons/firearms/230503_shotgun_shell.bbmodel`.
+- Source model is exactly two elements using one embedded 16×16 production PNG. Both source elements and face UVs are converted into the two-cube `geometry.lb.gallery_slug`; the embedded PNG is decoded directly.
+- Lucky-owned behavior: event-only Gallery Slug inventory grant, raycast scoring, multiplayer contribution tracking and cleanup. It replaces the old vanilla-snowball trial ammo so retries/participants cannot farm a generally useful vanilla item.
+- Legitimate player-owned snowballs are never counted, removed or rewritten.
+
+### Cave Dweller stalker — 0.34.0
+- Source: `Thiov/cave_dweller-fabric`, pinned at `fc14dd9a228a332878b9419b77b6125302b5e861`, MIT preserving SiverDX's original Cave Dweller Evolved license plus Fabric-port contributions.
+- Direct visual chain: 18-bone / 83-cube GeckoLib geometry, all 13 animation tracks, exact body PNG, exact eye-layer PNG and the source renderer/model/eye-layer references.
+- Direct audio subset: exact `spotted`, two `chase`, one `flee`, `disappear`, one hurt and death OGG files; each vendored binary is Git-blob identical to the pinned source.
+- Source Java default attributes: 60 HP, 6 attack, 0.3 movement speed and 100 follow range. Source goals implement stare, chase and flee; the full Java entity also includes crawling/climbing/door interaction and timed disappearance.
+- Lucky-owned adaptation: post-dragon 340 HP underground stalker. It approaches harmlessly while unwatched, freezes when directly watched, accumulates stare confrontations, then chooses a 20-damage chase or flee/disappear response. Sparse underground natural spawning and Legendary Lucky direct encounters are gated behind the first Ender Dragon kill.
+- Bedrock does **not** claim a full recreation of the source wall-climb/crawl/door-breaking code in this milestone. The preserved crawl animations remain in the resource chain for future parity work.
+- The source eye texture is rendered as a second ordinary alpha-test layer, matching the source renderer's separate eye layer without inventing an emissive glow.
