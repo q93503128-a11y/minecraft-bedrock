@@ -1,0 +1,33 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:rift_burrower_ant",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/rift_burrower_ant"
+      },
+      "geometry": {
+        "default": "geometry.lb.rift_burrower_ant"
+      },
+      "animations": {
+        "walk": "animation.lb.rift_burrower_ant.walk",
+        "locomotion": "controller.animation.lb.war_ant_mount.locomotion"
+      },
+      "scripts": {
+        "animate": [
+          "locomotion"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#806641",
+        "overlay_color": "#c9b96a"
+      }
+    }
+  }
+}

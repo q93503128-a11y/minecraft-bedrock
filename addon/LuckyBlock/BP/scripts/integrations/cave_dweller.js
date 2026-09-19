@@ -96,6 +96,13 @@ function tickDweller(entity){
   }
 
   if(mode==="chase"){
+    const vertical=player.location.y-entity.location.y;
+    const dx=player.location.x-entity.location.x,dz=player.location.z-entity.location.z,horizontal=Math.hypot(dx,dz);
+    if(vertical>1.4&&vertical<6.5&&horizontal<7.5){
+      try{entity.playAnimation("animation.lb.cave_dweller.crawl",{blendOutTime:.2});}catch{}
+      const len=Math.max(.001,horizontal);
+      try{entity.applyImpulse({x:dx/len*.08,y:.30,z:dz/len*.08});}catch{}
+    }
     if(ticks%60===0)play(entity,"lb.cave_dweller.chase",.9,.92+Math.random()*.12);
     if(ticks>=240){
       if(!looking&&target.distanceSq>18*18){disappear(entity);return;}

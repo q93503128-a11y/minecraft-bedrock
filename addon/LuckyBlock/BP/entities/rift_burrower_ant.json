@@ -1,0 +1,91 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:rift_burrower_ant",
+      "is_spawnable": true,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "monster",
+          "lb_hostile",
+          "lb_rift_burrower"
+        ]
+      },
+      "minecraft:health": {
+        "value": 300,
+        "max": 300
+      },
+      "minecraft:attack": {
+        "damage": 10
+      },
+      "minecraft:movement": {
+        "value": 0.34
+      },
+      "minecraft:movement.basic": {
+        "max_turn": 42
+      },
+      "minecraft:navigation.walk": {
+        "avoid_water": true,
+        "can_walk": true,
+        "can_path_over_water": false,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:jump.static": {},
+      "minecraft:collision_box": {
+        "width": 1.1,
+        "height": 0.65
+      },
+      "minecraft:physics": {},
+      "minecraft:knockback_resistance": {
+        "value": 0.45
+      },
+      "minecraft:follow_range": {
+        "value": 34
+      },
+      "minecraft:behavior.float": {
+        "priority": 0
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "must_see": true,
+        "reselect_targets": true,
+        "within_radius": 34,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "player"
+            },
+            "max_dist": 34
+          }
+        ]
+      },
+      "minecraft:behavior.melee_attack": {
+        "priority": 4,
+        "speed_multiplier": 1.05,
+        "track_target": true,
+        "reach_multiplier": 1.1
+      },
+      "minecraft:behavior.random_stroll": {
+        "priority": 7,
+        "speed_multiplier": 0.75
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 8,
+        "look_distance": 12,
+        "probability": 0.08
+      },
+      "minecraft:behavior.random_look_around": {
+        "priority": 9
+      }
+    }
+  }
+}
