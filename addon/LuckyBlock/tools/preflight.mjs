@@ -446,6 +446,13 @@ for(const kind of ["fragment","lucky_block"]){
   }
   assert(signatures.size===coreTiers.length,`core ${kind} silhouettes must be structurally distinct across all five tiers`);
 }
+const particleIds=new Set();
+for(const p of walk(path.join(rpRoot,"particles")).filter(p=>p.endsWith(".json"))){
+  const j=readJson(p),id=j?.particle_effect?.description?.identifier;
+  if(!id)continue;
+  assert(!particleIds.has(id),`duplicate particle identifier ${id}`);
+  particleIds.add(id);
+}
 const animationControllerIds=new Set();
 for(const p of walk(path.join(rpRoot,"animation_controllers")).filter(p=>p.endsWith(".json"))){
   const j=readJson(p);if(!j)continue;
@@ -480,6 +487,9 @@ function checkClientDescription(p,j){
     const id=typeof rc==="string"?rc:Object.keys(rc??{})[0];
     if(typeof id!=="string"||id==="controller.render.default"||id==="controller.render.armor")continue;
     assert(renderControllerIds.has(id),`${rel(p)} missing render controller ${id}`);
+  }
+  for(const id of Object.values(d.particle_effects??{})){
+    if(typeof id==="string"&&id.startsWith("lb:"))assert(particleIds.has(id),`${rel(p)} missing particle ${id}`);
   }
   for(const t of Object.values(d.textures??{}))if(typeof t==="string"&&t.startsWith("textures/")&&!vanillaTextureRefs.has(t))assert(existsAsset(t),`${rel(p)} missing texture ${t}`);
 }
@@ -519,13 +529,18 @@ for(const atlasName of ["terrain_texture.json","item_texture.json"]){
 }
 const soundPath=path.join(rpRoot,"sounds","sound_definitions.json");
 if(fs.existsSync(soundPath)){
-  const j=readJson(soundPath);
+  const j=readJson(soundPath),soundIds=new Set(Object.keys(j?.sound_definitions??{}));
   for(const [id,def] of Object.entries(j?.sound_definitions??{})){
     for(const raw of def?.sounds??[]){
       const n=typeof raw==="string"?raw:raw?.name;
       if(typeof n==="string"&&n.startsWith("sounds/"))assert(fs.existsSync(path.join(rpRoot,n+".ogg"))||fs.existsSync(path.join(rpRoot,n+".fsb")),`sound ${id}: missing ${n}`);
     }
   }
+  const scriptSource=walk(path.join(bpRoot,"scripts")).filter(p=>/\.m?js$/.test(p)).map(p=>fs.readFileSync(p,"utf8")).join("\n");
+  for(const m of scriptSource.matchAll(/["']((?:lb|slasher)\.[A-Za-z0-9_.-]+)["']/g))
+    assert(soundIds.has(m[1]),`runtime custom sound missing definition: ${m[1]}`);
+  for(const m of scriptSource.matchAll(/spawnParticle\(\s*["'](lb:[A-Za-z0-9_.-]+)["']/g))
+    assert(particleIds.has(m[1]),`runtime custom particle missing definition: ${m[1]}`);
 }
 
 function langMap(p){
@@ -557,4 +572,4 @@ if(errors.length){
   for(const e of errors)console.error("ERROR",e);
   process.exit(1);
 }
-console.log(`Lucky Block preflight OK — ${all.length} BP/RP files checked, ${itemDefs.size} items, ${blockDefs.size} blocks, ${entityDefs.size} entities, ${geometryIds.size} geometry IDs, ${animationIds.size} animation IDs, ${animationControllerIds.size} animation controllers`);
+console.log(`Lucky Block preflight OK — ${all.length} BP/RP files checked, ${itemDefs.size} items, ${blockDefs.size} blocks, ${entityDefs.size} entities, ${geometryIds.size} geometry IDs, ${animationIds.size} animation IDs, ${animationControllerIds.size} animation controllers, ${particleIds.size} particles`);
