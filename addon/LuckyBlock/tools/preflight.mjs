@@ -498,7 +498,7 @@ if(fs.existsSync(objectiveLootPath)){
   const loot=readJson(objectiveLootPath);
   assert(Array.isArray(loot?.pools)&&loot.pools.length===0,"objective_empty loot table must contain zero pools");
 }
-for(const id of ["lb:archive_codex","lb:fortune_bomb","lb:gauntlet_blackstone","lb:obsidilith_rune"]){
+for(const id of ["lb:archive_codex","lb:fortune_bomb","lb:gauntlet_blackstone","lb:obsidilith_rune","lb:gallery_target"]){
   assert(blockDefs.get(id)?.j?.components?.["minecraft:loot"]===objectiveLoot,`${id}: event objective must use non-dropping objective loot`);
 }
 
@@ -541,6 +541,9 @@ function langMap(p){
 const en=langMap(path.join(rpRoot,"texts","en_US.lang")),ko=langMap(path.join(rpRoot,"texts","ko_KR.lang"));
 for(const k of en.keys())if(!ko.has(k))warnings.push(`ko_KR missing key present in en_US: ${k}`);
 for(const k of ko.keys())if(!en.has(k))warnings.push(`en_US missing key present in ko_KR: ${k}`);
+for(const key of ["tile.lb:reward_turret.name","entity.lb:ant_queen.name","entity.lb:lucky_turret.name"]){
+  assert(en.has(key)&&ko.has(key),`missing user-facing localization in en_US/ko_KR: ${key}`);
+}
 
 for(const required of ["THIRD_PARTY_NOTICES.md","THIRD_PARTY_LICENSES"])assert(fs.existsSync(path.join(root,required)),`missing legal bundle ${required}`);
 
