@@ -112,3 +112,6 @@ item.lb:mythic_fragment.name=Mythic Lucky Fragment
 item.lb:mythic_lucky_block.name=Mythic Lucky Block
 tile.lb:mythic_fragment_display.name=Mythic Lucky Fragment Display
 tile.lb:mythic_lucky_block_placed.name=Mythic Lucky Block
+tile.lb:reward_turret.name=Lucky Auto-Turret
+entity.lb:ant_queen.name=Ant Queen
+entity.lb:lucky_turret.name=Lucky Auto-Turret
