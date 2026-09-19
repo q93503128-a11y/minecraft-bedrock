@@ -111,3 +111,17 @@ A source's top-level license does not override restrictions attached to embedded
 - Geometry/animation port changes are namespace/identifier remaps only; source binary texture/sound payloads are vendored byte-identically.
 - Java/Kotlin combat implementation is not copied as Bedrock code. Its documented behavior is re-expressed through `@minecraft/server 2.9.0` mechanics: telegraphed punch, delayed laser, swirl pulses, blindness, immunity and counterable shield phases.
 - Source-availability compliance continues under the existing BOMD entry and `THIRD_PARTY_LICENSES/BOMD_LGPL-3.0.txt`.
+
+
+## Active BOMD Void Blossom port — 0.31.0
+- Source: barribob/bosses-of-mass-destruction, reviewed commit `2fbd0dc79bea498bcad755c4ad9969055dc452c7`, LGPL-3.0.
+- Direct reused material: complete Void Blossom geometry, all eight animation tracks, entity texture, and five original OGG combat sounds.
+- Geometry/animation changes are identifier/namespace remaps only; PNG/OGG payloads are byte-identical.
+- Java/Kotlin combat code is not copied as Bedrock code. Spike, spike-wave, spore, petal-blade and milestone-blossom identities are re-expressed with `@minecraft/server 2.9.0`; life-root guard/exposure rules and Void Garden are project-owned.
+- Existing LGPL notice/source-availability treatment remains in force.
+
+## Active Loy's Archive Codex port — 0.31.0
+- Source: SL0ANE/Loy-s-Goodies, reviewed commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Selected file: `models/java-model/furniture & decoration/books/220407_book_0.bbmodel`.
+- All seven source elements and per-face UVs are converted directly; its single embedded texture is decoded directly.
+- Fortune Archive structure/puzzle behavior is project-owned and does not claim an upstream gameplay mechanic.

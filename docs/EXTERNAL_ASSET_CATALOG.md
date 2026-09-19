@@ -659,3 +659,48 @@ Bedrock/Lucky adaptation:
 - Gauntlet death produces a content reward package rather than only XP/stat inflation.
 
 The external model/animation data are not simplified copies: geometry is data-identical after identifier remapping and animation tracks are data-identical after namespace key remapping.
+
+
+## BOMD Void Blossom / Void Garden — 0.31.0
+
+Source: `barribob/bosses-of-mass-destruction`, LGPL-3.0, pinned commit `2fbd0dc79bea498bcad755c4ad9969055dc452c7`.
+
+Direct production payload:
+- `geo/void_blossom.geo.json`: 67 bones / 91 cubes;
+- `animations/void_blossom.animation.json`: 8 source animations: idle, spike, leaf_blade, blossom, spike_wave, spore, death, spawn;
+- exact `textures/entity/void_blossom.png`;
+- exact OGG: void_blossom_burrow, void_blossom_spike, spore_prepare, spore_impact, petal_blade.
+
+Source behavior references:
+- stationary boss; default 350 HP / 4 armor / 12 attack;
+- direct spike burst, expanding spike wave, spore projectile role, line-style petal blades and milestone blossom placement;
+- HP milestones at 75% / 50% / 25%.
+
+Lucky Bedrock adaptation:
+- 420 HP pre-dragon Epic miniboss, not a post-dragon stat wall;
+- spike burst: three target-area telegraphs followed by avoidable hits;
+- spike wave: three outward annular telegraphs;
+- spore: delayed 3.5-block poison/slow cloud;
+- petal blade: three telegraphed lines through target space;
+- 75/50/25% phases place four Flowering Azalea life roots; while present, boss receives 0.65x incoming damage and heals 2 HP/s;
+- clearing roots creates a 50-tick 1.35x vulnerability window;
+- persistent Void Garden uses only final vanilla arena materials plus the real boss asset.
+
+Geometry is data-identical after identifier remapping; animation data is identical after namespace key remapping. Texture and five imported sounds are byte-identical source blobs.
+
+## Loy's Goodies Archive Codex / Fortune Archive — 0.31.0
+
+Source: `SL0ANE/Loy-s-Goodies`, CC0-1.0, pinned commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+
+Direct production payload:
+- `models/java-model/furniture & decoration/books/220407_book_0.bbmodel`;
+- 7 elements, one embedded 64x64 production texture;
+- source element positions/rotations and per-face UVs convert 1:1 into `geometry.lb.archive_codex`.
+
+Lucky event role:
+- permanent 17x17 final-material archive;
+- four identical codices on four differently materialed pedestals;
+- randomized four-position sequence is replayed with production particles/audio, then players interact with the books in that spatial order;
+- progress is shared across players, so one player can observe and another can continue the sequence;
+- wrong input restarts the reveal; missing books are restored every event tick;
+- stable `world.afterEvents.playerInteractWithBlock` provides the interaction surface.

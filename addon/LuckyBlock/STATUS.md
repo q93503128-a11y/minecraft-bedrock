@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.30.0 Accessory Suite + Gauntlet completion-jump batch
+Milestone: 0.31.0 Void Garden + Fortune Archive P4 breadth batch
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -35,7 +35,7 @@ Implemented:
 Still not complete:
 1. larger reward library, now mainly sheer outcome count plus a smaller set of additional consumable/status, structure and specialist utility roles;
 2. more structures, traps, chained Lucky events, dungeons and additional minigames;
-3. more pre-dragon encounter breadth, especially additional miniboss families and alternate exploration structures;
+3. remaining pre-dragon breadth is now mainly traps, special structures and a smaller tail of alternate encounters rather than a missing core miniboss/non-combat role;
 4. more post-dragon normal-mob/elite role variety and a few additional miniboss/boss families;
 5. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
@@ -686,3 +686,24 @@ Static audit after 0.28.0:
 - Sporetrap was evaluated as a pre-dragon encounter candidate but rejected: its pinned renderer requests `textures/entity/sporetrap.png`, while that texture is absent from both the pinned tree and the path history. No guessed Venus Flytrap texture or temporary replacement was used.
 - BP/RP version is 0.30.0; @minecraft/server remains 2.9.0.
 - Stable Bedrock import/render, Wizard Hat/Sunglasses head alignment, Gauntlet flight/pathing, attack timing, anchor destruction, multiplayer target selection and balance are still P8 runtime QA and are not claimed tested.
+
+
+0.31.0 P4 breadth batch — Void Garden + Fortune Archive:
+- Added two structurally different pre-dragon outcomes in one batch: a mechanic-driven independent miniboss structure and a zero-combat cooperative spatial-memory structure.
+- Added `lb:void_blossom` from Bosses of Mass Destruction (LGPL-3.0), pinned to `2fbd0dc79bea498bcad755c4ad9969055dc452c7`.
+- Direct Void Blossom payload is complete: 67-bone / 91-cube source geometry, all eight source animations, exact source entity texture and five exact source sounds.
+- Geometry data is identical after changing only the geometry identifier to `geometry.lb.void_blossom`; animation tracks are identical after namespace-key remapping.
+- Source behavior reference is a stationary 350 HP / 4 armor / 12 attack boss with spike burst, spike wave, spore, petal blade and milestone blossom actions. Lucky uses 420 HP pre-dragon balance and preserves those five combat identities without copying Java/Kotlin implementation code.
+- Void Blossom attack set: three targeted spike bursts, three expanding spike rings, telegraphed poison/slow spore cloud, and three telegraphed petal-blade lanes.
+- At 75% / 50% / 25% HP the boss creates four Flowering Azalea life roots. While roots remain, incoming damage is 0.65x and the boss heals 2 HP per second; destroying all roots opens a 50-tick 1.35x vulnerability window.
+- Added persistent `Void Garden` Epic event structure. It uses final vanilla moss/rooted-dirt/mossy-cobble/deepslate/amethyst/light materials and the real BOMD boss asset; no temporary arena art exists.
+- Void Garden completion awards 5-7 Epic Fragments, one Rare Lucky Block and two Fortune Tonics, with a 30% Threat Sunglasses bonus. It does not hand out dragon-trivializing pre-dragon weapons.
+- Added `lb:archive_codex` from Loy's Goodies CC0 Book model. The source is seven elements with one 64x64 embedded production texture; conversion is exactly seven Bedrock cubes using the source per-face UVs.
+- Added persistent `Fortune Archive` Rare structure: four identical real Codex blocks sit on Gold/Lapis/Emerald/Amethyst pedestals; the event visually replays a randomized four-position sequence, then nearby players reproduce it by interacting with books.
+- Fortune Archive progress is shared/cooperative rather than owned by one player. Wrong input replays the sequence; missing/broken codices are restored by the event tick; stable `world.afterEvents.playerInteractWithBlock` supplies the interaction.
+- Fortune Archive completion awards 4-6 Rare Fragments, one Common Lucky Block and two Fortune Tonics, with Camera / Threat Sunglasses bonus rolls.
+- Static structure-count audit caught a Void Garden threshold off-by-one before main: the intended build places about 329 counted blocks, so the success threshold was corrected from 330 to 320.
+- Also repaired pre-existing literal `\\n` separators in the English/Korean Cardboard localization entries so they are real line breaks.
+- Reward weights remain exactly Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- BP/RP version is 0.31.0; @minecraft/server remains 2.9.0.
+- Real Bedrock import/render, giant Void Blossom bounds, root-breaking timing, multiplayer target pressure, Archive interaction ordering and balance remain P8 runtime QA. No runtime-playtest claim is made.

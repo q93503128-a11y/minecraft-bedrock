@@ -318,3 +318,18 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Source identities retained in the Bedrock design: floating boss, punch, delayed laser, swirl punch, blindness cast, poison/wither immunity, energy shield and idle healing concept. Lucky balance/mechanics adapt these to post-dragon progression: 6000 HP, explicit telegraphs, dodge-created vulnerability and two shield-anchor objectives.
 - Shield anchors use the source Gauntlet Blackstone cube-all visual and exact source texture; no temporary shield node model was created.
 - Existing LGPL source-availability/license bundle obligations remain covered by the pinned upstream link, vendored modified integration source, and `THIRD_PARTY_LICENSES/BOMD_LGPL-3.0.txt`.
+
+
+### Bosses of Mass Destruction Void Blossom — 0.31.0
+- Source: `barribob/bosses-of-mass-destruction`, pinned at `2fbd0dc79bea498bcad755c4ad9969055dc452c7`, LGPL-3.0.
+- Direct payload: source `void_blossom.geo.json` (67 bones / 91 cubes), all eight tracks from `void_blossom.animation.json`, exact `void_blossom.png`, and exact burrow/spike/spore-prepare/spore-impact/petal-blade OGG files.
+- Source behavior references reviewed: `VoidBlossomEntity.kt`, `VoidBlossomAttacks.kt`, `SpikeAction.kt`, `SpikeWaveAction.kt`, `SporeAction.kt`, `BladeAction.kt`, `BlossomAction.kt`, and `VoidBlossomConfig.kt`.
+- Source default combat scale is 350 HP / 4 armor / 12 attack and stationary movement. Lucky's pre-dragon port uses 420 HP and retains the source attack-family identity while reimplementing behavior through stable Bedrock Script API.
+- Lucky-owned additions are the persistent Void Garden, explicit attack telegraphs, Flowering Azalea life-root objective, 0.65x guard / 1.35x exposure windows, event persistence and rewards.
+- Existing BOMD LGPL source-availability/license obligations continue under `THIRD_PARTY_LICENSES/BOMD_LGPL-3.0.txt`.
+
+### Loy's Goodies Archive Codex — 0.31.0
+- Source: `SL0ANE/Loy-s-Goodies`, pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Upstream: `models/java-model/furniture & decoration/books/220407_book_0.bbmodel`.
+- Seven source elements convert 1:1 into seven Bedrock cubes with per-face source UVs; the model uses one embedded 64x64 production texture, decoded directly.
+- Fortune Archive structure layout, randomized replay sequence, multiplayer shared progress, wrong-answer reset, automatic book restoration and rewards are Lucky-owned gameplay.

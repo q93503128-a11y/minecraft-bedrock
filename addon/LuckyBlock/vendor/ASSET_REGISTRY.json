@@ -1322,6 +1322,59 @@
       ],
       "contentId": "lb:gauntlet_blackstone",
       "modification": "Source block is cube_all with gauntlet_blackstone texture. Bedrock port keeps that cube identity and exact source texture; Lucky uses three temporary breakable anchors to expose the boss during 65% and 30% shield phases."
+    },
+    {
+      "key": "bomd_void_blossom",
+      "source": "bosses_of_mass_destruction",
+      "upstream": [
+        "src/main/resources/assets/bosses_of_mass_destruction/geo/void_blossom.geo.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/animations/void_blossom.animation.json",
+        "src/main/resources/assets/bosses_of_mass_destruction/textures/entity/void_blossom.png",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/void_blossom_burrow.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/void_blossom_spike.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/spore_prepare.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/spore_impact.ogg",
+        "src/main/resources/assets/bosses_of_mass_destruction/sounds/petal_blade.ogg",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/void_blossom/VoidBlossomEntity.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/void_blossom/VoidBlossomAttacks.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/void_blossom/SpikeAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/void_blossom/SpikeWaveAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/void_blossom/SporeAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/void_blossom/BladeAction.kt",
+        "src/main/kotlin/net/barribob/boss/mob/mobs/void_blossom/BlossomAction.kt",
+        "src/main/kotlin/net/barribob/boss/config/VoidBlossomConfig.kt"
+      ],
+      "targets": [
+        "BP/entities/void_blossom.json",
+        "BP/scripts/integrations/bomd_void_blossom.js",
+        "RP/entity/void_blossom.entity.json",
+        "RP/models/entity/void_blossom.geo.json",
+        "RP/animations/void_blossom.animation.json",
+        "RP/textures/entity/void_blossom.png",
+        "RP/sounds/entity/void_blossom_burrow.ogg",
+        "RP/sounds/entity/void_blossom_spike.ogg",
+        "RP/sounds/entity/void_blossom_spore_prepare.ogg",
+        "RP/sounds/entity/void_blossom_spore_impact.ogg",
+        "RP/sounds/entity/void_blossom_petal_blade.ogg"
+      ],
+      "contentId": "lb:void_blossom",
+      "integrationModule": "BP/scripts/integrations/bomd_void_blossom.js + BP/scripts/events/pre_dragon_events.js",
+      "modification": "LGPL Void Blossom 67-bone/91-cube geometry and all eight source animations are direct namespace/identifier remaps; entity texture and five source sounds are byte-identical. Source 350 HP / 4 armor / 12 attack stationary boss identity, spike burst/wave, spore, petal blade and milestone blossom behavior inform Lucky's pre-dragon 420 HP encounter. Lucky adds explicit telegraphs, breakable Flowering Azalea life roots at 75/50/25%, 0.65x guarded damage and 1.35x post-cleanse vulnerability inside the persistent Void Garden structure."
+    },
+    {
+      "key": "loys_archive_codex",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/furniture & decoration/books/220407_book_0.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/archive_codex.json",
+        "RP/models/blocks/archive_codex.geo.json",
+        "RP/textures/blocks/lb_archive_codex.png"
+      ],
+      "contentId": "lb:archive_codex",
+      "integrationModule": "BP/scripts/events/pre_dragon_events.js",
+      "modification": "CC0 seven-element Book geometry is converted 1:1 to seven Bedrock cubes with source per-face UVs; its single embedded 64x64 production texture is decoded directly. Lucky-owned Fortune Archive places four identical codices on distinct vanilla-material pedestals and uses stable playerInteractWithBlock events for a shared cooperative spatial-memory sequence puzzle."
     }
   ]
 }
