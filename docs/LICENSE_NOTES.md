@@ -125,3 +125,16 @@ A source's top-level license does not override restrictions attached to embedded
 - Selected file: `models/java-model/furniture & decoration/books/220407_book_0.bbmodel`.
 - All seven source elements and per-face UVs are converted directly; its single embedded texture is decoded directly.
 - Fortune Archive structure/puzzle behavior is project-owned and does not claim an upstream gameplay mechanic.
+
+
+## Active Loy's Fortune Bomb port — 0.32.0
+- Source: SL0ANE/Loy-s-Goodies, reviewed commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Selected file: `models/java-model/tools & weapons/firearms/230426_bomb.bbmodel`.
+- All 8 source elements, rotations and per-face UVs are converted directly; the single embedded production texture is decoded directly.
+- Fortune Minefield gameplay is project-owned and does not claim an upstream trap mechanic.
+
+## Active Slayers-Beasts Rift Spitter port — 0.32.0
+- Source: InvictusSlayer/Slayers-Beasts, reviewed commit `ffc1f6480a60598797c63150c0d0fe66b65697ff`, MIT.
+- Direct reused material is the Ant Soldier visual/animation reference and exact Leafcutter Soldier texture.
+- Shared War Ant geometry/animation targets remain owned by the existing Ant Soldier/War Ant registry record; the Rift Spitter registry record does not duplicate target ownership.
+- Upstream Ant Soldier has no ranged spit. Corrosive salvos, retreat AI, post-dragon spawn policy, balance, drops and Rift Arsenal integration are project-owned.

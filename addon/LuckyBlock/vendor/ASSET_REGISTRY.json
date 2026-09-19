@@ -1375,6 +1375,41 @@
       "contentId": "lb:archive_codex",
       "integrationModule": "BP/scripts/events/pre_dragon_events.js",
       "modification": "CC0 seven-element Book geometry is converted 1:1 to seven Bedrock cubes with source per-face UVs; its single embedded 64x64 production texture is decoded directly. Lucky-owned Fortune Archive places four identical codices on distinct vanilla-material pedestals and uses stable playerInteractWithBlock events for a shared cooperative spatial-memory sequence puzzle."
+    },
+    {
+      "key": "loys_fortune_bomb",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/firearms/230426_bomb.bbmodel"
+      ],
+      "targets": [
+        "BP/blocks/fortune_bomb.json",
+        "RP/models/blocks/fortune_bomb.geo.json",
+        "RP/textures/blocks/lb_fortune_bomb.png"
+      ],
+      "contentId": "lb:fortune_bomb",
+      "integrationModule": "BP/scripts/events/pre_dragon_events.js",
+      "modification": "CC0 Bomb model is eight source elements using one embedded 32x32 production texture. All eight elements and per-face UV data are converted 1:1 into Bedrock block geometry and the embedded PNG is decoded directly. Lucky-owned Fortune Minefield uses twelve of these real bomb blocks in four telegraphed three-bomb waves; active bombs can be mined to disarm while surviving bombs deal scripted non-terrain-destroying blast damage."
+    },
+    {
+      "key": "slayers_beasts_rift_spitter_ant",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/AntSoldier.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/AntSoldierModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/AntSoldierAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/AntSoldierRenderer.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/ant/leafcutter_soldier.png"
+      ],
+      "targets": [
+        "BP/entities/rift_spitter_ant.json",
+        "BP/scripts/integrations/slayers_beasts_rift_spitter.js",
+        "RP/entity/rift_spitter_ant.entity.json",
+        "RP/textures/entity/rift_spitter_ant.png"
+      ],
+      "contentId": "lb:rift_spitter_ant",
+      "integrationModule": "BP/scripts/integrations/slayers_beasts_rift_spitter.js + BP/scripts/events/mythic_events.js",
+      "modification": "Uses the already-verified Ant Soldier geometry/WALK+AMBIENT conversion shared with lb:war_ant_mount instead of duplicating geometry ownership, while vendoring the exact leafcutter_soldier.png source texture. Upstream Ant Soldier is a neutral 15 HP / 5 attack melee mob; Lucky-owned post-dragon role is explicitly different: 260 HP ranged pressure, three-shot telegraphed corrosive salvos, close-range retreat, natural gated spawning, Lucky fragment drops and mixed-role Rift Arsenal placement."
     }
   ]
 }

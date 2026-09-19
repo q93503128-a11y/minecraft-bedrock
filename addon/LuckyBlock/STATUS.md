@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.31.0 Void Garden + Fortune Archive P4 breadth batch
+Milestone: 0.32.0 Fortune Minefield + Rift Spitter role-gap batch
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -34,9 +34,9 @@ Implemented:
 
 Still not complete:
 1. larger reward library, now mainly sheer outcome count plus a smaller set of additional consumable/status, structure and specialist utility roles;
-2. more structures, traps, chained Lucky events, dungeons and additional minigames;
-3. remaining pre-dragon breadth is now mainly traps, special structures and a smaller tail of alternate encounters rather than a missing core miniboss/non-combat role;
-4. more post-dragon normal-mob/elite role variety and a few additional miniboss/boss families;
+2. more dungeon/chained-event variants and sheer structure count; the dedicated trap category now has a production implementation;
+3. remaining pre-dragon breadth is now mainly a smaller tail of special structures/alternate encounters; dedicated miniboss, non-combat exploration and trap roles are all represented;
+4. more post-dragon normal-mob/elite count and encounter combinations; a dedicated ranged-pressure normal family now exists alongside predator/control/support roles;
 5. more Mythic dungeon variants and chained event families beyond the implemented boss/set/invasion/Lucky Rain/Rift Vault outcomes;
 7. full in-game Bedrock import/content-log/render/balance QA;
 8. refreshed packaged .mcaddon after the next packaging checkpoint.
@@ -707,3 +707,23 @@ Static audit after 0.28.0:
 - Reward weights remain exactly Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
 - BP/RP version is 0.31.0; @minecraft/server remains 2.9.0.
 - Real Bedrock import/render, giant Void Blossom bounds, root-breaking timing, multiplayer target pressure, Archive interaction ordering and balance remain P8 runtime QA. No runtime-playtest claim is made.
+
+
+0.32.0 role-gap batch — Fortune Minefield + Rift Spitter Ant:
+- Added `lb:fortune_bomb` from Loy's Goodies CC0 Bomb source `230426_bomb.bbmodel`.
+- Bomb source is 8 elements with one embedded 32x32 production texture; all eight elements and per-face UVs convert 1:1 into Bedrock geometry. No generated/temporary bomb art is used.
+- Added Rare `fortune_minefield` trap structure: 12 real Bomb blocks on a permanent 15x15 final-material arena.
+- Minefield runs four three-bomb arming waves. Only actively flashing bombs can be meaningfully disarmed; inactive missing bombs are restored, preventing trivial pre-clearing and broken-block softlocks.
+- Each active bomb has a 30-tick warning window. Players may mine it to disarm, or leave the 3.4-block blast radius before scripted detonation. Detonation deals 16 inner / 10 outer damage plus knockback but deliberately does not destroy terrain.
+- Fully disarming a wave now schedules the same 35-tick inter-wave break as surviving a detonation; an initial candidate's immediate-next-wave pacing edge case was caught and fixed before main.
+- Completion gives 3-5 Rare Fragments + one Fortune Tonic; 6+ disarms add an Epic Fragment and 9+ disarms add a Rare Lucky Block.
+- Added `lb:rift_spitter_ant`, using the already-verified Slayers-Beasts Ant Soldier geometry/WALK+AMBIENT conversion and exact upstream leafcutter_soldier.png texture.
+- Source Ant Soldier is a neutral melee mob with 15 HP / 5 attack / 0.22 speed. Lucky explicitly does not claim its new ranged role as upstream behavior.
+- Rift Spitter is post-dragon only: 260 HP / 10 melee fallback / 0.32 movement, three-shot telegraphed corrosive salvos at range, Poison II + short Slowness on hits, and a retreat impulse when players close inside 6 blocks.
+- Natural overworld spawn checks remain behind `lb:post_dragon_unlocked`, cap two within 72 blocks per player area, and use dirt/grass/mud/podzol/rooted-dirt surfaces.
+- Rift Arsenal now uses two Rift Spitters in both combat waves, replacing raw duplicate melee density with explicit ranged pressure while keeping Wudu control/support, Mantis predator, Tyrachnid elite and Bogre roles.
+- Rift Spitter death has modest progression drops rather than boss-scale loot: 50% Epic Fragment roll and 12% Legendary Fragment roll.
+- Reward weights remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- BP/RP version is 0.32.0; @minecraft/server remains 2.9.0.
+- Stable API check confirms `EntityDamageCause.entityExplosion` exists for scripted Minefield blast attribution.
+- Actual Bedrock import/render, multiplayer simultaneous bomb mining, natural-spawn feel, ant pathing/retreat, salvo dodge windows and Rift Arsenal balance remain P8 runtime QA and are not claimed tested.

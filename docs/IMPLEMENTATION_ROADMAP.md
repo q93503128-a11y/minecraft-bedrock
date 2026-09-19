@@ -26,12 +26,12 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, two minigames, ecological exploration, spatial-memory interaction and multiple persistent combat/non-combat structures. 0.31.0 adds the real external Archive Codex as an interactive structure object and adds two new structure outcomes rather than another stat item. Remaining P3 weakness is dominated by sheer materially-distinct outcome count, more dungeons/traps and a smaller specialist utility tail.
+Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, minigames, ecological/spatial exploration, persistent structures and now a dedicated trap family. 0.32.0 adds the production Fortune Bomb object plus Fortune Minefield rather than another stat item. Remaining P3 weakness is dominated by sheer materially-distinct outcome count, more dungeon/chained structures and a smaller specialist utility tail.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
 
-Implemented P4 slices: Inhabitants Impaler elite, Irk companion, Awakened Grove/Ent guardian, War Ant mount, Nether Wither Spider ranged/control encounter, Fortune Relay timed maze, Fortune Gallery projectile co-op, Butterfly Sanctuary ecological survey, Royal Anthill/Ant Queen, Fortune Bulwark wave defense, **Void Garden/Void Blossom** as a standalone stationary-pattern miniboss structure, and **Fortune Archive** as a no-combat cooperative spatial-memory structure. The two largest previously named gaps—an additional independent miniboss family and an alternate non-combat exploration structure—now have production implementations. Remaining P4 breadth is mainly traps, special structures and a smaller tail of alternate encounters.
+Implemented P4 slices: Impaler elite, Irk companion, Awakened Grove/Ent guardian, War Ant mount, Wither Spider ranged/control encounter, Fortune Relay, Fortune Gallery, Butterfly Sanctuary, Royal Anthill/Ant Queen, Fortune Bulwark, Void Garden/Void Blossom, Fortune Archive, and now **Fortune Minefield** as a dedicated disarm-or-dodge trap structure using a real CC0 Bomb asset. Core P4 roles now include miniboss, wave defense, ecological survey, memory puzzle, projectile challenge, maze and trap. Remaining P4 breadth is a smaller tail of special structures and alternate encounters rather than a missing category.
 
 ## P5 — First Ender Dragon gate
 Persist a world-level first-kill unlock. After that point, late-game spawn tables, event tables, rewards and encounter pools become eligible.
@@ -39,12 +39,12 @@ Persist a world-level first-kill unlock. After that point, late-game spawn table
 ## P6 — Late game
 Port/rebuild verified high-quality enemies and bosses. Every major boss receives encounter mechanics: telegraphs, phases, vulnerability windows, mobility, area denial and/or adds. Raw HP inflation cannot be the primary difficulty mechanism.
 
-Implemented P6 slices: Bogre late-game miniboss, Obsidilith Mythic boss, End Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, mixed-role Rift Arsenal waves, and now BOMD Gauntlet as a second mechanically complete boss family. Gauntlet adds delayed tracking laser, dodge-reward punch, multi-pulse area denial, blindness pressure and two breakable-anchor shield/vulnerability phases. Remaining P6 work is primarily broader normal-mob/ranged-family variety and more encounter combinations, not another raw-HP boss.
+Implemented P6 slices: Bogre miniboss, Obsidilith boss, Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, Gauntlet boss, mixed-role Rift Arsenal waves, and now **Rift Spitter Ant** as a dedicated post-dragon ranged-pressure normal family. Its three-shot corrosive salvo and close-range retreat fill the previously named ranged-family gap, and Rift Arsenal now combines ranged pressure with support/control/predator/elite/miniboss roles. Remaining P6 work is mainly more sheer normal-mob/elite count and additional encounter combinations.
 
 ## P7 — Mythic outcomes
 Mythic Lucky Blocks award content packages: boss/event/dungeon/set/invasion/Lucky Rain-style experiences rather than merely one huge-stat item.
 
-Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, Rift Siege, Lucky Rain, Rift Vault, chained Rift Arsenal, and now Gauntlet as a second direct Mythic boss outcome with source-faithful multi-pattern combat and shield counterplay. More dungeon variants and a smaller number of chained-event/package families remain.
+Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, Rift Siege, Lucky Rain, Rift Vault, chained Rift Arsenal and Gauntlet. 0.32.0 does not add another Mythic family, but materially upgrades Rift Arsenal composition by adding a true ranged-pressure role instead of duplicating melee bodies. More dungeon variants and a smaller number of chained-event/package families remain.
 
 ## P8 — Packaging and release validation
 - Package BP + RP as one .mcaddon.

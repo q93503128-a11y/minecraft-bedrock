@@ -333,3 +333,17 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Upstream: `models/java-model/furniture & decoration/books/220407_book_0.bbmodel`.
 - Seven source elements convert 1:1 into seven Bedrock cubes with per-face source UVs; the model uses one embedded 64x64 production texture, decoded directly.
 - Fortune Archive structure layout, randomized replay sequence, multiplayer shared progress, wrong-answer reset, automatic book restoration and rewards are Lucky-owned gameplay.
+
+
+### Loy's Goodies Fortune Bomb / Fortune Minefield — 0.32.0
+- Source: `SL0ANE/Loy-s-Goodies`, pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Upstream: `models/java-model/tools & weapons/firearms/230426_bomb.bbmodel`.
+- Source payload is 8 elements and one embedded 32x32 production texture. All source elements and per-face UVs are converted 1:1 into `geometry.lb.fortune_bomb`; the embedded PNG is decoded directly.
+- Fortune Minefield layout, four-wave arming logic, active-only disarming, inactive-bomb restoration, scripted non-terrain blast damage, cooperative state and rewards are Lucky-owned behavior.
+
+### Slayers-Beasts Rift Spitter Ant — 0.32.0
+- Source: `InvictusSlayer/Slayers-Beasts`, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`, MIT.
+- Direct source payload: Ant Soldier model/WALK+AMBIENT animation/renderer references and exact `textures/entity/ant/leafcutter_soldier.png`.
+- The already-verified Ant Soldier geometry/animation conversion used by `lb:war_ant_mount` is shared rather than duplicated under a second vendor target owner.
+- Upstream Ant Soldier is neutral melee: 15 HP, 5 attack, 0.22 movement, 0.5 knockback resistance. It has no acid-spit/ranged behavior.
+- Lucky-owned behavior is explicitly separate: post-dragon 260 HP ranged-pressure role, three delayed corrosive impacts, Poison II/Slowness, short-distance retreat, gated natural spawning, Lucky drops and Rift Arsenal composition.

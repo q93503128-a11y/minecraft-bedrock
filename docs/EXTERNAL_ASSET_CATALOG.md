@@ -704,3 +704,38 @@ Lucky event role:
 - progress is shared across players, so one player can observe and another can continue the sequence;
 - wrong input restarts the reveal; missing books are restored every event tick;
 - stable `world.afterEvents.playerInteractWithBlock` provides the interaction surface.
+
+
+## Loy's Goodies Fortune Bomb / Fortune Minefield — 0.32.0
+
+Source: `SL0ANE/Loy-s-Goodies`, CC0-1.0, pinned commit `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+
+Direct production payload:
+- `models/java-model/tools & weapons/firearms/230426_bomb.bbmodel`;
+- 8 source elements;
+- one embedded 32x32 texture used by all source faces;
+- 8 source elements -> 8 Bedrock cubes with source rotations and per-face UVs preserved.
+
+Lucky event role:
+- permanent 15x15 Rare Minefield arena built only from final vanilla materials plus 12 real Bomb blocks;
+- four waves arm three bombs at a time;
+- active bombs display existing licensed production particles/audio and allow a 30-tick disarm-or-dodge window;
+- inactive missing bombs are restored to prevent pre-clearing/softlock;
+- detonation is scripted 16 inner / 10 outer damage + knockback, deliberately without terrain destruction;
+- 35-tick spacing applies after both detonation and a fully disarmed wave.
+
+## Slayers-Beasts Rift Spitter Ant — 0.32.0
+
+Source: `InvictusSlayer/Slayers-Beasts`, MIT, pinned commit `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+
+Direct production payload:
+- Ant Soldier model and WALK/AMBIENT source animation references;
+- renderer 1.5x source scale already baked into the previously verified War Ant geometry conversion;
+- exact `leafcutter_soldier.png` texture blob `9540eaa95c30468b4cf8e932f95879350b7a8c7c`.
+
+Source/Lucky boundary:
+- upstream Ant Soldier: neutral melee, 15 HP, 5 attack, 0.22 movement, 0.5 knockback resistance;
+- Lucky Rift Spitter: post-dragon normal hostile, 260 HP, 10 melee fallback, 0.32 movement;
+- ranged identity is project-owned: three telegraphed 3-block corrosive impacts, Poison II + short Slowness and retreat impulse inside 6 blocks;
+- natural spawn remains behind the persistent first-Ender-Dragon gate, with a two-within-72 density cap;
+- Rift Arsenal stage 2 and finale each add two Spitters while reducing duplicate melee counts, making the chain role-based rather than merely denser.
