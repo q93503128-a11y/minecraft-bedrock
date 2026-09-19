@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.38.0 Core Loop Recovery test candidate
+Milestone: 0.39.0 Runtime Recovery
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -821,3 +821,14 @@ Static audit after 0.28.0:
 - Exploration-container common-fragment chance is 35%.
 - Preflight now asserts all ten explicit core items, all five placed Lucky blocks, block-placer targets, item icon atlas keys, lb recipe references and AlwaysUnlocked Lucky recipes.
 - BP/RP version is 0.38.0. This is a direct response to the first real gameplay test and requires a fresh import/retest before declaring the core loop fixed.
+
+0.39.0 Runtime Recovery:
+- Real 0.38 Bedrock testing invalidated several prior static assumptions. The pack imported, but core block placement failed, Lucky recipe-book entries did not appear, raw source texture sheets were incorrectly used as flat inventory icons, Slasher combat was nonfunctional in play, and the content log exposed invalid actor-animation keyframe schemas.
+- Core Lucky/Fragment IDs now follow the documented same-ID `minecraft:block_placer + replace_block_item:true` contract. The explicit item has no flat `minecraft:icon`, so Bedrock renders the actual 3D block visual instead of the source atlas sheet. This directly addresses the giant flat Lucky Block and tiled-triangle fragment screenshots.
+- All nine Lucky crafting/fusion recipes now use the documented object form `unlock: { "context": "AlwaysUnlocked" }`.
+- Actor-animation schema recovery normalized nine imported animation files after a full 27-file scan: Bogre 214 invalid wrappers, Cave Dweller 332, Gauntlet 671, Impaler 1071, Javelin 36, Lich 466, Obsidilith 3, Void Blossom 1677 and Warped Clam 151 -> 0. Numeric transform/timing values are preserved; invalid vector/pre/post wrappers are flattened and unsupported easing metadata is removed.
+- Slasher keeps the external CC0 models, first/third-person animations, sounds, particles and beams, but the old 1.18 item-extender state machine is no longer runtime authority. A 2.9.0 stable bridge handles reliable melee hits, +20 scripted melee damage, source fast-attack animation, source three-beam response and a 1.8 s charged-beam use action.
+- Mystical Aegis armor is rebalanced from 1/4/3/2 to 4/8/6/4 protection. Explorer is 3/7, Wizard Hat 4 and Threat Sunglasses 2. Existing hidden utility/set scripts are retained.
+- Added periodic ItemStack lore for 34 core/special items so armor values, set effects, spell/weapon behavior, cooldowns and oddity interactions are visible on hover.
+- BP/RP display names now include v0.39.0 for install differentiation.
+- 0.39 remains a recovery candidate. It must clear content log + placement + recipe + Slasher + visual checks in real Bedrock before breadth expansion resumes.

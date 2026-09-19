@@ -819,3 +819,12 @@ Source/Lucky boundary:
 - A Wildlife Mod candidate was not imported because its repository README mentioned MIT but the inspected pin did not contain a repository LICENSE file.
 - A second MIT candidate was rejected because the repository did not contain the promised production mob model/texture chain.
 - The batch therefore stays entirely on already-cleared Loy's Goodies and BOMD sources rather than weakening provenance standards.
+
+## 0.39.0 runtime fidelity correction
+Real Bedrock content-log testing showed that several earlier "animation data identical after namespace remap" statements were too strong. The source assets were genuinely vendored from their pinned licensed repositories, but nine animation conversions retained Blockbench/Gecko-style keyframe wrappers that Bedrock actor animation rejects.
+
+The 0.39 compatibility pass keeps numeric keyframe transform values and timing, while converting unsupported `{"vector":[...]}` wrappers and nested `pre/post.vector` into Bedrock array forms. Unsupported `easing/easingArgs` metadata is removed where the actor-animation schema has no equivalent. Affected runtime files: Bogre, Cave Dweller, Gauntlet, Impaler, Javelin, Lich, Obsidilith, Void Blossom and Warped Clam.
+
+This correction changes the compatibility representation, not the visual source license/provenance. Texture/audio binaries and source geometry provenance remain unchanged. Future audits must distinguish "source values preserved" from "byte/data identical" whenever a platform-schema normalization is required.
+
+Slasher likewise keeps its CC0 visual/audio/beam asset chain, but real 2.9.0 testing showed that the old 1.18 state-machine glue was not a reliable runtime authority. 0.39 keeps that source vendored for provenance and uses a small stable Bedrock bridge around the source animations/sounds/beams.

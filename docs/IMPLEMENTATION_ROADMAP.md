@@ -68,3 +68,6 @@ Common/Rare/Epic each gain a non-duplicate strange utility while Legendary gains
 
 ### 0.37.0 P8 transition note
 Feature expansion is paused for the first comprehensive runtime pass. The repository now contains a static release preflight, a dependency-free test .mcaddon builder, a Windows one-click launcher, a GitHub artifact workflow and an explicit runtime/multiplayer checklist. Further content breadth is deferred until critical import/render/script/persistence/concurrency defects are resolved.
+
+### 0.39.0 runtime recovery note
+The first real P8 passes found foundational issues that static source-fidelity checks missed. Feature breadth remains paused. Runtime validity now outranks source-data identity: actor animations must conform to Bedrock schema, core block-items must place through the documented same-ID replace_block_item contract, recipes must be visible in the recipe book, combat items must actually deal damage, and hidden equipment mechanics must be discoverable in hover lore. Only after this recovery gate passes should portable/weird outcome breadth resume.

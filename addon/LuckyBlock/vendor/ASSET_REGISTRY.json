@@ -476,7 +476,7 @@
       ],
       "contentId": "lb:impaler",
       "integrationModule": "BP/scripts/integrations/inhabitants.js",
-      "modification": "Original Bedrock-format geometry/animation and original texture/sounds retained with identifiers remapped; Java AI replaced by Bedrock entity components and Script API ranged shock behavior."
+      "modification": "Original Bedrock-format geometry/animation and original texture/sounds retained with identifiers remapped; Java AI replaced by Bedrock entity components and Script API ranged shock behavior. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     },
     {
       "key": "inhabitants_warped_clam",
@@ -500,7 +500,7 @@
       ],
       "contentId": "lb:warped_clam",
       "integrationModule": "BP/scripts/integrations/inhabitants.js",
-      "modification": "Ender variant visual/animation/sounds vendored; Java behavior replaced with post-Ender-Dragon Script API spawning and radial impact behavior."
+      "modification": "Ender variant visual/animation/sounds vendored; Java behavior replaced with post-Ender-Dragon Script API spawning and radial impact behavior. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     },
     {
       "key": "inhabitants_bogre",
@@ -533,7 +533,7 @@
       ],
       "contentId": "lb:bogre",
       "integrationModule": "BP/scripts/integrations/inhabitants_bogre.js",
-      "modification": "Original geometry, 21-animation set, texture and selected original sounds vendored. Java boss AI rebuilt for Bedrock as a three-phase Lucky encounter with telegraphed jump-dodge shockwaves and temporary vulnerability windows."
+      "modification": "Original geometry, 21-animation set, texture and selected original sounds vendored. Java boss AI rebuilt for Bedrock as a three-phase Lucky encounter with telegraphed jump-dodge shockwaves and temporary vulnerability windows. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     },
     {
       "key": "bomd_obsidilith",
@@ -582,7 +582,7 @@
       ],
       "contentId": "lb:obsidilith",
       "integrationModule": "BP/scripts/integrations/bomd_obsidilith.js",
-      "modification": "Original Obsidilith geometry/animation/entity texture, rune texture, selected original particle textures and sounds are vendored. Java/Kotlin combat is reimplemented for Bedrock as a Mythic post-dragon encounter with rune shields and Burst/Spike/Wave roles."
+      "modification": "Original Obsidilith geometry/animation/entity texture, rune texture, selected original particle textures and sounds are vendored. Java/Kotlin combat is reimplemented for Bedrock as a Mythic post-dragon encounter with rune shields and Burst/Spike/Wave roles. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     },
     {
       "key": "slasher_v1_weapon",
@@ -709,11 +709,12 @@
         "RP/textures/slasher/beam_fast_atk.png",
         "RP/textures/slasher/blade_icon.png",
         "RP/textures/slasher/icon.png",
-        "RP/textures/slasher/slasher.png"
+        "RP/textures/slasher/slasher.png",
+        "BP/scripts/integrations/slasher/runtime_bridge.js"
       ],
       "contentId": "lb:slasher",
       "integrationModule": "BP/scripts/integrations/slasher/index.js",
-      "modification": "Original Bedrock item, attachable, first/third-person geometry, animation controller, animations, beam entities, particles, icons, textures, sounds and combat state machine vendored. Namespace remapped lc: -> lb:. Compatibility port updates deprecated 1.18 APIs for 2.9.0 and late-game Lucky balance raises damage/durability without replacing visual design."
+      "modification": "Original CC0 Slasher item/attachable/FP+TP geometry/animations/beam entities/particles/textures/sounds remain vendored. The original 1.18 item-extender/state-machine source is retained for provenance but is no longer runtime authority after real 2.9.0 testing showed unreliable combat. Lucky 0.39 uses a stable entityHitEntity/itemStartUse bridge that reuses the source fast/charged animations, sounds and beam implementation while keeping the post-dragon Legendary identity."
     },
     {
       "key": "tomemancy_mythic_staff",
@@ -1206,7 +1207,7 @@
         "RP/sounds/items/javelin_entity_hit.ogg"
       ],
       "contentId": "lb:javelin",
-      "modification": "Source 5-cube thrown geometry, 5-cube held geometry, bounce/in_air animation data, both textures and six Javelin sounds are directly ported. Source 10-tick minimum draw, 60-tick full charge, stack-16 economy, block sticking, crouch recovery and bounce-platform identity are retained. Bedrock uses a normal entity plus stable Script API impulse/raycast rather than the experimental Custom Projectiles toggle. Lucky balance raises hit damage to 8-18 and adapts Java velocity to Bedrock impulse. The shared inhabitants_arsenal.js also implements Spike Drill behavior."
+      "modification": "Source 5-cube thrown geometry, 5-cube held geometry, bounce/in_air animation data, both textures and six Javelin sounds are directly ported. Source 10-tick minimum draw, 60-tick full charge, stack-16 economy, block sticking, crouch recovery and bounce-platform identity are retained. Bedrock uses a normal entity plus stable Script API impulse/raycast rather than the experimental Custom Projectiles toggle. Lucky balance raises hit damage to 8-18 and adapts Java velocity to Bedrock impulse. The shared inhabitants_arsenal.js also implements Spike Drill behavior. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     },
     {
       "key": "inhabitants_spike_drill",
@@ -1318,7 +1319,7 @@
         "RP/sounds/entity/gauntlet_energy_shield.ogg"
       ],
       "contentId": "lb:gauntlet",
-      "modification": "LGPL Gauntlet 26-bone/42-cube geometry and all ten source combat animations are direct ports with identifier/key namespace remapping only; entity texture and seven source sounds are byte-identical. Lucky Bedrock mechanics preserve punch, delayed laser, spin punch, blindness, poison/wither immunity and energy-shield identities with telegraphs/counterplay instead of copying Java implementation code."
+      "modification": "LGPL Gauntlet 26-bone/42-cube geometry and all ten source combat animations are direct ports with identifier/key namespace remapping only; entity texture and seven source sounds are byte-identical. Lucky Bedrock mechanics preserve punch, delayed laser, spin punch, blindness, poison/wither immunity and energy-shield identities with telegraphs/counterplay instead of copying Java implementation code. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     },
     {
       "key": "bomd_gauntlet_blackstone",
@@ -1371,7 +1372,7 @@
       ],
       "contentId": "lb:void_blossom",
       "integrationModule": "BP/scripts/integrations/bomd_void_blossom.js + BP/scripts/events/pre_dragon_events.js",
-      "modification": "LGPL Void Blossom 67-bone/91-cube geometry and all eight source animations are direct namespace/identifier remaps; entity texture and five source sounds are byte-identical. Source 350 HP / 4 armor / 12 attack stationary boss identity, spike burst/wave, spore, petal blade and milestone blossom behavior inform Lucky's pre-dragon 420 HP encounter. Lucky adds explicit telegraphs, breakable Flowering Azalea life roots at 75/50/25%, 0.65x guarded damage and 1.35x post-cleanse vulnerability inside the persistent Void Garden structure."
+      "modification": "LGPL Void Blossom 67-bone/91-cube geometry and all eight source animations are direct namespace/identifier remaps; entity texture and five source sounds are byte-identical. Source 350 HP / 4 armor / 12 attack stationary boss identity, spike burst/wave, spore, petal blade and milestone blossom behavior inform Lucky's pre-dragon 420 HP encounter. Lucky adds explicit telegraphs, breakable Flowering Azalea life roots at 75/50/25%, 0.65x guarded damage and 1.35x post-cleanse vulnerability inside the persistent Void Garden structure. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     },
     {
       "key": "loys_archive_codex",
@@ -1502,7 +1503,7 @@
       ],
       "contentId": "lb:cave_dweller",
       "integrationModule": "BP/scripts/integrations/cave_dweller.js",
-      "modification": "MIT visual/audio chain port. Source geometry is 18 bones / 83 cubes and differs only by geometry identifier; all 13 source animation tracks are preserved with namespace-only key remaps. Body/eyes PNG and seven selected OGG files are byte-identical. Source Java defaults are 60 HP, 6 attack, 0.3 movement and 100 follow range, with stare/chase/flee plus crawling/climbing/door interaction. Lucky-owned adaptation is a post-dragon 340 HP / 20 chase-damage underground stalker using stable Bedrock Script API gaze detection and shared stalk/spotted/chase/flee phases. Full source wall-climb/crawl/door-breaking behavior is not claimed implemented."
+      "modification": "MIT visual/audio chain port. Source geometry is 18 bones / 83 cubes and differs only by geometry identifier; all 13 source animation tracks are preserved with namespace-only key remaps. Body/eyes PNG and seven selected OGG files are byte-identical. Source Java defaults are 60 HP, 6 attack, 0.3 movement and 100 follow range, with stare/chase/flee plus crawling/climbing/door interaction. Lucky-owned adaptation is a post-dragon 340 HP / 20 chase-damage underground stalker using stable Bedrock Script API gaze detection and shared stalk/spotted/chase/flee phases. Full source wall-climb/crawl/door-breaking behavior is not claimed implemented. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     },
     {
       "key": "loys_flashbang",
@@ -1671,7 +1672,7 @@
       ],
       "contentId": "lb:lich",
       "integrationModule": "BP/scripts/integrations/bomd_lich.js",
-      "modification": "LGPL Lich geometry is 161 bones / 233 cubes and is data-identical after geometry-identifier remap; all 11 source animation tracks are preserved with namespace-key remap only. Entity texture and eight directly used BOMD OGG files are byte-identical. Source identity includes missiles, comet, phantom summons, teleport and rage; Lucky reimplements those roles in stable Bedrock Script API at 2800 HP as a post-dragon Legendary summoner/miniboss. Source global eternal-night time mutation is intentionally not reproduced; boss HUD dark-sky presentation avoids global multiplayer time grief."
+      "modification": "LGPL Lich geometry is 161 bones / 233 cubes and is data-identical after geometry-identifier remap; all 11 source animation tracks are preserved with namespace-key remap only. Entity texture and eight directly used BOMD OGG files are byte-identical. Source identity includes missiles, comet, phantom summons, teleport and rage; Lucky reimplements those roles in stable Bedrock Script API at 2800 HP as a post-dragon Legendary summoner/miniboss. Source global eternal-night time mutation is intentionally not reproduced; boss HUD dark-sky presentation avoids global multiplayer time grief. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
     }
   ]
 }

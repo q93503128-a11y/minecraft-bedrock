@@ -1,8 +1,18 @@
 # Lucky Block Bedrock Runtime Test Checklist
 
-Target: 0.38.0 Core Loop Recovery test candidate
+Target: 0.39.0 Runtime Recovery candidate
 
 This checklist begins only after `tools/preflight.mjs` passes and `LuckyBlock_0.37.0_TEST.mcaddon` is produced. Static success is not a gameplay-pass claim.
+
+## 0.39 recovery gate
+- Behavior/resource pack names must visibly include v0.39.0.
+- Content Log must contain **zero** actor-animation schema errors for Warped Clam, Impaler, Bogre, Cave Dweller, Gauntlet, Lich, Void Blossom, Javelin and Obsidilith.
+- Holding fragments/Lucky Blocks must show a sane 3D block model, never the raw tiled source texture sheet or a giant flat plane.
+- All 5 Lucky Blocks and all 5 fragments must place successfully; no `Missing referenced asset ... block_placer` errors.
+- Crafting book must show the five 6-fragment recipes and four upward fusion recipes.
+- Slasher left-click must visibly damage an entity and play its source attack/beam response; use action must fire charged beam and respect cooldown.
+- Hover every Mystical piece, Explorer piece, Wizard Hat, Threat Sunglasses and Slasher after 2 seconds in inventory: lore must explain protection/special effects.
+- Mystical Aegis protection must read 4/8/6/4; Explorer 3/7; Wizard Hat 4; Threat Sunglasses 2.
 
 ## Import gate
 - Import the .mcaddon into current stable Minecraft Bedrock.

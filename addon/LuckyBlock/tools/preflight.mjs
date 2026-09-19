@@ -46,10 +46,15 @@ for(const p of walk(path.join(bpRoot,"blocks")).filter(p=>p.endsWith(".json"))){
 }
 const coreTiers=["common","rare","epic","legendary","mythic"];
 const coreItemIds=coreTiers.flatMap(t=>[`lb:${t}_fragment`,`lb:${t}_lucky_block`]);
-const placedLuckyIds=coreTiers.map(t=>`lb:${t}_lucky_block_placed`);
-for(const id of coreItemIds)assert(itemDefs.has(id),`missing explicit core item ${id}`);
-for(const id of placedLuckyIds)assert(blockDefs.has(id),`missing placed Lucky Block ${id}`);
-for(const id of coreItemIds)assert(!blockDefs.has(id),`core item collides with block identifier ${id}`);
+for(const id of coreItemIds){
+  assert(itemDefs.has(id),`missing explicit core item ${id}`);
+  assert(blockDefs.has(id),`missing same-id core block for replace_block_item ${id}`);
+  const item=itemDefs.get(id)?.j;
+  const placer=item?.components?.["minecraft:block_placer"];
+  assert(placer?.block===id,`${id}: block_placer must reference the same identifier`);
+  assert(placer?.replace_block_item===true,`${id}: replace_block_item must be true`);
+  assert(!item?.components?.["minecraft:icon"],`${id}: core block item must use 3D block rendering, not a flat texture sheet icon`);
+}
 const itemAtlasPath=path.join(rpRoot,"textures","item_texture.json");
 const itemAtlas=readJson(itemAtlasPath)?.texture_data??{};
 for(const [id,{p,j}] of itemDefs){
@@ -79,6 +84,8 @@ if(bp&&rp){
   const server=(bp.dependencies??[]).find(d=>d.module_name==="@minecraft/server");
   assert(server?.version==="2.9.0",`@minecraft/server expected 2.9.0, found ${server?.version}`);
   assert(rp.header?.pack_scope==="world",`RP pack_scope expected world, found ${rp.header?.pack_scope}`);
+  assert(String(bp.header?.name??"").includes("v"+bv),`BP display name must include version v${bv}`);
+  assert(String(rp.header?.name??"").includes("v"+rv),`RP display name must include version v${rv}`);
 }
 
 const registry=readJson(path.join(root,"vendor","ASSET_REGISTRY.json"));
@@ -120,7 +127,7 @@ for(const p of walk(path.join(bpRoot,"recipes")).filter(p=>p.endsWith(".json")))
   for(const x of results)if(typeof x?.item==="string")refs.push(x.item);
   for(const id of refs.filter(x=>x.startsWith("lb:")))assert(itemDefs.has(id)||blockDefs.has(id),`${rel(p)} unresolved lb item/block reference: ${id}`);
   if(/(lucky_block_from_fragments|fuse_.*_lucky_block)\.json$/.test(p)){
-    assert(Array.isArray(r.unlock)&&r.unlock.some(x=>x?.context==="AlwaysUnlocked"),`${rel(p)} must be AlwaysUnlocked in recipe book`);
+    assert(r.unlock?.context==="AlwaysUnlocked",`${rel(p)} must use unlock.context=AlwaysUnlocked object form`);
   }
 }
 
@@ -151,14 +158,51 @@ if(fs.existsSync(mainPath)){
   }
 }
 
+const lorePath=path.join(bpRoot,"scripts","item_lore.js");
+assert(fs.existsSync(lorePath),"missing item_lore.js");
+if(fs.existsSync(lorePath))assert(fs.readFileSync(lorePath,"utf8").includes(".setLore("),"item_lore.js must apply ItemStack.setLore");
+const slasherIndex=path.join(bpRoot,"scripts","integrations","slasher","index.js");
+const slasherBridge=path.join(bpRoot,"scripts","integrations","slasher","runtime_bridge.js");
+assert(fs.existsSync(slasherBridge),"missing stable Slasher runtime bridge");
+if(fs.existsSync(slasherIndex)){
+  const s=fs.readFileSync(slasherIndex,"utf8");
+  assert(s.includes('import "./runtime_bridge.js";'),"Slasher index must load runtime_bridge");
+  assert(!s.includes("item_extender/internal.js")&&!s.includes('import "./slasher/slasher.js";'),"legacy Slasher state machine must not be runtime authority");
+}
+const armorExpect={
+  "lb:tomemancy_mystical_helmet":4,
+  "lb:tomemancy_mystical_chestplate":8,
+  "lb:tomemancy_mystical_leggings":6,
+  "lb:tomemancy_mystical_boots":4,
+  "lb:explorer_hat":3,
+  "lb:explorer_pack":7,
+  "lb:wizard_hat":4,
+  "lb:threat_sunglasses":2
+};
+for(const [id,value] of Object.entries(armorExpect)){
+  const actual=itemDefs.get(id)?.j?.components?.["minecraft:wearable"]?.protection;
+  assert(actual===value,`${id}: expected protection ${value}, got ${actual}`);
+}
+
 const geometryIds=new Set();
 for(const p of walk(path.join(rpRoot,"models")).filter(p=>p.endsWith(".json"))){
   const j=readJson(p);if(!j)continue;
   for(const g of j["minecraft:geometry"]??[])if(g?.description?.identifier)geometryIds.add(g.description.identifier);
 }
+function scanAnimationSchema(value,file,trail=""){
+  if(Array.isArray(value)){for(let i=0;i<value.length;i++)scanAnimationSchema(value[i],file,trail+"["+i+"]");return;}
+  if(!value||typeof value!=="object")return;
+  if(Array.isArray(value.vector))errors.push(`animation schema ${rel(file)} ${trail}.vector: invalid wrapper`);
+  if(Object.prototype.hasOwnProperty.call(value,"easing"))errors.push(`animation schema ${rel(file)} ${trail}.easing: unsupported actor-animation key`);
+  if(Object.prototype.hasOwnProperty.call(value,"easingArgs"))errors.push(`animation schema ${rel(file)} ${trail}.easingArgs: unsupported actor-animation key`);
+  if(value.pre&&typeof value.pre==="object"&&!Array.isArray(value.pre)&&Array.isArray(value.pre.vector))errors.push(`animation schema ${rel(file)} ${trail}.pre.vector: must be array`);
+  if(value.post&&typeof value.post==="object"&&!Array.isArray(value.post)&&Array.isArray(value.post.vector))errors.push(`animation schema ${rel(file)} ${trail}.post.vector: must be array`);
+  for(const [k,v] of Object.entries(value))scanAnimationSchema(v,file,trail?trail+"."+k:k);
+}
 const animationIds=new Set();
 for(const p of walk(path.join(rpRoot,"animations")).filter(p=>p.endsWith(".json"))){
   const j=readJson(p);if(!j)continue;
+  scanAnimationSchema(j,p);
   for(const k of Object.keys(j.animations??{}))animationIds.add(k);
 }
 const vanillaTextureRefs=new Set(["textures/misc/enchanted_item_glint"]);

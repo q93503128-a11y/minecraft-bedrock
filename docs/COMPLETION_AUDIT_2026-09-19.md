@@ -1,20 +1,20 @@
 # Lucky Block Completion Audit — 2026-09-19
 
-Baseline reviewed through the 0.38.0 Core Loop Recovery test-candidate milestone.
+Baseline reviewed through the 0.39.0 Runtime Recovery milestone.
 
 ## Phase assessment
 
 | Phase | Approx. completion | Why |
 |---|---:|---|
 | P0 Canon/legal inventory | 100% | Source/license registry and bundled licenses are release-preflight inputs. |
-| P1 Real visual foundation | 92% | Production assets are in place; remaining uncertainty is real Bedrock rendering/alignment. |
-| P2 Acquisition/opening core | 98% | First real Bedrock test exposed core-item discoverability; 0.38 replaces auto block-items with explicit fragment/Lucky items, explicit placers, recipe-book unlocks and bounded acquisition pity. Fresh runtime retest remains required. |
+| P1 Real visual foundation | 82% | Real testing exposed broad actor-animation schema and item-presentation defects. 0.39 normalizes all known invalid wrappers and restores 3D block-item presentation, but runtime visual retest is mandatory. |
+| P2 Acquisition/opening core | 90% | 0.38 placement/recipe assumptions failed in Bedrock. 0.39 switches to same-ID replace_block_item and correct AlwaysUnlocked recipe syntax; actual placement/opening/recipe-book retest is still required. |
 | P3 Reward library | 98% | Category coverage is broad enough to stop feature expansion for the first serious test pass. |
 | P4 Pre-dragon encounters | 97% | Runtime progression/softlock/balance validation is now the limiting factor. |
 | P5 Ender Dragon gate | 96% | Implemented; save/reload and multiplayer persistence now need real Bedrock verification. |
 | P6 Late game | 98% | Role breadth is sufficient for test; rendering/pathing/timing/balance remain runtime questions. |
 | P7 Mythic outcomes | 96% | Multiple boss/event/dungeon packages exist; persistence and concurrency need runtime validation. |
-| P8 Packaging/release QA | 42% | Real gameplay testing has begun and already exposed/fixed central progression discoverability plus earlier sound binding defects. 0.38 must now be re-imported and rechecked before broader combat/multiplayer QA. |
+| P8 Packaging/release QA | 45% | Real QA is now finding and fixing runtime defects. Release readiness is deliberately held down until 0.39 passes clean content-log, core progression, visual, combat and multiplayer retests. |
 
 ## Practical reading
 - Core systems / architecture: roughly **92%+**.
