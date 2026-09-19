@@ -309,6 +309,10 @@ if(fs.existsSync(lorePath)){
     "lb:tomemancy_diamond_staff","lb:tomemancy_meteor_tome","lb:tomemancy_gigavolt_tome","lb:tomemancy_dragon_fireball_tome",
     "lb:tomemancy_mystical_helmet","lb:tomemancy_mystical_chestplate","lb:tomemancy_mystical_leggings","lb:tomemancy_mystical_boots",
     "lb:explorer_hat","lb:explorer_pack","lb:wizard_hat","lb:threat_sunglasses",
+    "lb:reward_burger","lb:reward_noodles","lb:reward_plunger","lb:reward_backpack","lb:reward_snow_globe",
+    "lb:reward_vending_machine","lb:reward_moai","lb:reward_pc","lb:reward_cctv","lb:reward_wrench",
+    "lb:reward_chainsaw","lb:reward_camera","lb:reward_golden_hammer","lb:reward_vase","lb:reward_easel",
+    "lb:reward_cardboard_sword","lb:reward_cardboard_axe","lb:reward_cardboard_shield","lb:reward_turret",
     "lb:reward_gravestone","lb:reward_mirror","lb:reward_air_conditioner"
   ];
   for(const id of requiredLoreIds)assert(loreSource.includes(`["${id}",`),`missing required hover lore for ${id}`);
