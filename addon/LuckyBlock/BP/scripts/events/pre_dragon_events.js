@@ -916,7 +916,7 @@ function buildVoidGarden(state,dimension){
     for(const [ox,oz] of [[1,0],[-1,0],[0,1],[0,-1]])put(dx+ox,3,dz+oz,P.leaves);
   }
   for(const [dx,dz] of [[7,0],[-7,0],[0,7],[0,-7]]){put(dx,-1,dz,P.amethyst);put(dx-1,-1,dz,P.stone);put(dx+1,-1,dz,P.stone);}
-  state.structureBuilt=placed>=330;
+  state.structureBuilt=placed>=320;
   return state.structureBuilt;
 }
 function gardenBoss(state,dimension){
