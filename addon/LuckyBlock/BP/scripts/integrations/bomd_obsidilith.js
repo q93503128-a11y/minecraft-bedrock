@@ -245,7 +245,7 @@ function tickBoss(entity){
 }
 
 system.runInterval(()=>{
-  bossTick+=5;
+  bossTick=world.getAbsoluteTime();
   for(const dimId of ["overworld","nether","the_end"]){
     const dimension=world.getDimension(dimId);
     for(const entity of dimension.getEntities({type:"lb:obsidilith"})){
