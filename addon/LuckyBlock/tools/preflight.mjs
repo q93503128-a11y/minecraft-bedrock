@@ -243,6 +243,31 @@ function scanAnimationSchema(value,file,trail=""){
   if(value.post&&typeof value.post==="object"&&!Array.isArray(value.post)&&Array.isArray(value.post.vector))errors.push(`animation schema ${rel(file)} ${trail}.post.vector: must be array`);
   for(const [k,v] of Object.entries(value))scanAnimationSchema(v,file,trail?trail+"."+k:k);
 }
+function coreGeometryStats(p){
+  const j=readJson(p),g=j?.["minecraft:geometry"]?.[0];
+  if(!g)return undefined;
+  const cubes=[];
+  let min=[Infinity,Infinity,Infinity],max=[-Infinity,-Infinity,-Infinity];
+  for(const b of g.bones??[])for(const c of b.cubes??[]){
+    const o=c.origin??[0,0,0],z=c.size??[0,0,0];
+    cubes.push({o,z,r:c.rotation??[0,0,0],p:c.pivot??null});
+    for(let i=0;i<3;i++){min[i]=Math.min(min[i],o[i]);max[i]=Math.max(max[i],o[i]+z[i]);}
+  }
+  return {sig:JSON.stringify(cubes),size:max.map((v,i)=>v-min[i]),cubeCount:cubes.length};
+}
+for(const kind of ["fragment","lucky_block"]){
+  const signatures=new Set();
+  for(const tier of coreTiers){
+    const p=path.join(rpRoot,"models","blocks",`${tier}_${kind}.geo.json`);
+    assert(fs.existsSync(p),`missing core geometry ${rel(p)}`);
+    if(!fs.existsSync(p))continue;
+    const stats=coreGeometryStats(p);
+    assert(Boolean(stats)&&stats.cubeCount>0,`${rel(p)} contains no visible cubes`);
+    assert(Boolean(stats)&&stats.size.every(v=>Number.isFinite(v)&&v>0&&v<=16.1),`${rel(p)} core geometry exceeds one-block visual scale: ${JSON.stringify(stats?.size)}`);
+    if(stats)signatures.add(stats.sig);
+  }
+  assert(signatures.size===coreTiers.length,`core ${kind} silhouettes must be structurally distinct across all five tiers`);
+}
 const animationIds=new Set();
 for(const p of walk(path.join(rpRoot,"animations")).filter(p=>p.endsWith(".json"))){
   const j=readJson(p);if(!j)continue;
@@ -265,6 +290,13 @@ for(const p of walk(path.join(bpRoot,"blocks")).filter(p=>p.endsWith(".json"))){
   if(typeof g==="string"&&g.startsWith("geometry.lb."))assert(geometryIds.has(g),`${rel(p)} missing geometry ${g}`);
 }
 
+const terrainAtlas=readJson(path.join(rpRoot,"textures","terrain_texture.json"))?.texture_data??{};
+for(const id of coreItemIds){
+  const block=blockDefs.get(id)?.j;
+  const material=block?.components?.["minecraft:material_instances"]?.["*"];
+  const key=material?.texture;
+  assert(typeof key==="string"&&Boolean(terrainAtlas[key]),`${id}: material texture key missing from terrain_texture.json: ${key}`);
+}
 for(const atlasName of ["terrain_texture.json","item_texture.json"]){
   const p=path.join(rpRoot,"textures",atlasName);if(!fs.existsSync(p))continue;
   const j=readJson(p);
