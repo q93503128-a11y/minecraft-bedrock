@@ -613,18 +613,16 @@ function giveGalleryAmmo(player,count=24){
 function consumeGalleryAmmo(player){
   try{
     if(player.getGameMode()===mc.GameMode.Creative)return true;
-    const inv=player.getComponent("minecraft:inventory")?.container;
-    if(!inv)return false;
-    const slot=player.selectedSlotIndex;
-    const stack=inv.getItem(slot);
-    if(stack?.typeId!==GALLERY_AMMO_ID)return false;
-    if(stack.amount<=1)inv.setItem(slot,undefined);
-    else{stack.amount-=1;inv.setItem(slot,stack);}
+    const slot=player.getComponent("equippable")?.getEquipmentSlot(mc.EquipmentSlot.Mainhand);
+    const stack=slot?.getItem();
+    if(!slot||stack?.typeId!==GALLERY_AMMO_ID)return false;
+    if(stack.amount<=1)slot.setItem(undefined);
+    else{stack.amount-=1;slot.setItem(stack);}
     return true;
   }catch{return false;}
 }
 function traceGalleryShot(player,maxDistance=36){
-  const start={x:player.location.x,y:player.location.y+1.55,z:player.location.z};
+  const start=player.getHeadLocation();
   let hit;
   try{hit=player.getBlockFromViewDirection({maxDistance,includeLiquidBlocks:false,includePassableBlocks:false})?.block;}catch{}
   const view=player.getViewDirection();

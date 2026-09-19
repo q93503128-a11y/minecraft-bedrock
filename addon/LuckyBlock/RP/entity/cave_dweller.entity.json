@@ -5,7 +5,7 @@
       "identifier": "lb:cave_dweller",
       "materials": {
         "default": "entity_alphatest",
-        "eyes": "entity_emissive_alpha"
+        "eyes": "entity_alphatest"
       },
       "textures": {
         "default": "textures/entity/cave_dweller",
