@@ -175,6 +175,12 @@ if(fs.existsSync(acquisitionPath)){
     assert(a.includes(token),`acquisition.js missing survival contract token: ${token}`);
   }
 }
+const acquisitionSimPath=path.join(root,"tools","simulate-acquisition.mjs");
+assert(fs.existsSync(acquisitionSimPath),"missing deterministic acquisition simulation");
+if(fs.existsSync(acquisitionSimPath)){
+  const sim=spawnSync(process.execPath,[acquisitionSimPath],{encoding:"utf8"});
+  if(sim.status!==0)errors.push(`acquisition simulation failed: ${(sim.stderr||sim.stdout||"unknown failure").trim()}`);
+}
 const rewardPath=path.join(bpRoot,"scripts","reward_registry.js");
 if(fs.existsSync(rewardPath)){
   const s=fs.readFileSync(rewardPath,"utf8");
