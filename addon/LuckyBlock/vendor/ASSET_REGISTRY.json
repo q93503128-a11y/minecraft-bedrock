@@ -477,7 +477,6 @@
       ],
       "targets": [
         "BP/entities/impaler.json",
-        "BP/spawn_rules/impaler.json",
         "RP/models/entity/impaler.geo.json",
         "RP/animations/impaler.animation.json",
         "RP/textures/entity/impaler.png",
@@ -488,7 +487,7 @@
       ],
       "contentId": "lb:impaler",
       "integrationModule": "BP/scripts/integrations/inhabitants.js",
-      "modification": "Original Bedrock-format geometry/animation and original texture/sounds retained with identifiers remapped; Java AI replaced by Bedrock entity components and Script API ranged shock behavior. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid."
+      "modification": "Original Bedrock-format geometry/animation and original texture/sounds retained with identifiers remapped; Java AI replaced by Bedrock entity components and Script API ranged shock behavior. 0.39 runtime correction: numeric animation transforms/timing are retained, while non-Bedrock keyframe wrappers (`vector`, nested pre/post.vector) are flattened to Bedrock arrays and unsupported source easing metadata is removed so the actor-animation schema is valid. 2026-09-19 progression correction: the vanilla spawn_rule target was removed so Impaler cannot bypass the Ender-Dragon gate; Impaler appearances are now controlled by scripted/event paths."
     },
     {
       "key": "inhabitants_warped_clam",
