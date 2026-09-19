@@ -24,6 +24,7 @@ const LORE=new Map([
 ["lb:storm_longbow",["§b[Storm Longbow]","§f당김 피해 8 / 14 / 20 / 26","§f완전 당김: 관통 최대 2","§7화살 소모"]],
 ["lb:amethyst_repeater",["§5[Amethyst Repeater]","§f사용: 3연사 × 12 마법 피해","§7Amethyst Charge 3개 필요·소모"]],
 ["lb:amethyst_charge",["§d[탄약] Amethyst Charge","§fAmethyst Repeater 1발당 1개","§7한 번의 3연사에 3개 필요"]],
+["lb:gallery_slug",["§b[이벤트 탄약] Gallery Slug","§fFortune Gallery 표적 사격 전용","§7이벤트 종료·이탈 시 자동 회수"]],
 ["lb:javelin",["§6[Javelin]","§f충전 투척: 8~18 피해","§f웅크려 박힌 창 회수","§f박힌 창 위 연속 바운스"]],
 ["lb:spike_drill",["§6[Spike Drill]","§f사용 유지: 채굴 가속","§f열 120: 과열 / 2초 잠금","§f웅크림+보조손 눈덩이: 열 -30"]],
 ["lb:fortune_tonic",["§b[Fortune Tonic]","§f흡수 I 60초 / 저항 I 8초","§f재생 I 4초"]],
