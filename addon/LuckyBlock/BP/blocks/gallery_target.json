@@ -1,0 +1,20 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:gallery_target"
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.reward_vase",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_reward_vase",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:destructible_by_mining": false,
+      "minecraft:destructible_by_explosion": false,
+      "minecraft:loot": "loot_tables/blocks/objective_empty.json"
+    }
+  }
+}
