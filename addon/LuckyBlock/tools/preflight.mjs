@@ -255,6 +255,14 @@ if(fs.existsSync(rewardPath)){
 }
 
 
+const impalerSpawnRule=path.join(bpRoot,"spawn_rules","impaler.json");
+assert(!fs.existsSync(impalerSpawnRule),"Impaler must not have an ungated vanilla spawn_rule; use scripted post-dragon spawns");
+const witherSpiderPath=path.join(bpRoot,"scripts","integrations","slayers_beasts_wither_spider.js");
+if(fs.existsSync(witherSpiderPath)){
+  const src=fs.readFileSync(witherSpiderPath,"utf8");
+  assert(src.includes('getDynamicProperty("lb:post_dragon_unlocked")!==true'),"Wither Spider natural spawn must be gated post-dragon");
+}
+
 const loysGoodiesPath=path.join(bpRoot,"scripts","integrations","loys_goodies.js");
 if(fs.existsSync(loysGoodiesPath)){
   const src=fs.readFileSync(loysGoodiesPath,"utf8");
