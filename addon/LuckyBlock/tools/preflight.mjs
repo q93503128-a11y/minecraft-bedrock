@@ -44,6 +44,10 @@ const blockDefs=new Map();
 for(const p of walk(path.join(bpRoot,"blocks")).filter(p=>p.endsWith(".json"))){
   const j=readJson(p),def=j?.["minecraft:block"];if(def?.description?.identifier)blockDefs.set(def.description.identifier,{p,j:def});
 }
+const entityDefs=new Map();
+for(const p of walk(path.join(bpRoot,"entities")).filter(p=>p.endsWith(".json"))){
+  const j=readJson(p),def=j?.["minecraft:entity"];if(def?.description?.identifier)entityDefs.set(def.description.identifier,{p,j:def});
+}
 const coreTiers=["common","rare","epic","legendary","mythic"];
 const coreItemIds=coreTiers.flatMap(t=>[`lb:${t}_fragment`,`lb:${t}_lucky_block`]);
 for(const id of coreItemIds){
@@ -184,6 +188,40 @@ if(fs.existsSync(acquisitionSimPath)){
 const rewardPath=path.join(bpRoot,"scripts","reward_registry.js");
 if(fs.existsSync(rewardPath)){
   const s=fs.readFileSync(rewardPath,"utf8");
+  let rewardData;
+  try{
+    const executable=s
+      .replace(/export\s+const\s+weightedPools\s*=/,"const weightedPools =")
+      .replace(/export\s+const\s+tierFallbacks\s*=/,"const tierFallbacks =")
+      .replace(/export\s+const\s+activeTiers\s*=/,"const activeTiers =");
+    rewardData=new Function(executable+"\nreturn {weightedPools,tierFallbacks,activeTiers};")();
+  }catch(e){errors.push(`reward_registry.js evaluation failed: ${e.message}`);}
+  if(rewardData){
+    const eventSources=[
+      path.join(bpRoot,"scripts","events","mythic_events.js"),
+      path.join(bpRoot,"scripts","events","rift_reliquary.js"),
+      path.join(bpRoot,"scripts","events","pre_dragon_events.js")
+    ].filter(fs.existsSync).map(p=>fs.readFileSync(p,"utf8")).join("\n");
+    for(const [tier,pool] of Object.entries(rewardData.weightedPools??{})){
+      assert(Array.isArray(pool)&&pool.length>0,`reward tier ${tier} must have a non-empty pool`);
+      for(const entry of pool??[]){
+        assert(Number.isFinite(entry?.weight)&&entry.weight>0,`reward tier ${tier} has invalid weight for ${entry?.id}`);
+        if(entry.kind==="item"||entry.kind==="fragments"){
+          assert(typeof entry.id==="string"&&(entry.id.startsWith("minecraft:")||itemDefs.has(entry.id)),`reward tier ${tier} unresolved ${entry.kind} ${entry.id}`);
+        }else if(entry.kind==="entity"){
+          assert(typeof entry.id==="string"&&entityDefs.has(entry.id),`reward tier ${tier} unresolved entity ${entry.id}`);
+        }else if(entry.kind==="bundle"){
+          assert(Array.isArray(entry.items)&&entry.items.length>0,`reward tier ${tier} bundle ${entry.id} is empty`);
+          for(const part of entry.items??[])assert(typeof part?.id==="string"&&(part.id.startsWith("minecraft:")||itemDefs.has(part.id)),`reward tier ${tier} bundle ${entry.id} unresolved item ${part?.id}`);
+        }else if(entry.kind==="event"){
+          assert(typeof entry.id==="string"&&eventSources.includes(`"${entry.id}"`),`reward tier ${tier} unresolved event handler ${entry.id}`);
+          if(entry.fallback?.id)assert(entry.fallback.id.startsWith("minecraft:")||itemDefs.has(entry.fallback.id),`reward tier ${tier} event ${entry.id} unresolved fallback ${entry.fallback.id}`);
+        }else{
+          errors.push(`reward tier ${tier} unsupported kind ${entry?.kind} for ${entry?.id}`);
+        }
+      }
+    }
+  }
   const sums={
     common:sumBetween(s,"common: [","  rare: ["),
     rare:sumBetween(s,"  rare: [","  epic: ["),
@@ -471,4 +509,4 @@ if(errors.length){
   for(const e of errors)console.error("ERROR",e);
   process.exit(1);
 }
-console.log(`Lucky Block preflight OK — ${all.length} BP/RP files checked, ${geometryIds.size} geometry IDs, ${animationIds.size} animation IDs, ${animationControllerIds.size} animation controllers`);
+console.log(`Lucky Block preflight OK — ${all.length} BP/RP files checked, ${itemDefs.size} items, ${blockDefs.size} blocks, ${entityDefs.size} entities, ${geometryIds.size} geometry IDs, ${animationIds.size} animation IDs, ${animationControllerIds.size} animation controllers`);
