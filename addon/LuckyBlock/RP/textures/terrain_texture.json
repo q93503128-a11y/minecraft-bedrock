@@ -81,6 +81,9 @@
     },
     "lb_reward_turret": {
       "textures": "textures/blocks/lb_reward_turret"
+    },
+    "lb_gauntlet_blackstone": {
+      "textures": "textures/blocks/lb_gauntlet_blackstone"
     }
   }
 }

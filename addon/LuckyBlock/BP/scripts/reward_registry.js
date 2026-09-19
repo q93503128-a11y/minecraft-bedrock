@@ -15,10 +15,10 @@ export const weightedPools = {
     { weight: 5, kind: "fragments", id: "lb:rare_fragment", min: 1, max: 1, source: "core" }
   ],
   rare: [
-    { weight: 14, kind: "fragments", id: "lb:rare_fragment", min: 2, max: 4, source: "core" },
-    { weight: 6, kind: "item", id: "lb:reward_vending_machine", source: "loys_goodies" },
+    { weight: 9, kind: "fragments", id: "lb:rare_fragment", min: 2, max: 4, source: "core" },
+    { weight: 4, kind: "item", id: "lb:reward_vending_machine", source: "loys_goodies" },
     { weight: 6, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
-    { weight: 7, kind: "item", id: "lb:reward_cctv", source: "loys_goodies" },
+    { weight: 5, kind: "item", id: "lb:reward_cctv", source: "loys_goodies" },
     { weight: 7, kind: "item", id: "lb:reward_wrench", source: "loys_goodies" },
     { weight: 7, kind: "item", id: "lb:reward_easel", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_backpack", source: "loys_goodies" },
@@ -26,7 +26,9 @@ export const weightedPools = {
     { weight: 6, kind: "item", id: "lb:reward_cardboard_shield", source: "frenchkrab" },
     { weight: 6, kind: "item", id: "lb:reward_turret", source: "loys_goodies" },
     { weight: 7, kind: "bundle", id: "inhabitants_javelin_bundle", source: "inhabitants", items: [{ id: "lb:javelin", count: 6 }] },
-    { weight: 5, kind: "item", id: "lb:common_lucky_block", count: 2, source: "core" },
+    { weight: 6, kind: "item", id: "lb:threat_sunglasses", source: "loys_goodies" },
+    { weight: 5, kind: "item", id: "lb:fortune_tonic", count: 2, source: "loys_goodies" },
+    { weight: 3, kind: "item", id: "lb:common_lucky_block", count: 2, source: "core" },
     { weight: 5, kind: "fragments", id: "lb:epic_fragment", min: 1, max: 1, source: "core" },
     { weight: 6, kind: "entity", id: "lb:irk_companion", nameTag: "Irk Companion", source: "slayers_beasts", tameToOpener: true },
     { weight: 8, kind: "event", id: "fortune_relay", source: "core+licensed_external_fx", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } }
@@ -66,23 +68,25 @@ export const weightedPools = {
 };
 
 weightedPools.legendary = [
-  { weight: 20, kind: "fragments", id: "lb:legendary_fragment", min: 2, max: 4, source: "core" },
+  { weight: 16, kind: "fragments", id: "lb:legendary_fragment", min: 2, max: 4, source: "core" },
   { weight: 8, kind: "entity", id: "lb:wudu_binder", nameTag: "Wudu Binder", source: "slayers_beasts", requiresPostDragon: true },
   { weight: 12, kind: "entity", id: "lb:tyrachnid", nameTag: "Tyrachnid Elite", source: "slayers_beasts", requiresPostDragon: true },
   { weight: 20, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
   { weight: 16, kind: "item", id: "lb:slasher", source: "slasher_v1", requiresPostDragon: true },
-  { weight: 18, kind: "item", id: "lb:epic_lucky_block", count: 2, source: "core" },
+  { weight: 16, kind: "item", id: "lb:epic_lucky_block", count: 2, source: "core" },
   { weight: 12, kind: "fragments", id: "lb:mythic_fragment", min: 1, max: 1, source: "core", requiresPostDragon: true },
   { weight: 10, kind: "item", id: "lb:legendary_lucky_block", source: "core" },
-  { weight: 6, kind: "entity", id: "lb:sky_damselfly_mount", nameTag: "Sky Damselfly Mount", source: "slayers_beasts", requiresPostDragon: true, tameToOpener: true, tameEvent: "lb:on_tame" }
+  { weight: 6, kind: "entity", id: "lb:sky_damselfly_mount", nameTag: "Sky Damselfly Mount", source: "slayers_beasts", requiresPostDragon: true, tameToOpener: true, tameEvent: "lb:on_tame" },
+  { weight: 6, kind: "item", id: "lb:wizard_hat", source: "loys_goodies", requiresPostDragon: true }
 ];
 
 weightedPools.mythic = [
   { weight: 6, kind: "fragments", id: "lb:mythic_fragment", min: 3, max: 6, source: "core" },
   { weight: 4, kind: "item", id: "lb:legendary_lucky_block", count: 2, source: "core" },
-  { weight: 14, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
+  { weight: 12, kind: "entity", id: "lb:obsidilith", nameTag: "Obsidilith", source: "bosses_of_mass_destruction", requiresPostDragon: true },
+  { weight: 10, kind: "entity", id: "lb:gauntlet", nameTag: "Gauntlet", source: "bosses_of_mass_destruction", requiresPostDragon: true },
   {
-    weight: 14,
+    weight: 12,
     kind: "bundle",
     id: "tomemancer_archmage_set",
     source: "tomemancy",
@@ -94,10 +98,10 @@ weightedPools.mythic = [
       { id: "lb:tomemancy_dragon_fireball_tome", count: 1 }
     ]
   },
-  { weight: 13, kind: "event", id: "rift_siege", source: "core+inhabitants+bomd+slayers_beasts", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
-  { weight: 11, kind: "event", id: "lucky_rain", source: "core+licensed_external_rewards", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
-  { weight: 16, kind: "event", id: "rift_vault", source: "core+licensed_external_encounters", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
-  { weight: 12, kind: "event", id: "rift_arsenal", source: "core+inhabitants+slayers_beasts", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
+  { weight: 12, kind: "event", id: "rift_siege", source: "core+inhabitants+bomd+slayers_beasts", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
+  { weight: 10, kind: "event", id: "lucky_rain", source: "core+licensed_external_rewards", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
+  { weight: 14, kind: "event", id: "rift_vault", source: "core+licensed_external_encounters", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
+  { weight: 10, kind: "event", id: "rift_arsenal", source: "core+inhabitants+slayers_beasts", requiresPostDragon: true, fallback: { id: "lb:mythic_fragment", min: 4, max: 4 } },
   { weight: 2, kind: "entity", id: "lb:bogre", nameTag: "Bogre", source: "inhabitants", requiresPostDragon: true },
   { weight: 3, kind: "fragments", id: "lb:legendary_fragment", min: 6, max: 10, source: "core" },
   { weight: 5, kind: "item", id: "lb:mythic_lucky_block", source: "core" }

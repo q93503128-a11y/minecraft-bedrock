@@ -419,6 +419,69 @@
           "stream": false
         }
       ]
+    },
+    "lb.gauntlet.cast": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/gauntlet_cast",
+          "stream": false
+        }
+      ]
+    },
+    "lb.gauntlet.idle": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/gauntlet_idle",
+          "stream": false
+        }
+      ]
+    },
+    "lb.gauntlet.hurt": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/gauntlet_hurt",
+          "stream": false
+        }
+      ]
+    },
+    "lb.gauntlet.death": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/gauntlet_death",
+          "stream": false
+        }
+      ]
+    },
+    "lb.gauntlet.laser_charge": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/gauntlet_laser_charge",
+          "stream": false
+        }
+      ]
+    },
+    "lb.gauntlet.spin_punch": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/gauntlet_spin_punch",
+          "stream": false
+        }
+      ]
+    },
+    "lb.gauntlet.energy_shield": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/gauntlet_energy_shield",
+          "stream": false
+        }
+      ]
     }
   }
 }

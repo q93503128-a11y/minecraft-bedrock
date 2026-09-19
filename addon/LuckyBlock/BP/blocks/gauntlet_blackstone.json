@@ -1,0 +1,27 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:gauntlet_blackstone",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.gauntlet_blackstone",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_gauntlet_blackstone",
+          "render_method": "opaque"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 1.1
+      },
+      "minecraft:explosion_resistance": {
+        "value": 3600000
+      },
+      "minecraft:light_emission": 4
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "lb:threat_sunglasses",
+      "menu_category": {
+        "category": "equipment",
+        "is_hidden_in_commands": false
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "threat_sunglasses"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "item.lb:threat_sunglasses.name"
+      },
+      "minecraft:rarity": "rare",
+      "minecraft:max_stack_size": 1,
+      "minecraft:durability": {
+        "damage_chance": {
+          "min": 0,
+          "max": 0
+        },
+        "max_durability": 240
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "minecraft:glass_pane"
+            ],
+            "repair_amount": 24
+          },
+          {
+            "items": [
+              "lb:rare_fragment"
+            ],
+            "repair_amount": 72
+          }
+        ]
+      },
+      "minecraft:wearable": {
+        "dispensable": true,
+        "slot": "slot.armor.head",
+        "protection": 0
+      }
+    }
+  }
+}

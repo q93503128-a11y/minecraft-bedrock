@@ -1,0 +1,151 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:gauntlet",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "lb:shielded": {
+        "minecraft:damage_sensor": {
+          "triggers": {
+            "cause": "all",
+            "damage_multiplier": 0.18,
+            "deals_damage": "yes"
+          }
+        }
+      },
+      "lb:exposed": {
+        "minecraft:damage_sensor": {
+          "triggers": {
+            "cause": "all",
+            "damage_multiplier": 1.5,
+            "deals_damage": "yes"
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "monster",
+          "lb_hostile",
+          "lb_boss",
+          "lb_gauntlet",
+          "post_dragon"
+        ]
+      },
+      "minecraft:boss": {
+        "name": "Gauntlet",
+        "hud_range": 64,
+        "should_darken_sky": false
+      },
+      "minecraft:health": {
+        "value": 6000,
+        "max": 6000
+      },
+      "minecraft:attack": {
+        "damage": 34
+      },
+      "minecraft:movement": {
+        "value": 0.26
+      },
+      "minecraft:movement.hover": {
+        "max_turn": 24
+      },
+      "minecraft:navigation.fly": {
+        "can_path_over_water": true,
+        "avoid_damage_blocks": true
+      },
+      "minecraft:physics": {},
+      "minecraft:collision_box": {
+        "width": 2.8,
+        "height": 4.8
+      },
+      "minecraft:knockback_resistance": {
+        "value": 0.95
+      },
+      "minecraft:follow_range": {
+        "value": 48
+      },
+      "minecraft:behavior.hurt_by_target": {
+        "priority": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 2,
+        "within_radius": 48,
+        "reselect_targets": true,
+        "must_see": false,
+        "entity_types": [
+          {
+            "filters": {
+              "test": "is_family",
+              "subject": "other",
+              "value": "player"
+            },
+            "max_dist": 48
+          }
+        ]
+      },
+      "minecraft:behavior.move_towards_target": {
+        "priority": 3,
+        "speed_multiplier": 1,
+        "within_radius": 6
+      },
+      "minecraft:behavior.look_at_player": {
+        "priority": 7,
+        "look_distance": 32,
+        "probability": 1
+      },
+      "minecraft:behavior.random_fly": {
+        "priority": 8,
+        "xz_dist": 8,
+        "y_dist": 4,
+        "y_offset": 1,
+        "speed_multiplier": 0.55
+      },
+      "minecraft:damage_sensor": {
+        "triggers": {
+          "cause": "fall",
+          "deals_damage": false
+        }
+      }
+    },
+    "events": {
+      "lb:shield_on": {
+        "remove": {
+          "component_groups": [
+            "lb:exposed"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:shielded"
+          ]
+        }
+      },
+      "lb:shield_off": {
+        "remove": {
+          "component_groups": [
+            "lb:shielded",
+            "lb:exposed"
+          ]
+        }
+      },
+      "lb:expose": {
+        "remove": {
+          "component_groups": [
+            "lb:shielded"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:exposed"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import * as mc from "@minecraft/server";
+import { hasWizardHat } from "./loys_accessories.js";
 
 const SPELLS = {
   "lb:tomemancy_meteor_tome": { key: "meteor", cooldown: 240, durability: 4 },
@@ -26,7 +27,8 @@ function tryStartCooldown(player, spell) {
     actionbar(player, "§5Tomemancy §8— §d" + ((readyAt - clockTick) / 20).toFixed(1) + "s");
     return false;
   }
-  cooldowns.set(key, clockTick + spell.cooldown);
+  const focusCooldown = hasWizardHat(player) ? Math.max(20, Math.round(spell.cooldown * 0.85)) : spell.cooldown;
+  cooldowns.set(key, clockTick + focusCooldown);
   return true;
 }
 function refundCooldown(player, spell) {
@@ -64,12 +66,13 @@ function damageHeldTome(player, expectedType, amount) {
   return true;
 }
 function staffFocus(player) {
+  let power = 1.0;
   try {
     const offhand = player.getComponent("equippable")?.getEquipmentSlot(mc.EquipmentSlot.Offhand)?.getItem();
-    return offhand?.typeId === "lb:tomemancy_diamond_staff" ? 1.20 : 1.0;
-  } catch {
-    return 1.0;
-  }
+    if (offhand?.typeId === "lb:tomemancy_diamond_staff") power *= 1.20;
+  } catch {}
+  if (hasWizardHat(player)) power *= 1.15;
+  return power;
 }
 function centerOf(entity) {
   try { return entity.getHeadLocation(); }

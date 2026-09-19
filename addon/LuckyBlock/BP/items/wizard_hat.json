@@ -1,0 +1,56 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "lb:wizard_hat",
+      "menu_category": {
+        "category": "equipment",
+        "is_hidden_in_commands": false
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "wizard_hat"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "item.lb:wizard_hat.name"
+      },
+      "minecraft:rarity": "epic",
+      "minecraft:max_stack_size": 1,
+      "minecraft:durability": {
+        "damage_chance": {
+          "min": 0,
+          "max": 0
+        },
+        "max_durability": 420
+      },
+      "minecraft:repairable": {
+        "repair_items": [
+          {
+            "items": [
+              "minecraft:leather"
+            ],
+            "repair_amount": 28
+          },
+          {
+            "items": [
+              "lb:legendary_fragment"
+            ],
+            "repair_amount": 140
+          }
+        ]
+      },
+      "minecraft:enchantable": {
+        "value": 18,
+        "slot": "armor_head"
+      },
+      "minecraft:wearable": {
+        "dispensable": true,
+        "slot": "slot.armor.head",
+        "protection": 1
+      }
+    }
+  }
+}

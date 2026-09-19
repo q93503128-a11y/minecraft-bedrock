@@ -8,7 +8,7 @@ const HOSTILES = new Set([
   "minecraft:shulker","minecraft:phantom","minecraft:pillager","minecraft:vindicator",
   "minecraft:evocation_illager","minecraft:ravager","minecraft:breeze","minecraft:warden",
   "lb:impaler","lb:wither_spider","lb:ant_soldier_guard","lb:ant_queen",
-  "lb:mantis","lb:tyrachnid","lb:wudu_binder","lb:bogre","lb:warped_clam","lb:obsidilith"
+  "lb:mantis","lb:tyrachnid","lb:wudu_binder","lb:bogre","lb:warped_clam","lb:obsidilith,"lb:gauntlet"
 ]);
 
 function center(block) {

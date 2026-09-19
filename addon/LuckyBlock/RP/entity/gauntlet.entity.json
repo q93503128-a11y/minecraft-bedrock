@@ -1,0 +1,41 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:gauntlet",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/gauntlet"
+      },
+      "geometry": {
+        "default": "geometry.lb.gauntlet"
+      },
+      "animations": {
+        "punch_start": "animation.lb.gauntlet.punch_start",
+        "swirl_punch": "animation.lb.gauntlet.swirl_punch",
+        "laser_eye_start": "animation.lb.gauntlet.laser_eye_start",
+        "laser_eye_stop": "animation.lb.gauntlet.laser_eye_stop",
+        "laser_eye_loop": "animation.lb.gauntlet.laser_eye_loop",
+        "punch_loop": "animation.lb.gauntlet.punch_loop",
+        "punch_stop": "animation.lb.gauntlet.punch_stop",
+        "idle": "animation.lb.gauntlet.idle",
+        "death": "animation.lb.gauntlet.death",
+        "cast": "animation.lb.gauntlet.cast"
+      },
+      "scripts": {
+        "animate": [
+          "idle"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ],
+      "spawn_egg": {
+        "base_color": "#2b252c",
+        "overlay_color": "#d34b43"
+      }
+    }
+  }
+}

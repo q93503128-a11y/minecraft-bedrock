@@ -46,6 +46,15 @@
     },
     "spike_drill": {
       "textures": "textures/items/spike_drill"
+    },
+    "wizard_hat": {
+      "textures": "textures/items/wizard_hat"
+    },
+    "threat_sunglasses": {
+      "textures": "textures/items/threat_sunglasses"
+    },
+    "fortune_tonic": {
+      "textures": "textures/items/fortune_tonic"
     }
   }
 }
