@@ -20,7 +20,8 @@
       },
       "minecraft:explosion_resistance": {
         "value": 6
-      }
+      },
+      "minecraft:loot": "loot_tables/blocks/objective_empty.json"
     }
   }
 }
