@@ -72,7 +72,7 @@ function grasp(wudu,target){
   },18);
 }
 function combatPass(){
-  combatTick+=STEP;if(!postDragon())return;
+  combatTick=mc.world.getAbsoluteTime();if(!postDragon())return;
   for(const id of ["overworld","nether","the_end"]){
     const dimension=mc.world.getDimension(id);
     for(const wudu of dimension.getEntities({type:"lb:wudu_binder"})){
