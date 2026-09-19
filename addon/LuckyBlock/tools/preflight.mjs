@@ -225,7 +225,21 @@ if(fs.existsSync(mainPath)){
 
 const lorePath=path.join(bpRoot,"scripts","item_lore.js");
 assert(fs.existsSync(lorePath),"missing item_lore.js");
-if(fs.existsSync(lorePath))assert(fs.readFileSync(lorePath,"utf8").includes(".setLore("),"item_lore.js must apply ItemStack.setLore");
+if(fs.existsSync(lorePath)){
+  const loreSource=fs.readFileSync(lorePath,"utf8");
+  assert(loreSource.includes(".setLore("),"item_lore.js must apply ItemStack.setLore");
+  const requiredLoreIds=[
+    ...coreItemIds,
+    "lb:slasher","lb:slasher_blade","lb:amethyst_repeater","lb:amethyst_charge",
+    "lb:storm_longbow","lb:javelin","lb:spike_drill",
+    "lb:fortune_tonic","lb:flashbang","lb:smoke_grenade","lb:lucky_guitar",
+    "lb:tomemancy_diamond_staff","lb:tomemancy_meteor_tome","lb:tomemancy_gigavolt_tome","lb:tomemancy_dragon_fireball_tome",
+    "lb:tomemancy_mystical_helmet","lb:tomemancy_mystical_chestplate","lb:tomemancy_mystical_leggings","lb:tomemancy_mystical_boots",
+    "lb:explorer_hat","lb:explorer_pack","lb:wizard_hat","lb:threat_sunglasses",
+    "lb:reward_gravestone","lb:reward_mirror","lb:reward_air_conditioner"
+  ];
+  for(const id of requiredLoreIds)assert(loreSource.includes(`["${id}",`),`missing required hover lore for ${id}`);
+}
 const slasherIndex=path.join(bpRoot,"scripts","integrations","slasher","index.js");
 const slasherBridge=path.join(bpRoot,"scripts","integrations","slasher","runtime_bridge.js");
 assert(fs.existsSync(slasherBridge),"missing stable Slasher runtime bridge");
