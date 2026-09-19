@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.100",
+  "format_version": "1.26.0",
   "minecraft:item": {
     "description": {
       "identifier": "lb:common_lucky_block",
@@ -9,18 +9,14 @@
       }
     },
     "components": {
-      "minecraft:icon": {
-        "textures": {
-          "default": "lb_common_lucky_block_item"
-        }
-      },
       "minecraft:display_name": {
         "value": "item.lb:common_lucky_block.name"
       },
       "minecraft:max_stack_size": 64,
       "minecraft:rarity": "common",
       "minecraft:block_placer": {
-        "block": "lb:common_lucky_block_placed"
+        "block": "lb:common_lucky_block",
+        "replace_block_item": true
       }
     }
   }

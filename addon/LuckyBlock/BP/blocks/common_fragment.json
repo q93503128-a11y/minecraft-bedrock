@@ -2,7 +2,10 @@
   "format_version": "1.26.0",
   "minecraft:block": {
     "description": {
-      "identifier": "lb:common_fragment_display"
+      "identifier": "lb:common_fragment",
+      "menu_category": {
+        "category": "items"
+      }
     },
     "components": {
       "minecraft:geometry": "geometry.lb.common_fragment",
@@ -11,30 +14,6 @@
           "texture": "lb_fragment_mana",
           "render_method": "alpha_test"
         }
-      },
-      "minecraft:collision_box": {
-        "origin": [
-          -3,
-          0,
-          -3
-        ],
-        "size": [
-          6,
-          7,
-          6
-        ]
-      },
-      "minecraft:selection_box": {
-        "origin": [
-          -4,
-          0,
-          -4
-        ],
-        "size": [
-          8,
-          8,
-          8
-        ]
       },
       "minecraft:destructible_by_mining": {
         "seconds_to_destroy": 0.15
