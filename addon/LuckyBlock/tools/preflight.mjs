@@ -255,6 +255,20 @@ if(fs.existsSync(rewardPath)){
 }
 
 
+const loysGoodiesPath=path.join(bpRoot,"scripts","integrations","loys_goodies.js");
+if(fs.existsSync(loysGoodiesPath)){
+  const src=fs.readFileSync(loysGoodiesPath,"utf8");
+  for(const id of ["lb:rift_spitter_ant","lb:rift_charger_ant","lb:rift_burrower_ant","lb:cave_dweller","lb:lich","lb:void_blossom"])
+    assert(src.includes(`"${id}"`),`loys_goodies HOSTILES missing late-game target ${id}`);
+  assert(src.includes("world.gameRules.pvp !== true"),"Snow Globe must respect PvP-off multiplayer");
+}
+for(const relPath of ["events/pre_dragon_events.js","events/mythic_events.js","events/rift_reliquary.js"]){
+  const p=path.join(bpRoot,"scripts",relPath),src=fs.existsSync(p)?fs.readFileSync(p,"utf8"):"";
+  assert(src.includes("lb:pre_dragon_event_states_v1"),`${relPath} must account for pre-dragon event occupancy`);
+  assert(src.includes("lb:mythic_event_states_v1"),`${relPath} must account for mythic event occupancy`);
+  assert(src.includes("lb:rift_reliquary_states_v1"),`${relPath} must account for reliquary event occupancy`);
+}
+
 const mainPath=path.join(bpRoot,"scripts","main.js");
 if(fs.existsSync(mainPath)){
   const s=fs.readFileSync(mainPath,"utf8");
@@ -450,16 +464,18 @@ function checkClientDescription(p,j){
   if(!d)return;
   for(const g of Object.values(d.geometry??{})){
     if(typeof g!=="string")continue;
-    if(g.startsWith("geometry.lb.")||g.startsWith("geometry.slasher"))assert(geometryIds.has(g),`${rel(p)} missing custom geometry ${g}`);
+    if(g.startsWith("geometry.humanoid.armor."))continue;
+    assert(geometryIds.has(g),`${rel(p)} missing geometry ${g}`);
   }
   for(const a of Object.values(d.animations??{})){
     if(typeof a!=="string")continue;
-    if(a.startsWith("animation.lb.")||a.startsWith("animation.slasher"))assert(animationIds.has(a),`${rel(p)} missing custom animation ${a}`);
-    if(a.startsWith("controller.animation.lb.")||a.startsWith("controller.animation.slasher"))assert(animationControllerIds.has(a),`${rel(p)} missing animation controller ${a}`);
+    if(a.startsWith("controller.animation."))assert(animationControllerIds.has(a),`${rel(p)} missing animation controller ${a}`);
+    else if(a.startsWith("animation."))assert(animationIds.has(a),`${rel(p)} missing animation ${a}`);
   }
   for(const rc of d.render_controllers??[]){
     const id=typeof rc==="string"?rc:Object.keys(rc??{})[0];
-    if(typeof id==="string"&&id.startsWith("controller.render.slasher"))assert(renderControllerIds.has(id),`${rel(p)} missing render controller ${id}`);
+    if(typeof id!=="string"||id==="controller.render.default"||id==="controller.render.armor")continue;
+    assert(renderControllerIds.has(id),`${rel(p)} missing render controller ${id}`);
   }
   for(const t of Object.values(d.textures??{}))if(typeof t==="string"&&t.startsWith("textures/")&&!vanillaTextureRefs.has(t))assert(existsAsset(t),`${rel(p)} missing texture ${t}`);
 }
@@ -469,6 +485,17 @@ for(const dir of ["entity","attachables"]){
 for(const p of walk(path.join(bpRoot,"blocks")).filter(p=>p.endsWith(".json"))){
   const j=readJson(p),g=j?.["minecraft:block"]?.components?.["minecraft:geometry"];
   if(typeof g==="string"&&g.startsWith("geometry.lb."))assert(geometryIds.has(g),`${rel(p)} missing geometry ${g}`);
+}
+
+const objectiveLoot="loot_tables/blocks/objective_empty.json";
+const objectiveLootPath=path.join(bpRoot,objectiveLoot);
+assert(fs.existsSync(objectiveLootPath),"missing objective_empty loot table");
+if(fs.existsSync(objectiveLootPath)){
+  const loot=readJson(objectiveLootPath);
+  assert(Array.isArray(loot?.pools)&&loot.pools.length===0,"objective_empty loot table must contain zero pools");
+}
+for(const id of ["lb:archive_codex","lb:fortune_bomb","lb:gauntlet_blackstone","lb:obsidilith_rune"]){
+  assert(blockDefs.get(id)?.j?.components?.["minecraft:loot"]===objectiveLoot,`${id}: event objective must use non-dropping objective loot`);
 }
 
 const terrainAtlas=readJson(path.join(rpRoot,"textures","terrain_texture.json"))?.texture_data??{};
