@@ -1,5 +1,5 @@
 {
-  "format_version": "1.21.0",
+  "format_version": "1.26.0",
   "minecraft:entity": {
     "description": {
       "identifier": "lb:flashbang_projectile",
@@ -10,17 +10,25 @@
     "components": {
       "minecraft:type_family": {
         "family": [
-          "lb_projectile"
+          "projectile",
+          "lb_grenade"
         ]
       },
       "minecraft:collision_box": {
         "width": 0.35,
         "height": 0.35
       },
-      "minecraft:physics": {},
-      "minecraft:pushable": {
-        "is_pushable": false,
-        "is_pushable_by_piston": true
+      "minecraft:push_through": {
+        "value": 1
+      },
+      "minecraft:damage_sensor": {
+        "triggers": {
+          "deals_damage": false
+        }
+      },
+      "minecraft:physics": {
+        "has_gravity": true,
+        "has_collision": true
       }
     }
   }
