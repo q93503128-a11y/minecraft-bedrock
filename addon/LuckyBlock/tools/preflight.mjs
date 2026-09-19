@@ -55,6 +55,16 @@ for(const id of coreItemIds){
   assert(placer?.replace_block_item===true,`${id}: replace_block_item must be true`);
   assert(!item?.components?.["minecraft:icon"],`${id}: core block item must use 3D block rendering, not a flat texture sheet icon`);
 }
+for(const tier of coreTiers){
+  const fragmentId=`lb:${tier}_fragment`;
+  const luckyId=`lb:${tier}_lucky_block`;
+  const fragmentBlock=blockDefs.get(fragmentId)?.j;
+  const luckyBlock=blockDefs.get(luckyId)?.j;
+  assert(Boolean(fragmentBlock),`missing core fragment block ${fragmentId}`);
+  assert(Boolean(luckyBlock),`missing Lucky Block ${luckyId}`);
+  assert(Boolean(luckyBlock?.components?.[`lb:open_${tier}`]),`${luckyId}: missing lb:open_${tier} custom component`);
+  for(const key of Object.keys(fragmentBlock?.components??{}))assert(!key.startsWith("lb:open_"),`${fragmentId}: fragment must not carry Lucky open component ${key}`);
+}
 const itemAtlasPath=path.join(rpRoot,"textures","item_texture.json");
 const itemAtlas=readJson(itemAtlasPath)?.texture_data??{};
 for(const [id,{p,j}] of itemDefs){
@@ -131,6 +141,40 @@ for(const p of walk(path.join(bpRoot,"recipes")).filter(p=>p.endsWith(".json")))
   }
 }
 
+const coreRecipeSpec={
+  "common_lucky_block_from_fragments.json":{result:"lb:common_lucky_block",ingredients:{"lb:common_fragment":6}},
+  "rare_lucky_block_from_fragments.json":{result:"lb:rare_lucky_block",ingredients:{"lb:rare_fragment":6}},
+  "epic_lucky_block_from_fragments.json":{result:"lb:epic_lucky_block",ingredients:{"lb:epic_fragment":6}},
+  "legendary_lucky_block_from_fragments.json":{result:"lb:legendary_lucky_block",ingredients:{"lb:legendary_fragment":6}},
+  "mythic_lucky_block_from_fragments.json":{result:"lb:mythic_lucky_block",ingredients:{"lb:mythic_fragment":6}},
+  "fuse_rare_lucky_block.json":{result:"lb:rare_lucky_block",ingredients:{"lb:common_lucky_block":4,"lb:rare_fragment":2}},
+  "fuse_epic_lucky_block.json":{result:"lb:epic_lucky_block",ingredients:{"lb:rare_lucky_block":4,"lb:epic_fragment":2}},
+  "fuse_legendary_lucky_block.json":{result:"lb:legendary_lucky_block",ingredients:{"lb:epic_lucky_block":5,"lb:legendary_fragment":3}},
+  "fuse_mythic_lucky_block.json":{result:"lb:mythic_lucky_block",ingredients:{"lb:legendary_lucky_block":5,"lb:mythic_fragment":4}}
+};
+for(const [name,spec] of Object.entries(coreRecipeSpec)){
+  const p=path.join(bpRoot,"recipes",name);
+  assert(fs.existsSync(p),`missing core recipe ${name}`);
+  if(!fs.existsSync(p))continue;
+  const j=readJson(p),r=j?.["minecraft:recipe_shapeless"];
+  assert(Boolean(r),`${name}: core recipe must be shapeless`);
+  if(!r)continue;
+  assert(Array.isArray(r.tags)&&r.tags.includes("crafting_table"),`${name}: missing crafting_table tag`);
+  assert(r.unlock?.context==="AlwaysUnlocked",`${name}: recipe book unlock must be AlwaysUnlocked object form`);
+  assert(r.result?.item===spec.result&&r.result?.count===1,`${name}: wrong result contract`);
+  const counts={};
+  for(const x of r.ingredients??[])if(typeof x?.item==="string")counts[x.item]=(counts[x.item]??0)+1;
+  assert(JSON.stringify(counts)===JSON.stringify(spec.ingredients),`${name}: ingredient multiset mismatch ${JSON.stringify(counts)}`);
+}
+
+const acquisitionPath=path.join(bpRoot,"scripts","acquisition.js");
+assert(fs.existsSync(acquisitionPath),"missing acquisition.js");
+if(fs.existsSync(acquisitionPath)){
+  const a=fs.readFileSync(acquisitionPath,"utf8");
+  for(const token of ["playerBreakBlock","entityDie","blockContainerOpened","subscribeFishingCatch","STARTER_COMMON_THRESHOLD = 6","lb:common_fragment","lb:rare_fragment","lb:epic_fragment","lb:legendary_fragment","lb:mythic_fragment"]){
+    assert(a.includes(token),`acquisition.js missing survival contract token: ${token}`);
+  }
+}
 const rewardPath=path.join(bpRoot,"scripts","reward_registry.js");
 if(fs.existsSync(rewardPath)){
   const s=fs.readFileSync(rewardPath,"utf8");
