@@ -1533,7 +1533,6 @@
       "targets": [
         "BP/items/smoke_grenade.json",
         "BP/entities/smoke_grenade_projectile.json",
-        "BP/scripts/integrations/loys_tactical_tools.js",
         "RP/attachables/smoke_grenade.attachable.json",
         "RP/entity/smoke_grenade_projectile.entity.json",
         "RP/models/entity/smoke_grenade_held.geo.json",
@@ -1552,7 +1551,6 @@
       ],
       "targets": [
         "BP/items/lucky_guitar.json",
-        "BP/scripts/integrations/loys_tactical_tools.js",
         "RP/attachables/lucky_guitar.attachable.json",
         "RP/models/entity/lucky_guitar_held.geo.json",
         "RP/textures/items/lucky_guitar.png"
