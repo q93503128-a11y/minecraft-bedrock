@@ -1,6 +1,6 @@
 # Lucky Block Add-On Implementation Roadmap
 
-Reviewed: 2026-09-18
+Reviewed: 2026-09-19
 
 ## P0 — Canon and legal inventory
 Complete. Canon, license notes and initial asset catalog live in this repository.
@@ -26,7 +26,7 @@ Build materially distinct outcomes in batches. Each batch must mix item, encount
 
 Initial direct-use/rebuild sources: Loy's Goodies, FrenchKrab-cleared models, Themonsterguns, official Bedrock samples.
 
-Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, minigames, ecological/spatial exploration, persistent structures and now a dedicated trap family. 0.32.0 adds the production Fortune Bomb object plus Fortune Minefield rather than another stat item. Remaining P3 weakness is dominated by sheer materially-distinct outcome count, more dungeon/chained structures and a smaller specialist utility tail.
+Implemented reward-family slices now include utility/decor, multiple melee/ranged/magic archetypes, pet and ground/flight mounts, armor, support wearables, specialist tools, deployables, minigames, ecological/spatial exploration, persistent structures and a dedicated trap family. 0.33.0 adds Rift Reliquary as a room-gated exploration/trap/objective/combat dungeon rather than another wave arena, and Rift Charger as a distinct movement-pressure enemy. Remaining P3 weakness is mainly sheer materially-distinct outcome count and a smaller specialist utility/odd-event tail.
 
 ## P4 — Pre-dragon encounter layer
 Introduce selected custom mobs, pets, structures, minibosses and world events that fit vanilla progression plus Lucky growth.
@@ -39,12 +39,12 @@ Persist a world-level first-kill unlock. After that point, late-game spawn table
 ## P6 — Late game
 Port/rebuild verified high-quality enemies and bosses. Every major boss receives encounter mechanics: telegraphs, phases, vulnerability windows, mobility, area denial and/or adds. Raw HP inflation cannot be the primary difficulty mechanism.
 
-Implemented P6 slices: Bogre miniboss, Obsidilith boss, Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, Gauntlet boss, mixed-role Rift Arsenal waves, and now **Rift Spitter Ant** as a dedicated post-dragon ranged-pressure normal family. Its three-shot corrosive salvo and close-range retreat fill the previously named ranged-family gap, and Rift Arsenal now combines ranged pressure with support/control/predator/elite/miniboss roles. Remaining P6 work is mainly more sheer normal-mob/elite count and additional encounter combinations.
+Implemented P6 slices: Bogre miniboss, Obsidilith boss, Warped Clam, Mantis predator, Tyrachnid cave elite, Wudu Binder control/support, Gauntlet boss, Rift Spitter ranged pressure, and now **Rift Charger Ant** as a dedicated telegraphed mobility/charge role. A missed charge creates a vulnerability window, so the role rewards dodging rather than only adding health/damage. Rift Reliquary then combines Charger movement pressure with Spitter/Wudu/Tyrachnid roles. Remaining P6 work is mainly more sheer normal/elite count and a few additional role combinations.
 
 ## P7 — Mythic outcomes
 Mythic Lucky Blocks award content packages: boss/event/dungeon/set/invasion/Lucky Rain-style experiences rather than merely one huge-stat item.
 
-Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, Rift Siege, Lucky Rain, Rift Vault, chained Rift Arsenal and Gauntlet. 0.32.0 does not add another Mythic family, but materially upgrades Rift Arsenal composition by adding a true ranged-pressure role instead of duplicating melee bodies. More dungeon variants and a smaller number of chained-event/package families remain.
+Implemented P7 slices: Obsidilith boss encounter, Tomemancer Archmage Set, Rift Siege, Lucky Rain, Rift Vault, chained Rift Arsenal, Gauntlet, and now **Rift Reliquary**. Reliquary is a permanent room-gated dungeon with spatial key activation, a timed trap corridor, breakable rune seals and a final mixed-role encounter, directly addressing the remaining dungeon/chained-structure gap. More package variants still help sheer outcome count, but the Mythic structure family is no longer represented by only arena/vault styles.
 
 ## P8 — Packaging and release validation
 - Package BP + RP as one .mcaddon.

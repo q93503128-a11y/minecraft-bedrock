@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.32.0 Fortune Minefield + Rift Spitter role-gap batch
+Milestone: 0.33.0 Rift Reliquary + Rift Charger completion-jump batch
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -727,3 +727,18 @@ Static audit after 0.28.0:
 - BP/RP version is 0.32.0; @minecraft/server remains 2.9.0.
 - Stable API check confirms `EntityDamageCause.entityExplosion` exists for scripted Minefield blast attribution.
 - Actual Bedrock import/render, multiplayer simultaneous bomb mining, natural-spawn feel, ant pathing/retreat, salvo dodge windows and Rift Arsenal balance remain P8 runtime QA and are not claimed tested.
+
+0.33.0 completion-jump batch — Rift Reliquary + Rift Charger:
+- Added `lb:rift_charger_ant` using Slayers-Beasts MIT Ant Soldier source references and the exact upstream Meadow Soldier texture; the already-audited Ant Soldier geometry/WALK+AMBIENT conversion is shared instead of duplicated.
+- Source Ant Soldier behavior remains documented as neutral 15 HP / 5 attack melee. Lucky's Charger role is explicitly project-owned: 420 HP, 16 melee, sparse post-dragon rocky-surface spawning, 24-tick charge-lane telegraph, dash impact, and a 50-tick 1.35x vulnerability window when players dodge the charge.
+- Charger has its own Legendary direct encounter and remains behind the first-Ender-Dragon gate. Legendary pool total remains exactly 122.
+- Added **Rift Reliquary**, a new Mythic permanent 17×29 dungeon/chained package rather than another single-room wave arena.
+- Reliquary stage 1 uses three physically separated real Archive Codex blocks. Keys are order-free and shared across multiplayer; each first activation spawns a different tagged guard role.
+- Stage 2 opens only after all keys are active and guards are cleared, then arms six real Fortune Bomb blocks in a timed disarm-or-dodge corridor.
+- Stage 3 opens only after all six bombs are resolved and requires four real Obsidilith Rune blocks to be physically destroyed.
+- Final stage combines two Rift Chargers, one Rift Spitter, one Wudu Binder and one Tyrachnid so mobility/ranged/support/control/elite pressure interact in one encounter.
+- Objective blocks and closed gates are repaired while locked, preventing pre-clearing and common progression softlocks. The event pauses while unattended and persists shared world state.
+- Completion grants 9-12 Mythic Fragments, one Legendary Lucky Block and two Fortune Tonics; 5+ bomb disarms add two Legendary Fragments.
+- Mythic weight 10 is fully funded by reducing existing repeated/generic slices; Mythic total remains exactly 100.
+- BP/RP version is now 0.33.0; @minecraft/server remains 2.9.0.
+- Stable Bedrock import/render, charge physics, multiplayer simultaneous Codex interaction/bomb mining, dungeon gate repair, long-session persistence and final encounter balance remain P8 runtime QA. No runtime-playtest claim is made.

@@ -347,3 +347,16 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - The already-verified Ant Soldier geometry/animation conversion used by `lb:war_ant_mount` is shared rather than duplicated under a second vendor target owner.
 - Upstream Ant Soldier is neutral melee: 15 HP, 5 attack, 0.22 movement, 0.5 knockback resistance. It has no acid-spit/ranged behavior.
 - Lucky-owned behavior is explicitly separate: post-dragon 260 HP ranged-pressure role, three delayed corrosive impacts, Poison II/Slowness, short-distance retreat, gated natural spawning, Lucky drops and Rift Arsenal composition.
+
+### Slayers-Beasts Rift Charger Ant — 0.33.0
+- Source: `InvictusSlayer/Slayers-Beasts`, pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`, MIT.
+- Direct source payload: Ant Soldier model/WALK+AMBIENT animation/renderer references plus exact `textures/entity/ant/meadow_soldier.png`.
+- The Bedrock entity shares the already-verified Ant Soldier geometry/animation conversion rather than creating or duplicating a new visual model.
+- Upstream Ant Soldier remains a neutral 15 HP / 5 attack / 0.22 movement melee mob. The charge mechanic is not source-original.
+- Lucky-owned adaptation: post-dragon 420 HP charge-pressure role, 24-tick lane telegraph, high-impulse dash, 30-damage collision, miss-created 50-tick 1.35x vulnerability, sparse rocky-surface spawning and Lucky progression drops.
+
+### Rift Reliquary composition — 0.33.0
+- The dungeon introduces no placeholder or assistant-made temporary art.
+- Its three unique physical objective families reuse cleared production assets already in this pack: Loy's Goodies CC0 Archive Codex and Fortune Bomb, plus Bosses of Mass Destruction LGPL Obsidilith Rune.
+- Lucky-owned content is the permanent 17×29 final-material dungeon layout and progression logic: three order-free Codex keys with guarded activation, a six-Bomb timed trap corridor, a four-Rune sealed sanctum, then a mixed final role encounter.
+- The final encounter combines Rift Charger movement pressure, Rift Spitter ranged pressure, Wudu support/control and Tyrachnid elite pressure. The structure/puzzle flow is Lucky-owned and is not attributed to any upstream mod.

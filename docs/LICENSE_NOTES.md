@@ -138,3 +138,11 @@ A source's top-level license does not override restrictions attached to embedded
 - Direct reused material is the Ant Soldier visual/animation reference and exact Leafcutter Soldier texture.
 - Shared War Ant geometry/animation targets remain owned by the existing Ant Soldier/War Ant registry record; the Rift Spitter registry record does not duplicate target ownership.
 - Upstream Ant Soldier has no ranged spit. Corrosive salvos, retreat AI, post-dragon spawn policy, balance, drops and Rift Arsenal integration are project-owned.
+
+## 0.33.0 reuse note — Rift Charger / Reliquary
+
+- Rift Charger adds no new license family. It uses the already-cleared Slayers-Beasts MIT source pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Newly vendored binary: exact upstream `common/src/main/resources/assets/slayersbeasts/textures/entity/ant/meadow_soldier.png`.
+- The Ant Soldier geometry/animation conversion is shared from existing audited targets; it is not duplicated under a second asset owner.
+- Rift Reliquary reuses already-cleared Loy's Goodies CC0 Archive Codex/Fortune Bomb assets and the existing BOMD LGPL Obsidilith Rune asset. No new third-party license family is introduced by the dungeon layout.
+- Source-original behavior and Lucky-owned gameplay remain explicitly separated in THIRD_PARTY_NOTICES and the vendor registry.

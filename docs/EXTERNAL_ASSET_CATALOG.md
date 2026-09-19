@@ -739,3 +739,23 @@ Source/Lucky boundary:
 - ranged identity is project-owned: three telegraphed 3-block corrosive impacts, Poison II + short Slowness and retreat impulse inside 6 blocks;
 - natural spawn remains behind the persistent first-Ender-Dragon gate, with a two-within-72 density cap;
 - Rift Arsenal stage 2 and finale each add two Spitters while reducing duplicate melee counts, making the chain role-based rather than merely denser.
+
+## Completion-jump batch — 0.33.0
+
+### Slayers-Beasts Rift Charger Ant
+- MIT source pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Exact upstream Meadow Ant Soldier texture is vendored; the already-verified Ant Soldier geometry and WALK/AMBIENT conversion is shared.
+- Post-dragon role: 420 HP mobility/charge pressure, not another ranged or simple melee stat body.
+- A 24-tick line telegraph precedes the dash. Connecting deals 30 impact damage and knockback; dodging the lane opens a 50-tick 1.35x vulnerability window.
+- Natural spawn is post-dragon only, sparse, capped at one within 96 blocks, and biased to rocky/grass/tuff/gravel surfaces.
+- Legendary Lucky Blocks can produce a direct Charger encounter without changing the Legendary pool total.
+
+### Rift Reliquary
+- New post-dragon Mythic dungeon/chained package.
+- Permanent 17×29 structure with separated rooms and real progression gates rather than a single wave arena.
+- Room 1: three spatially separated Archive Codex keys; each activation wakes a different licensed-source guard role.
+- Room 2: six Fortune Bombs become a timed disarm-or-dodge corridor.
+- Room 3: four Obsidilith Runes must be physically destroyed before the final encounter.
+- Final role composition: two Rift Chargers + Rift Spitter + Wudu Binder + Tyrachnid.
+- Objective blocks are restored while their stage is locked, preventing pre-clear/softlock bypass; closed gates are also repaired until legitimately opened.
+- The event pauses while unattended and uses world-persisted shared state, so multiplayer participants progress one cooperative dungeon rather than separate player copies.
