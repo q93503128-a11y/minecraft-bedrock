@@ -758,15 +758,13 @@ export function startMythicEvent(dimension, center, type) {
   if (mc.world.getDynamicProperty("lb:post_dragon_unlocked") !== true) return false;
 
   const states = loadStates();
-  let reliquaryStates = [];
-  const reliquaryRaw = mc.world.getDynamicProperty("lb:rift_reliquary_states_v1");
-  if (typeof reliquaryRaw === "string" && reliquaryRaw) {
-    try {
-      const parsed = JSON.parse(reliquaryRaw);
-      if (Array.isArray(parsed)) reliquaryStates = parsed;
-    } catch {}
+  let reliquaryStates = [], preDragonStates = [];
+  for (const [key,target] of [["lb:rift_reliquary_states_v1",reliquaryStates],["lb:pre_dragon_event_states_v1",preDragonStates]]) {
+    const raw=mc.world.getDynamicProperty(key);
+    if(typeof raw!=="string"||!raw)continue;
+    try{const parsed=JSON.parse(raw);if(Array.isArray(parsed))target.push(...parsed);}catch{}
   }
-  if (states.length + reliquaryStates.length >= MAX_ACTIVE_EVENTS) return false;
+  if (states.length + reliquaryStates.length + preDragonStates.length >= MAX_ACTIVE_EVENTS) return false;
 
   let normalizedCenter = {
     x: Math.floor(center.x) + 0.5,
@@ -785,6 +783,10 @@ export function startMythicEvent(dimension, center, type) {
     if (distSq(state.center, normalizedCenter) < 64 * 64) return false;
   }
   for (const state of reliquaryStates) {
+    if (state.dimension !== key) continue;
+    if (distSq(state.center, normalizedCenter) < 80 * 80) return false;
+  }
+  for (const state of preDragonStates) {
     if (state.dimension !== key) continue;
     if (distSq(state.center, normalizedCenter) < 80 * 80) return false;
   }
