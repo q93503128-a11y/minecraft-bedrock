@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.34.0 Gallery Slug + Cave Dweller stalker batch
+Milestone: 0.35.0 Tactical breadth + Rift Burrower batch
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -757,3 +757,19 @@ Static audit after 0.28.0:
 - Legendary Cave Dweller weight 8 is funded by reducing generic fragment weight by 4 and repeated Bogre weight by 4. Tier totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
 - BP/RP version is 0.34.0 and @minecraft/server remains 2.9.0.
 - Stable Bedrock import/render, eye-layer appearance, chargeable Gallery Slug input feel, multiplayer simultaneous gallery shooting, Cave Dweller gaze/chase behavior and balance still require P8 real runtime QA.
+
+0.35.0 Tactical breadth + Rift Burrower batch:
+- Added three materially distinct Loy's Goodies CC0 portable rewards with complete production source models/textures:
+  - `lb:lucky_guitar`: 9-element Guitar, reusable Common non-combat Encore support;
+  - `lb:smoke_grenade`: 9-element Smoke Grenade, physical thrown Rare utility + persisted smoke concealment/control zone;
+  - `lb:flashbang`: 18-element Flash Bang, physical thrown Epic crowd-control tool with PvP-safe player handling.
+- Held/thrown Flashbang and Smoke geometry are regenerated directly from the source element/rotation/UV data; Guitar likewise preserves all 9 source elements. All three embedded PNGs are exact source decodes.
+- Smoke uses the documented vanilla `minecraft:basic_smoke_particle`; no temporary smoke art was created.
+- Added `lb:rift_burrower_ant` from the separate Slayers-Beasts AntWorker chain: 12-cube Worker model, six-bone 3-second WALK, baked 1.2 renderer scale, exact Meadow Worker texture.
+- Upstream Worker is 5 HP / 0.22 movement; Lucky's Dragon-gated adaptation is 300 HP with a restart-safe phase/burrow cooldown, temporary invisibility, relocation and emergence slow/damage pressure.
+- Legendary Burrower weight 6 is funded by -2 generic Legendary fragments and -4 repeated Epic Lucky Block weight; Legendary total remains 122.
+- Rift Reliquary final encounter now uses Charger + Burrower + Spitter + Wudu + Tyrachnid instead of two Chargers.
+- Cave Dweller chase gains partial source-parity vertical pressure using the already-vendored crawl animation + stable applyImpulse. Full Java wall-climb/door-breaking parity is still not claimed.
+- Reward totals remain Common 96 / Rare 100 / Epic 100 / Legendary 122 / Mythic 100.
+- BP/RP version is 0.35.0; @minecraft/server remains 2.9.0.
+- Stable Bedrock import/render, grenade held alignment/physics/fuse feel, smoke-zone multiplayer interaction, Guitar spam/cooldown feel, Burrower teleport/pathing and Cave Dweller vertical pursuit still require real P8 runtime QA.

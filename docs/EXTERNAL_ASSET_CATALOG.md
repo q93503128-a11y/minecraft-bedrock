@@ -777,3 +777,23 @@ Source/Lucky boundary:
 - Source behavior identity reviewed from CaveDwellerEntity + Stare/Chase/Flee goals.
 - Lucky role is deliberately not another ranged or charge enemy: post-dragon underground stalker that changes state based on player gaze, then commits to chase or flee.
 - Direct Legendary encounter weight 8 is funded by reducing generic Legendary fragments and repeated Bogre weight; the Legendary pool remains exactly 122.
+
+## 0.35.0 Tactical / Burrower breadth batch
+
+### Three new materially different portable outcomes
+- **Lucky Guitar** — Common weird/non-combat support result. 9-element CC0 Guitar model; reusable Encore buffs nearby players with regeneration/speed on a cooldown.
+- **Smoke Grenade** — Rare tactical utility. 9-element CC0 model exists both in hand and as a physical thrown entity. Detonation creates a world-persisted smoke zone; players inside gain short refreshed invisibility while nearby non-player entities receive blindness/slowness.
+- **Flashbang** — Epic tactical control. 18-element CC0 model exists both in hand and as a physical thrown entity. Timed detonation controls nearby entities; other players are affected only when PvP is enabled, preventing normal cooperative-world grief.
+- The three outcomes are funded from generic/repeated slices rather than increasing tier totals.
+
+### Rift Burrower Ant
+- Separate Slayers-Beasts AntWorker source, not an AntSoldier recolor.
+- Source model: 12 cubes; WALK drives six leg bones; renderer scale 1.2 is baked into Bedrock geometry; exact Meadow Worker texture is retained.
+- Post-dragon phase role: normal melee pressure is interrupted by telegraphed smoke/burrow, temporary invisibility, relocation near the player and a short emergence slow/damage zone.
+- Natural spawn remains Dragon-gated and capped at two within 72 blocks.
+- Legendary direct result weight 6 is funded by reducing generic Legendary fragments and repeated Epic Lucky Block weight.
+- Rift Reliquary final role mix is now Charger + Burrower + Spitter + Wudu + Tyrachnid.
+
+### Cave Dweller parity step
+- During chase, a player 1.4–6.5 blocks above and within 7.5 horizontal blocks triggers the already-vendored source crawl animation and a small upward/toward-target impulse.
+- This is deliberately described as partial vertical-pursuit parity, not a full Java wall-climb or door-breaking reproduction.

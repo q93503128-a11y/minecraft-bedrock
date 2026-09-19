@@ -1503,6 +1503,85 @@
       "contentId": "lb:cave_dweller",
       "integrationModule": "BP/scripts/integrations/cave_dweller.js",
       "modification": "MIT visual/audio chain port. Source geometry is 18 bones / 83 cubes and differs only by geometry identifier; all 13 source animation tracks are preserved with namespace-only key remaps. Body/eyes PNG and seven selected OGG files are byte-identical. Source Java defaults are 60 HP, 6 attack, 0.3 movement and 100 follow range, with stare/chase/flee plus crawling/climbing/door interaction. Lucky-owned adaptation is a post-dragon 340 HP / 20 chase-damage underground stalker using stable Bedrock Script API gaze detection and shared stalk/spotted/chase/flee phases. Full source wall-climb/crawl/door-breaking behavior is not claimed implemented."
+    },
+    {
+      "key": "loys_flashbang",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/firearms/230425_flash_bang_0.bbmodel"
+      ],
+      "targets": [
+        "BP/items/flashbang.json",
+        "BP/entities/flashbang_projectile.json",
+        "BP/scripts/integrations/loys_tactical_tools.js",
+        "RP/attachables/flashbang.attachable.json",
+        "RP/entity/flashbang_projectile.entity.json",
+        "RP/models/entity/flashbang_held.geo.json",
+        "RP/models/entity/flashbang.geo.json",
+        "RP/textures/items/flashbang.png"
+      ],
+      "contentId": "lb:flashbang",
+      "integrationModule": "BP/scripts/integrations/loys_tactical_tools.js",
+      "modification": "CC0 Flash Bang source has 18 elements and one embedded 16x16 production texture. Held and thrown Bedrock geometry preserve all 18 source elements, rotations and per-face UVs; the embedded PNG is decoded exactly. Lucky behavior is a throwable timed flash/control tool with multiplayer PvP safeguards."
+    },
+    {
+      "key": "loys_smoke_grenade",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/firearms/230425_smoke_grenade_0.bbmodel"
+      ],
+      "targets": [
+        "BP/items/smoke_grenade.json",
+        "BP/entities/smoke_grenade_projectile.json",
+        "BP/scripts/integrations/loys_tactical_tools.js",
+        "RP/attachables/smoke_grenade.attachable.json",
+        "RP/entity/smoke_grenade_projectile.entity.json",
+        "RP/models/entity/smoke_grenade_held.geo.json",
+        "RP/models/entity/smoke_grenade.geo.json",
+        "RP/textures/items/smoke_grenade.png"
+      ],
+      "contentId": "lb:smoke_grenade",
+      "integrationModule": "BP/scripts/integrations/loys_tactical_tools.js",
+      "modification": "CC0 Smoke Grenade source has 9 elements and one embedded 16x16 production texture. Held/thrown geometry preserves all 9 source elements and UVs; texture is decoded exactly. Lucky behavior creates a persisted smoke zone using stable vanilla minecraft:basic_smoke_particle, giving players concealment while blinding/slowing nearby non-player entities."
+    },
+    {
+      "key": "loys_lucky_guitar",
+      "source": "loys_goodies",
+      "upstream": [
+        "models/java-model/tools & weapons/instruments/220913_guitar.bbmodel"
+      ],
+      "targets": [
+        "BP/items/lucky_guitar.json",
+        "BP/scripts/integrations/loys_tactical_tools.js",
+        "RP/attachables/lucky_guitar.attachable.json",
+        "RP/models/entity/lucky_guitar_held.geo.json",
+        "RP/textures/items/lucky_guitar.png"
+      ],
+      "contentId": "lb:lucky_guitar",
+      "integrationModule": "BP/scripts/integrations/loys_tactical_tools.js",
+      "modification": "CC0 Guitar source has 9 elements and one embedded 32x32 production texture. All 9 elements, rotations and UVs are directly converted. Lucky-owned role is a reusable non-combat party support instrument with a cooldown-based Encore."
+    },
+    {
+      "key": "slayers_beasts_rift_burrower_ant",
+      "source": "slayers_beasts",
+      "upstream": [
+        "common/src/main/java/net/invictusslayer/slayersbeasts/world/entity/AntWorker.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/model/AntWorkerModel.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/animation/AntWorkerAnimation.java",
+        "common/src/main/java/net/invictusslayer/slayersbeasts/client/renderer/AntWorkerRenderer.java",
+        "common/src/main/resources/assets/slayersbeasts/textures/entity/ant/meadow_worker.png"
+      ],
+      "targets": [
+        "BP/entities/rift_burrower_ant.json",
+        "BP/scripts/integrations/slayers_beasts_rift_burrower.js",
+        "RP/entity/rift_burrower_ant.entity.json",
+        "RP/models/entity/rift_burrower_ant.geo.json",
+        "RP/animations/rift_burrower_ant.animation.json",
+        "RP/textures/entity/rift_burrower_ant.png"
+      ],
+      "contentId": "lb:rift_burrower_ant",
+      "integrationModule": "BP/scripts/integrations/slayers_beasts_rift_burrower.js",
+      "modification": "Uses the separate AntWorker model rather than shared AntSoldier geometry. Source worker is 5 HP / 0.22 movement with a 12-cube model, six-bone WALK animation and renderer scale 1.2; meadow_worker.png is vendored byte-identically. Lucky-owned post-dragon role is a 300 HP phase/burrow ambusher with restart-safe countdowns, temporary invisibility, relocation, slow-zone emergence, sparse gated spawning and Reliquary role integration. Optional upstream cargo layer is not claimed active."
     }
   ]
 }

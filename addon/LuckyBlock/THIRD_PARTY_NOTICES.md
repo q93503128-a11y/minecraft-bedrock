@@ -376,3 +376,20 @@ Each selected model had a directly embedded PNG texture in its Blockbench source
 - Lucky-owned adaptation: post-dragon 340 HP underground stalker. It approaches harmlessly while unwatched, freezes when directly watched, accumulates stare confrontations, then chooses a 20-damage chase or flee/disappear response. Sparse underground natural spawning and Legendary Lucky direct encounters are gated behind the first Ender Dragon kill.
 - Bedrock does **not** claim a full recreation of the source wall-climb/crawl/door-breaking code in this milestone. The preserved crawl animations remain in the resource chain for future parity work.
 - The source eye texture is rendered as a second ordinary alpha-test layer, matching the source renderer's separate eye layer without inventing an emissive glow.
+
+### Loy's Goodies Tactical / Guitar suite — 0.35.0
+- Source: `SL0ANE/Loy-s-Goodies@afbb7695b09de0ed8ee3aa97732ff7c3d367520c`, CC0-1.0.
+- Flashbang: `230425_flash_bang_0.bbmodel`, 18 source elements, one embedded 16×16 production texture; held and thrown geometry preserve all 18 elements and UVs.
+- Smoke Grenade: `230425_smoke_grenade_0.bbmodel`, 9 source elements, one embedded 16×16 production texture; held and thrown geometry preserve all 9 elements and UVs.
+- Lucky Guitar: `220913_guitar.bbmodel`, 9 source elements, one embedded 32×32 production texture; all 9 elements and source UVs are preserved in the attachable.
+- Lucky-owned gameplay: Flashbang is a timed visual/control throwable; Smoke Grenade creates a persisted concealment/control cloud using the documented vanilla `minecraft:basic_smoke_particle`; Lucky Guitar is a non-combat party-support Encore with a per-player cooldown.
+- These mechanics are not claimed as upstream Loy's Goodies gameplay; Loy's Goodies supplies the production visual assets.
+
+### Slayers-Beasts Rift Burrower Ant — 0.35.0
+- Source: `InvictusSlayer/Slayers-Beasts@ffc1f6480a60598797c63150c0d0fe66b65697ff`, MIT.
+- Uses the **separate AntWorker source chain**, not the already-used AntSoldier silhouette.
+- Upstream Worker attributes: 5 HP / 0.22 movement. Source visual chain is 12 cubes, six animated leg bones, 3-second looping WALK, renderer scale 1.2, and exact `meadow_worker.png`.
+- Optional upstream AntCargoLayer is not used or falsely claimed; Lucky's Burrower appears as an empty-cargo Worker.
+- Lucky-owned adaptation: post-dragon 300 HP phase/teleport ambusher, restart-safe burrow cooldown, short invisibility/relocation, emergence slow/damage zone, gated natural spawning and Legendary direct encounter.
+- Rift Reliquary final composition now replaces the second Charger with Burrower, giving charge + phase + ranged + support/control + elite roles.
+- Cave Dweller also gains partial source-parity vertical pursuit: the preserved source `crawl` animation is played while stable `applyImpulse` provides short climb pressure. Door-breaking/full source climbing is still not claimed.

@@ -156,3 +156,12 @@ A source's top-level license does not override restrictions attached to embedded
 - Cave Dweller PNG/OGG binaries are byte-identical. Geometry/animation JSON changes are identifier/namespace remaps only.
 - Java source logic is not copied as Bedrock JavaScript. Lucky's gaze state machine, progression balance, spawn policy and rewards are Bedrock-side adaptations informed by documented source behavior.
 - No placeholder, inferred texture substitution or unverified binary is introduced in this batch.
+
+## 0.35.0 reuse / license note
+- No new license family or external repository is introduced.
+- Flashbang, Smoke Grenade and Guitar reuse the already-cleared Loy's Goodies CC0-1.0 source pinned at `afbb7695b09de0ed8ee3aa97732ff7c3d367520c`.
+- Rift Burrower uses the already-cleared Slayers-Beasts MIT source pinned at `ffc1f6480a60598797c63150c0d0fe66b65697ff`.
+- Flashbang/Smoke/Guitar embedded PNGs are decoded directly and their target cube/UV lists are regenerated from the pinned source models without substitute art.
+- `meadow_worker.png` is vendored byte-identically. AntWorker Java model/animation/renderer data are ported into Bedrock geometry/animation data; Java gameplay code is not copied as Bedrock runtime code.
+- Vanilla `minecraft:basic_smoke_particle` is used for smoke presentation; no project-drawn temporary smoke texture is introduced.
+- No placeholder, temp, dummy or inferred third-party asset enters this milestone.
