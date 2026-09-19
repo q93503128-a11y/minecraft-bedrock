@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "lb:smoke_grenade",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/items/smoke_grenade"
+      },
+      "geometry": {
+        "default": "geometry.lb.smoke_grenade_held"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}

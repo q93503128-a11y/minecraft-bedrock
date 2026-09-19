@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "lb:lucky_guitar",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/items/lucky_guitar"
+      },
+      "geometry": {
+        "default": "geometry.lb.lucky_guitar_held"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}

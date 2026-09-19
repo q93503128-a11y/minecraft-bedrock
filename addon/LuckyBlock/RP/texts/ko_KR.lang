@@ -84,3 +84,6 @@ entity.lb:rift_spitter_ant.name=균열 포격 개미
 entity.lb:rift_charger_ant.name=균열 돌진 개미
 item.lb:gallery_slug.name=포춘 갤러리 탄환
 entity.lb:cave_dweller.name=동굴 배회자
+item.lb:flashbang.name=섬광탄
+item.lb:smoke_grenade.name=연막탄
+item.lb:lucky_guitar.name=럭키 기타

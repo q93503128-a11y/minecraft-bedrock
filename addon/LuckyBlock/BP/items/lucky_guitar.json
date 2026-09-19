@@ -1,0 +1,30 @@
+{
+  "format_version": "1.21.50",
+  "minecraft:item": {
+    "description": {
+      "identifier": "lb:lucky_guitar",
+      "menu_category": {
+        "category": "items",
+        "is_hidden_in_commands": false
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "lucky_guitar"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "item.lb:lucky_guitar.name"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:rarity": "common",
+      "minecraft:hand_equipped": true,
+      "minecraft:allow_off_hand": false,
+      "minecraft:use_modifiers": {
+        "movement_modifier": 1,
+        "use_duration": 72000
+      }
+    }
+  }
+}

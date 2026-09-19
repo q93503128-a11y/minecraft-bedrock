@@ -1,6 +1,7 @@
 export const weightedPools = {
   common: [
-    { weight: 28, kind: "fragments", id: "lb:common_fragment", min: 2, max: 5, source: "core" },
+    { weight: 24, kind: "fragments", id: "lb:common_fragment", min: 2, max: 5, source: "core" },
+    { weight: 4, kind: "item", id: "lb:lucky_guitar", source: "loys_goodies" },
     { weight: 8, kind: "item", id: "lb:reward_burger", source: "loys_goodies" },
     { weight: 8, kind: "item", id: "lb:reward_noodles", source: "loys_goodies" },
     { weight: 7, kind: "item", id: "lb:reward_plunger", source: "loys_goodies" },
@@ -15,13 +16,14 @@ export const weightedPools = {
     { weight: 5, kind: "fragments", id: "lb:rare_fragment", min: 1, max: 1, source: "core" }
   ],
   rare: [
-    { weight: 4, kind: "fragments", id: "lb:rare_fragment", min: 2, max: 4, source: "core" },
+    { weight: 2, kind: "fragments", id: "lb:rare_fragment", min: 2, max: 4, source: "core" },
+    { weight: 4, kind: "item", id: "lb:smoke_grenade", count: 2, source: "loys_goodies" },
     { weight: 4, kind: "item", id: "lb:reward_vending_machine", source: "loys_goodies" },
     { weight: 4, kind: "item", id: "lb:reward_pc", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_cctv", source: "loys_goodies" },
     { weight: 6, kind: "item", id: "lb:reward_wrench", source: "loys_goodies" },
     { weight: 6, kind: "item", id: "lb:reward_easel", source: "loys_goodies" },
-    { weight: 5, kind: "item", id: "lb:reward_backpack", source: "loys_goodies" },
+    { weight: 3, kind: "item", id: "lb:reward_backpack", source: "loys_goodies" },
     { weight: 5, kind: "item", id: "lb:reward_golden_hammer", source: "loys_goodies" },
     { weight: 6, kind: "item", id: "lb:reward_cardboard_shield", source: "frenchkrab" },
     { weight: 6, kind: "item", id: "lb:reward_turret", source: "loys_goodies" },
@@ -50,10 +52,11 @@ export const weightedPools = {
     { weight: 5, kind: "event", id: "butterfly_sanctuary", source: "core+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 8, kind: "event", id: "void_garden", source: "core+bosses_of_mass_destruction", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 6, kind: "item", id: "lb:spike_drill", source: "inhabitants" },
-    { weight: 7, kind: "entity", id: "lb:war_ant_mount", nameTag: "War Ant Mount", source: "slayers_beasts", tameToOpener: true, tameEvent: "lb:on_tame" },
+    { weight: 5, kind: "entity", id: "lb:war_ant_mount", nameTag: "War Ant Mount", source: "slayers_beasts", tameToOpener: true, tameEvent: "lb:on_tame" },
+    { weight: 4, kind: "item", id: "lb:flashbang", count: 2, source: "loys_goodies" },
     { weight: 7, kind: "bundle", id: "amethyst_repeater_kit", source: "tomemancy", items: [{ id: "lb:amethyst_repeater", count: 1 }, { id: "lb:amethyst_charge", count: 48 }] },
     { weight: 6, kind: "bundle", id: "storm_longbow_kit", source: "loys_goodies", items: [{ id: "lb:storm_longbow", count: 1 }, { id: "minecraft:arrow", count: 32 }] },
-    { weight: 6, kind: "bundle", id: "explorer_field_kit", source: "loys_goodies", items: [{ id: "lb:explorer_hat", count: 1 }, { id: "lb:explorer_pack", count: 1 }, { id: "minecraft:compass", count: 1 }] },
+    { weight: 4, kind: "bundle", id: "explorer_field_kit", source: "loys_goodies", items: [{ id: "lb:explorer_hat", count: 1 }, { id: "lb:explorer_pack", count: 1 }, { id: "minecraft:compass", count: 1 }] },
     { weight: 7, kind: "entity", id: "lb:wither_spider", nameTag: "Wither Spider Artillery", source: "slayers_beasts" },
     {
       weight: 6,

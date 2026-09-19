@@ -84,3 +84,6 @@ entity.lb:rift_spitter_ant.name=Rift Spitter Ant
 entity.lb:rift_charger_ant.name=Rift Charger Ant
 item.lb:gallery_slug.name=Gallery Slug
 entity.lb:cave_dweller.name=Cave Dweller
+item.lb:flashbang.name=Flashbang
+item.lb:smoke_grenade.name=Smoke Grenade
+item.lb:lucky_guitar.name=Lucky Guitar

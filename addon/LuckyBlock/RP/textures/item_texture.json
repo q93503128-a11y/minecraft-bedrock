@@ -58,6 +58,15 @@
     },
     "gallery_slug": {
       "textures": "textures/items/gallery_slug"
+    },
+    "flashbang": {
+      "textures": "textures/items/flashbang"
+    },
+    "smoke_grenade": {
+      "textures": "textures/items/smoke_grenade"
+    },
+    "lucky_guitar": {
+      "textures": "textures/items/lucky_guitar"
     }
   }
 }

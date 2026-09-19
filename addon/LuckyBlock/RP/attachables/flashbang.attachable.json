@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "lb:flashbang",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/items/flashbang"
+      },
+      "geometry": {
+        "default": "geometry.lb.flashbang_held"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}
