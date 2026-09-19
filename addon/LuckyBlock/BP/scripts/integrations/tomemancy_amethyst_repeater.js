@@ -22,12 +22,18 @@ function canDamage(source,entity){
   return true;
 }
 function inventory(player){try{return player.getComponent("minecraft:inventory")?.container;}catch{return undefined;}}
-function hasAmmo(player){
-  try{if(player.getGameMode()===mc.GameMode.Creative)return true;}catch{}
-  const inv=inventory(player);if(!inv)return false;
-  for(let i=0;i<inv.size;i++)if(inv.getItem(i)?.typeId===AMMO)return true;
-  return false;
+function ammoCount(player){
+  try{if(player.getGameMode()===mc.GameMode.Creative)return SHOTS;}catch{}
+  const inv=inventory(player);if(!inv)return 0;
+  let count=0;
+  for(let i=0;i<inv.size;i++){
+    const item=inv.getItem(i);
+    if(item?.typeId===AMMO)count+=item.amount;
+    if(count>=SHOTS)return count;
+  }
+  return count;
 }
+function hasAmmo(player){return ammoCount(player)>=SHOTS;}
 function consumeAmmo(player){
   try{if(player.getGameMode()===mc.GameMode.Creative)return true;}catch{}
   const inv=inventory(player);if(!inv)return false;
@@ -94,7 +100,7 @@ mc.world.afterEvents.itemStartUse.subscribe(event=>{
   const player=event.source;if(!(player instanceof mc.Player))return;
   const next=readyAt.get(player.id)??0;
   if(tick<next){actionbar(player,"§5Amethyst Repeater §8— §d"+((next-tick)/20).toFixed(1)+"s");return;}
-  if(!hasAmmo(player)){actionbar(player,"§5Amethyst Repeater §8— §cCraft Amethyst Charges");return;}
+  if(!hasAmmo(player)){actionbar(player,"§5Amethyst Repeater §8— §cNeed 3 Amethyst Charges");return;}
   readyAt.set(player.id,tick+COOLDOWN);
   const state={fired:false};
   for(let i=0;i<SHOTS;i++)mc.system.runTimeout(()=>{if(fireShot(player,i))state.fired=true;},i*SHOT_SPACING);
