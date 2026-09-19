@@ -140,7 +140,7 @@ function tickBogre(bogre) {
 }
 
 system.runInterval(() => {
-  encounterTick += 5;
+  encounterTick = world.getAbsoluteTime();
   for (const dimensionId of ["overworld","nether","the_end"]) {
     const dimension=world.getDimension(dimensionId);
     for (const bogre of dimension.getEntities({type:"lb:bogre"})) {
