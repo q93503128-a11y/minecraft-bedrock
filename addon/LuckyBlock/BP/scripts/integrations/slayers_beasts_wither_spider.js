@@ -52,7 +52,7 @@ function telegraphVolley(spider,target){
   },16);
 }
 function runCombat(){
-  combatTick+=STEP;
+  combatTick=mc.world.getAbsoluteTime();
   for(const dimensionId of ["overworld","nether","the_end"]){
     const dimension=mc.world.getDimension(dimensionId);
     for(const spider of dimension.getEntities({type:"lb:wither_spider"})){
