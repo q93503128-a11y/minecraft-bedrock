@@ -123,10 +123,10 @@ function isMatureEnough(id, permutation) {
   const age = states.age;
 
   if (id === "minecraft:wheat" || id === "minecraft:carrots" || id === "minecraft:potatoes" || id === "minecraft:beetroot") {
-    return typeof growth !== "number" || growth >= 7;
+    return typeof growth === "number" && growth >= 7;
   }
-  if (id === "minecraft:nether_wart") return typeof age !== "number" || age >= 3;
-  if (id === "minecraft:cocoa") return typeof age !== "number" || age >= 2;
+  if (id === "minecraft:nether_wart") return typeof age === "number" && age >= 3;
+  if (id === "minecraft:cocoa") return typeof age === "number" && age >= 2;
   return true;
 }
 
