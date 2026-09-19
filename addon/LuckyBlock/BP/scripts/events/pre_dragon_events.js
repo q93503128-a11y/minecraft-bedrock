@@ -1220,7 +1220,9 @@ function tickFortuneMinefield(state,dimension){
       still.push(i);
     }
     state.activeBombs=still;
-    if((state.elapsed??0)>=(state.detonateAt??Infinity)){
+    if(still.length===0&&(state.elapsed??0)<(state.detonateAt??Infinity)){
+      state.nextWaveAt=state.elapsed+35;
+    }else if((state.elapsed??0)>=(state.detonateAt??Infinity)){
       for(const i of still)detonateMinefieldBomb(state,dimension,i);
       state.activeBombs=[];state.nextWaveAt=state.elapsed+35;
     }
