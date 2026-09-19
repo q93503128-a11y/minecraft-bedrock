@@ -319,6 +319,16 @@ for(const kind of ["fragment","lucky_block"]){
   }
   assert(signatures.size===coreTiers.length,`core ${kind} silhouettes must be structurally distinct across all five tiers`);
 }
+const animationControllerIds=new Set();
+for(const p of walk(path.join(rpRoot,"animation_controllers")).filter(p=>p.endsWith(".json"))){
+  const j=readJson(p);if(!j)continue;
+  for(const k of Object.keys(j.animation_controllers??{}))animationControllerIds.add(k);
+}
+const renderControllerIds=new Set();
+for(const p of walk(path.join(rpRoot,"render_controllers")).filter(p=>p.endsWith(".json"))){
+  const j=readJson(p);if(!j)continue;
+  for(const k of Object.keys(j.render_controllers??{}))renderControllerIds.add(k);
+}
 const animationIds=new Set();
 for(const p of walk(path.join(rpRoot,"animations")).filter(p=>p.endsWith(".json"))){
   const j=readJson(p);if(!j)continue;
@@ -329,8 +339,19 @@ const vanillaTextureRefs=new Set(["textures/misc/enchanted_item_glint"]);
 function checkClientDescription(p,j){
   const d=j?.["minecraft:client_entity"]?.description??j?.["minecraft:attachable"]?.description;
   if(!d)return;
-  for(const g of Object.values(d.geometry??{}))if(typeof g==="string"&&g.startsWith("geometry.lb."))assert(geometryIds.has(g),`${rel(p)} missing geometry ${g}`);
-  for(const a of Object.values(d.animations??{}))if(typeof a==="string"&&a.startsWith("animation.lb."))assert(animationIds.has(a),`${rel(p)} missing animation ${a}`);
+  for(const g of Object.values(d.geometry??{})){
+    if(typeof g!=="string")continue;
+    if(g.startsWith("geometry.lb.")||g.startsWith("geometry.slasher"))assert(geometryIds.has(g),`${rel(p)} missing custom geometry ${g}`);
+  }
+  for(const a of Object.values(d.animations??{})){
+    if(typeof a!=="string")continue;
+    if(a.startsWith("animation.lb.")||a.startsWith("animation.slasher"))assert(animationIds.has(a),`${rel(p)} missing custom animation ${a}`);
+    if(a.startsWith("controller.animation.lb.")||a.startsWith("controller.animation.slasher"))assert(animationControllerIds.has(a),`${rel(p)} missing animation controller ${a}`);
+  }
+  for(const rc of d.render_controllers??[]){
+    const id=typeof rc==="string"?rc:Object.keys(rc??{})[0];
+    if(typeof id==="string"&&id.startsWith("controller.render.slasher"))assert(renderControllerIds.has(id),`${rel(p)} missing render controller ${id}`);
+  }
   for(const t of Object.values(d.textures??{}))if(typeof t==="string"&&t.startsWith("textures/")&&!vanillaTextureRefs.has(t))assert(existsAsset(t),`${rel(p)} missing texture ${t}`);
 }
 for(const dir of ["entity","attachables"]){
@@ -393,4 +414,4 @@ if(errors.length){
   for(const e of errors)console.error("ERROR",e);
   process.exit(1);
 }
-console.log(`Lucky Block preflight OK — ${all.length} BP/RP files checked, ${geometryIds.size} geometry IDs, ${animationIds.size} animation IDs`);
+console.log(`Lucky Block preflight OK — ${all.length} BP/RP files checked, ${geometryIds.size} geometry IDs, ${animationIds.size} animation IDs, ${animationControllerIds.size} animation controllers`);
