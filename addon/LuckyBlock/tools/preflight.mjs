@@ -36,6 +36,29 @@ function sumBetween(s,a,b){
 }
 
 const all=[...walk(bpRoot),...walk(rpRoot)];
+const itemDefs=new Map();
+for(const p of walk(path.join(bpRoot,"items")).filter(p=>p.endsWith(".json"))){
+  const j=readJson(p),def=j?.["minecraft:item"];if(def?.description?.identifier)itemDefs.set(def.description.identifier,{p,j:def});
+}
+const blockDefs=new Map();
+for(const p of walk(path.join(bpRoot,"blocks")).filter(p=>p.endsWith(".json"))){
+  const j=readJson(p),def=j?.["minecraft:block"];if(def?.description?.identifier)blockDefs.set(def.description.identifier,{p,j:def});
+}
+const coreTiers=["common","rare","epic","legendary","mythic"];
+const coreItemIds=coreTiers.flatMap(t=>[`lb:${t}_fragment`,`lb:${t}_lucky_block`]);
+const placedLuckyIds=coreTiers.map(t=>`lb:${t}_lucky_block_placed`);
+for(const id of coreItemIds)assert(itemDefs.has(id),`missing explicit core item ${id}`);
+for(const id of placedLuckyIds)assert(blockDefs.has(id),`missing placed Lucky Block ${id}`);
+for(const id of coreItemIds)assert(!blockDefs.has(id),`core item collides with block identifier ${id}`);
+const itemAtlasPath=path.join(rpRoot,"textures","item_texture.json");
+const itemAtlas=readJson(itemAtlasPath)?.texture_data??{};
+for(const [id,{p,j}] of itemDefs){
+  const placer=j.components?.["minecraft:block_placer"]?.block;
+  if(placer)assert(blockDefs.has(placer),`${rel(p)} block_placer target missing: ${placer}`);
+  const icon=j.components?.["minecraft:icon"]?.textures?.default;
+  if(icon)assert(Boolean(itemAtlas[icon]),`${rel(p)} item icon key missing from item_texture.json: ${icon}`);
+}
+
 for(const p of all.filter(p=>p.endsWith(".json")))readJson(p);
 for(const p of all.filter(p=>/\.(m?js)$/.test(p))){
   const r=spawnSync(process.execPath,["--check",p],{encoding:"utf8"});
@@ -85,6 +108,20 @@ if(registry){
 
 for(const p of walk(path.join(rpRoot,"textures"))){
   if(/(placeholder|dummy|temp|test)/i.test(path.basename(p)))errors.push(`placeholder-like production texture path: ${rel(p)}`);
+}
+
+for(const p of walk(path.join(bpRoot,"recipes")).filter(p=>p.endsWith(".json"))){
+  const j=readJson(p),r=j?.["minecraft:recipe_shapeless"]??j?.["minecraft:recipe_shaped"];
+  if(!r)continue;
+  const refs=[];
+  if(Array.isArray(r.ingredients))for(const x of r.ingredients)if(typeof x?.item==="string")refs.push(x.item);
+  if(r.key)for(const x of Object.values(r.key))if(typeof x?.item==="string")refs.push(x.item);
+  const results=Array.isArray(r.result)?r.result:[r.result];
+  for(const x of results)if(typeof x?.item==="string")refs.push(x.item);
+  for(const id of refs.filter(x=>x.startsWith("lb:")))assert(itemDefs.has(id)||blockDefs.has(id),`${rel(p)} unresolved lb item/block reference: ${id}`);
+  if(/(lucky_block_from_fragments|fuse_.*_lucky_block)\.json$/.test(p)){
+    assert(Array.isArray(r.unlock)&&r.unlock.some(x=>x?.context==="AlwaysUnlocked"),`${rel(p)} must be AlwaysUnlocked in recipe book`);
+  }
 }
 
 const rewardPath=path.join(bpRoot,"scripts","reward_registry.js");

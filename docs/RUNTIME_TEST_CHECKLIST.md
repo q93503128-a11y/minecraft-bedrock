@@ -1,6 +1,6 @@
 # Lucky Block Bedrock Runtime Test Checklist
 
-Target: 0.37.0 test candidate
+Target: 0.38.0 Core Loop Recovery test candidate
 
 This checklist begins only after `tools/preflight.mjs` passes and `LuckyBlock_0.37.0_TEST.mcaddon` is produced. Static success is not a gameplay-pass claim.
 
@@ -11,6 +11,14 @@ This checklist begins only after `tools/preflight.mjs` passes and `LuckyBlock_0.
 - Re-open the world after saving once.
 - Content Log: zero pack JSON/script/model/texture/sound errors.
 - No missing/purple-black textures, invisible production entities or broken held-item models.
+
+## Core visibility / recipe gate
+- In Creative **All Items**, searching "럭키" (or "Lucky") must show all 5 Lucky Fragments and all 5 Lucky Blocks as explicit inventory items.
+- `/give @s lb:common_fragment` and `/give @s lb:common_lucky_block` must both resolve.
+- Placing each Lucky Block inventory item must create the corresponding tier block and interacting with it must consume/open that placed block.
+- The recipe book must show all 5 six-fragment crafting recipes and all 4 upward-fusion recipes without requiring a hidden discovery trigger.
+- Survival sanity: 12 common ores without a random common-fragment hit must still produce one by pity; 20 eligible hostile kills likewise must not remain completely dry.
+- Verify fragments are inventory currency items, not placeable public blocks.
 
 ## Core progression smoke test
 - Obtain/open Common, Rare, Epic, Legendary and Mythic Lucky Blocks.

@@ -1,6 +1,6 @@
 # Lucky Block Completion Audit — 2026-09-19
 
-Baseline reviewed through the 0.37.0 P8 test-candidate preparation milestone.
+Baseline reviewed through the 0.38.0 Core Loop Recovery test-candidate milestone.
 
 ## Phase assessment
 
@@ -8,13 +8,13 @@ Baseline reviewed through the 0.37.0 P8 test-candidate preparation milestone.
 |---|---:|---|
 | P0 Canon/legal inventory | 100% | Source/license registry and bundled licenses are release-preflight inputs. |
 | P1 Real visual foundation | 92% | Production assets are in place; remaining uncertainty is real Bedrock rendering/alignment. |
-| P2 Acquisition/opening core | 97% | Core/fusion/reward pools are static-gated and ready for runtime smoke testing. |
+| P2 Acquisition/opening core | 98% | First real Bedrock test exposed core-item discoverability; 0.38 replaces auto block-items with explicit fragment/Lucky items, explicit placers, recipe-book unlocks and bounded acquisition pity. Fresh runtime retest remains required. |
 | P3 Reward library | 98% | Category coverage is broad enough to stop feature expansion for the first serious test pass. |
 | P4 Pre-dragon encounters | 97% | Runtime progression/softlock/balance validation is now the limiting factor. |
 | P5 Ender Dragon gate | 96% | Implemented; save/reload and multiplayer persistence now need real Bedrock verification. |
 | P6 Late game | 98% | Role breadth is sufficient for test; rendering/pathing/timing/balance remain runtime questions. |
 | P7 Mythic outcomes | 96% | Multiple boss/event/dungeon packages exist; persistence and concurrency need runtime validation. |
-| P8 Packaging/release QA | 35% | Reproducible preflight + .mcaddon test packaging + explicit runtime checklist now exist; real Bedrock import/content-log/play/multiplayer pass is still pending. |
+| P8 Packaging/release QA | 42% | Real gameplay testing has begun and already exposed/fixed central progression discoverability plus earlier sound binding defects. 0.38 must now be re-imported and rechecked before broader combat/multiplayer QA. |
 
 ## Practical reading
 - Core systems / architecture: roughly **92%+**.

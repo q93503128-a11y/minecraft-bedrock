@@ -1,6 +1,6 @@
 # Lucky Block Add-On source status
 
-Milestone: 0.37.0 P8 test-candidate prep
+Milestone: 0.38.0 Core Loop Recovery test candidate
 
 Implemented:
 - Five Lucky Block tiers and five Lucky Fragment tiers with distinct real licensed visual assets.
@@ -809,3 +809,15 @@ Static audit after 0.28.0:
 - First GitHub runner preflight exposed two real Cave Dweller sound binding mismatches. The source-exact vendored files are cave_dweller_dweller_hurt_1.ogg and cave_dweller_dweller_death.ogg, while sound_definitions referenced non-existent shorter paths. Definitions now target the actual vendored files.
 - The same run also reported eight false-positive missing textures for textures/misc/enchanted_item_glint. That path is a Minecraft vanilla resource, so preflight now explicitly treats only that known built-in texture reference as external-to-pack.
 - Test-build workflow must rerun cleanly before the package is handed off for Bedrock import.
+
+0.38.0 Core Loop Recovery:
+- Real Bedrock testing showed the central progression objects were not discoverable: Lucky Fragments/Lucky Blocks were absent from creative search, their recipes were not shown in the recipe book, and a short survival test produced no visible fragment loop.
+- Root architecture fix: the ten public progression IDs are now explicit `minecraft:item` definitions instead of depending on auto-generated items from custom blocks.
+- `lb:{tier}_fragment` is now a real inventory item using the already-vendored production pylon/Lucky textures.
+- `lb:{tier}_lucky_block` is now a real inventory item with stable `minecraft:block_placer` that places internal `lb:{tier}_lucky_block_placed`; the placed block retains the existing external geometry/material and Lucky opening custom component.
+- Old fragment block definitions are retained only as hidden internal `*_fragment_display` visual definitions so they no longer collide with the public item IDs.
+- All nine Lucky crafting/fusion recipes are explicitly `AlwaysUnlocked` in the recipe book.
+- Common-fragment acquisition remains random but gains bounded per-player pity counters: rich ore ≤5 eligible breaks, common ore ≤12, logs ≤32, mature crops ≤24, bulk stone ≤256, hostile kills ≤20, fishing ≤4 treasure / ≤8 ordinary catches. Base common chances were also raised moderately.
+- Exploration-container common-fragment chance is 35%.
+- Preflight now asserts all ten explicit core items, all five placed Lucky blocks, block-placer targets, item icon atlas keys, lb recipe references and AlwaysUnlocked Lucky recipes.
+- BP/RP version is 0.38.0. This is a direct response to the first real gameplay test and requires a fresh import/retest before declaring the core loop fixed.

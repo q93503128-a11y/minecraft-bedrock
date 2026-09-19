@@ -53,6 +53,24 @@ function rollReward(dimension, location, chance, itemId, min = 1, max = min) {
   if (Math.random() < chance) spawnReward(dimension, location, itemId, min, max);
 }
 
+function rollRewardWithPity(player, dimension, location, chance, itemId, pityKey, threshold, min = 1, max = min) {
+  if (Math.random() < chance) {
+    spawnReward(dimension, location, itemId, min, max);
+    try { player.setDynamicProperty(pityKey, 0); } catch {}
+    return true;
+  }
+  let count = 0;
+  try { count = Number(player.getDynamicProperty(pityKey) ?? 0); } catch {}
+  count++;
+  if (count >= threshold) {
+    spawnReward(dimension, location, itemId, min, max);
+    try { player.setDynamicProperty(pityKey, 0); } catch {}
+    return true;
+  }
+  try { player.setDynamicProperty(pityKey, count); } catch {}
+  return false;
+}
+
 function isLog(id) {
   return id.endsWith("_log") || id.endsWith("_wood") || id.endsWith("_stem") || id.endsWith("_hyphae");
 }
@@ -84,30 +102,30 @@ world.afterEvents.playerBreakBlock.subscribe((event) => {
   const location = event.block.location;
 
   if (RICH_ORES.has(id)) {
-    rollReward(dimension, location, 0.070, "lb:common_fragment", 1, 2);
+    rollRewardWithPity(event.player, dimension, location, 0.120, "lb:common_fragment", "lb:pity_mining_common", 5, 1, 2);
     rollReward(dimension, location, 0.015, "lb:rare_fragment", 1, 1);
     rollReward(dimension, location, 0.0015, "lb:epic_fragment", 1, 1);
     return;
   }
 
   if (COMMON_ORES.has(id)) {
-    rollReward(dimension, location, 0.030, "lb:common_fragment", 1, 1);
+    rollRewardWithPity(event.player, dimension, location, 0.060, "lb:common_fragment", "lb:pity_mining_common", 12, 1, 1);
     rollReward(dimension, location, 0.0025, "lb:rare_fragment", 1, 1);
     return;
   }
 
   if (isLog(id)) {
-    rollReward(dimension, location, 0.008, "lb:common_fragment", 1, 1);
+    rollRewardWithPity(event.player, dimension, location, 0.020, "lb:common_fragment", "lb:pity_logging_common", 32, 1, 1);
     return;
   }
 
   if (FARM_BLOCKS.has(id) && isMatureEnough(id, event.brokenBlockPermutation)) {
-    rollReward(dimension, location, 0.012, "lb:common_fragment", 1, 1);
+    rollRewardWithPity(event.player, dimension, location, 0.030, "lb:common_fragment", "lb:pity_farming_common", 24, 1, 1);
     return;
   }
 
   if (isBulkStone(id)) {
-    rollReward(dimension, location, 0.0008, "lb:common_fragment", 1, 1);
+    rollRewardWithPity(event.player, dimension, location, 0.0015, "lb:common_fragment", "lb:pity_quarry_common", 256, 1, 1);
   }
 });
 
@@ -215,7 +233,7 @@ world.afterEvents.entityDie.subscribe((event) => {
   }
 
   if (HOSTILES.has(typeId)) {
-    rollReward(dimension, location, 0.025, "lb:common_fragment", 1, 1);
+    rollRewardWithPity(killer, dimension, location, 0.040, "lb:common_fragment", "lb:pity_combat_common", 20, 1, 1);
     rollReward(dimension, location, 0.0018, "lb:rare_fragment", 1, 1);
     if (postDragon) rollReward(dimension, location, 0.00025, "lb:epic_fragment", 1, 1);
   }
@@ -264,7 +282,7 @@ world.afterEvents.blockContainerOpened.subscribe((event) => {
   const postDragon = world.getDynamicProperty(POST_DRAGON_KEY) === true;
   const location = event.block.location;
 
-  rollReward(event.dimension, location, 0.22, "lb:common_fragment", 1, 2);
+  rollReward(event.dimension, location, 0.35, "lb:common_fragment", 1, 2);
   rollReward(event.dimension, location, 0.045, "lb:rare_fragment", 1, 1);
   rollReward(event.dimension, location, 0.006, "lb:epic_fragment", 1, 1);
 
@@ -294,14 +312,14 @@ subscribeFishingCatch(({ player, dimension, location, itemStack }) => {
   const treasure = FISHING_TREASURE.has(itemStack.typeId);
 
   if (treasure) {
-    rollReward(dimension, location, 0.25, "lb:common_fragment", 1, 2);
+    rollRewardWithPity(player, dimension, location, 0.35, "lb:common_fragment", "lb:pity_fishing_common", 4, 1, 2);
     rollReward(dimension, location, 0.050, "lb:rare_fragment", 1, 1);
     rollReward(dimension, location, 0.0080, "lb:epic_fragment", 1, 1);
     if (postDragon) rollReward(dimension, location, 0.0012, "lb:legendary_fragment", 1, 1);
     return;
   }
 
-  rollReward(dimension, location, 0.10, "lb:common_fragment", 1, 1);
+  rollRewardWithPity(player, dimension, location, 0.15, "lb:common_fragment", "lb:pity_fishing_common", 8, 1, 1);
   rollReward(dimension, location, 0.012, "lb:rare_fragment", 1, 1);
   rollReward(dimension, location, 0.0010, "lb:epic_fragment", 1, 1);
   if (postDragon) rollReward(dimension, location, 0.0002, "lb:legendary_fragment", 1, 1);

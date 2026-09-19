@@ -4,14 +4,33 @@
     "description": {
       "identifier": "lb:common_lucky_block_from_fragments"
     },
-    "tags": ["crafting_table"],
+    "tags": [
+      "crafting_table"
+    ],
+    "unlock": [
+      {
+        "context": "AlwaysUnlocked"
+      }
+    ],
     "ingredients": [
-      { "item": "lb:common_fragment" },
-      { "item": "lb:common_fragment" },
-      { "item": "lb:common_fragment" },
-      { "item": "lb:common_fragment" },
-      { "item": "lb:common_fragment" },
-      { "item": "lb:common_fragment" }
+      {
+        "item": "lb:common_fragment"
+      },
+      {
+        "item": "lb:common_fragment"
+      },
+      {
+        "item": "lb:common_fragment"
+      },
+      {
+        "item": "lb:common_fragment"
+      },
+      {
+        "item": "lb:common_fragment"
+      },
+      {
+        "item": "lb:common_fragment"
+      }
     ],
     "result": {
       "item": "lb:common_lucky_block",
