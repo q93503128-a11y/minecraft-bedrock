@@ -202,17 +202,31 @@ if(fs.existsSync(rewardPath)){
       path.join(bpRoot,"scripts","events","rift_reliquary.js"),
       path.join(bpRoot,"scripts","events","pre_dragon_events.js")
     ].filter(fs.existsSync).map(p=>fs.readFileSync(p,"utf8")).join("\n");
+    const registryOwnedIds=new Set();
+    for(const asset of registry?.assets??[]){
+      if(typeof asset.contentId==="string")registryOwnedIds.add(asset.contentId);
+      for(const target of asset.targets??[]){
+        const m=target.match(/^BP\/(?:items|blocks)\/([^/*{}]+)\.json$/);
+        if(m)registryOwnedIds.add("lb:"+m[1]);
+      }
+    }
+    const coreRewardIds=new Set(coreItemIds);
     for(const [tier,pool] of Object.entries(rewardData.weightedPools??{})){
       assert(Array.isArray(pool)&&pool.length>0,`reward tier ${tier} must have a non-empty pool`);
       for(const entry of pool??[]){
         assert(Number.isFinite(entry?.weight)&&entry.weight>0,`reward tier ${tier} has invalid weight for ${entry?.id}`);
         if(entry.kind==="item"||entry.kind==="fragments"){
           assert(typeof entry.id==="string"&&(entry.id.startsWith("minecraft:")||itemDefs.has(entry.id)||blockDefs.has(entry.id)),`reward tier ${tier} unresolved ${entry.kind} ${entry.id}`);
+          if(entry.id?.startsWith("lb:")&&!coreRewardIds.has(entry.id))assert(registryOwnedIds.has(entry.id),`reward tier ${tier} lacks external provenance ownership for ${entry.id}`);
         }else if(entry.kind==="entity"){
           assert(typeof entry.id==="string"&&entityDefs.has(entry.id),`reward tier ${tier} unresolved entity ${entry.id}`);
+          assert(registryOwnedIds.has(entry.id),`reward tier ${tier} entity lacks external provenance ownership ${entry.id}`);
         }else if(entry.kind==="bundle"){
           assert(Array.isArray(entry.items)&&entry.items.length>0,`reward tier ${tier} bundle ${entry.id} is empty`);
-          for(const part of entry.items??[])assert(typeof part?.id==="string"&&(part.id.startsWith("minecraft:")||itemDefs.has(part.id)||blockDefs.has(part.id)),`reward tier ${tier} bundle ${entry.id} unresolved item ${part?.id}`);
+          for(const part of entry.items??[]){
+            assert(typeof part?.id==="string"&&(part.id.startsWith("minecraft:")||itemDefs.has(part.id)||blockDefs.has(part.id)),`reward tier ${tier} bundle ${entry.id} unresolved item ${part?.id}`);
+            if(part?.id?.startsWith("lb:")&&!coreRewardIds.has(part.id))assert(registryOwnedIds.has(part.id),`reward tier ${tier} bundle ${entry.id} lacks external provenance ownership for ${part.id}`);
+          }
         }else if(entry.kind==="event"){
           assert(typeof entry.id==="string"&&eventSources.includes(`"${entry.id}"`),`reward tier ${tier} unresolved event handler ${entry.id}`);
           if(entry.fallback?.id)assert(entry.fallback.id.startsWith("minecraft:")||itemDefs.has(entry.fallback.id)||blockDefs.has(entry.fallback.id),`reward tier ${tier} event ${entry.id} unresolved fallback ${entry.fallback.id}`);
