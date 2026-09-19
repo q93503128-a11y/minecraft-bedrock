@@ -105,9 +105,9 @@ function detonate(s,d,i){
 }
 function startFinalWave(s,d){
   const c=s.center;
-  for(const [id,dx,dz] of [["lb:rift_charger_ant",-4,-10],["lb:rift_charger_ant",4,-10],["lb:rift_spitter_ant",0,-12],["lb:wudu_binder",-5,-8],["lb:tyrachnid",5,-8]])spawnTagged(s,d,id,{x:c.x+dx,y:c.y,z:c.z+dz});
+  for(const [id,dx,dz] of [["lb:rift_charger_ant",-4,-10],["lb:rift_burrower_ant",4,-10],["lb:rift_spitter_ant",0,-12],["lb:wudu_binder",-5,-8],["lb:tyrachnid",5,-8]])spawnTagged(s,d,id,{x:c.x+dx,y:c.y,z:c.z+dz});
   sound(d,"lb.obsidilith.prepare",c,{volume:1.0,pitch:0.9});
-  msg(d,c,"§5[Rift Reliquary] 최종 수호대 — 돌진, 원거리 포격, 지원/제압, 엘리트 압박을 동시에 돌파하세요.");
+  msg(d,c,"§5[Rift Reliquary] 최종 수호대 — 돌진, 잠복 기습, 원거리 포격, 지원/제압, 엘리트 압박을 동시에 돌파하세요.");
 }
 function complete(s,d){
   cleanup(s,d);
