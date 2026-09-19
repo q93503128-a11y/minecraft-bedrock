@@ -872,8 +872,244 @@ function tickButterflySanctuary(state,dimension){
   return false;
 }
 
+
+function voidGardenSiteClear(dimension,center){
+  const bx=Math.floor(center.x),by=Math.floor(center.y),bz=Math.floor(center.z);
+  for(const [dx,dz] of [[-9,-9],[-9,9],[9,-9],[9,9],[0,0],[-9,0],[9,0],[0,-9],[0,9]]){
+    const g=groundAt(dimension,bx+dx,by,bz+dz);
+    if(!g||Math.abs(g.y-by)>1)return false;
+  }
+  for(let dx=-9;dx<=9;dx+=2)for(let dz=-9;dz<=9;dz+=2)for(let dy=0;dy<=10;dy++){
+    try{if(dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz})?.typeId!=="minecraft:air")return false;}catch{return false;}
+  }
+  return true;
+}
+function findVoidGardenSite(dimension,center){
+  for(const [dx,dz] of [[0,0],[26,0],[-26,0],[0,26],[0,-26],[26,26],[-26,26],[26,-26],[-26,-26],[38,0],[-38,0],[0,38],[0,-38]]){
+    const g=groundAt(dimension,center.x+dx,center.y,center.z+dz);if(!g)continue;
+    const p={x:g.x+0.5,y:g.y,z:g.z+0.5};if(voidGardenSiteClear(dimension,p))return p;
+  }
+}
+function buildVoidGarden(state,dimension){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const P={
+    moss:mc.BlockPermutation.resolve("minecraft:moss_block"),
+    root:mc.BlockPermutation.resolve("minecraft:rooted_dirt"),
+    stone:mc.BlockPermutation.resolve("minecraft:mossy_cobblestone"),
+    dark:mc.BlockPermutation.resolve("minecraft:deepslate_tiles"),
+    amethyst:mc.BlockPermutation.resolve("minecraft:amethyst_block"),
+    light:mc.BlockPermutation.resolve("minecraft:glowstone"),
+    leaves:mc.BlockPermutation.resolve("minecraft:azalea_leaves")
+  };
+  let placed=0;
+  function put(dx,dy,dz,p){try{const b=dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz});if(!b)return;b.setPermutation(p);placed++;}catch{}}
+  for(let dx=-9;dx<=9;dx++)for(let dz=-9;dz<=9;dz++){
+    const r=Math.hypot(dx,dz);if(r>9.4)continue;
+    let p=((dx*dx+dz*dz)%11===0)?P.stone:P.moss;
+    if(Math.abs(dx)<=2&&Math.abs(dz)<=2)p=P.root;
+    if(r>=8.25)p=P.dark;
+    put(dx,-1,dz,p);
+  }
+  for(const [dx,dz] of [[-7,-7],[-7,7],[7,-7],[7,7]]){
+    for(let y=0;y<=3;y++)put(dx,y,dz,P.stone);
+    put(dx,4,dz,P.amethyst);put(dx,5,dz,P.light);
+    for(const [ox,oz] of [[1,0],[-1,0],[0,1],[0,-1]])put(dx+ox,3,dz+oz,P.leaves);
+  }
+  for(const [dx,dz] of [[7,0],[-7,0],[0,7],[0,-7]]){put(dx,-1,dz,P.amethyst);put(dx-1,-1,dz,P.stone);put(dx+1,-1,dz,P.stone);}
+  state.structureBuilt=placed>=330;
+  return state.structureBuilt;
+}
+function gardenBoss(state,dimension){
+  try{return dimension.getEntities({location:state.center,maxDistance:36,type:"lb:void_blossom"}).find(e=>{try{return e.hasTag(tagFor(state.id));}catch{return false;}});}catch{return undefined;}
+}
+function clearGardenRoots(state,dimension){
+  for(const [dx,dz] of [[7,0],[-7,0],[0,7],[0,-7]]){
+    const p={x:Math.floor(state.center.x+dx),y:Math.floor(state.center.y),z:Math.floor(state.center.z+dz)};
+    try{const b=dimension.getBlock(p);if(b?.typeId==="minecraft:flowering_azalea")b.setPermutation(mc.BlockPermutation.resolve("minecraft:air"));}catch{}
+  }
+}
+function finishVoidGarden(state,dimension){
+  clearGardenRoots(state,dimension);
+  spawnItem(dimension,state.center,"lb:epic_fragment",5+Math.floor(Math.random()*3));
+  spawnItem(dimension,state.center,"lb:rare_lucky_block",1);
+  spawnItem(dimension,state.center,"lb:fortune_tonic",2);
+  if(Math.random()<0.30)spawnItem(dimension,state.center,"lb:threat_sunglasses",1);
+  try{dimension.playSound("lb.void_blossom.spore_impact",state.center,{volume:.9,pitch:1.2});}catch{}
+  try{dimension.spawnParticle("lb:obsidilith_burst",{x:state.center.x,y:state.center.y+.8,z:state.center.z});}catch{}
+  messageNear(dimension,state.center,"§d[에픽 럭키] Void Garden 정화 완료! 뿌리 정원은 월드에 남습니다.");
+}
+function tickVoidGarden(state,dimension){
+  state.elapsed=(state.elapsed??0)+STEP;
+  if(state.elapsed>18000){
+    const boss=gardenBoss(state,dimension);if(boss)try{boss.remove();}catch{}
+    clearGardenRoots(state,dimension);
+    spawnItem(dimension,state.center,"lb:epic_fragment",3);
+    messageNear(dimension,state.center,"§8[에픽 럭키] Void Garden이 가라앉았습니다. 에픽 조각 3개를 남겼습니다.");
+    return true;
+  }
+  if((state.stage??0)===0){
+    if(!buildVoidGarden(state,dimension)){
+      spawnItem(dimension,state.center,"lb:epic_fragment",3);
+      messageNear(dimension,state.center,"§8[에픽 럭키] Void Garden을 만들 공간이 없어 에픽 조각 3개로 보상했습니다.");
+      return true;
+    }
+    spawnTagged(state,dimension,"lb:void_blossom",[[0,0]]);
+    const boss=gardenBoss(state,dimension);
+    if(boss){try{boss.nameTag="Void Blossom";}catch{};try{boss.playAnimation("animation.lb.void_blossom.spawn");}catch{}}
+    state.stage=1;
+    messageNear(dimension,state.center,"§5[에픽 럭키] Void Garden — Void Blossom의 가시·포자·꽃잎 칼날을 피하고, 75/50/25%에 피어나는 생명 뿌리를 먼저 정화하세요.");
+    return false;
+  }
+  if(gardenBoss(state,dimension))return false;
+  finishVoidGarden(state,dimension);return true;
+}
+
+function archiveCodexOffsets(){return [[0,-5],[5,0],[0,5],[-5,0]];}
+function archiveCodexPoint(state,index){
+  const [dx,dz]=archiveCodexOffsets()[index]??[0,0];
+  return{x:Math.floor(state.center.x+dx),y:Math.floor(state.center.y),z:Math.floor(state.center.z+dz)};
+}
+function archiveSiteClear(dimension,center){
+  const bx=Math.floor(center.x),by=Math.floor(center.y),bz=Math.floor(center.z);
+  for(const [dx,dz] of [[-8,-8],[-8,8],[8,-8],[8,8],[0,0],[-8,0],[8,0],[0,-8],[0,8]]){
+    const g=groundAt(dimension,bx+dx,by,bz+dz);if(!g||Math.abs(g.y-by)>1)return false;
+  }
+  for(let dx=-8;dx<=8;dx+=2)for(let dz=-8;dz<=8;dz+=2)for(let dy=0;dy<=5;dy++){
+    try{if(dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz})?.typeId!=="minecraft:air")return false;}catch{return false;}
+  }
+  return true;
+}
+function findArchiveSite(dimension,center){
+  for(const [dx,dz] of [[0,0],[22,0],[-22,0],[0,22],[0,-22],[22,22],[-22,22],[22,-22],[-22,-22],[34,0],[-34,0],[0,34],[0,-34]]){
+    const g=groundAt(dimension,center.x+dx,center.y,center.z+dz);if(!g)continue;
+    const p={x:g.x+0.5,y:g.y,z:g.z+0.5};if(archiveSiteClear(dimension,p))return p;
+  }
+}
+function buildFortuneArchive(state,dimension){
+  const bx=Math.floor(state.center.x),by=Math.floor(state.center.y),bz=Math.floor(state.center.z);
+  const P={
+    floor:mc.BlockPermutation.resolve("minecraft:polished_tuff"),
+    trim:mc.BlockPermutation.resolve("minecraft:tuff_bricks"),
+    shelf:mc.BlockPermutation.resolve("minecraft:bookshelf"),
+    wood:mc.BlockPermutation.resolve("minecraft:dark_oak_planks"),
+    light:mc.BlockPermutation.resolve("minecraft:sea_lantern"),
+    codex:mc.BlockPermutation.resolve("lb:archive_codex"),
+    gold:mc.BlockPermutation.resolve("minecraft:gold_block"),
+    lapis:mc.BlockPermutation.resolve("minecraft:lapis_block"),
+    emerald:mc.BlockPermutation.resolve("minecraft:emerald_block"),
+    amethyst:mc.BlockPermutation.resolve("minecraft:amethyst_block")
+  };
+  let placed=0;
+  function put(dx,dy,dz,p){try{const b=dimension.getBlock({x:bx+dx,y:by+dy,z:bz+dz});if(!b)return;b.setPermutation(p);placed++;}catch{}}
+  for(let dx=-8;dx<=8;dx++)for(let dz=-8;dz<=8;dz++)put(dx,-1,dz,(Math.abs(dx)===8||Math.abs(dz)===8)?P.trim:P.floor);
+  for(let x=-8;x<=8;x++)for(const z of [-8,8])if(!(z===8&&Math.abs(x)<=1))for(let y=0;y<=2;y++)put(x,y,z,P.trim);
+  for(let z=-7;z<=7;z++)for(const x of [-8,8])for(let y=0;y<=2;y++)put(x,y,z,P.trim);
+  for(const [dx,dz] of [[-6,-6],[-6,6],[6,-6],[6,6]]){for(let y=0;y<=3;y++)put(dx,y,dz,P.shelf);put(dx,4,dz,P.light);}
+  for(let dx=-2;dx<=2;dx++)for(let dz=-2;dz<=2;dz++)if(Math.abs(dx)===2||Math.abs(dz)===2)put(dx,0,dz,P.wood);
+  const ped=[P.gold,P.lapis,P.emerald,P.amethyst];
+  const offsets=archiveCodexOffsets();
+  for(let i=0;i<offsets.length;i++){
+    const [dx,dz]=offsets[i];put(dx,-1,dz,ped[i]);put(dx,0,dz,P.codex);
+    for(const [ox,oz] of [[1,0],[-1,0],[0,1],[0,-1]])put(dx+ox,-1,dz+oz,P.wood);
+  }
+  put(0,-1,0,P.light);
+  state.structureBuilt=placed>=430;
+  return state.structureBuilt;
+}
+function restoreArchiveCodices(state,dimension){
+  for(let i=0;i<4;i++){
+    const p=archiveCodexPoint(state,i);
+    try{const b=dimension.getBlock(p);if(b?.typeId!=="lb:archive_codex")b?.setPermutation(mc.BlockPermutation.resolve("lb:archive_codex"));}catch{}
+  }
+}
+function shuffledArchiveSequence(){
+  const a=[0,1,2,3];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function pulseArchiveCodex(state,dimension,index){
+  const p=archiveCodexPoint(state,index),c={x:p.x+.5,y:p.y+.45,z:p.z+.5};
+  try{dimension.spawnParticle("lb:obsidilith_burst",c);}catch{}
+  for(const [dx,dz] of [[.8,0],[-.8,0],[0,.8],[0,-.8]])try{dimension.spawnParticle("lb:slasher_spark_particle",{x:c.x+dx,y:c.y+.1,z:c.z+dz});}catch{}
+  try{dimension.playSound("break.amethyst_cluster",c,{volume:.65,pitch:1.02+index*.08});}catch{}
+}
+function resetArchiveReveal(state,dimension,wrong=false){
+  state.stage=1;state.revealTicks=0;state.revealIndex=0;state.progress=0;state.completePending=false;
+  if(wrong)messageNear(dimension,state.center,"§c[Fortune Archive] 순서가 틀렸습니다. 기록을 다시 재생합니다.");
+}
+function finishFortuneArchive(state,dimension){
+  spawnItem(dimension,state.center,"lb:rare_fragment",4+Math.floor(Math.random()*3));
+  spawnItem(dimension,state.center,"lb:common_lucky_block",1);
+  spawnItem(dimension,state.center,"lb:fortune_tonic",2);
+  if(Math.random()<0.25)spawnItem(dimension,state.center,"lb:reward_camera",1);
+  if(Math.random()<0.20)spawnItem(dimension,state.center,"lb:threat_sunglasses",1);
+  try{dimension.playSound("slasher.critical",state.center,{volume:.72,pitch:1.12});}catch{}
+  try{dimension.spawnParticle("lb:obsidilith_burst",{x:state.center.x,y:state.center.y+.4,z:state.center.z});}catch{}
+  messageNear(dimension,state.center,"§b[레어 럭키] Fortune Archive 해독 완료! 서고는 월드에 남습니다.");
+}
+function tickFortuneArchive(state,dimension){
+  state.elapsed=(state.elapsed??0)+STEP;
+  if(state.elapsed>18000){
+    spawnItem(dimension,state.center,"lb:rare_fragment",2);
+    messageNear(dimension,state.center,"§8[레어 럭키] Fortune Archive가 잠겼습니다. 레어 조각 2개를 남겼습니다.");
+    return true;
+  }
+  if((state.stage??0)===0){
+    if(!buildFortuneArchive(state,dimension)){
+      spawnItem(dimension,state.center,"lb:rare_fragment",3);
+      messageNear(dimension,state.center,"§8[레어 럭키] 서고를 만들 공간이 없어 레어 조각 3개로 보상했습니다.");
+      return true;
+    }
+    state.sequence=shuffledArchiveSequence();state.attempts=0;
+    resetArchiveReveal(state,dimension,false);
+    messageNear(dimension,state.center,"§b[레어 럭키] Fortune Archive — 네 권의 서고 기록이 빛나는 순서를 기억한 뒤 책을 같은 순서로 누르세요. 여러 명이 이어서 눌러도 됩니다.");
+    return false;
+  }
+  restoreArchiveCodices(state,dimension);
+  if(state.completePending){finishFortuneArchive(state,dimension);return true;}
+  if(state.stage===1){
+    state.revealTicks=(state.revealTicks??0)+STEP;
+    if(state.revealTicks<20)return false;
+    state.revealTicks=0;
+    const sequence=Array.isArray(state.sequence)&&state.sequence.length===4?state.sequence:[0,1,2,3];
+    const idx=sequence[state.revealIndex??0];
+    if(Number.isInteger(idx))pulseArchiveCodex(state,dimension,idx);
+    state.revealIndex=(state.revealIndex??0)+1;
+    if(state.revealIndex>=4){
+      state.stage=2;state.progress=0;
+      messageNear(dimension,state.center,"§f[Fortune Archive] 기록 재생 완료 — 이제 §b같은 순서§f로 네 권의 책을 누르세요.");
+    }
+  }
+  return false;
+}
+function archiveStateForBlock(states,dimensionId,location){
+  for(const state of states){
+    if(state.type!=="fortune_archive")continue;
+    if(!(dimensionId===state.dimension||dimensionId.endsWith(":"+state.dimension)))continue;
+    for(let i=0;i<4;i++){const p=archiveCodexPoint(state,i);if(p.x===location.x&&p.y===location.y&&p.z===location.z)return{state,index:i};}
+  }
+}
+mc.world.afterEvents.playerInteractWithBlock.subscribe(event=>{
+  if(event.block?.typeId!=="lb:archive_codex"||event.isFirstEvent===false)return;
+  const states=loadStates(),found=archiveStateForBlock(states,event.block.dimension.id,event.block.location);if(!found)return;
+  const state=found.state,dimension=event.block.dimension;
+  if(state.stage!==2){
+    try{event.player.sendMessage("§7[Fortune Archive] 기록 재생이 끝날 때까지 기다리세요.");}catch{}
+    return;
+  }
+  const sequence=Array.isArray(state.sequence)&&state.sequence.length===4?state.sequence:[0,1,2,3];
+  const progress=Number(state.progress??0),expected=sequence[progress];
+  if(found.index!==expected){
+    state.attempts=(state.attempts??0)+1;resetArchiveReveal(state,dimension,true);saveStates(states);return;
+  }
+  state.progress=progress+1;pulseArchiveCodex(state,dimension,found.index);
+  try{event.player.onScreenDisplay.setActionBar("§bFortune Archive §8— §f"+state.progress+"/4");}catch{}
+  if(state.progress>=4)state.completePending=true;
+  saveStates(states);
+});
+
 export function startPreDragonEvent(dimension,center,type){
-  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark"&&type!=="fortune_gallery"&&type!=="butterfly_sanctuary")return false;
+  if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark"&&type!=="fortune_gallery"&&type!=="butterfly_sanctuary"&&type!=="void_garden"&&type!=="fortune_archive")return false;
   if(!dimension.id.includes("overworld"))return false;
   const site=type==="awakened_grove"
     ?findGroveSite(dimension,center)
@@ -885,10 +1121,14 @@ export function startPreDragonEvent(dimension,center,type){
           ?findBulwarkSite(dimension,center)
           :type==="fortune_gallery"
             ?findGallerySite(dimension,center)
-            :findSanctuarySite(dimension,center);
+            :type==="butterfly_sanctuary"
+              ?findSanctuarySite(dimension,center)
+              :type==="void_garden"
+                ?findVoidGardenSite(dimension,center)
+                :findArchiveSite(dimension,center);
   if(!site)return false;
   const states=loadStates();if(states.length>=MAX_ACTIVE)return false;
-  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:type==="fortune_gallery"?58:type==="butterfly_sanctuary"?52:48;
+  const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:type==="fortune_gallery"?58:type==="butterfly_sanctuary"?52:type==="void_garden"?58:type==="fortune_archive"?50:48;
   for(const s of states)if(s.dimension==="overworld"&&distSq(s.center,site)<overlap*overlap)return false;
   states.push({id:nextId(),type,dimension:"overworld",center:site,stage:0,elapsed:0});saveStates(states);return true;
 }
@@ -911,7 +1151,11 @@ mc.system.runInterval(()=>{
                 ?tickFortuneGallery(state,dimension)
                 :state.type==="butterfly_sanctuary"
                   ?tickButterflySanctuary(state,dimension)
-                  :true;
+                  :state.type==="void_garden"
+                    ?tickVoidGarden(state,dimension)
+                    :state.type==="fortune_archive"
+                      ?tickFortuneArchive(state,dimension)
+                      :true;
     }catch{done=false;}
     if(!done)next.push(state);
   }

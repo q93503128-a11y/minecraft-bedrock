@@ -1,0 +1,104 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "lb:void_blossom",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "lb:rooted_guard": {
+        "minecraft:damage_sensor": {
+          "triggers": {
+            "cause": "all",
+            "damage_multiplier": 0.65,
+            "deals_damage": "yes"
+          }
+        }
+      },
+      "lb:exposed": {
+        "minecraft:damage_sensor": {
+          "triggers": {
+            "cause": "all",
+            "damage_multiplier": 1.35,
+            "deals_damage": "yes"
+          }
+        }
+      }
+    },
+    "components": {
+      "minecraft:type_family": {
+        "family": [
+          "monster",
+          "lb_hostile",
+          "lb_boss",
+          "lb_void_blossom"
+        ]
+      },
+      "minecraft:boss": {
+        "name": "Void Blossom",
+        "hud_range": 48,
+        "should_darken_sky": false
+      },
+      "minecraft:health": {
+        "value": 420,
+        "max": 420
+      },
+      "minecraft:movement": {
+        "value": 0
+      },
+      "minecraft:physics": {},
+      "minecraft:collision_box": {
+        "width": 2.8,
+        "height": 9.5
+      },
+      "minecraft:knockback_resistance": {
+        "value": 1
+      },
+      "minecraft:follow_range": {
+        "value": 42
+      },
+      "minecraft:damage_sensor": {
+        "triggers": {
+          "cause": "fall",
+          "deals_damage": false
+        }
+      }
+    },
+    "events": {
+      "lb:root_guard": {
+        "remove": {
+          "component_groups": [
+            "lb:exposed"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:rooted_guard"
+          ]
+        }
+      },
+      "lb:expose": {
+        "remove": {
+          "component_groups": [
+            "lb:rooted_guard"
+          ]
+        },
+        "add": {
+          "component_groups": [
+            "lb:exposed"
+          ]
+        }
+      },
+      "lb:normal": {
+        "remove": {
+          "component_groups": [
+            "lb:rooted_guard",
+            "lb:exposed"
+          ]
+        }
+      }
+    }
+  }
+}

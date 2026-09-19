@@ -482,6 +482,51 @@
           "stream": false
         }
       ]
+    },
+    "lb.void_blossom.burrow": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/void_blossom_burrow",
+          "stream": false
+        }
+      ]
+    },
+    "lb.void_blossom.spike": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/void_blossom_spike",
+          "stream": false
+        }
+      ]
+    },
+    "lb.void_blossom.spore_prepare": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/void_blossom_spore_prepare",
+          "stream": false
+        }
+      ]
+    },
+    "lb.void_blossom.spore_impact": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/void_blossom_spore_impact",
+          "stream": false
+        }
+      ]
+    },
+    "lb.void_blossom.petal_blade": {
+      "category": "hostile",
+      "sounds": [
+        {
+          "name": "sounds/entity/void_blossom_petal_blade",
+          "stream": false
+        }
+      ]
     }
   }
 }

@@ -84,6 +84,9 @@
     },
     "lb_gauntlet_blackstone": {
       "textures": "textures/blocks/lb_gauntlet_blackstone"
+    },
+    "lb_archive_codex": {
+      "textures": "textures/blocks/lb_archive_codex"
     }
   }
 }

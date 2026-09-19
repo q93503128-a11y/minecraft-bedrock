@@ -23,7 +23,10 @@ tile.lb:reward_camera.name=럭키 카메라
 tile.lb:reward_golden_hammer.name=럭키 황금 망치
 tile.lb:reward_vase.name=럭키 항아리
 tile.lb:reward_easel.name=럭키 이젤
-tile.lb:reward_cardboard_sword.name=골판지 검\ntile.lb:reward_cardboard_axe.name=골판지 도끼\ntile.lb:reward_cardboard_shield.name=골판지 방패\nentity.lb:impaler.name=임페일러
+tile.lb:reward_cardboard_sword.name=골판지 검
+tile.lb:reward_cardboard_axe.name=골판지 도끼
+tile.lb:reward_cardboard_shield.name=골판지 방패
+entity.lb:impaler.name=임페일러
 entity.lb:warped_clam.name=뒤틀린 조개
 entity.lb:bogre.name=보그르
 entity.lb:obsidilith.name=옵시딜리스
@@ -74,3 +77,5 @@ item.lb:threat_sunglasses.name=위협 감지 선글라스
 item.lb:fortune_tonic.name=행운 토닉
 entity.lb:gauntlet.name=건틀릿
 tile.lb:gauntlet_blackstone.name=건틀릿 블랙스톤
+entity.lb:void_blossom.name=보이드 블로섬
+tile.lb:archive_codex.name=기록의 고서

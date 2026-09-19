@@ -1,0 +1,26 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:archive_codex",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.archive_codex",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_archive_codex",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.8
+      },
+      "minecraft:explosion_resistance": {
+        "value": 12
+      }
+    }
+  }
+}
