@@ -832,3 +832,33 @@ Static audit after 0.28.0:
 - Added periodic ItemStack lore for 34 core/special items so armor values, set effects, spell/weapon behavior, cooldowns and oddity interactions are visible on hover.
 - BP/RP display names now include v0.39.0 for install differentiation.
 - 0.39 remains a recovery candidate. It must clear content log + placement + recipe + Slasher + visual checks in real Bedrock before breadth expansion resumes.
+
+## 0.39.0 internal recovery audit continuation — 2026-09-19
+
+This is still an internal recovery state, not a user playtest request.
+
+Core A-D hardening:
+- Core Lucky Block/Fragment same-ID block-item placement contracts were re-audited against current stable Bedrock behavior.
+- All nine fragment/fusion recipes are now locked by exact ingredient/result preflight contracts.
+- Added a cross-activity starter guarantee: the first Common Lucky Fragment arrives within six eligible survival actions unless an existing random/pity drop happens earlier.
+- Added deterministic acquisition simulation (200,000 actions per path) and made preflight execute it.
+- Core geometry checks now reject empty/oversized/same-silhouette tier assets and missing terrain bindings.
+
+Portable/runtime E-H hardening:
+- Slasher stable runtime bridge now restores source FP controller cooldown signals for alternating fast attacks and charge/release flow.
+- Slasher charged beam now requires an actual held-use charge and fires on release; the legacy 1.18 state machine remains provenance-only.
+- Restored normal durability loss for Mystical Aegis, Explorer gear, Wizard Hat, Threat Sunglasses and Diamond Staff; script-managed weapons/tomes remain vanilla-durability-disabled to avoid double wear.
+- Amethyst Repeater now requires all three Amethyst Charges before starting a three-shot burst.
+- Gallery Slug was confirmed as event-only Fortune Gallery ammunition with grant/use/cleanup flow and now has explanatory lore.
+- Hover lore was synchronized for Slasher/Blade, Repeater/Charge, Diamond Staff and event ammo.
+- Preflight now validates portable runtime imports, Slasher FP/beam contracts, armor/staff durability mode, core combat balance anchors and required lore coverage.
+
+Reward graph hardening:
+- Reward registry is evaluated by preflight rather than weight-summed only.
+- Every item/fragment/block-item reward must resolve to a BP definition; every entity reward must resolve to a BP entity; every bundle member and fallback must resolve.
+- Every event reward ID must exist in one of the production event handlers.
+- Non-core Lucky reward/entity IDs must be owned by the external asset registry.
+- Current manual cross-check found 54 Lucky item/block reward IDs with no unexplained external ownership gaps, 13 custom entity reward IDs with definitions, and all 14 event reward IDs with handlers.
+
+Remaining release work is still internal. Do not ask the user to import/playtest until the remaining full-pack runtime/content/balance/package audits are complete and only final Bedrock real-run verification remains.
+
