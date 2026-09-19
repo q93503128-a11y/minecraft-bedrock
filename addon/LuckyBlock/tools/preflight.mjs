@@ -124,7 +124,8 @@ if(registry){
   const ids=new Map(),owners=new Map();
   for(const [key,s] of Object.entries(registry.sources??{})){
     if(!s.url||!s.license||!s.reviewedCommit||!s.integrationMode)errors.push(`source ${key}: missing url/license/reviewedCommit/integrationMode`);
-    if(s.licenseFile&&!fs.existsSync(path.join(root,s.licenseFile)))errors.push(`source ${key}: missing bundled license ${s.licenseFile}`);
+    if(!s.licenseFile)errors.push(`source ${key}: missing bundled licenseFile`);
+    else if(!fs.existsSync(path.join(root,s.licenseFile)))errors.push(`source ${key}: missing bundled license ${s.licenseFile}`);
   }
   for(const a of registry.assets??[]){
     if(!a.key||!a.source||!registry.sources?.[a.source]){errors.push(`asset ${a.key??"<unknown>"}: invalid source`);continue;}
