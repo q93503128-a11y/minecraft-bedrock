@@ -207,6 +207,21 @@ if(fs.existsSync(mainPath)){
     assert(fs.existsSync(p),`main.js missing import target: ${spec}`);
   }
 }
+if(fs.existsSync(mainPath)){
+  const s=fs.readFileSync(mainPath,"utf8");
+  for(const spec of [
+    "./integrations/slasher/index.js",
+    "./integrations/tomemancy.js",
+    "./integrations/tomemancy_amethyst_repeater.js",
+    "./integrations/loys_storm_longbow.js",
+    "./integrations/inhabitants_arsenal.js",
+    "./integrations/loys_explorer_kit.js",
+    "./integrations/loys_accessories.js",
+    "./integrations/loys_tactical_tools.js",
+    "./integrations/tomemancy_mystical_aegis.js"
+  ])assert(s.includes(`import "${spec}";`),`main.js missing portable runtime import ${spec}`);
+}
+
 
 const lorePath=path.join(bpRoot,"scripts","item_lore.js");
 assert(fs.existsSync(lorePath),"missing item_lore.js");
@@ -219,6 +234,22 @@ if(fs.existsSync(slasherIndex)){
   assert(s.includes('import "./runtime_bridge.js";'),"Slasher index must load runtime_bridge");
   assert(!s.includes("item_extender/internal.js")&&!s.includes('import "./slasher/slasher.js";'),"legacy Slasher state machine must not be runtime authority");
 }
+if(fs.existsSync(slasherBridge)){
+  const s=fs.readFileSync(slasherBridge,"utf8");
+  for(const token of [
+    "entityHitEntity","itemStartUse","itemReleaseUse","itemStopUse",
+    "startItemCooldown(\"slasher_fast_atk_1\"","startItemCooldown(\"slasher_fast_atk_2\"",
+    "startItemCooldown(\"slasher_charging_start\"","startItemCooldown(\"slasher_charged_atk_start\"",
+    "shootFastAtkBeam","shootChargedAtkBeam","damageDurability"
+  ])assert(s.includes(token),`Slasher runtime bridge missing contract token: ${token}`);
+}
+const repeaterPath=path.join(bpRoot,"scripts","integrations","tomemancy_amethyst_repeater.js");
+assert(fs.existsSync(repeaterPath),"missing Amethyst Repeater runtime");
+if(fs.existsSync(repeaterPath)){
+  const s=fs.readFileSync(repeaterPath,"utf8");
+  assert(s.includes("function ammoCount(")&&s.includes("return ammoCount(player)>=SHOTS"),"Amethyst Repeater must require a full three-shot ammo burst");
+}
+
 const armorExpect={
   "lb:tomemancy_mystical_helmet":4,
   "lb:tomemancy_mystical_chestplate":8,
@@ -230,8 +261,22 @@ const armorExpect={
   "lb:threat_sunglasses":2
 };
 for(const [id,value] of Object.entries(armorExpect)){
-  const actual=itemDefs.get(id)?.j?.components?.["minecraft:wearable"]?.protection;
+  const item=itemDefs.get(id)?.j;
+  const actual=item?.components?.["minecraft:wearable"]?.protection;
   assert(actual===value,`${id}: expected protection ${value}, got ${actual}`);
+  const chance=item?.components?.["minecraft:durability"]?.damage_chance;
+  assert(chance?.min===100&&chance?.max===100,`${id}: wearable durability damage_chance must be 100/100`);
+}
+const staffChance=itemDefs.get("lb:tomemancy_diamond_staff")?.j?.components?.["minecraft:durability"]?.damage_chance;
+assert(staffChance?.min===100&&staffChance?.max===100,"lb:tomemancy_diamond_staff must use normal durability loss");
+
+const scriptedDurabilityItems=[
+  "lb:slasher","lb:amethyst_repeater","lb:storm_longbow","lb:spike_drill",
+  "lb:tomemancy_meteor_tome","lb:tomemancy_gigavolt_tome","lb:tomemancy_dragon_fireball_tome"
+];
+for(const id of scriptedDurabilityItems){
+  const chance=itemDefs.get(id)?.j?.components?.["minecraft:durability"]?.damage_chance;
+  assert(chance?.min===0&&chance?.max===0,`${id}: scripted durability item must keep vanilla durability loss disabled`);
 }
 
 const geometryIds=new Set();
