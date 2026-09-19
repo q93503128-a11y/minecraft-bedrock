@@ -1,6 +1,7 @@
 import { system, world, BlockPermutation, ItemStack } from "@minecraft/server";
 import "./acquisition.js";
 import "./reward_behaviors.js";
+import "./item_lore.js";
 import "./integrations/inhabitants.js";
 import "./integrations/inhabitants_bogre.js";
 import "./integrations/inhabitants_arsenal.js";
