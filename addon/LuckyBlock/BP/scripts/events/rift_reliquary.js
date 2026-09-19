@@ -188,11 +188,14 @@ mc.world.afterEvents.playerInteractWithBlock.subscribe(event=>{
 export function startRiftReliquaryEvent(dimension,center,type){
   if(type!=="rift_reliquary"||mc.world.getDynamicProperty("lb:post_dragon_unlocked")!==true)return false;
   const states=load();if(states.length>=MAX_ACTIVE)return false;
+  let otherStates=[];
+  const otherRaw=mc.world.getDynamicProperty("lb:mythic_event_states_v1");
+  if(typeof otherRaw==="string"&&otherRaw)try{const parsed=JSON.parse(otherRaw);if(Array.isArray(parsed))otherStates=parsed;}catch{}
+  if(states.length+otherStates.length>=4)return false;
   const base={x:Math.floor(center.x)+0.5,y:Math.floor(center.y),z:Math.floor(center.z)+0.5};
   const site=findSite(dimension,base);if(!site)return false;
   for(const s of states)if(s.dimension===dimKey(dimension.id)&&distSq(s.center,site)<80*80)return false;
-  const otherRaw=mc.world.getDynamicProperty("lb:mythic_event_states_v1");
-  if(typeof otherRaw==="string"&&otherRaw)try{for(const s of JSON.parse(otherRaw)){if(s.dimension===dimKey(dimension.id)&&distSq(s.center,site)<80*80)return false;}}catch{}
+  for(const s of otherStates)if(s.dimension===dimKey(dimension.id)&&distSq(s.center,site)<80*80)return false;
   states.push({id:nextId(),type,dimension:dimKey(dimension.id),center:site,stage:0,elapsed:0,keyMask:0,spentMask:0,disarms:0});
   save(states);return true;
 }

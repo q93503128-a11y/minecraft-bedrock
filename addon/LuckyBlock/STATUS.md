@@ -737,7 +737,7 @@ Static audit after 0.28.0:
 - Stage 2 opens only after all keys are active and guards are cleared, then arms six real Fortune Bomb blocks in a timed disarm-or-dodge corridor.
 - Stage 3 opens only after all six bombs are resolved and requires four real Obsidilith Rune blocks to be physically destroyed.
 - Final stage combines two Rift Chargers, one Rift Spitter, one Wudu Binder and one Tyrachnid so mobility/ranged/support/control/elite pressure interact in one encounter.
-- Objective blocks and closed gates are repaired while locked, preventing pre-clearing and common progression softlocks. The event pauses while unattended and persists shared world state.
+- Objective blocks and closed gates are repaired while locked, preventing pre-clearing and common progression softlocks. The event pauses while unattended and persists shared world state. Existing Mythic events and Rift Reliquary now perform symmetric cross-family distance checks and share a four-event global cap, preventing simultaneous openings from overlapping permanent structures.
 - Completion grants 9-12 Mythic Fragments, one Legendary Lucky Block and two Fortune Tonics; 5+ bomb disarms add two Legendary Fragments.
 - Mythic weight 10 is fully funded by reducing existing repeated/generic slices; Mythic total remains exactly 100.
 - BP/RP version is now 0.33.0; @minecraft/server remains 2.9.0.
