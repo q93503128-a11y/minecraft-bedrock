@@ -50,7 +50,7 @@ function trySpawnMantis(){
   }
 }
 function runMantisCombat(){
-  mantisTick+=10;
+  mantisTick=mc.world.getAbsoluteTime();
   for(const dimId of ["overworld","nether","the_end"]){
     const dimension=mc.world.getDimension(dimId);
     for(const mantis of dimension.getEntities({type:"lb:mantis"})){
