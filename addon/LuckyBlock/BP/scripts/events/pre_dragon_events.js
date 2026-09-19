@@ -1292,6 +1292,16 @@ function tickFortuneMinefield(state,dimension){
 export function startPreDragonEvent(dimension,center,type){
   if(type!=="awakened_grove"&&type!=="fortune_relay"&&type!=="royal_anthill"&&type!=="fortune_bulwark"&&type!=="fortune_gallery"&&type!=="butterfly_sanctuary"&&type!=="void_garden"&&type!=="fortune_archive"&&type!=="fortune_minefield")return false;
   if(!dimension.id.includes("overworld"))return false;
+
+  const states=loadStates();
+  let mythicStates=[],reliquaryStates=[];
+  for(const [key,target] of [["lb:mythic_event_states_v1",mythicStates],["lb:rift_reliquary_states_v1",reliquaryStates]]){
+    const raw=mc.world.getDynamicProperty(key);
+    if(typeof raw!=="string"||!raw)continue;
+    try{const parsed=JSON.parse(raw);if(Array.isArray(parsed))target.push(...parsed);}catch{}
+  }
+  if(states.length+mythicStates.length+reliquaryStates.length>=MAX_ACTIVE)return false;
+
   const site=type==="awakened_grove"
     ?findGroveSite(dimension,center)
     :type==="fortune_relay"
@@ -1310,9 +1320,11 @@ export function startPreDragonEvent(dimension,center,type){
                   ?findArchiveSite(dimension,center)
                   :findMinefieldSite(dimension,center);
   if(!site)return false;
-  const states=loadStates();if(states.length>=MAX_ACTIVE)return false;
+
   const overlap=type==="fortune_relay"?56:type==="royal_anthill"?56:type==="fortune_bulwark"?52:type==="fortune_gallery"?58:type==="butterfly_sanctuary"?52:type==="void_garden"?58:type==="fortune_archive"?50:type==="fortune_minefield"?50:48;
-  for(const s of states)if(s.dimension==="overworld"&&distSq(s.center,site)<overlap*overlap)return false;
+  for(const x of states)if(x.dimension==="overworld"&&distSq(x.center,site)<overlap*overlap)return false;
+  for(const x of [...mythicStates,...reliquaryStates])if(x.dimension==="overworld"&&distSq(x.center,site)<80*80)return false;
+
   states.push({id:nextId(),type,dimension:"overworld",center:site,stage:0,elapsed:0});saveStates(states);return true;
 }
 mc.system.runInterval(()=>{
