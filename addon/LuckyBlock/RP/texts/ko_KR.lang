@@ -112,3 +112,6 @@ item.lb:mythic_fragment.name=신화 럭키 조각
 item.lb:mythic_lucky_block.name=신화 럭키 블럭
 tile.lb:mythic_fragment_display.name=신화 럭키 조각 장식
 tile.lb:mythic_lucky_block_placed.name=신화 럭키 블럭
+tile.lb:reward_turret.name=럭키 자동 터렛
+entity.lb:ant_queen.name=개미 여왕
+entity.lb:lucky_turret.name=럭키 자동 터렛
