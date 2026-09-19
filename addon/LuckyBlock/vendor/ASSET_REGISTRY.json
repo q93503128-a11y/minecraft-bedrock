@@ -17,21 +17,24 @@
       "license": "MIT",
       "reviewedRef": "main",
       "reviewedCommit": "5e04b6f719c316b0611f569af0cab7d6e9a2fb26",
-      "integrationMode": "vendored"
+      "integrationMode": "vendored",
+      "licenseFile": "THIRD_PARTY_LICENSES/MICROSOFT_MINECRAFT_SAMPLES_MIT.txt"
     },
     "corvae_pylon": {
       "url": "https://github.com/CorvaeOboro/minecraft_botania_pylon_crystal",
       "license": "CC0-1.0",
       "reviewedRef": "main",
       "reviewedCommit": "7a0d28235188131313bfa4b20684549d3ac15528",
-      "integrationMode": "vendored"
+      "integrationMode": "vendored",
+      "licenseFile": "THIRD_PARTY_LICENSES/CC0-1.0.txt"
     },
     "loys_goodies": {
       "url": "https://github.com/SL0ANE/Loy-s-Goodies",
       "license": "CC0-1.0",
       "reviewedRef": "main",
       "reviewedCommit": "afbb7695b09de0ed8ee3aa97732ff7c3d367520c",
-      "integrationMode": "vendored"
+      "integrationMode": "vendored",
+      "licenseFile": "THIRD_PARTY_LICENSES/CC0-1.0.txt"
     },
     "frenchkrab": {
       "url": "https://github.com/FrenchKrab/mc-blockbench-models",
@@ -40,7 +43,8 @@
       "reviewedRef": "master",
       "reviewedCommit": "3a568ceda77434a17e2722459e8becf48a1f6920",
       "integrationMode": "vendored",
-      "attributionRequired": true
+      "attributionRequired": true,
+      "licenseFile": "THIRD_PARTY_LICENSES/FRENCHKRAB_CC-BY-4.0.txt"
     },
     "inhabitants": {
       "url": "https://github.com/Team-Synapse-MC/Inhabitants",
@@ -49,7 +53,8 @@
       "reviewedRef": "develop",
       "reviewedCommit": "2da25600eb052862d34818b4a2a458afea83e868",
       "integrationMode": "vendored",
-      "attributionRequired": true
+      "attributionRequired": true,
+      "licenseFile": "THIRD_PARTY_LICENSES/INHABITANTS_MIT.txt"
     },
     "bosses_of_mass_destruction": {
       "url": "https://github.com/barribob/bosses-of-mass-destruction",
@@ -71,7 +76,8 @@
       "integrationMode": "vendored",
       "attributionRequired": false,
       "originalServerApi": "@minecraft/server 1.18.0",
-      "portTargetServerApi": "@minecraft/server 2.9.0"
+      "portTargetServerApi": "@minecraft/server 2.9.0",
+      "licenseFile": "THIRD_PARTY_LICENSES/SLASHER_CC0-1.0.txt"
     },
     "tomemancy": {
       "url": "https://github.com/Sharded-Alex/Tomemancy",
