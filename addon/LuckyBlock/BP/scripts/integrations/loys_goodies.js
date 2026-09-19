@@ -17,6 +17,15 @@ function center(block) {
   return { x: block.location.x + 0.5, y: block.location.y + 0.6, z: block.location.z + 0.5 };
 }
 
+const interactionLocks = new Set();
+function claimInteraction(event) {
+  const b=event.block,key=event.dimension.id+"|"+b.location.x+"|"+b.location.y+"|"+b.location.z;
+  if(interactionLocks.has(key))return false;
+  interactionLocks.add(key);
+  system.run(()=>interactionLocks.delete(key));
+  return true;
+}
+
 function consumeBlock(event) {
   event.block.setPermutation(BlockPermutation.resolve("minecraft:air"));
 }
@@ -121,6 +130,7 @@ system.runInterval(runTurrets, TURRET_STEP);
 export function registerLoysGoodiesIntegration(registry) {
   register(registry, "lb:consume_burger", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       event.player.addEffect("saturation", 80, { amplifier: 0 });
       event.player.addEffect("regeneration", 80, { amplifier: 0 });
       consumeBlock(event);
@@ -129,6 +139,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:consume_noodles", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       event.player.addEffect("saturation", 100, { amplifier: 0 });
       event.player.addEffect("regeneration", 120, { amplifier: 0 });
       event.player.addEffect("speed", 120, { amplifier: 0 });
@@ -145,6 +156,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:open_backpack", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       spawn(event, "lb:common_fragment", 4 + Math.floor(Math.random() * 5));
       if (Math.random() < 0.55) spawn(event, "lb:rare_fragment", 1 + Math.floor(Math.random() * 2));
       if (Math.random() < 0.10) spawn(event, "lb:epic_fragment", 1);
@@ -166,6 +178,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:vending_machine", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       const uses = Number(event.block.permutation.getState("lb:uses_left") ?? 3);
       const reward = Math.random() < 0.58 ? "lb:reward_burger" : "lb:reward_noodles";
       spawn(event, reward, 1);
@@ -176,6 +189,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:moai_blessing", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       event.player.addEffect("resistance", 300, { amplifier: 1 });
       event.player.addEffect("slowness", 80, { amplifier: 0 });
       consumeBlock(event);
@@ -184,6 +198,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:pc_overclock", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       event.player.addEffect("haste", 500, { amplifier: 1 });
       event.player.addEffect("speed", 240, { amplifier: 0 });
       event.player.addEffect("night_vision", 500, { amplifier: 0 });
@@ -213,6 +228,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:wrench_tune", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       event.player.addEffect("haste", 600, { amplifier: 2 });
       event.player.addEffect("resistance", 160, { amplifier: 0 });
       consumeBlock(event);
@@ -253,6 +269,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:hammer_blessing", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       event.player.addEffect("strength", 240, { amplifier: 1 });
       event.player.addEffect("resistance", 240, { amplifier: 1 });
       consumeBlock(event);
@@ -261,6 +278,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:vase_cache", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       const roll = Math.random();
       if (roll < 0.65) spawn(event, "lb:common_fragment", 3 + Math.floor(Math.random() * 5));
       else if (roll < 0.94) spawn(event, "lb:rare_fragment", 1 + Math.floor(Math.random() * 2));
@@ -271,6 +289,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:easel_focus", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       event.player.addEffect("night_vision", 900, { amplifier: 0 });
       event.player.addEffect("slow_falling", 300, { amplifier: 0 });
       event.player.addEffect("speed", 200, { amplifier: 0 });
@@ -280,6 +299,7 @@ export function registerLoysGoodiesIntegration(registry) {
 
   register(registry, "lb:deploy_turret", {
     onPlayerInteract(event) {
+      if (!claimInteraction(event)) return;
       const p = center(event.block);
       try {
         const turret = event.dimension.spawnEntity("lb:lucky_turret", { x: p.x, y: event.block.location.y + 0.05, z: p.z });
