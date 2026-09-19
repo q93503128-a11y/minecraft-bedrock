@@ -1,6 +1,14 @@
 import * as mc from "@minecraft/server";
 
 const DEATH_KEY="lb:last_deaths_v1";
+const interactionLocks=new Set();
+function claimInteraction(event){
+ const b=event.block,key=event.dimension.id+"|"+b.location.x+"|"+b.location.y+"|"+b.location.z;
+ if(interactionLocks.has(key))return false;
+ interactionLocks.add(key);
+ mc.system.run(()=>interactionLocks.delete(key));
+ return true;
+}
 function center(block){return{x:block.location.x+.5,y:block.location.y+.7,z:block.location.z+.5};}
 function consume(event){try{event.block.setPermutation(mc.BlockPermutation.resolve("minecraft:air"));}catch{}}
 function register(registry,id,handlers){registry.registerCustomComponent(id,handlers);}
@@ -28,6 +36,7 @@ function safeDeathSpot(d,rec){
  }
 }
 function reflect(event){
+ if(!claimInteraction(event))return;
  const p=event.player;
  const map=[
   ["slowness","speed",0,260],
@@ -53,6 +62,7 @@ function reflect(event){
  consume(event);
 }
 function recall(event){
+ if(!claimInteraction(event))return;
  const deaths=loadDeaths(),rec=deaths[event.player.id];
  if(!rec){try{event.player.sendMessage("§7[귀환 묘비] 기록된 사망 위치가 없습니다.");}catch{};return;}
  let d;try{d=mc.world.getDimension(String(rec.dimension).replace("minecraft:",""));}catch{return;}
@@ -66,6 +76,7 @@ function recall(event){
  }catch{}
 }
 function cool(event){
+ if(!claimInteraction(event))return;
  const c=center(event.block);let fire=0,ext=0;
  for(let dx=-5;dx<=5;dx++)for(let dy=-3;dy<=4;dy++)for(let dz=-5;dz<=5;dz++){
   if(dx*dx+dy*dy+dz*dz>36)continue;
