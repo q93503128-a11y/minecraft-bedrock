@@ -55,6 +55,9 @@
     },
     "fortune_tonic": {
       "textures": "textures/items/fortune_tonic"
+    },
+    "gallery_slug": {
+      "textures": "textures/items/gallery_slug"
     }
   }
 }

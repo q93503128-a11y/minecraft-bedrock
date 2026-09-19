@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "lb:gallery_slug",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/items/gallery_slug"
+      },
+      "geometry": {
+        "default": "geometry.lb.gallery_slug"
+      },
+      "render_controllers": [
+        "controller.render.default"
+      ]
+    }
+  }
+}
