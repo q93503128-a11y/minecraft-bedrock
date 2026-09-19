@@ -90,6 +90,15 @@
     },
     "lb_fortune_bomb": {
       "textures": "textures/blocks/lb_fortune_bomb"
+    },
+    "lb_reward_mirror": {
+      "textures": "textures/blocks/lb_reward_mirror"
+    },
+    "lb_reward_gravestone": {
+      "textures": "textures/blocks/lb_reward_gravestone"
+    },
+    "lb_reward_air_conditioner": {
+      "textures": "textures/blocks/lb_reward_air_conditioner"
     }
   }
 }

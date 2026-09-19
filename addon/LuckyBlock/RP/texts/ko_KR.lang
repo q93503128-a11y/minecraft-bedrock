@@ -88,3 +88,6 @@ item.lb:flashbang.name=섬광탄
 item.lb:smoke_grenade.name=연막탄
 item.lb:lucky_guitar.name=럭키 기타
 entity.lb:rift_burrower_ant.name=균열 잠복 일개미
+tile.lb:reward_mirror.name=포춘 거울
+tile.lb:reward_gravestone.name=귀환 묘비
+tile.lb:reward_air_conditioner.name=럭키 에어컨

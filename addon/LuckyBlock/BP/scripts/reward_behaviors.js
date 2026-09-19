@@ -1,10 +1,12 @@
 import { system } from "@minecraft/server";
 import { registerLoysGoodiesIntegration } from "./integrations/loys_goodies.js";
 import { registerFrenchKrabIntegration } from "./integrations/frenchkrab.js";
+import { registerLoysOdditiesIntegration } from "./integrations/loys_oddities.js";
 
 const integrations = [
   registerLoysGoodiesIntegration,
-  registerFrenchKrabIntegration
+  registerFrenchKrabIntegration,
+  registerLoysOdditiesIntegration
 ];
 
 system.beforeEvents.startup.subscribe((initEvent) => {

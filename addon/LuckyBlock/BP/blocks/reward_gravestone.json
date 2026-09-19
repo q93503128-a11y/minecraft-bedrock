@@ -1,0 +1,24 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:block": {
+    "description": {
+      "identifier": "lb:reward_gravestone",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:geometry": "geometry.lb.reward_gravestone",
+      "minecraft:material_instances": {
+        "*": {
+          "texture": "lb_reward_gravestone",
+          "render_method": "alpha_test"
+        }
+      },
+      "minecraft:destructible_by_mining": {
+        "seconds_to_destroy": 0.35
+      },
+      "lb:recall_gravestone": {}
+    }
+  }
+}

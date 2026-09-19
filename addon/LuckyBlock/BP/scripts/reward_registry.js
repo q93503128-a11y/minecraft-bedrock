@@ -1,6 +1,7 @@
 export const weightedPools = {
   common: [
-    { weight: 24, kind: "fragments", id: "lb:common_fragment", min: 2, max: 5, source: "core" },
+    { weight: 20, kind: "fragments", id: "lb:common_fragment", min: 2, max: 5, source: "core" },
+    { weight: 4, kind: "item", id: "lb:reward_gravestone", source: "loys_goodies" },
     { weight: 4, kind: "item", id: "lb:lucky_guitar", source: "loys_goodies" },
     { weight: 8, kind: "item", id: "lb:reward_burger", source: "loys_goodies" },
     { weight: 8, kind: "item", id: "lb:reward_noodles", source: "loys_goodies" },
@@ -33,7 +34,8 @@ export const weightedPools = {
     { weight: 3, kind: "item", id: "lb:common_lucky_block", count: 2, source: "core" },
     { weight: 3, kind: "fragments", id: "lb:epic_fragment", min: 1, max: 1, source: "core" },
     { weight: 5, kind: "entity", id: "lb:irk_companion", nameTag: "Irk Companion", source: "slayers_beasts", tameToOpener: true },
-    { weight: 8, kind: "event", id: "fortune_relay", source: "core+licensed_external_fx", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } },
+    { weight: 4, kind: "item", id: "lb:reward_air_conditioner", source: "loys_goodies" },
+    { weight: 4, kind: "event", id: "fortune_relay", source: "core+licensed_external_fx", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } },
     { weight: 7, kind: "event", id: "fortune_archive", source: "core+loys_goodies", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } },
     { weight: 6, kind: "event", id: "fortune_minefield", source: "core+loys_goodies", fallback: { id: "lb:rare_fragment", min: 3, max: 4 } }
   ],
@@ -45,7 +47,8 @@ export const weightedPools = {
     { weight: 1, kind: "item", id: "lb:rare_lucky_block", count: 2, source: "core" },
     { weight: 5, kind: "fragments", id: "lb:legendary_fragment", min: 1, max: 1, source: "core" },
     { weight: 2, kind: "item", id: "lb:epic_lucky_block", source: "core" },
-    { weight: 9, kind: "event", id: "awakened_grove", source: "core+inhabitants+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
+    { weight: 5, kind: "event", id: "awakened_grove", source: "core+inhabitants+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
+    { weight: 4, kind: "item", id: "lb:reward_mirror", source: "loys_goodies" },
     { weight: 7, kind: "event", id: "royal_anthill", source: "core+slayers_beasts", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 6, kind: "event", id: "fortune_bulwark", source: "core+loys_goodies+licensed_encounters", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
     { weight: 6, kind: "event", id: "fortune_gallery", source: "core+loys_goodies", fallback: { id: "lb:epic_fragment", min: 3, max: 4 } },
