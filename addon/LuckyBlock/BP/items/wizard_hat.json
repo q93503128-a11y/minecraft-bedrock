@@ -24,7 +24,7 @@
           "min": 0,
           "max": 0
         },
-        "max_durability": 420
+        "max_durability": 520
       },
       "minecraft:repairable": {
         "repair_items": [
@@ -43,13 +43,13 @@
         ]
       },
       "minecraft:enchantable": {
-        "value": 18,
+        "value": 20,
         "slot": "armor_head"
       },
       "minecraft:wearable": {
         "dispensable": true,
         "slot": "slot.armor.head",
-        "protection": 1
+        "protection": 4
       }
     }
   }

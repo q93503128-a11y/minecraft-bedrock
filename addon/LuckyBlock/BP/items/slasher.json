@@ -36,7 +36,9 @@
       "minecraft:repairable": {
         "repair_items": [
           {
-            "items": ["lb:slasher_blade"],
+            "items": [
+              "lb:slasher_blade"
+            ],
             "repair_amount": 320
           }
         ]
@@ -44,9 +46,8 @@
       "minecraft:hand_equipped": true,
       "minecraft:allow_off_hand": false,
       "minecraft:use_modifiers": {
-
-        "movement_modifier": 1.0,
-        "use_duration": 3600
+        "movement_modifier": 0.72,
+        "use_duration": 72000
       }
     }
   }
