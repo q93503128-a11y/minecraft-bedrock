@@ -22,6 +22,7 @@ function groundAt(dimension,x,startY,z){
   }
 }
 function trySpawnWitherSpider(){
+  if(mc.world.getDynamicProperty("lb:post_dragon_unlocked")!==true)return;
   const dimension=mc.world.getDimension("nether");
   const allowed=new Set(["minecraft:netherrack","minecraft:soul_sand","minecraft:soul_soil","minecraft:basalt","minecraft:blackstone","minecraft:crimson_nylium","minecraft:warped_nylium"]);
   for(const player of mc.world.getAllPlayers()){
