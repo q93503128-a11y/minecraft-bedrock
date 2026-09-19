@@ -219,7 +219,7 @@ mc.world.afterEvents.entityDie.subscribe(event=>{
  try{clearRoots(entity);}catch{}
 });
 mc.system.runInterval(()=>{
- clock+=STEP;
+ clock=mc.world.getAbsoluteTime();
  for(const id of ["overworld","nether","the_end"]){
   let dimension;try{dimension=mc.world.getDimension(id);}catch{continue;}
   for(const entity of dimension.getEntities({type:TYPE})){try{tickBlossom(entity);}catch{}}
