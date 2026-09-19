@@ -112,6 +112,8 @@ if(bp&&rp){
   assert(rpToBp?.version?.join(".")===bv,"RP->BP dependency version mismatch");
   const server=(bp.dependencies??[]).find(d=>d.module_name==="@minecraft/server");
   assert(server?.version==="2.9.0",`@minecraft/server expected 2.9.0, found ${server?.version}`);
+  assert(JSON.stringify(bp.header?.min_engine_version)==="[1,26,40]",`BP min_engine_version must be 1.26.40 for @minecraft/server 2.9.0, found ${JSON.stringify(bp.header?.min_engine_version)}`);
+  assert(JSON.stringify(rp.header?.min_engine_version)==="[1,26,40]",`RP min_engine_version must match BP at 1.26.40, found ${JSON.stringify(rp.header?.min_engine_version)}`);
   assert(rp.header?.pack_scope==="world",`RP pack_scope expected world, found ${rp.header?.pack_scope}`);
   assert(String(bp.header?.name??"").includes("v"+bv),`BP display name must include version v${bv}`);
   assert(String(rp.header?.name??"").includes("v"+rv),`RP display name must include version v${rv}`);
