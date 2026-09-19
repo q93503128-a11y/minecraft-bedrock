@@ -3,7 +3,6 @@ import * as mc from "@minecraft/server";
 const TYPE="lb:rift_charger_ant";
 const POST_DRAGON_KEY="lb:post_dragon_unlocked";
 const STEP=10;
-let tick=0;
 
 function distSq(a,b){const dx=a.x-b.x,dy=a.y-b.y,dz=a.z-b.z;return dx*dx+dy*dy+dz*dz;}
 function particle(d,id,p){try{d.spawnParticle(id,p);}catch{}}
@@ -30,8 +29,8 @@ function startCharge(ant,target){
   const snapshot={x:target.location.x,z:target.location.z};
   const dx=snapshot.x-ant.location.x,dz=snapshot.z-ant.location.z;
   const len=Math.max(0.001,Math.hypot(dx,dz)),ux=dx/len,uz=dz/len;
-  ant.setDynamicProperty("lb:charger_busy_until",tick+55);
-  ant.setDynamicProperty("lb:charger_next_charge",tick+120+Math.floor(Math.random()*45));
+  ant.setDynamicProperty("lb:charger_busy_ticks",55);
+  ant.setDynamicProperty("lb:charger_charge_cooldown",120+Math.floor(Math.random()*45));
   try{ant.addEffect("slowness",30,{amplifier:4,showParticles:false});}catch{}
   try{ant.dimension.playSound("lb.obsidilith.spike_indicator",ant.location,{volume:0.78,pitch:0.82});}catch{}
   telegraphLine(ant,snapshot);
@@ -61,10 +60,12 @@ function startCharge(ant,target){
   },24);
 }
 function combat(ant){
-  const target=nearestPlayer(ant,36);if(!target)return;
-  if(tick<Number(ant.getDynamicProperty("lb:charger_busy_until")??0))return;
-  if(target.distanceSq<7*7||target.distanceSq>24*24)return;
-  if(tick<Number(ant.getDynamicProperty("lb:charger_next_charge")??0))return;
+  const busy=Math.max(0,Number(ant.getDynamicProperty("lb:charger_busy_ticks")??0)-STEP);
+  const cooldown=Math.max(0,Number(ant.getDynamicProperty("lb:charger_charge_cooldown")??0)-STEP);
+  ant.setDynamicProperty("lb:charger_busy_ticks",busy);
+  ant.setDynamicProperty("lb:charger_charge_cooldown",cooldown);
+  const target=nearestPlayer(ant,36);if(!target||busy>0)return;
+  if(target.distanceSq<7*7||target.distanceSq>24*24||cooldown>0)return;
   startCharge(ant,target.player);
 }
 function groundAt(dimension,x,startY,z){
@@ -100,7 +101,6 @@ mc.world.afterEvents.entityDie.subscribe(event=>{
   if(Math.random()<0.18)drop(d,p,"lb:legendary_fragment",1);
 });
 mc.system.runInterval(()=>{
-  tick+=STEP;
   for(const id of ["overworld","nether","the_end"]){
     let d;try{d=mc.world.getDimension(id);}catch{continue;}
     for(const ant of d.getEntities({type:TYPE})){try{combat(ant);}catch{}}

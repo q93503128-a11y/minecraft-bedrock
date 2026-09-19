@@ -3,7 +3,6 @@ import * as mc from "@minecraft/server";
 const TYPE="lb:rift_spitter_ant";
 const POST_DRAGON_KEY="lb:post_dragon_unlocked";
 const STEP=10;
-let tick=0;
 
 function distSq(a,b){const dx=a.x-b.x,dy=a.y-b.y,dz=a.z-b.z;return dx*dx+dy*dy+dz*dz;}
 function nearestPlayer(entity,maxDistance=30){
@@ -43,17 +42,19 @@ function salvo(ant,target){
  }
 }
 function combat(ant){
+ const retreatCd=Math.max(0,Number(ant.getDynamicProperty("lb:spitter_retreat_cooldown")??0)-STEP);
+ const salvoCd=Math.max(0,Number(ant.getDynamicProperty("lb:spitter_salvo_cooldown")??0)-STEP);
+ ant.setDynamicProperty("lb:spitter_retreat_cooldown",retreatCd);
+ ant.setDynamicProperty("lb:spitter_salvo_cooldown",salvoCd);
  const target=nearestPlayer(ant,30);if(!target)return;
- const nextRetreat=Number(ant.getDynamicProperty("lb:spitter_next_retreat")??0);
- if(target.distanceSq<36&&tick>=nextRetreat){
+ if(target.distanceSq<36&&retreatCd<=0){
   const dx=ant.location.x-target.player.location.x,dz=ant.location.z-target.player.location.z,len=Math.max(.001,Math.hypot(dx,dz));
   try{ant.applyImpulse({x:dx/len*.62,y:.18,z:dz/len*.62});}catch{}
-  ant.setDynamicProperty("lb:spitter_next_retreat",tick+35);
+  ant.setDynamicProperty("lb:spitter_retreat_cooldown",35);
  }
- if(target.distanceSq<42||target.distanceSq>30*30)return;
- const next=Number(ant.getDynamicProperty("lb:spitter_next_salvo")??0);if(tick<next)return;
+ if(target.distanceSq<42||target.distanceSq>30*30||salvoCd>0)return;
  salvo(ant,target.player);
- ant.setDynamicProperty("lb:spitter_next_salvo",tick+95+Math.floor(Math.random()*40));
+ ant.setDynamicProperty("lb:spitter_salvo_cooldown",95+Math.floor(Math.random()*40));
 }
 function groundAt(dimension,x,startY,z){
  const bx=Math.floor(x),bz=Math.floor(z),top=Math.min(250,Math.floor(startY)+10),bottom=Math.max(-60,Math.floor(startY)-20);
@@ -91,7 +92,6 @@ mc.world.afterEvents.entityDie.subscribe(event=>{
  if(Math.random()<.12)drop(d,p,"lb:legendary_fragment",1);
 });
 mc.system.runInterval(()=>{
- tick+=STEP;
  for(const id of ["overworld","nether","the_end"]){
   let d;try{d=mc.world.getDimension(id);}catch{continue;}
   for(const ant of d.getEntities({type:TYPE})){try{combat(ant);}catch{}}

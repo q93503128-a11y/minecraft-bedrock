@@ -741,4 +741,5 @@ Static audit after 0.28.0:
 - Completion grants 9-12 Mythic Fragments, one Legendary Lucky Block and two Fortune Tonics; 5+ bomb disarms add two Legendary Fragments.
 - Mythic weight 10 is fully funded by reducing existing repeated/generic slices; Mythic total remains exactly 100.
 - BP/RP version is now 0.33.0; @minecraft/server remains 2.9.0.
+- Static lifecycle review also replaced absolute session-tick combat deadlines in both Rift Charger and the existing Rift Spitter with small persisted countdown cooldowns, preventing a world restart from inheriting a very large stale attack deadline.
 - Stable Bedrock import/render, charge physics, multiplayer simultaneous Codex interaction/bomb mining, dungeon gate repair, long-session persistence and final encounter balance remain P8 runtime QA. No runtime-playtest claim is made.
