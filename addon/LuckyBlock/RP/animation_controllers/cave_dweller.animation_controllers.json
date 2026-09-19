@@ -1,0 +1,84 @@
+{
+  "format_version": "1.10.0",
+  "animation_controllers": {
+    "controller.animation.lb.cave_dweller.state": {
+      "initial_state": "stalk",
+      "states": {
+        "stalk": {
+          "animations": [
+            {
+              "calm_move": "query.is_moving"
+            },
+            {
+              "calm_idle": "!query.is_moving"
+            }
+          ],
+          "transitions": [
+            {
+              "chase": "query.variant == 1"
+            },
+            {
+              "flee": "query.variant == 2"
+            },
+            {
+              "spotted": "query.variant == 3"
+            }
+          ]
+        },
+        "chase": {
+          "animations": [
+            {
+              "new_run": "query.is_moving"
+            },
+            {
+              "run_idle": "!query.is_moving"
+            }
+          ],
+          "transitions": [
+            {
+              "stalk": "query.variant == 0"
+            },
+            {
+              "flee": "query.variant == 2"
+            },
+            {
+              "spotted": "query.variant == 3"
+            }
+          ]
+        },
+        "flee": {
+          "animations": [
+            "flee"
+          ],
+          "transitions": [
+            {
+              "stalk": "query.variant == 0"
+            },
+            {
+              "chase": "query.variant == 1"
+            },
+            {
+              "spotted": "query.variant == 3"
+            }
+          ]
+        },
+        "spotted": {
+          "animations": [
+            "spotted"
+          ],
+          "transitions": [
+            {
+              "stalk": "query.variant == 0"
+            },
+            {
+              "chase": "query.variant == 1"
+            },
+            {
+              "flee": "query.variant == 2"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

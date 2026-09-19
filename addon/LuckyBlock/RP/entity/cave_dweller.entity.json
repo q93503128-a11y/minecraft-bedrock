@@ -1,0 +1,48 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "lb:cave_dweller",
+      "materials": {
+        "default": "entity_alphatest",
+        "eyes": "entity_emissive_alpha"
+      },
+      "textures": {
+        "default": "textures/entity/cave_dweller",
+        "eyes": "textures/entity/cave_dweller_eyes"
+      },
+      "geometry": {
+        "default": "geometry.lb.cave_dweller"
+      },
+      "animations": {
+        "idle": "animation.lb.cave_dweller.idle",
+        "run": "animation.lb.cave_dweller.run",
+        "crouch_run": "animation.lb.cave_dweller.crouch_run",
+        "crouch_run_new": "animation.lb.cave_dweller.crouch_run_new",
+        "crouch_idle": "animation.lb.cave_dweller.crouch_idle",
+        "new_run": "animation.lb.cave_dweller.new_run",
+        "run_idle": "animation.lb.cave_dweller.run_idle",
+        "calm_move": "animation.lb.cave_dweller.calm_move",
+        "calm_idle": "animation.lb.cave_dweller.calm_idle",
+        "spotted": "animation.lb.cave_dweller.spotted",
+        "flee": "animation.lb.cave_dweller.flee",
+        "crawl_end": "animation.lb.cave_dweller.crawl_end",
+        "crawl": "animation.lb.cave_dweller.crawl",
+        "state": "controller.animation.lb.cave_dweller.state"
+      },
+      "scripts": {
+        "animate": [
+          "state"
+        ]
+      },
+      "render_controllers": [
+        "controller.render.lb.cave_dweller_body",
+        "controller.render.lb.cave_dweller_eyes"
+      ],
+      "spawn_egg": {
+        "base_color": "#161616",
+        "overlay_color": "#e7e7e7"
+      }
+    }
+  }
+}
