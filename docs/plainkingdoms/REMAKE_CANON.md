@@ -454,14 +454,24 @@ Add:
 - touch-friendly rotate/confirm/cancel actions;
 - nearby obstruction explanation.
 
-Categories:
+Implemented Alpha 4 categories:
 - Recommended
-- Housing
-- Economy
+- Housing / Economy
 - Military
+- Civic / Research
 - Defense
-- Civic/Support
-- Special
+- Roads / Walls
+
+Alpha 4 implementation details:
+- building selection snaps the front direction to the nearest cardinal direction based on player view;
+- 90° rotation changes the actual generated procedural structure, not only the preview;
+- an entrance/front marker is rendered separately in placement preview;
+- rotation is persisted in building shard schema v3 while schema v2 remains readable;
+- rotated footprint/reservation/upgrade collision checks use the same orientation;
+- barracks default RallyPoint and resident work apron follow building orientation;
+- repeat placement is player-toggleable;
+- roads and walls use tap-start/tap-end two-point construction with a 72-block initial cap;
+- road/wall segments are construction jobs and reject building-footprint intersections.
 
 ## 14. UI information architecture
 
