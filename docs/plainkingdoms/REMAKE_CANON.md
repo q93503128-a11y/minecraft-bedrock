@@ -260,6 +260,35 @@ Reject or correct:
 - severe cliff cells with no walkable approach;
 - protected/forbidden zones.
 
+### Alpha 6 SquadBrain implementation
+
+The local physical squad now has a role-weighted tactical state machine.
+
+States used in Alpha 6 include:
+- approach
+- engage
+- brace
+- charge
+- recover
+- kite
+- fireline
+- siege_reposition
+- anchor
+- desperate
+- move / retreat / hold
+
+Behavior rules:
+- spear-heavy squads brace against cavalry at close approach;
+- cavalry-heavy squads charge suitable targets but suppress charge into spear walls;
+- a successful cavalry hit enters a disengage/recover window before the next charge;
+- ranged-heavy squads maintain a stand-off band and kite if compressed;
+- siege-heavy squads maintain a longer rear band;
+- heavy/royal-guard-heavy squads anchor at close range;
+- explicit Move/Rally/Retreat overrides autonomous combat movement;
+- Hold does not chase.
+
+This is squad-level intent for the compressed one-entity army. R7 adds actual representative-soldier formation slot positioning.
+
 ## 7. Army control model
 
 Default exposed orders:
