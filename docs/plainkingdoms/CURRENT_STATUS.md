@@ -1,215 +1,233 @@
 # PlainKingdoms 리메이크 현재 상태
 
-기준일: 2026-09-30
-기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`
-현재 로컬 개발 빌드: `1.5.0 Remake Alpha 4`
+기준일: 2026-09-30  
+기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
+현재 로컬 개발 빌드: `1.6.0 Remake Alpha 5`
 
 ## 저장소 역할
 
-이 GitHub 저장소는 Bedrock 프로젝트의 기획/설계/감사 문서 정본이다.
-PlainKingdoms 실제 Bedrock BP/RP 수정과 .mcaddon 패키징은 현재 작업 환경에서 수행한다.
-GitHub Actions 통과 여부를 Bedrock 런타임 정상의 근거로 사용하지 않는다.
+이 GitHub 저장소는 Minecraft Bedrock 프로젝트의 기획/설계/감사 문서 정본이다. PlainKingdoms 실제 BP/RP 수정과 `.mcaddon` 패키징은 작업 환경에서 수행하며, GitHub에는 기획과 구현 상태/출처 기록을 유지한다.
 
-## Alpha 1 — 장거리 지휘 / 선제 전략 전환
+## 지금까지 완료된 리메이크 기반
 
-- 블록 ray hit 실패 시 장거리 지면 보정
-- 군령 깃발 허공 사용을 장거리 이동/공격이동으로 사용
-- 웅크리기+사용은 군단 메뉴
-- 플레이어와 멀어진 물리 군단을 엔진 청크 정지 전에 전략 상태로 능동 전환
-- 44/56블록 hysteresis
+### Alpha 1 — 장거리 지휘 / 선제 전략 전환
 
-## Alpha 2 — World/Nation StrategicArmyState 정본화
+- 허공 ray 실패 시 장거리 지면 투영/보정
+- 군령 깃발 허공 사용 = 장거리 명령, 웅크리기+사용 = 군단 메뉴
+- 엔진이 군단을 멈추기 전에 거리 기준으로 Strategic state 전환
+- 44/56 블록 hysteresis
 
-- 국가 슬롯별 `pk_armies_slot_<slot>` world shard가 군단 정본
-- 기존 player `army_roster`는 세이브 호환 mirror
-- 소유자가 로그아웃해도 다른 플레이어가 월드를 유지하면 전략 행군 지속
-- 실체 기록인데 actor가 사라진 군단의 1.5초 누락 복구
-- 다른 플레이어가 접근해도 전략 군단 실체화
-- 오프라인 소유 군단 사망 정합성 처리
+### Alpha 2 — World/Nation StrategicArmyState
 
-## Alpha 3 — 병영 생산 Queue / RallyPoint / 3도구 UI
+- `pk_armies_slot_<nationSlot>` world shard가 군단 정본
+- 기존 player roster는 호환 mirror
+- 소유자 오프라인 중에도 월드가 실행 중이면 전략 행군
+- missing actor 복구
+- 다른 플레이어 접근 시 materialization
+- generation으로 stale actor 부활 방지
 
-- 즉시 군단 생성 대신 병영 Recruitment Queue
-- 병영별 병렬/순차 생산
-- 병영 레벨 기반 훈련 시간
-- 군단 한도/인구 예약
-- 취소 시 자원 환불
+### Alpha 3 — Recruitment Queue / RallyPoint / UI 1차 축소
+
+- 즉시 땅 소환 → 병영 Recruitment Queue
+- 병영별 병렬 생산 / 같은 병영 순차 생산
+- 병영 레벨에 따른 훈련 시간
+- 자원/인구/군단 한도 예약
+- 취소 환불
 - 병영별 RallyPoint
-- 모집 완료 시 StrategicArmyState 먼저 생성
-- 소유자 오프라인 중 월드가 실행되면 Queue 진행
-- 강제 핫바 시스템 도구 6개 → 3개
+- 완료 시 StrategicArmyState 생성
+- 강제 핫바 도구 6개 → 3개
 - 중복 통합 메뉴 제거
 
-## Alpha 4 — 건설 UX / 방향 / 기반시설
+### Alpha 4 — 건설 UX
 
-### 건설 메뉴 정보 구조
+- 건설 카테고리
+- 실제 90° 방향/회전
+- 입구 방향 미리보기
+- building shard v3 rotation 저장 및 v2 호환
+- 반복 배치
+- 두 점 터치 도로/성벽
+- 회전 footprint / 업그레이드 / 병영 RallyPoint / 주민 근무 위치 연결
 
-기존 13개 건물 단일 긴 목록을 다음 카테고리로 분리:
-- 추천
-- 주거 / 경제
-- 군사
-- 지원 / 연구
-- 방어
-- 도로 / 성벽
+## Alpha 5 — 외부 CC0 기반 혼성 군단 표현 / 전투 상태 기반
 
-일반 플레이에서 건설도구를 열면 먼저 카테고리와 현재 배치 상태를 본다.
+### 실제 외부 원본 선정
 
-### 건물 방향 / 회전
+Alpha 5에서 실제로 통합한 외부 원본은 Kenney의 **Blocky Characters**다.
 
-새 일반 건물 선택 시 플레이어가 바라보는 방향을 가장 가까운 90° 단위로 스냅하여 건물 정면으로 사용한다.
+- 공식: https://kenney.nl/assets/blocky-characters
+- 라이선스: CC0
+- 실제 검사한 retrieval mirror: `Hidencod/tge-assets/packs/blocky-characters/character-a.glb`
+- Git blob SHA: `1929813eb7229d3440f4e517b7e0055c3dfd0078`
+- 검사한 원본 크기: 131,728 bytes
+- 원본 GLB 자체는 Add-On에 포함하지 않음
+- 원본의 blocky humanoid 비율/노드 구조와 일부 animation curve를 Bedrock cuboid rig로 retarget/adapt
 
-지원 방향:
-- 북
-- 동
-- 남
-- 서
+실제 원본에서 확인한 clip에는 idle, walk, sprint, die, attack-melee-right/left, holding/shoot/interact 계열 등이 있다.
 
-배치 중:
-- 웅크리기 + 건설도구 사용 → 90° 회전
-- 건설 메뉴의 회전 버튼 → 90° 회전
+Quaternius Animated Knight / Universal Animation Library 2는 후속 brace/charge/bow/crossbow/reload 등 확장 후보로 조사했지만 **Alpha 5 통합으로 표시하지 않는다**.
 
-미리보기에는:
-- 현재 실제 Lv.1 외곽
-- Lv.5 최대 예약 외곽
-- 설치 가능/불가
-- 정면 방향용 별도 입구 마커
+정확한 출처/통합 경계는:
+- `docs/plainkingdoms/EXTERNAL_ASSET_PROVENANCE.md`
+- RP `provenance/external_assets.json`
+- RP `THIRD_PARTY_ASSETS.md`
 
-가 동시에 표시된다.
+에 기록한다.
 
-회전은 단순 UI 값이 아니라 실제 procedural structure operation 좌표 전체에 적용된다.
+### 6명 대표 병사 군단
 
-### 건물 저장 포맷 v3
+성능 원칙은 유지:
+- 전략 군단 1개 = 물리 Entity 1개
+- 30개 개별 Minecraft mob으로 분해하지 않음
 
-기존 building shard v2:
-- type
-- x/y/z
-- level
+새 물리 표현:
+- `geometry.plainkingdoms.squad_v2`
+- 한 Entity 내부에 최대 6명의 대표 병사
+- Kenney Blocky Characters 비율을 Bedrock cuboid로 재해석
+- 127 bones
+- 9개 친군 군단 Entity가 공용 rig 사용
 
-Alpha 4 building shard v3:
-- type
-- x/y/z
-- level
-- rotation
+대표 병사 역할 코드:
+- 민병
+- 검병
+- 창병
+- 중장
+- 궁병
+- 석궁
+- 기사
+- 왕실근위
+- 공성
 
-v2 월드는 그대로 읽으며 rotation은 0°(북)로 간주한다.
-다음 shard 저장 시 v3로 자연 승격한다.
+편성이 `검10 + 창10 + 궁10`이면 더 이상 dominant type 하나만으로 장비가 결정되지 않는다. 6개 대표 슬롯에 실제 composition을 분배하여 서로 다른 무기/장비 silhouette를 표시한다.
 
-업그레이드/재시공에서도 기존 rotation을 유지한다.
+### 전투 손실 시 시각 인원 감소
 
-회전값은 다음에도 반영:
-- 건물 실제 크기/예약 footprint
-- 건물끼리 충돌 판정
-- 증축 충돌 판정
-- 주민 근무지 출입 방향
-- 병영 기본 RallyPoint
-- 건물 목록/관리 UI
+현재 군단 HP 비율에 따라 보이는 대표 병사 수를 줄인다.
 
-### 연속 배치
+초기 band:
+- 84% 초과: 6명
+- 67% 초과: 5명
+- 50% 초과: 4명
+- 34% 초과: 3명
+- 17% 초과: 2명
+- 그 이하: 1명
 
-건설 메뉴에서 연속 배치 ON/OFF를 선택할 수 있다.
+실제 병력 30명을 정확히 6명이 1:5로 나타낸다는 뜻은 아니며, 상태 전달용 대표 표현이다.
 
-ON:
-- 공사 완료 뒤 같은 건물 종류를 계속 배치
+### Client-synced Entity Properties
 
-OFF:
-- 공사 등록 시 배치 모드 해제
+각 친군 army entity에:
+- `plainkingdoms:anim_state`
+- `plainkingdoms:slot1_role ... slot6_role`
+- `plainkingdoms:slot1_visible ... slot6_visible`
 
-기존 모바일 중복 탭 방지와 미리보기→재터치 확정은 유지한다.
+총 13개 client-synced property를 추가했다.
 
-### 도로 2점 배치
+Script가 전략/전투 상태와 composition을 계산하고 RP가 해당 property를 읽어 실제 외형/animation을 표현한다.
 
-건설 → 도로 / 성벽 → 도로
+### 외부 원본 기반 animation retarget
 
-1. 시작점 터치
-2. 끝점 터치
-3. 최대 길이/영토/건물 교차/자원 검사
-4. 공사 Queue 등록
+새 animation family:
+- squad_idle
+- squad_walk
+- squad_sprint
+- squad_melee
+- squad_ranged
+- squad_hit
+- squad_die
+- squad_visibility
 
-초기 구현:
-- 최대 72블록
-- 3블록 폭
-- gravel 중심
-- 일정 간격 stone brick 강조
-- 길이 비례 석재 비용
+Kenney 실제 source timing을 보존한 주요 retarget:
+- idle 약 1.333s
+- walk 약 0.667s
+- sprint 약 0.500s
+- melee 약 0.417s
+- die 약 0.333s
 
-정밀 드래그를 요구하지 않아 터치에서도 동일하게 사용한다.
+현재 die clip은 리소스로 포함됐지만 Minecraft entity 제거 전에 확실히 재생시키는 corpse/death representation은 아직 후속 과제다.
 
-### 성벽 2점 배치
+### 공격 피해와 animation hit frame 연결
 
-건설 → 도로 / 성벽 → 성벽
+기존:
+- 사거리 안
+- cooldown 완료
+- 바로 `applyDamage()`
 
-1. 시작점 터치
-2. 끝점 터치
-3. 유효성 검사
-4. 공사 Queue 등록
+Alpha 5:
+1. 공격 상태 선택
+2. melee/ranged animation 시작
+3. animation lock
+4. melee 약 5 tick / ranged 약 4 tick 후 hit frame
+5. 공격자/대상 생존 및 관계 재검증
+6. 사거리 재검증
+7. authoritative damage 적용
+8. 피격 군단 hit reaction 요청
 
-초기 구현:
-- 최대 72블록
-- stone brick 기반
-- 상단 stone brick wall
-- 일정 간격 lantern
-- 길이 비례 석재/목재 비용
+공격 시작 시점에 숫자만 즉시 깎이는 구조를 제거했다.
 
-도로/성벽은 일반 건물 record가 아니라 construction job 기반 기반시설이다.
-기존 건물의 현재 footprint를 관통하는 구간은 거부한다.
+### SquadBrain 기반 인터페이스
 
-### 모바일 조작 원칙
+아직 최종 SquadBrain은 아니지만 다음 기반을 추가했다.
 
-- 일반 건물은 기존 미리보기/재터치 유지
-- 회전은 웅크리기+사용 또는 큰 메뉴 버튼
-- 도로/성벽은 start/end 두 번 터치
-- 필수 drag 없음
-- 기반시설 첫 지점은 particle marker로 유지
-- 웅크리기+건설도구 사용으로 기반시설 첫 지점 초기화 가능
+- `pk_brain_state`
+- `pk_brain_target`
+- idle / hold / move / approach / engage 상태 기록
+- animation state와 combat 판단 분리
+- 이동 중 walk
+- 후퇴 이동 중 sprint
+- 공격 중 locomotion이 one-shot attack을 덮어쓰지 않도록 animation lock
 
-## 내부 정적 검사
+### 표적 선택 1차 개선
 
-Alpha 4 최종 패키지 기준:
+기존 nearest-only target selection을 scoring 방식으로 변경했다.
+
+현재 반영:
+- 거리
+- 대상 남은 HP
+- 창병 비율 → 기병 우선
+- 기사 비율 → 궁/석궁 우선
+- 공성 비율 → Ancient Colossus 우선
+- 중장/근위 대상의 단순 우선도 조정
+
+R6에서 위협도, 명령 목표, 집중화 penalty, ranged safety, formation/role reservation까지 확장한다.
+
+## Alpha 5 정적 검사
+
+최종 패키지 기준:
 - JavaScript syntax PASS
+- JSON 58개 parse PASS
 - duplicate function declaration 0
-- JSON 55개 전수 parse PASS
-- BP/RP/모듈 버전 1.5.0 정합
-- BP→RP dependency 정합
-- building shard v2/v3 backward read 확인
-- rotated structure plan 코드 경로 확인
-- rectangular barracks L1 footprint 13×16 → 90° 회전 시 16×13 계산 확인
+- BP/RP/module 1.6.0 정합
+- 9개 friendly client entity → squad_v2 연결 확인
+- 9개 friendly BP entity → 13개 client-synced property 확인
+- six representative soldier root 확인
+- animation family 8종 확인
+- Kenney provenance 확인
+- 원본 GLB 미포함 확인
+- delayed hit frame 경로 확인
+- mixed composition slot sync 확인
+- target scoring 실제 call path 확인
 - source ZIP / mcaddon CRC PASS
-- source / mcaddon 82개 payload byte hash 일치
-
-정적 검사는 런타임 플레이 정상 판정을 대신하지 않는다.
+- source ZIP / mcaddon byte-identical
+- archive SHA-256: `f398bb0cc5b1670b2958db85683e37e1269937f8cf406a4739d81aa46b726fdd`
 
 ## 아직 남은 큰 리메이크
 
-- 외부 병사 모델/rig/전투 애니메이션
-- 혼성 편성 대표 병사 시각화
-- SquadBrain
-- 실제 Formation
-- 원거리 projectile/공성 연출
+- R6 완전한 SquadBrain
+- Block / Line / Column / Wedge / Loose 실제 Formation
+- 병종별 위치 reservation
+- 창병 brace / 기사 charge-regroup
+- 궁/석궁 거리 유지 및 실제 projectile 연출
+- siege setup/fire/impact
 - 전략 군단 간 추상 전투
-- 동맹 지원군 전략 행군
 - 외교 treaty permission
+- 동맹 지원군 전략 행군
 - 전술 카메라
 - 전략 지도 재설계
-- UI 컨텍스트 명령 추가 정리
-- Marketplace 최종 접근성/온보딩/모바일 전수검사
+- UI context command 추가 정리
+- Marketplace 최종 온보딩/접근성/멀티/모바일 검사
 
 ## 검증 정책
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
-통합 테스트 단계에서 Alpha 4 건설 기능은 반드시:
-- 직사각형 건물을 4방향 모두 배치
-- 회전 미리보기와 실제 구조 일치
-- 회전 건물 업그레이드/재시공 시 방향 유지
-- Alpha 3 building shard v2 → v3 호환
-- 도로/성벽 평지·경사·대각선
-- 영토 경계 거부
-- 기존 건물 교차 거부
-- 연속 배치 ON/OFF
-- 모바일 중복 터치
-- 회전 병영 RallyPoint
-- 회전 건물 주민 근무 위치
-
-를 확인한다.
-
-현재 Alpha 4는 리메이크 중간 개발판이며 완료판이 아니다.
+Alpha 5는 정적/코드 단위 검사를 통과한 통합 개발 중간판이다. R6/R7 전투와 대형까지 결합하고 주요 전략/외교 흐름을 더 연결한 뒤 내부 회귀감사를 거쳐 사용자 런타임 테스트 단계로 넘긴다.
