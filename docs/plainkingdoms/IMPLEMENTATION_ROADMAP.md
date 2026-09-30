@@ -1,0 +1,189 @@
+# PlainKingdoms Marketplace Remake Implementation Roadmap
+
+Date: 2026-09-30
+Baseline: PlainKingdoms v1.1.5
+
+## R0 — Safety, audit, compatibility
+
+Goals:
+- unpack and inventory BP/RP;
+- preserve v1.1.5 identifiers and save keys during migration;
+- record manifest/module versions;
+- establish static validation;
+- record external-asset provenance before replacing visuals.
+
+Exit:
+- source can be repackaged;
+- JSON parses;
+- JS syntax passes;
+- manifest dependencies remain valid;
+- save-migration plan documented.
+
+## R1 — Army command reliability
+
+### R1.1 Proactive physical/strategic handoff
+
+Implement:
+- distance thresholds independent of chunk disappearance;
+- physical actor snapshot before removal;
+- generation protection;
+- strategic march immediately after virtualization;
+- materialization near any relevant player.
+
+Required regression:
+- send army 500 blocks away and remain stationary;
+- send army 1000 blocks away and remain stationary;
+- send army 2000 blocks away and remain stationary;
+- confirm strategic coordinate continues changing;
+- approach destination only after expected arrival and confirm actor appears near authoritative location.
+
+### R1.2 World strategic registry
+
+Move authoritative strategic army data from only-player storage to nation/world storage.
+
+Keep player army_roster as migration/compatibility mirror until stable.
+
+Support owner disconnect.
+
+### R1.3 GroundTargetResolver
+
+Implement:
+- direct ray hit;
+- projected fallback;
+- Dimension.getTopmostBlock where script-accessible;
+- walkable correction;
+- clear user feedback.
+
+Required:
+- shallow downward angle;
+- near-horizontal angle;
+- short/medium/far target;
+- hill;
+- cliff;
+- water;
+- unloaded destination;
+- mobile touch.
+
+## R2 — Input and navigation UX
+
+- detect input mode where stable API allows;
+- consolidate permanent hotbar tools;
+- context command surfaces;
+- remove duplicate hub loops;
+- categorize long building/unit lists;
+- large touch targets;
+- confirmation feedback.
+
+## R3 — Recruitment and military infrastructure
+
+- barracks/stable/range/siege production queues;
+- RallyPoint storage;
+- global recruitment panel;
+- auto facility distribution;
+- queue progress;
+- cancel/refund rules;
+- spawn/muster validation;
+- multiplayer ownership.
+
+Legacy recruitComposition direct spawning becomes migration/debug fallback only.
+
+## R4 — Building experience
+
+- preserve placement preview;
+- add rotation;
+- entrance/facing visualization;
+- repeat placement;
+- two-point road/wall workflow;
+- touch two-tap mode;
+- clearer invalid reasons.
+
+## R5 — Army representation and animation
+
+- select legally usable external source assets;
+- create provenance registry;
+- adapt rigs/models to Bedrock;
+- representative mixed-composition rendering;
+- animation state controller;
+- hit-frame timing;
+- visible depletion.
+
+No placeholder models.
+
+## R6 — Squad combat brain
+
+Implement:
+- perception;
+- target scoring;
+- order intent;
+- formation;
+- role assignment;
+- approach/reposition/retreat;
+- combat state machine.
+
+Replace nearest-target-only behavior.
+
+Add role logic for spear brace, knight charge, ranged spacing, siege setup.
+
+## R7 — Formation and group movement
+
+- Block/Line/Column/Wedge/Loose;
+- automatic formation;
+- manual preference;
+- multi-army relative placement;
+- facing/width input;
+- terrain-aware relaxation;
+- shared path corridor experiments.
+
+## R8 — Strategic encounters
+
+- strategic army-vs-army detection;
+- abstract battle when nobody is present;
+- materialized battle when players are present;
+- deterministic enough to prevent reload abuse;
+- encounter duration and result log;
+- state reconciliation if player enters midway.
+
+## R9 — Diplomacy and campaigns
+
+- War/Truce/Neutral/Alliance;
+- treaty permissions;
+- reinforcement march;
+- war log;
+- optional war objectives;
+- ally notifications;
+- strategic shared information.
+
+## R10 — Tactical camera and strategic map
+
+- optional raised command camera;
+- touch/gamepad-friendly camera movement;
+- army selection;
+- destination preview;
+- map-based distant orders;
+- ETA and encounter markers.
+
+## R11 — Marketplace polish
+
+- onboarding;
+- tutorial prompts;
+- accessibility;
+- Korean/English text cleanup;
+- visual hierarchy;
+- sound feedback;
+- model consistency;
+- license audit;
+- performance profiles;
+- multiplayer abuse tests.
+
+## R12 — Full release validation
+
+Platforms:
+- Windows keyboard/mouse;
+- Windows controller;
+- Android/iOS-class touch behavior where testable;
+- lower simulation distance;
+- multiplayer host/client;
+- fresh world;
+- migrated v1.1.5 world.
+
+Release cannot be declared based only on static validation.
