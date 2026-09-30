@@ -67,7 +67,7 @@ Project documents:
 
 Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
-Current local remake milestone: `1.6.0 Remake Alpha 5` — world-authoritative strategic armies, production/RallyPoint flow, construction remake, and the first CC0-external-derived mixed-composition combat presentation.
+Current local remake milestone: `1.7.0 Remake Alpha 6` — first functional SquadBrain with spear brace, cavalry charge/recover, ranged kiting, siege rear positioning, heavy anchoring, and explicit-order priority.n/RallyPoint flow, construction remake, and the first CC0-external-derived mixed-composition combat presentation.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -92,7 +92,7 @@ Current completed foundation:
 - delayed combat hit frames and first scored-target/SquadBrain interface.
 
 Next major work:
-- full SquadBrain role positioning and combat states;
+- R7 representative-soldier formations and role slot positioning;
 - Block/Line/Column/Wedge/Loose formations;
 - richer role-specific brace/charge/bow/crossbow/siege animation/projectile presentation;
 - strategic combat, diplomacy, tactical camera and strategic map.
