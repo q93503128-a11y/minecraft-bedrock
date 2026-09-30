@@ -61,3 +61,22 @@ Project documents:
 - LC Studios Slasher Sword Addon vendored as a native Bedrock held Legendary weapon with original icons, FP/TP models, animations, beams, particles, sounds and combat script;
 - Slasher compatibility-ported from @minecraft/server 1.18.0 to 2.9.0 and gated behind first Ender Dragon kill;
 - Slasher Blade repair drops integrated into Bogre and Obsidilith.
+
+
+## PlainKingdoms Marketplace Remake
+
+Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
+
+PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
+
+Canonical remake documents:
+- `docs/plainkingdoms/REMAKE_CANON.md`
+- `docs/plainkingdoms/RTS_REFERENCE_AND_UX.md`
+- `docs/plainkingdoms/IMPLEMENTATION_ROADMAP.md`
+- `docs/plainkingdoms/RUNTIME_TEST_MATRIX.md`
+
+Current first engineering priorities:
+- fix distant armies that stop outside simulation distance by proactively virtualizing physical actors;
+- make strategic army state authoritative instead of depending on chunk/entity simulation;
+- replace hard-fail ground ray targeting with direct-hit + projected terrain fallback;
+- preserve mobile/touch as a first-class control target.
