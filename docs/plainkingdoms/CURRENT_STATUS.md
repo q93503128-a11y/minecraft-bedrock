@@ -2,7 +2,7 @@
 
 기준일: 2026-09-30  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.6.0 Remake Alpha 5`
+현재 로컬 개발 빌드: `1.7.0 Remake Alpha 6`
 
 ## 저장소 역할
 
@@ -231,3 +231,55 @@ R6에서 위협도, 명령 목표, 집중화 penalty, ranged safety, formation/r
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
 Alpha 5는 정적/코드 단위 검사를 통과한 통합 개발 중간판이다. R6/R7 전투와 대형까지 결합하고 주요 전략/외교 흐름을 더 연결한 뒤 내부 회귀감사를 거쳐 사용자 런타임 테스트 단계로 넘긴다.
+
+
+## Alpha 6 — SquadBrain 병종 전술 1차 본체
+
+### 목표
+
+Alpha 5의 `pk_brain_state`/target scoring/animation bridge를 실제 전투 의사결정에 사용한다.
+
+### 구현
+
+- 기존 target 유지 성향을 추가해 매 틱 가장 가까운 적만 갈아타는 현상을 완화
+- target score에 거리, 잔여 HP, 병종 상성, 같은 아군의 집중 수, 자신을 노리는 위협도를 반영
+- 창 비중 25% 이상 군단은 기병 접근 시 `brace`
+- brace 상태의 창벽은 기사 charge 피해를 감소시키고 대기병 피해를 강화
+- 기사 비중 27% 이상 군단은 적절한 중거리에서 ranged/취약 목표를 향해 `charge`
+- spear wall 목표에는 charge를 억제
+- charge 성공 뒤 `recover`로 전환해 뒤로 이탈한 뒤 cooldown 후 재돌격 가능
+- 궁/석궁 비중이 높은 군단은 preferred range를 유지하고 너무 가까우면 `kite`
+- 공성 비중이 높은 군단은 더 긴 후방 거리를 유지하고 `siege_reposition`
+- 중장/왕실근위 비중이 높은 군단은 근접에서 `anchor`하여 과도한 추격을 억제
+- 명시적 Move/Rally/Retreat는 자동 전술보다 우선하며 opportunistic attack을 하지 않음
+- Hold는 추격하지 않지만 사거리 안의 적에게는 전투 가능
+- Attack/Defend는 SquadBrain 전술 이동 사용
+
+### 애니메이션
+
+새 client-synced state:
+- `anim_state = 6` → `squad_brace`
+
+9개 아군 군단 BP/RP 모두 property range와 brace mapping을 동일하게 갱신했다.
+
+### 중요한 한계
+
+현재도 한 전략 군단은 한 물리 Entity다.
+따라서 대표 병사 6명이 서로 독립된 충돌/길찾기 좌표를 갖는 것은 아니다.
+
+R6은 "군단 전체의 전술 의사결정" 단계다.
+실제 Block/Line/Column/Wedge/Loose 대표병사 슬롯 배치와 역할별 전열/후열 정렬은 R7에서 구현한다.
+
+### Alpha 6 정적 검사
+
+- JavaScript syntax PASS
+- JSON 58개 parse PASS
+- named function 430 / duplicate 0
+- BP/RP 1.7.0 정합
+- friendly BP anim_state 0..6: 9/9
+- friendly RP brace mapping: 9/9
+- ZIP CRC PASS
+- source ZIP / mcaddon byte-identical
+- SHA-256: `6931d7fee854dc9e54905bc95d789a5fdd164ad771d22fe17864eda0723cd16d`
+
+현재도 사용자 실플레이 테스트 단계가 아니다.
