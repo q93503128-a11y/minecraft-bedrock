@@ -55,6 +55,26 @@ Expected:
 - rally point moved during production;
 - multiplayer simultaneous recruitment.
 
+## SquadBrain Alpha 6
+
+- spear-heavy vs knight-heavy: brace triggers at close approach;
+- braced spear wall reduces charge effectiveness;
+- knight-heavy vs ranged-heavy: charge begins only in the intended distance band;
+- charge into spear wall is suppressed;
+- successful charge enters recover/disengage and does not immediately spam another charge;
+- ranged-heavy squad kites when an enemy compresses its minimum range;
+- ranged-heavy squad returns toward its preferred fireline when too far away;
+- siege-heavy squad preserves a longer rear distance;
+- heavy/royal-guard-heavy squad anchors instead of over-pursuing at close range;
+- balanced 10 sword / 10 spear / 10 archer does not stop at maximum archer range;
+- target does not thrash every decision tick while the current target remains valid;
+- target focus saturation causes some multi-squad spreading without preventing focus fire on an important target;
+- Move/Rally/Retreat overrides SquadBrain and does not opportunistically attack;
+- Hold does not chase but attacks when already in range;
+- Attack/Defend uses tactical movement;
+- brace animation state is visible and exits correctly;
+- cavalry recover movement does not path into unsafe blocks.
+
 ## Formations
 
 For Block/Line/Column/Wedge/Loose:
