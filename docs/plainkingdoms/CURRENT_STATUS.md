@@ -2,7 +2,7 @@
 
 기준일: 2026-09-30
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`
-현재 로컬 개발 빌드: `1.3.0 Remake Alpha 2`
+현재 로컬 개발 빌드: `1.4.0 Remake Alpha 3`
 
 ## 저장소 역할
 
@@ -10,112 +10,158 @@
 PlainKingdoms 실제 Bedrock BP/RP 수정과 .mcaddon 패키징은 현재 작업 환경에서 수행한다.
 GitHub Actions 통과 여부를 Bedrock 런타임 정상의 근거로 사용하지 않는다.
 
-## 완료된 리메이크 기반 작업
+## Alpha 1 — 장거리 지휘 / 선제 전략 전환
 
-### Alpha 1 — 장거리 지휘 / 선제 전략 전환
-
-- 가까운 실제 블록 ray hit를 우선 사용
-- ray가 허공으로 빠지면 시선 X/Z를 지형으로 보정
+- 블록 ray hit 실패 시 장거리 지면 보정
 - 군령 깃발 허공 사용을 장거리 이동/공격이동으로 사용
-- 웅크리기+사용은 군단 메뉴로 분리
-- 모든 플레이어에게서 멀어진 물리 군단을 청크가 얼리기 전에 전략 상태로 능동 전환
-- 44/56블록 hysteresis로 반복 생성/제거 방지
+- 웅크리기+사용은 군단 메뉴
+- 플레이어와 멀어진 물리 군단을 엔진 청크 정지 전에 전략 상태로 능동 전환
+- 44/56블록 hysteresis
 
-### Alpha 2 — StrategicArmyState 월드 정본화
+## Alpha 2 — World/Nation StrategicArmyState 정본화
 
-v1.1.5/Alpha 1까지는 군단 위치 목록의 정본이 소유 Player의 `army_roster`에 있었다.
-Alpha 2부터 국가 슬롯별 world dynamic property가 정본이다.
+- 국가 슬롯별 `pk_armies_slot_<slot>` world shard가 군단 정본
+- 기존 player `army_roster`는 세이브 호환 mirror
+- 소유자가 로그아웃해도 다른 플레이어가 월드를 유지하면 전략 행군 지속
+- 실체 기록인데 actor가 사라진 군단의 1.5초 누락 복구
+- 다른 플레이어가 접근해도 전략 군단 실체화
+- 오프라인 소유 군단 사망 정합성 처리
 
-저장 형태:
-- `pk_armies_slot_<nationSlot>`
-- 국가별 최대 군단 수만 저장
-- player `army_roster`는 기존 세이브/호환용 mirror
+## Alpha 3 — 병영 생산 Queue / RallyPoint / 3도구 UI
 
-초기 접속 마이그레이션:
-1. 해당 국가 world army shard가 이미 있으면 world 상태를 player mirror로 복사
-2. shard가 없으면 기존 player `army_roster` + 실제 로드 군단을 병합
-3. world shard 생성
-4. 이후 world 상태를 정본으로 사용
+### 모집 방식 전환
 
-### 소유자 오프라인 행군
+기존 즉시 모집:
+1. 편성 선택
+2. 자원 차감
+3. 플레이어가 영토 안 땅을 직접 바라봄
+4. 로드된 청크에 즉시 군단 Entity 생성
 
-전략 루프가 더 이상 `for each online player -> advanceVirtualArmies(player)`에 종속되지 않는다.
+Alpha 3:
+1. 편성 선택
+2. 비용/가용 인구/군단 한도 예약 검사
+3. 해당 편성을 훈련할 수 있는 병영 중 가장 빨리 완료되는 병영 자동 선택
+4. 자원 선결제
+5. Recruitment Queue 저장
+6. 병영별 실제 훈련 시간 진행
+7. 완료 시 StrategicArmyState 생성
+8. 병영 RallyPoint에 전략 군단 배치
+9. 플레이어가 근처라면 기존 materialization 시스템이 물리 actor 생성
 
-현재 루프:
-1. world registry에 존재하는 국가별 군단 shard 확인
-2. 실체라고 기록됐지만 실제 actor가 사라진 군단 복구
-3. 플레이어와 충분히 멀어진 actor를 전략 상태로 전환
-4. 모든 virtual StrategicArmyState 이동
-5. 어느 플레이어든 가까워지면 해당 군단 실체화
+모집 단계에서 땅을 바라볼 필요가 없다.
 
-따라서 소유 플레이어가 로그아웃해도 월드가 다른 플레이어 때문에 계속 실행 중이라면 해당 군단의 전략 행군이 계속된다.
+### 병영 병렬/순차 생산
 
-### 빠른 청크 이탈 복구
+- 병영마다 1개 생산 라인을 가진다.
+- 서로 다른 병영은 병렬 훈련한다.
+- 같은 병영에 들어간 모집은 순차 대기한다.
+- 편성 병종 단계에 따라 필요한 최소 병영 레벨을 계산한다.
+- 고레벨 병영일수록 훈련 시간이 짧다.
+- 한 국가 Recruitment Queue 최대 12개.
+- 실제 군단 + 모집 예약을 합산하여 군단 한도를 넘는 Queue 등록을 막는다.
+- 모집 예약 군단은 가용 인구에서도 미리 차감한다.
 
-56블록 선제 전환 전에 엔진이 actor를 query에서 제거하는 경우도 고려한다.
+### RallyPoint
 
-world row가:
-- `virtual=false`
-- 하지만 실제 actor가 없음
+국가별 recruitment shard:
+- `pk_recruitment_slot_<slot>`
 
-상태로 1.5초 이상 유지되면:
-- generation 증가
-- `virtual=true`
-- strategic movement로 승격
+병영별 RallyPoint를 저장한다.
 
-정지 군단도 동일하게 virtual hold 상태로 보존되어 이후 접근 시 다시 실체화된다.
+기본:
+- 병영 출입구 바깥 자동 지점
 
-### 오프라인 소유자의 근거리 군단
+사용자 지정:
+- 군령의 장거리 Ground Resolver를 그대로 사용
+- 영토 안의 바라보는 땅을 한 번 지정
+- 이후 해당 병영 모집 완료 군단이 반복 사용
 
-소유자가 접속하지 않았더라도 다른 플레이어가 근처에 있어 군단이 물리 actor로 실체화된 경우:
-- 기존 이동 명령을 계속 수행
-- 수도 귀환/방어는 nation registry의 수도 좌표 사용
-- physical 위치/HP/order를 world shard에 주기적으로 다시 기록
+병영이 사라지거나 요구 레벨을 만족하지 못하게 되면:
+- 다른 적합한 병영을 탐색
+- 다른 병영으로 재배정되면 재훈련 시간을 부여
+- 적합한 병영이 없으면 Queue를 삭제하지 않고 일시정지
 
-### 사망 정합성
+### Queue 관리
 
-소유자가 오프라인인 물리 군단이 전멸하면:
-- world strategic row를 즉시 제거
-- generation을 올려 stale entity 부활 방지
-- 기존 player army_count 정산 debt는 다음 접속 시 적용
+군령 → 군사 생산 / 모집:
+- 새 군단 모집
+- 모집 대기열
+- 병영 / 집결지
+- 기존 군단 재편성
 
-## 성능/저장 진단
+대기열에서:
+- 편성
+- 병영
+- 집결지
+- 남은 시간/대기 시간
+- 일시정지 이유
 
-설정 → 성능 진단에 다음 정보를 추가:
-- world 전략 군단 수
-- virtual 전략 군단 수
-- 현재 로드 아군 군단 수
-- world Dynamic Property 총 byte 수
+를 확인할 수 있다.
 
-국가별 army shard 분할을 사용해 하나의 거대한 JSON에 모든 군단을 저장하지 않는다.
+모집 취소:
+- Queue 제거
+- 지불 자원 전액 환불
 
-## 아직 구현하지 않은 큰 리메이크
+### 오프라인/청크 독립 완료
 
-- 병영 Recruitment Queue / RallyPoint
-- UI/핫바 전면 재구성
+Recruitment Queue는 player-local UI 데이터가 아니라 world nation shard다.
+
+따라서 모집을 시작한 뒤 소유자가 로그아웃해도 월드가 실행 중이면 생산 타이머가 계속 판정된다.
+완료 시 물리 Entity를 강제로 요구하지 않고 StrategicArmyState로 먼저 생성하므로 병영 청크가 로드되어 있을 필요가 없다.
+
+### UI 1차 정리
+
+정상 플레이에서 강제 지급하는 도구를 6개 → 3개로 축소:
+1. 왕국 장부
+2. 건설도구
+3. 군령 깃발
+
+기존:
+- 설정기
+- 세계 지도
+- 군단 호출기
+
+는 더 이상 핫바를 강제 점유하지 않는다.
+해당 기능은 왕국 장부/군령 메뉴에 통합했다.
+
+중복 `통합 메뉴` 허브도 정상 메뉴 흐름에서 제거했다.
+
+### 성능 진단
+
+성능 진단에 전체 Recruitment Queue 개수를 추가했다.
+
+## 아직 남은 큰 리메이크
+
+- 건설 카테고리 UI / 회전 / 출입구 방향 / 도로·성벽 2점 배치
 - 외부 병사 모델/rig/전투 애니메이션
+- 혼성 편성 대표 병사 시각화
 - SquadBrain
 - 실제 Formation
+- 원거리 projectile/공성 연출
 - 전략 군단 간 추상 전투
 - 동맹 지원군 전략 행군
+- 외교 treaty permission
 - 전술 카메라
 - 전략 지도 재설계
-- Marketplace 최종 접근성/온보딩
+- Marketplace 최종 접근성/온보딩/모바일 전수검사
 
-## 내부 검증 정책
+## 검증 정책
 
-사용자 실플레이 테스트는 아직 요구하지 않는다.
+현재도 사용자 실플레이 테스트 단계가 아니다.
 
-전체 리메이크가 충분히 진행된 뒤 내부 정적/수동 검사를 먼저 끝내고 마지막 단계에서 실제 Bedrock 플레이 검증을 요청한다.
+정적 검사와 내부 코드 감사는 각 배치마다 수행하지만,
+청크 독립 이동, Queue, RallyPoint, 전투 AI, 모바일 입력이 서로 연결된 후 통합 실게임 테스트를 요청한다.
 
-단, 청크 독립 이동은 최종 검증 시 반드시:
-- 500블록
-- 1000블록
-- 2000블록
-- 소유자 로그아웃 + 다른 플레이어가 월드 유지
-- 목적지 접근 후 실체화
-- 과거 위치 stale actor 미부활
+Alpha 3 필수 후속 회귀 항목:
+- 병영 1개 Queue 순차 처리
+- 병영 2개 이상 병렬 처리
+- 고레벨 병영 우선/훈련 시간 단축
+- 모집 취소 자원 환불
+- Queue 중 군단 한도 초과 방지
+- RallyPoint 기본/사용자 지정
+- 소유자 오프라인 중 Queue 완료
+- 완료 후 StrategicArmyState 생성
+- 목적지 청크 접근 시 물리 actor 실체화
+- 1.1.5/Alpha 1/Alpha 2 세이브 호환
 
-을 확인해야 한다.
-
-현재 Alpha 2는 기반 공사 단계이며 리메이크 완료판이 아니다.
+현재 Alpha 3는 리메이크 중간 개발판이며 완료판이 아니다.
