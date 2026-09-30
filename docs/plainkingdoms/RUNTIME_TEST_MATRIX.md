@@ -104,14 +104,26 @@ Observe:
 ## Building UX
 
 - all categories;
-- rotation;
-- invalid collision;
-- expansion footprint;
-- repeat placement;
-- road/wall two-point;
+- selection from each category returns the correct build mode;
+- rotation at 0°/90°/180°/270°;
+- rectangular barracks/mine/warehouse preview dimensions rotate correctly;
+- entrance/front marker follows rotation;
+- actual generated blocks match rotated preview;
+- invalid collision uses rotated Lv.5 reserved footprint;
+- upgrade/refresh retains rotation;
+- Alpha 3/v2 building shard loads as north-facing and upgrades to v3 safely;
+- repeat placement ON/OFF;
+- road two-point flat/slope/diagonal;
+- wall two-point flat/slope/diagonal;
+- road/wall maximum length rejection;
+- road/wall territory-boundary rejection;
+- road/wall building-footprint intersection rejection;
+- infrastructure first-point reset;
 - cancel;
 - touch accidental double tap;
-- placement near water/terrain edge.
+- placement near water/terrain edge;
+- rotated barracks default RallyPoint;
+- rotated resident workplace apron.
 
 ## Diplomacy
 
