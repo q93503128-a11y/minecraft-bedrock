@@ -12,7 +12,7 @@ Baseline: PlainKingdoms v1.1.5
 - R2 input/navigation UX: first pass implemented in 1.4.0 Remake Alpha 3; construction navigation substantially improved in Alpha 4. Army/context UI still remains.
 - R3 recruitment / RallyPoint: first functional implementation completed in 1.4.0 Remake Alpha 3.
 - R4 building experience: first functional implementation completed in 1.5.0 Remake Alpha 4 — categories, 90° rotation, entrance marker, repeat placement, road/wall two-point construction.
-- R5+ remain active work.
+- R5 army representation/animation: first functional implementation completed in 1.6.0 Remake Alpha 5 — Kenney CC0-derived six-soldier squad rig, mixed-composition role visibility, HP depletion visuals, animation-state bridge, and delayed hit frames.\n- R6 SquadBrain: foundation started in Alpha 5 with brain state/target and scored target selection; full role positioning/reposition/retreat remains.\n- R7+ remain active work.
 
 Runtime verification remains pending until the later integrated test phase.
 
