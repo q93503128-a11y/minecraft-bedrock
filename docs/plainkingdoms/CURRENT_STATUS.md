@@ -83,7 +83,7 @@ Quaternius Animated Knight / Universal Animation Library 2는 후속 brace/charg
 - `geometry.plainkingdoms.squad_v2`
 - 한 Entity 내부에 최대 6명의 대표 병사
 - Kenney Blocky Characters 비율을 Bedrock cuboid로 재해석
-- 127 bones
+- 103 bones / 120 cubes after Alpha 5 mobile-oriented geometry reduction
 - 9개 친군 군단 Entity가 공용 rig 사용
 
 대표 병사 역할 코드:
@@ -208,7 +208,7 @@ R6에서 위협도, 명령 목표, 집중화 penalty, ranged safety, formation/r
 - target scoring 실제 call path 확인
 - source ZIP / mcaddon CRC PASS
 - source ZIP / mcaddon byte-identical
-- archive SHA-256: `f398bb0cc5b1670b2958db85683e37e1269937f8cf406a4739d81aa46b726fdd`
+- archive SHA-256: `8288f0ef76dedaae74f4e10348e4930c63e3e8a19ee4a41dcdce00794f8feb25`
 
 ## 아직 남은 큰 리메이크
 
