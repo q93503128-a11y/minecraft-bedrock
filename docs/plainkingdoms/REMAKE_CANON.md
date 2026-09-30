@@ -395,6 +395,19 @@ Loss feedback:
 
 Do not imply that each visual soldier equals exactly one strategic soldier.
 
+### Alpha 5 implementation
+
+The first functional version is now implemented with one physical army entity rendering up to six representative soldiers.
+
+- shared geometry: `geometry.plainkingdoms.squad_v2`;
+- body proportions and selected motion curves are retargeted from Kenney Blocky Characters (CC0), with exact provenance tracked separately;
+- six visual slots receive role codes derived from the actual 30-person composition;
+- visible equipment silhouettes cover militia, sword, spear, heavy infantry, archer, crossbow, knight, royal guard and siege;
+- HP depletion reduces visible representatives from six toward one;
+- entity type and base texture are still retained for compatibility, so a future role-atlas/texture pass can further differentiate each representative.
+
+This preserves the compressed-army performance model while ending the previous dominant-unit-only equipment presentation.
+
 ## 11. Animation target
 
 External commercially usable or permissively licensed models/rigs/animations may be adapted only after license verification and provenance recording.
@@ -418,6 +431,20 @@ Required animation families:
 Damage should occur on a deliberate hit frame rather than at the beginning of an attack cycle.
 
 Visual projectiles may be lightweight presentation objects while server script remains authoritative for damage.
+
+### Alpha 5 animation implementation
+
+A client-synced animation state bridge now drives:
+- idle;
+- walk;
+- sprint/retreat;
+- melee;
+- ranged;
+- hit reaction.
+
+The Kenney-derived idle/walk/sprint/melee/death curves were retargeted into Bedrock animation JSON. The death clip exists as a resource but final corpse/death presentation remains unresolved because normal entity removal may occur before a readable death animation finishes.
+
+Combat damage for friendly armies is now scheduled at an animation hit frame rather than applied immediately at attack start. The scheduled hit revalidates entity existence, hostility and distance before authoritative damage.
 
 ## 12. Recruitment redesign
 
