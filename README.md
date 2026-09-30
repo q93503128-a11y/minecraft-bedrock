@@ -65,7 +65,9 @@ Project documents:
 
 ## PlainKingdoms Marketplace Remake
 
-Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.\n\nCurrent local remake milestone: `1.4.0 Remake Alpha 3` — barracks recruitment queues, per-barracks rally points, strategic completion, and three-tool hotbar UX.nation-authoritative strategic army state, owner-independent march, and missing-actor recovery.
+Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
+
+Current local remake milestone: `1.5.0 Remake Alpha 4` — chunk-independent strategic army foundation, barracks recruitment queues/RallyPoints, three-tool hotbar UX, categorized construction, real 90° building rotation, and two-point road/wall construction.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -73,10 +75,21 @@ Canonical remake documents:
 - `docs/plainkingdoms/REMAKE_CANON.md`
 - `docs/plainkingdoms/RTS_REFERENCE_AND_UX.md`
 - `docs/plainkingdoms/IMPLEMENTATION_ROADMAP.md`
-- `docs/plainkingdoms/RUNTIME_TEST_MATRIX.md`\n- `docs/plainkingdoms/CURRENT_STATUS.md`
+- `docs/plainkingdoms/RUNTIME_TEST_MATRIX.md`
+- `docs/plainkingdoms/CURRENT_STATUS.md`
 
-Current first engineering priorities:
-- fix distant armies that stop outside simulation distance by proactively virtualizing physical actors;
-- make strategic army state authoritative instead of depending on chunk/entity simulation;
-- replace hard-fail ground ray targeting with direct-hit + projected terrain fallback;
-- preserve mobile/touch as a first-class control target.
+Current completed foundation:
+- proactive physical/strategic army handoff;
+- nation/world-authoritative StrategicArmyState;
+- long-range terrain command fallback;
+- barracks recruitment queue and RallyPoint;
+- three primary system tools;
+- categorized construction UX;
+- persisted four-direction building orientation;
+- two-point roads and walls.
+
+Next major work:
+- external soldier models/rigs/animations with commercial-safe provenance;
+- mixed-composition visual squads;
+- SquadBrain and real formations;
+- strategic combat/diplomacy/tactical camera.
