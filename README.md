@@ -73,7 +73,7 @@ Canonical remake documents:
 - `docs/plainkingdoms/REMAKE_CANON.md`
 - `docs/plainkingdoms/RTS_REFERENCE_AND_UX.md`
 - `docs/plainkingdoms/IMPLEMENTATION_ROADMAP.md`
-- `docs/plainkingdoms/RUNTIME_TEST_MATRIX.md`
+- `docs/plainkingdoms/RUNTIME_TEST_MATRIX.md`\n- `docs/plainkingdoms/CURRENT_STATUS.md`
 
 Current first engineering priorities:
 - fix distant armies that stop outside simulation distance by proactively virtualizing physical actors;
