@@ -2,7 +2,7 @@
 
 기준일: 2026-09-30
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`
-현재 로컬 개발 빌드: `1.2.0 Remake Alpha 1`
+현재 로컬 개발 빌드: `1.3.0 Remake Alpha 2`
 
 ## 저장소 역할
 
@@ -10,69 +10,112 @@
 PlainKingdoms 실제 Bedrock BP/RP 수정과 .mcaddon 패키징은 현재 작업 환경에서 수행한다.
 GitHub Actions 통과 여부를 Bedrock 런타임 정상의 근거로 사용하지 않는다.
 
-## Alpha 1에서 실제 구현한 것
+## 완료된 리메이크 기반 작업
 
-### 1. 청크 밖 군단 정지 문제 1차 구조 수정
+### Alpha 1 — 장거리 지휘 / 선제 전략 전환
 
-v1.1.5는 군단 엔티티가 entity query에서 사라진 뒤에야 virtual army로 전환하려고 했다.
-하지만 Bedrock에서는 엔티티가 persistent/query-visible 상태여도 simulation distance 밖에서 실제 AI/이동이 멈출 수 있다.
+- 가까운 실제 블록 ray hit를 우선 사용
+- ray가 허공으로 빠지면 시선 X/Z를 지형으로 보정
+- 군령 깃발 허공 사용을 장거리 이동/공격이동으로 사용
+- 웅크리기+사용은 군단 메뉴로 분리
+- 모든 플레이어에게서 멀어진 물리 군단을 청크가 얼리기 전에 전략 상태로 능동 전환
+- 44/56블록 hysteresis로 반복 생성/제거 방지
 
-Alpha 1부터는 엔티티가 사라지기를 기다리지 않는다.
+### Alpha 2 — StrategicArmyState 월드 정본화
 
-현재 초기 임계값:
-- 모든 플레이어에게서 56블록보다 멀어짐: 물리 군단을 능동적으로 전략 상태로 전환
-- 전략 군단 좌표에서 플레이어가 44블록 이내 접근: 물리 군단 재실체화
+v1.1.5/Alpha 1까지는 군단 위치 목록의 정본이 소유 Player의 `army_roster`에 있었다.
+Alpha 2부터 국가 슬롯별 world dynamic property가 정본이다.
 
-44/56의 서로 다른 임계값은 경계에서 생성/제거 반복을 막기 위한 hysteresis다.
-이 수치는 모바일/낮은 simulation distance 실플레이 결과로 재조정할 수 있다.
+저장 형태:
+- `pk_armies_slot_<nationSlot>`
+- 국가별 최대 군단 수만 저장
+- player `army_roster`는 기존 세이브/호환용 mirror
 
-### 2. 장거리 군령 지면 보정
+초기 접속 마이그레이션:
+1. 해당 국가 world army shard가 이미 있으면 world 상태를 player mirror로 복사
+2. shard가 없으면 기존 player `army_roster` + 실제 로드 군단을 병합
+3. world shard 생성
+4. 이후 world 상태를 정본으로 사용
 
-기존:
-- getBlockFromViewDirection 96블록
-- 실제 블록을 못 맞히면 실패 또는 허공 itemUse로 군단 메뉴 진입
+### 소유자 오프라인 행군
 
-Alpha 1:
-1. 직접 ray hit 우선
-2. 실패하면 시선 방향 여러 X/Z 지점의 topmost terrain 탐색
-3. 시선과 가장 자연스럽게 맞는 지면 후보 사용
-4. 스크립트에서 지형을 읽을 수 없는 먼 지점이면 전략 이동용 projected X/Z 허용
+전략 루프가 더 이상 `for each online player -> advanceVirtualArmies(player)`에 종속되지 않는다.
 
-따라서 멀리 명령하려고 카메라를 발밑까지 심하게 숙여야 하는 문제를 줄인다.
+현재 루프:
+1. world registry에 존재하는 국가별 군단 shard 확인
+2. 실체라고 기록됐지만 실제 actor가 사라진 군단 복구
+3. 플레이어와 충분히 멀어진 actor를 전략 상태로 전환
+4. 모든 virtual StrategicArmyState 이동
+5. 어느 플레이어든 가까워지면 해당 군단 실체화
 
-군령 깃발 기본 조작:
-- 블록/땅 터치: 정확한 지점 명령
-- 허공 사용: 보정된 장거리 이동/공격이동
-- 웅크리기 + 사용: 군단 지휘 메뉴
+따라서 소유 플레이어가 로그아웃해도 월드가 다른 플레이어 때문에 계속 실행 중이라면 해당 군단의 전략 행군이 계속된다.
 
-### 3. 실체화 판정 개선
+### 빠른 청크 이탈 복구
 
-기존 materialize는 소유 플레이어와의 거리만 봤다.
-Alpha 1은 해당 전략 군단 좌표와 가장 가까운 오버월드 플레이어를 기준으로 재실체화 가능성을 판단한다.
+56블록 선제 전환 전에 엔진이 actor를 query에서 제거하는 경우도 고려한다.
 
-## 아직 구현하지 않은 핵심
+world row가:
+- `virtual=false`
+- 하지만 실제 actor가 없음
 
-- world/nation 단위 StrategicArmyState 완전 정본화
-- 소유 플레이어 오프라인 중에도 계속 진행되는 행군
-- 병영 모집 Queue / RallyPoint
-- 새 군단 모델과 전투 애니메이션
-- SquadBrain / 병종별 전술 AI
-- 실제 전장 formation
-- 먼 곳의 전략 전투
+상태로 1.5초 이상 유지되면:
+- generation 증가
+- `virtual=true`
+- strategic movement로 승격
+
+정지 군단도 동일하게 virtual hold 상태로 보존되어 이후 접근 시 다시 실체화된다.
+
+### 오프라인 소유자의 근거리 군단
+
+소유자가 접속하지 않았더라도 다른 플레이어가 근처에 있어 군단이 물리 actor로 실체화된 경우:
+- 기존 이동 명령을 계속 수행
+- 수도 귀환/방어는 nation registry의 수도 좌표 사용
+- physical 위치/HP/order를 world shard에 주기적으로 다시 기록
+
+### 사망 정합성
+
+소유자가 오프라인인 물리 군단이 전멸하면:
+- world strategic row를 즉시 제거
+- generation을 올려 stale entity 부활 방지
+- 기존 player army_count 정산 debt는 다음 접속 시 적용
+
+## 성능/저장 진단
+
+설정 → 성능 진단에 다음 정보를 추가:
+- world 전략 군단 수
+- virtual 전략 군단 수
+- 현재 로드 아군 군단 수
+- world Dynamic Property 총 byte 수
+
+국가별 army shard 분할을 사용해 하나의 거대한 JSON에 모든 군단을 저장하지 않는다.
+
+## 아직 구현하지 않은 큰 리메이크
+
+- 병영 Recruitment Queue / RallyPoint
+- UI/핫바 전면 재구성
+- 외부 병사 모델/rig/전투 애니메이션
+- SquadBrain
+- 실제 Formation
+- 전략 군단 간 추상 전투
 - 동맹 지원군 전략 행군
 - 전술 카메라
 - 전략 지도 재설계
-- UI/핫바 전면 정리
+- Marketplace 최종 접근성/온보딩
 
-## Alpha 1 필수 실게임 검사
+## 내부 검증 정책
 
-1. 군단을 500블록 이상 이동 명령하고 플레이어는 제자리 유지
-2. 호출기에서 전략 좌표가 계속 변하는지 확인
-3. 1000블록 이상도 반복
-4. 예상 도착 뒤 목적지에 접근해 새 위치에서 실체화되는지 확인
-5. 옛 위치에 중복 군단이 남지 않는지 확인
-6. 허공을 향해 얕게 아래를 보는 장거리 군령이 메뉴가 아니라 이동 명령으로 처리되는지 확인
-7. 웅크리기+사용으로 군단 메뉴가 열리는지 확인
-8. 기존 정확한 땅 터치 명령이 회귀하지 않았는지 확인
+사용자 실플레이 테스트는 아직 요구하지 않는다.
 
-이 검사를 통과하기 전에는 청크 문제를 완전 해결로 선언하지 않는다.
+전체 리메이크가 충분히 진행된 뒤 내부 정적/수동 검사를 먼저 끝내고 마지막 단계에서 실제 Bedrock 플레이 검증을 요청한다.
+
+단, 청크 독립 이동은 최종 검증 시 반드시:
+- 500블록
+- 1000블록
+- 2000블록
+- 소유자 로그아웃 + 다른 플레이어가 월드 유지
+- 목적지 접근 후 실체화
+- 과거 위치 stale actor 미부활
+
+을 확인해야 한다.
+
+현재 Alpha 2는 기반 공사 단계이며 리메이크 완료판이 아니다.
