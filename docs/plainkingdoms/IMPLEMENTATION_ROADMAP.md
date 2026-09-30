@@ -1,7 +1,7 @@
 # PlainKingdoms Marketplace Remake Implementation Roadmap
 
 Date: 2026-09-30
-Baseline: PlainKingdoms v1.1.5
+Baseline: PlainKingdoms v1.1.5\n\n## Implementation progress\n\n- R0: complete for current baseline audit/repackaging.\n- R1.1 proactive physical/strategic handoff: implemented in 1.2.0 Remake Alpha 1.\n- R1.2 world/nation strategic army authority and offline-owner march: implemented in 1.3.0 Remake Alpha 2.\n- R1.3 ground target resolver: implemented in Alpha 1 and retained.\n- R2+ remain active work.\n\nRuntime verification remains pending until the later integrated test phase.
 
 ## R0 — Safety, audit, compatibility
 
