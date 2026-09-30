@@ -65,7 +65,7 @@ Project documents:
 
 ## PlainKingdoms Marketplace Remake
 
-Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.\n\nCurrent local remake milestone: `1.3.0 Remake Alpha 2` — world/nation-authoritative strategic army state, owner-independent march, and missing-actor recovery.
+Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.\n\nCurrent local remake milestone: `1.4.0 Remake Alpha 3` — barracks recruitment queues, per-barracks rally points, strategic completion, and three-tool hotbar UX.nation-authoritative strategic army state, owner-independent march, and missing-actor recovery.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
