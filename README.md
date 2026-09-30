@@ -67,7 +67,7 @@ Project documents:
 
 Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
-Current local remake milestone: `1.5.0 Remake Alpha 4` — chunk-independent strategic army foundation, barracks recruitment queues/RallyPoints, three-tool hotbar UX, categorized construction, real 90° building rotation, and two-point road/wall construction.
+Current local remake milestone: `1.6.0 Remake Alpha 5` — world-authoritative strategic armies, production/RallyPoint flow, construction remake, and the first CC0-external-derived mixed-composition combat presentation.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -77,6 +77,7 @@ Canonical remake documents:
 - `docs/plainkingdoms/IMPLEMENTATION_ROADMAP.md`
 - `docs/plainkingdoms/RUNTIME_TEST_MATRIX.md`
 - `docs/plainkingdoms/CURRENT_STATUS.md`
+- `docs/plainkingdoms/EXTERNAL_ASSET_PROVENANCE.md`
 
 Current completed foundation:
 - proactive physical/strategic army handoff;
@@ -84,12 +85,14 @@ Current completed foundation:
 - long-range terrain command fallback;
 - barracks recruitment queue and RallyPoint;
 - three primary system tools;
-- categorized construction UX;
-- persisted four-direction building orientation;
-- two-point roads and walls.
+- categorized/rotatable construction and two-point infrastructure;
+- Kenney Blocky Characters CC0-derived six-representative-soldier squad rig;
+- mixed-composition role/equipment visualization;
+- client-synced idle/walk/sprint/melee/ranged/hit animation state;
+- delayed combat hit frames and first scored-target/SquadBrain interface.
 
 Next major work:
-- external soldier models/rigs/animations with commercial-safe provenance;
-- mixed-composition visual squads;
-- SquadBrain and real formations;
-- strategic combat/diplomacy/tactical camera.
+- full SquadBrain role positioning and combat states;
+- Block/Line/Column/Wedge/Loose formations;
+- richer role-specific brace/charge/bow/crossbow/siege animation/projectile presentation;
+- strategic combat, diplomacy, tactical camera and strategic map.
