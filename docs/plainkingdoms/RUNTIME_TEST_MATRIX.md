@@ -258,6 +258,67 @@ Multiplayer:
 - alliance breakup while support army is inside former ally territory;
 - save/reload with active treaties and reinforcement march.
 
+## Campaign / siege / projectiles Alpha 10
+
+Siege command:
+- select one army and order enemy capital siege;
+- select all armies and order building siege;
+- 1 / 4 / 8 / 16 armies all receive unique assembly targets within siege-start radius;
+- physical army reaches target then creates siege;
+- virtual army reaches target then creates siege;
+- owner disconnect does not stop siege march;
+- peace/truce/alliance transition cancels bilateral active siege;
+- player issues normal Move/Attack/Hold/Retreat and army leaves siege cleanly.
+
+Siege resolution:
+- fortification HP reflects capital/watchtower state;
+- disabled watchtower no longer contributes defense;
+- fortification breaks before target HP;
+- non-capital victory disables target building temporarily without deleting structure blocks;
+- disabled barracks cannot accept normal recruitment production;
+- disabled production/support building stops contributing to building-level totals;
+- disabled watchtower stops automated defense;
+- disable expiry restores operation;
+- capital breach weakens strategic fortification/defense for the configured duration;
+- capital breach expiry restores normal defense;
+- siege attacker losses update authoritative StrategicArmyState and cannot be overwritten by a healthier physical copy;
+- observed siege writes strategic HP loss back to physical actor health.
+
+Campaign logistics:
+- supply increases in own territory;
+- supply increases more slowly in allied ResourceAid+MilitaryAccess territory;
+- supply falls in neutral field;
+- supply falls faster in enemy territory;
+- low supply slows virtual march;
+- low supply/morale slows physical march;
+- low supply/morale lowers strategic and local damage;
+- battle damage lowers morale;
+- strategic victory and siege victory recover some morale;
+- supply/morale survive virtualize/materialize and save/reload.
+
+Campaign result:
+- siege victory changes war score;
+- attacker receives loot/resource reward;
+- defender siege-loss counters update;
+- campaign log only exposes records involving that nation.
+
+Visible projectile:
+- archer shot visibly spawns arrow;
+- crossbow shot visibly spawns bolt;
+- siege-heavy ranged shot visibly spawns siege projectile;
+- observed strategic siege produces visible volleys;
+- projectile disappears after impact/timeout;
+- cosmetic projectile itself deals zero impact damage;
+- server-authoritative hit-frame applies damage exactly once;
+- target leaving range before hit frame still cancels authoritative damage;
+- many projectiles do not accumulate permanently.
+
+Performance:
+- active siege count appears in performance diagnostic;
+- observed siege count appears separately;
+- low-supply army count appears;
+- multiple unobserved sieges do not require loaded chunks.
+
 ## Accessibility/mobile
 
 - no required hover;
