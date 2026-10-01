@@ -319,6 +319,72 @@ Performance:
 - low-supply army count appears;
 - multiple unobserved sieges do not require loaded chunks.
 
+## Tactical camera / strategic command Alpha 11
+
+Tactical camera:
+- toggle ON from Army menu;
+- toggle OFF and return to ordinary camera;
+- reconnect/player init never leaves camera stuck;
+- death/respawn camera recovery;
+- keyboard/mouse orbit and camera-relative movement;
+- controller orbit and camera-relative movement;
+- touch orbit and camera-relative movement;
+- movement direction remains understandable relative to elevated view;
+- Army Banner ground Move/Attack Move still works while tactical camera is active;
+- tactical actionbar reports correct selected/all scope, moving count, encounter count and siege count;
+- rapidly toggling camera does not create camera errors or duplicated UI state.
+
+Strategic army map:
+- one/4/16 armies list without losing items across pagination;
+- HP/order/physical/virtual/encounter/siege state correct;
+- current and target coordinates correct;
+- ETA decreases during virtual march and stops when no moving target exists;
+- select individual army from strategic map;
+- formation change persists;
+- return-to-capital order works.
+
+Direct coordinates:
+- valid positive and negative X/Z;
+- decimal input handled consistently;
+- blank/invalid numeric input rejected without corrupting army target;
+- Move command;
+- Attack Move command;
+- loaded destination;
+- unloaded destination;
+- MilitaryAccess validation still applies.
+
+Conflict map:
+- active Encounter appears;
+- active Siege appears;
+- selected army dispatches to encounter area;
+- attacker can reissue existing Siege target;
+- observer teleport occurs only when explicitly selected.
+
+Nation/site context:
+- own capital rally;
+- War nation capital Attack Move;
+- War nation capital Siege;
+- Alliance + access normal movement;
+- Alliance + Reinforcement + access strategic reinforcement;
+- Neutral/Alliance without MilitaryAccess cannot receive invalid military entry;
+- world-site Move;
+- world-site Attack Move.
+
+Army Banner direct entity context:
+- own army tap opens own context;
+- select/hold/attack-mode/formation actions apply to the tapped army;
+- SharedCommand ally opens shared-control context;
+- SharedVision-only ally exposes information but not command;
+- SharedVision-only interaction never teleports player;
+- War enemy context dispatches currently selected own army rather than taking control of enemy;
+- unrelated/non-army entities retain normal behavior.
+
+Menu/UX:
+- common army command reachable without reopening deep Realm menu;
+- strategic map observer teleport clearly separated from actual command;
+- touch targets remain large enough on phone layout;
+- no hover-dependent information.
+
 ## Accessibility/mobile
 
 - no required hover;
