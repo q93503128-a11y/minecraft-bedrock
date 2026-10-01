@@ -67,7 +67,7 @@ Project documents:
 
 Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
-Current local remake milestone: `1.11.0 Remake Alpha 10` — nation-vs-nation Strategic Siege, temporary building disable/capital breach, supply/morale campaign logistics, war score/loot, and visible cosmetic arrow/bolt/siege projectiles while Script hit frames remain authoritative for damage.
+Current local remake milestone: `1.12.0 Remake Alpha 11` — follow-orbit camera-relative tactical command view, strategic army/conflict/nation/site/coordinate command surfaces, tactical status HUD, and direct Army Banner entity context controls.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -91,16 +91,15 @@ Current completed foundation:
 - abstract/physical strategic battle continuity;
 - four-state diplomacy and five treaty permissions;
 - strategic allied reinforcement march;
-- Strategic Siege against capitals/buildings;
-- supply/morale logistics across strategic and physical simulation;
-- temporary building disable and capital breach;
-- war score/loot campaign result state;
-- cosmetic arrow/bolt/siege projectile presentation with zero projectile damage.
+- Strategic Siege, supply/morale, temporary disable/breach, war score and loot;
+- cosmetic arrow/bolt/siege projectile presentation;
+- tactical follow-orbit camera with camera-relative controls;
+- strategic-map command surface with army ETA, conflicts, nations/sites and X/Z orders;
+- direct Army Banner entity context interaction.
 
 Next major work:
-- R11 tactical camera and strategic-map command surface;
-- deeper context command UI;
-- NPC strategic campaign/siege and richer multi-nation war consequences;
 - role-specific combat/death animation polish;
+- NPC strategic campaign/siege and richer multi-nation war consequences;
+- strategic-map/tactical-camera touch/controller runtime tuning;
 - R12 Marketplace onboarding/accessibility/mobile/multiplayer polish;
 - R13 full release validation.
