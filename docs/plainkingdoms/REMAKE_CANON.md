@@ -682,6 +682,41 @@ Do not instantly resolve large battles if a duration better communicates war.
 
 When a player approaches during/after an encounter, materialize the authoritative remaining state.
 
+
+### Alpha 8 strategic encounter implementation
+
+The first nation-vs-nation strategic encounter layer is implemented.
+
+Rules:
+- only nations currently at War can create strategic encounters;
+- only virtual armies are candidates for new abstract encounters;
+- enemy armies within 12 blocks create an Encounter;
+- same-side armies within 18 blocks join the existing Encounter;
+- a 24-block spatial grid prevents full pairwise world scans;
+- one pass creates at most four new Encounter records.
+
+An Encounter stores its participants and every participant's pre-battle order/target. Strategic movement pauses while `encounterId` is present.
+
+When unobserved:
+- combat advances once per strategic pass;
+- damage uses current HP, actual composition, role counters, formation modifiers and deterministic round variance;
+- HP is written back into StrategicArmyState;
+- destroyed armies are removed from the authoritative world shard.
+
+When a player comes within the observation threshold:
+- abstract damage stops;
+- Encounter state becomes physical;
+- the normal materialization layer creates the same surviving armies with the same stored HP.
+
+If observers leave and all survivors are virtual again, the same Encounter returns to abstract resolution.
+
+On victory or diplomatic peace:
+- Encounter membership is removed;
+- surviving armies restore the order and target they had before the battle.
+
+The initial Alpha 8 layer intentionally excludes NPC-site strategic combat, fortress/capital siege resolution, supply/morale, and multi-coalition battles.
+
+
 ## 19. Diplomacy redesign
 
 Relationship states:
