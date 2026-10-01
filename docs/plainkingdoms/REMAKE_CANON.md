@@ -339,6 +339,38 @@ Manual selection remains available.
 
 Terrain and tactical doctrine may temporarily adapt formation without destroying the player's preferred formation.
 
+### Alpha 7 formation implementation
+
+Formation preference is now part of the authoritative army row:
+- auto
+- block
+- line
+- column
+- wedge
+- loose
+
+Legacy rows default to auto.
+
+The physical actor mirrors the preference and exposes a client-synced 0..4 active formation property.
+
+The six representative soldier roots move to distinct local coordinates for Block, Line, Column, Wedge, and Loose. Representative roles are reordered so frontline roles tend toward front slots and archer/crossbow/siege roles tend toward rear slots; Wedge prioritizes cavalry toward the lead.
+
+Auto rules in Alpha 7:
+- Move / Rally / Retreat -> Column;
+- spear Brace -> Line;
+- cavalry Charge -> Wedge;
+- ranged Fireline -> Line;
+- Recover / Kite / Siege Reposition -> Loose;
+- heavy Anchor / normal melee -> Block.
+
+Manual formation preference overrides automatic switching.
+
+For multi-army commands, the destination point is expanded into a formation-specific set of unique target coordinates. The local layout is rotated using the vector from the selected-army centroid toward the destination, so Line/Column/Wedge orientation follows travel direction rather than fixed world axes.
+
+A lightweight same-nation separation vector is applied only in local steering, while the A* destination and route cache remain stable. This reduces actor stacking without continuously invalidating path plans.
+
+The compressed-army rule remains unchanged: representative soldiers are visual/tactical slots inside one army entity, not independent pathfinding mobs.
+
 ## 9. Combat architecture
 
 Replace nearest-target plus periodic direct-damage combat with a squad-level state machine.
