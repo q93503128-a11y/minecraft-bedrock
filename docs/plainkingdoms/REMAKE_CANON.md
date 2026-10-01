@@ -845,6 +845,32 @@ StrategicArmyState now carries supply and morale. Home territory replenishes sup
 
 Visible ranged combat uses script-spawned cosmetic projectile entities for arrow, bolt, and siege shot. They have no impact damage. Existing server-authoritative animation hit-frame logic remains the only damage source.
 
+### Alpha 12 NPC strategic-site implementation
+
+Hostile faction sites now participate in the same physical/strategic continuity principle as armies.
+
+Supported first-pass faction sites:
+- Raider Camp
+- Goblin Camp
+- Undead Crypt
+- a Neutral Clan only after that nation has explicitly made it hostile
+
+A strategic site attack stores `siteTargetId` on the authoritative army row. At the site radius, unobserved combat is resolved against persistent strategic garrison HP. When a player approaches, actual defenders are spawned with health proportional to that remaining garrison. When observers leave, the physical defender health is converted back into strategic garrison HP before the actors are removed.
+
+This prevents site combat from freezing on unloaded chunks and prevents partial progress from resetting simply because the representation changed.
+
+World bosses and dungeon waves remain intentionally physical-content-first in Alpha 12.
+
+### Alpha 12 role-animation implementation
+
+The shared six-representative rig now distinguishes:
+- bow draw/release;
+- crossbow aim/reload/release;
+- siege recoil/fire;
+- cavalry charge posture.
+
+These use client-synced animation states and role properties. Cosmetic projectile entities remain presentation-only and do not become a second damage authority.
+
 ## 21. Accessibility and readability
 
 Required:
