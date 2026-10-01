@@ -2,7 +2,7 @@
 
 기준일: 2026-10-01  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.13.0 Remake Alpha 12`
+현재 로컬 개발 빌드: `1.14.0 Remake Alpha 13`
 
 ## 저장소 역할
 
@@ -270,7 +270,7 @@ Alpha 7에서 “실제 대형”이란:
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
-Alpha 12까지 일반 NPC 세력의 청크 밖 전략전과 역할별 bow/crossbow/siege/charge 표현이 연결됐다. 다음 배치부터 R12 Marketplace 온보딩·접근성·모바일/컨트롤러·멀티 폴리싱으로 들어가며, 그 뒤 내부 전수감사 후 실제 Bedrock 통합 테스트를 요청한다.
+Alpha 13에서 R12 Marketplace 폴리싱 1차를 시작했다. 온보딩·메뉴 계층·간결 HUD를 정리했고, Alpha 12 실제 소스 감사에서 발견한 모집 Queue 런타임 함수 누락을 복구했다. 다음 R12 배치는 touch/controller 실제 런타임, 멀티 권한/동시성, 문구/현지화, 전투 표현 폴리싱을 계속한다.
 
 정적 검사는 Minecraft 런타임 정상 판정을 대신하지 않는다.
 
@@ -1095,3 +1095,197 @@ site가 제압되면:
 - SHA-256: `fd7d479adaf88803a30a1d14de8b08c015f4c61c4efa1389bd3aa6cbfaa9a9f4`
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
+
+
+## Alpha 13 — R12 Marketplace 폴리싱 1차 / 모집 런타임 복구
+
+버전:
+- 패키지: `1.14.0 Remake Alpha 13`
+- runtime VERSION: `1.14.0-remake.13`
+
+### Alpha 12 실제 소스 재감사에서 발견한 모집 런타임 누락
+
+Alpha 12 최종 SOURCE를 다시 직접 감사한 결과 문서에는 Recruitment Queue/RallyPoint가 구현된 것으로 기록되어 있었지만 실제 `main.js`에는 다음 호출 대상 정의가 빠져 있었다.
+
+- `processRecruitmentQueues`
+- `openArmyManagement`
+- `openReformArmyList`
+
+JavaScript 구문 자체는 유효하므로 `node --check`만으로는 탐지되지 않는 런타임 누락이었다.
+
+Alpha 13에서 이 경로를 실제 구현으로 복구했다.
+
+### 모집 Queue 복구
+
+정본:
+- nation/world shard: `pk_recruitment_slot_<slot>`
+- 국가당 Queue 최대 12
+- 1초 간격 recruitment loop
+- StrategicArmyState가 완성 군단의 권위 상태
+
+흐름:
+1. 편성 프리셋 선택
+2. 해금/군단 한도/가용 인구/자원 검사
+3. 완료 예상 시간이 가장 빠른 적합 병영 자동 선택
+4. 자원·인구·군단 슬롯 예약
+5. 같은 병영은 순차, 서로 다른 병영은 병렬 훈련
+6. 완료 시 병영 RallyPoint에서 virtual StrategicArmyState 생성
+7. owner가 온라인이면 mirror/HUD 갱신과 근거리 materialization 시도
+8. owner가 오프라인이어도 월드가 실행 중이면 Queue 진행
+
+추가 회귀:
+- 병영 파괴/레벨 부족/공성 기능정지 시 Queue pause
+- 복구 시 pause 시간만큼 `startedAt/readyAt`을 뒤로 이동
+- `pausedAt`도 저장 정규화에 포함해 월드 재로드 후 조기 완료 방지
+- 취소 시 예약 자원 전액 반환
+- 취소 뒤 같은 병영 후속 Queue 재스케줄
+- 중복 armyId가 이미 world shard에 있으면 중복 생성하지 않음
+
+### RallyPoint
+
+병영별 RallyPoint를 recruitment shard에 저장한다.
+
+모바일/컨트롤러에서 정밀한 지면 드래그를 요구하지 않도록:
+- 병영 선택
+- 현재 플레이어 위치 사용
+- 병영 입구 기본값 복원
+
+경로를 제공한다.
+
+RallyPoint는 내 영토/오버월드 조건을 검사한다.
+
+### 기존 군단 재편성 복구
+
+수도 36블록 안, Encounter/Siege 비참가 군단을 기존 편성 프리셋으로 재편성할 수 있다.
+
+- 더 비싼 편성은 양의 자원 차액만 지불
+- 낮춘 편성은 자원 환불 없음
+- 현재 HP 비율 유지
+- 새 composition에 맞춰 type/HP max 갱신
+- generation 증가 후 stale physical actor 제거
+- world-authoritative row를 virtual 상태로 갱신 후 materialize
+- 기존 encounter/siege/site/support 상태 정리
+
+### R12 온보딩
+
+게임 상태를 읽는 8단계 핵심 온보딩을 추가했다.
+
+1. 수도
+2. 첫 생산 건물
+3. 첫 병영
+4. 첫 군단 모집
+5. RallyPoint
+6. 첫 이동 명령
+7. 첫 전투
+8. 첫 외교
+
+각 단계에서:
+- 현재 완료 여부를 텍스트/기호로 표시
+- 다음 행동 바로가기 제공
+- 건너뛰기/재활성화 가능
+- 싱글플레이에서 다른 국가가 없으면 외교 단계는 진행 차단 요소로 사용하지 않음
+
+### 접근성 / 메뉴 계층
+
+군령 메인 메뉴를 긴 단일 목록에서 다음 계층으로 축약했다.
+
+- 빠른 군단 지휘
+- 군사 생산 / 모집
+- 전략 / 전쟁
+- 군단 관리 / 위치
+- 전술 카메라
+- 온보딩 / 조작 안내
+- 왕국 장부
+
+전략/전쟁과 관리/위치는 별도 하위 메뉴로 분리했다.
+
+왕국 장부도:
+- 온보딩
+- 국가/수도
+- 주민/생활
+- 탐험/세력
+- 외교
+- 전략 지도
+- 서버/자원/상세
+- 설정
+
+중심으로 정리했다.
+
+설정은:
+- 화면/접근성
+- 성능
+- 복구/오류
+- 온보딩/조작
+- 왕국 장부
+
+로 분리했다.
+
+### 모바일 HUD
+
+신규/미설정 플레이어 기본값:
+- `hud_compact = 1`
+
+간결 HUD는:
+- 국가
+- 핵심 자원
+- 군단 수
+- 현재 건설 모드/공사
+- 다음 온보딩 목표
+- 부족 경고
+
+위주로 표시한다.
+
+상세 HUD는 설정에서 다시 켤 수 있다.
+
+### 오류 메시지
+
+핵심 실패 경로 일부를:
+- 실패 이유
+- 바로 할 수 있는 해결 방법
+
+을 함께 표시하는 `problem(...)` 경로로 정리했다.
+
+현재 적용 범위:
+- 지면 명령 탐색 실패
+- 국가 없이 건설
+- 수도 부지 충돌
+- 모집/해금/자원/인구/병영 조건
+- RallyPoint 조건
+- 재편성 조건
+
+### Alpha 13 정적/패키지 검사
+
+- JavaScript syntax PASS
+- top-level stub load PASS
+- JSON 66개 parse PASS
+- named function 609 / duplicate 0
+- BP/RP/module/dependency 1.14.0 정합
+- runtime VERSION `1.14.0-remake.13`
+- Recruitment Queue process loop 연결 확인
+- recruitment pause `pausedAt` persistence 확인
+- world-authoritative army count 경로 확인
+- 친군 BP anim_state 0..11: 9/9
+- 친군 RP sprint=4 / charge=10 mapping: 9/9
+- 3개 핵심 핫바 도구 강제 정책 유지
+- payload 94 files
+- Source ZIP CRC PASS
+- archive/tree byte identity PASS
+- Source ZIP / mcaddon byte-identical
+- 정적/패키지 검사 38/38 PASS
+- SHA-256: `6ec17d42577d4d0e88fa6d4ba157d42eee1cd4dea696f7d8931dec6c60a3f67f`
+
+### 아직 완료로 보지 않는 것
+
+이번 검사는 Bedrock 런타임 테스트가 아니다.
+
+특히 다음은 R12/R13 실제 통합 테스트가 필요하다.
+- 터치/컨트롤러 조작성과 폼 레이아웃
+- 실제 여러 병영 Queue 병렬/순차 시간
+- owner disconnect/reconnect 중 Queue
+- 멀티 동시 모집/취소/권한 race
+- RallyPoint 실제 materialization
+- 재편성 직후 physical actor generation 정합
+- 저장 이전/마이그레이션
+- 저사양 모바일 성능
+
+따라서 Alpha 13은 R12 폴리싱의 첫 정적 구현 배치이며 Marketplace 후보 완료 상태가 아니다.
