@@ -67,7 +67,7 @@ Project documents:
 
 Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
-Current local remake milestone: `1.7.0 Remake Alpha 6` — first functional SquadBrain with spear brace, cavalry charge/recover, ranged kiting, siege rear positioning, heavy anchoring, and explicit-order priority.n/RallyPoint flow, construction remake, and the first CC0-external-derived mixed-composition combat presentation.
+Current local remake milestone: `1.8.0 Remake Alpha 7` — persistent Auto/manual formations, five representative-soldier formation layouts, role-aware front/rear slots, formation-aware multi-army destination spreading, and local same-nation separation on top of the Alpha 6 SquadBrain.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -88,11 +88,16 @@ Current completed foundation:
 - categorized/rotatable construction and two-point infrastructure;
 - Kenney Blocky Characters CC0-derived six-representative-soldier squad rig;
 - mixed-composition role/equipment visualization;
-- client-synced idle/walk/sprint/melee/ranged/hit animation state;
-- delayed combat hit frames and first scored-target/SquadBrain interface.
+- animation-synchronized damage hit frames;
+- SquadBrain spear brace / cavalry charge-recover / ranged kite-fireline / siege reposition / heavy anchor;
+- Auto/manual Block, Line, Column, Wedge and Loose formations;
+- StrategicArmyState formation persistence;
+- formation-aware unique multi-army destinations;
+- local same-nation movement separation.
 
 Next major work:
-- R7 representative-soldier formations and role slot positioning;
-- Block/Line/Column/Wedge/Loose formations;
-- richer role-specific brace/charge/bow/crossbow/siege animation/projectile presentation;
-- strategic combat, diplomacy, tactical camera and strategic map.
+- R8 strategic encounters and unloaded abstract combat;
+- R9 diplomacy/treaty permissions and strategic allied reinforcement march;
+- visible ranged/siege projectile presentation;
+- tactical camera and strategic-map command surface;
+- Marketplace onboarding/accessibility/mobile/multiplayer validation.
