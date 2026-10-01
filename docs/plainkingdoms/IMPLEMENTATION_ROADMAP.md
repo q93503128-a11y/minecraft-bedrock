@@ -20,7 +20,7 @@ Baseline: PlainKingdoms v1.1.5
 - R10 campaign/siege/projectile layer: first functional implementation completed in 1.11.0 Remake Alpha 10 — Strategic Siege, temporary building disable/capital breach, supply/morale logistics, war score/loot, and cosmetic arrow/bolt/siege projectile presentation.
 - R11 tactical camera and strategic map: first functional implementation completed in 1.12.0 Remake Alpha 11 — follow-orbit camera-relative command view, tactical actionbar, army/conflict/nation/site/coordinate strategic command surfaces, and direct Army Banner entity context controls.
 - R11.5 pre-polish combat/NPC bridge: completed in 1.13.0 Remake Alpha 12 — chunk-independent NPC faction-site combat with physical/abstract garrison continuity and role-specific bow/crossbow/siege/charge animations.
-- R12+ remain active work.
+- R12 Marketplace polish: first implementation batch completed in 1.14.0 Remake Alpha 13 — onboarding, menu hierarchy/accessibility, compact mobile HUD, Recruitment Queue runtime repair, RallyPoint controls, and army reformation restoration. Touch/controller runtime, multiplayer abuse/race testing, localization, presentation polish and release audit remain active.
 
 Runtime verification remains pending until the later integrated test phase.
 
@@ -216,6 +216,34 @@ Further polish remains:
 - license audit;
 - performance profiles;
 - multiplayer abuse tests.
+
+### Alpha 13 first R12 batch
+
+Implemented statically in 1.14.0 Remake Alpha 13:
+- state-driven 8-step onboarding with direct next-action routing;
+- solo-safe diplomacy onboarding completion;
+- Army/Realm/Settings menu hierarchy reduction;
+- compact HUD default with detailed HUD toggle;
+- reason + recovery text for several high-frequency failure paths;
+- missing Recruitment Queue runtime functions restored from existing schema/design intent;
+- automatic eligible-barracks scheduling;
+- same-barracks sequential / multi-barracks parallel training;
+- owner-offline world Queue progression;
+- per-barracks RallyPoint controls;
+- queue cancel/full refund and pause/resume timing persistence;
+- existing-army preset reformation at capital with HP-fraction preservation.
+
+Still required before R12 exit:
+- real Bedrock touch/controller path testing;
+- phone portrait/landscape density checks;
+- host/client multiplayer ownership and race tests;
+- simultaneous recruit/build/diplomacy operations;
+- Korean/English final copy/localization pass;
+- sound/animation/death/siege presentation polish;
+- low-end mobile performance profiling;
+- final license/provenance audit.
+
+Static validation does not close these runtime requirements.
 
 ## R13 — Full release validation
 
