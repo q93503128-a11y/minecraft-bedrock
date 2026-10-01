@@ -2,7 +2,9 @@
 
 기준일: 2026-10-01  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.15.0 Remake Alpha 14`
+현재 로컬 개발 빌드: `1.16.0 Remake Alpha 15`
+
+Alpha 15는 R12 소스 감사·수정 및 패키징 checkpoint다. R12 종료나 Marketplace 출시 후보 완료 판정이 아니다. 실제 Bedrock Add-On import/world launch/play는 NOT_RUN이며 touch/controller/host-client/mobile/engine migration은 BLOCKED_RUNTIME이다. Windows Bedrock 설치는 확인했으나 화면 자동화가 중단된 뒤 화면 조작 없이 소스 작업을 계속했다.
 
 ## 저장소 역할
 
@@ -1466,3 +1468,39 @@ claim 저장이 실패하면 보상을 지급하지 않고 재시도 안내를 �
 - 저사양 모바일에서 메뉴/HUD/전략 loop 성능
 
 따라서 Alpha 14는 R12 두 번째 구현 배치이며 Marketplace 후보 완료 상태가 아니다.
+
+
+### Alpha 15 — R12 소스 감사 / 저장 실패·권한·일반 플레이 수정
+
+출발 source는 사용자 제공 Alpha 14 ZIP이다. SHA-256 `1f4eaa3977ccbbf1de5437afa9ce907350f63733227f29b195694e147f3756dc`를 확인하고, 문서 main `dbcd013aebc117e4ea341daf93d150970f9c61ad`와 7개 정본 문서를 읽은 뒤 실제 구현과 대조했다. 신규 대형 캠페인 기능은 추가하지 않았다.
+
+이번 소스 수정:
+
+- 일반 Minecraft Creative 강제·전역 itemUse/채굴 차단·설치 블록 삭제·자동 vanilla entity 정리를 해제했다. 시스템 도구가 필요한 block/entity 이벤트만 소비한다. 일반 item을 지우지 않고 빈 inventory slot로 이동하며, 수동 entity 정리는 `pk_admin`+재확인으로 제한한다. 기존 월드의 game mode/rules를 반대 값으로 자동 변경하지 않는다.
+- 다중 scalar 자원 쓰기를 player `pk_economy_v1` wallet로 모았다. 비용/환불과 world 작업의 저장은 복구 journal receipt로 연결하며, 초기 intent 저장 실패 시 비용·작업을 바꾸지 않는다. 후속 실패는 이전 world 상태를 보이면서 정확한 target wallet/primary로 재시도한다.
+- stable reward packet ID와 wallet lastClaim으로 지급 후 queue cleanup 실패의 중복 지급을 막는다. ResourceAid는 sender debit+outbox를 한 번에 예약하고 수신 watermark로 중복 전달을 막는다. site/siege/NPC claim과 pending reward는 같은 world batch다.
+- 긴 world JSON와 journal은 6,000 UTF-16 문자 이하 alternate-bank page로 저장한다. index 저장 실패 시 이전 값이 유지되고 surrogate pair를 나누지 않는다. syntactically corrupt JSON/missing page는 덮어쓰지 않고 진단한다.
+- 군단 world snapshot 저장 뒤 물리 actor를 제거한다. materialization row 저장 실패 시 새 actor를 제거한다. 완료 모집/tombstone 검사를 병영/한도 검사보다 먼저 수행해 stale Queue의 재생성·환불을 막는다. 사망 row 제거와 tombstone은 함께 저장한다.
+- 명령은 최신 권위 row/generation을 저장한 뒤 actor에 적용한다. formation도 저장 성공 뒤 변경한다. SharedCommand 선택 잔류와 SharedVision/서버 현황의 정보 노출을 수정했다. 외교 요청 ID·현재 소유자·현재 조약 flag를 확정 때 재검사한다.
+- Encounter/Siege 다중 기록을 batch로 저장하고 stale membership 재편입을 막는다. site actor spawn 저장 실패를 되돌리며, 마지막 적 사망/remaining=0 상태는 보상·다음 wave 실패를 재시도한다.
+- UserBusy/disconnect 폼 lock race, 전술 HUD 덮어쓰기, Realm 메뉴 반복 camera clear, Survival 관찰 이동, 좌표 입력 검사를 수정했다. 공성 목표는 10개, 국가 현황은 4개씩 페이지화했다. 주요 UI 20개 흐름의 완료/취소/복귀를 소스로 추적했다.
+- 혼성 대표 병사의 melee/ranged/brace/charge를 role별로 제한했다. hit-frame에서 현재 generation·관계·명령·병종 기여를 재검사한다. 9종 sprint=4/charge=10, one army=one entity/최대6대표, 44/56 handoff, owner-offline 전략 진행은 유지한다.
+
+검증된 범위:
+
+- mocked Script API regression **71/71 PASS**; 실제 Bedrock runtime 검사와 다르다.
+- static/package **37/37 PASS**, JSON66, named function638/duplicate0, undefined direct-call heuristic0.
+- BP/RP entity18, item6, geometry16, animation16, friendly variants9; 참조·animation bones·texture·camera·manifest/dependency 대조.
+- 최종 payload94파일/추가·삭제0/변경4파일: BP manifest, BP scripts/main.js, RP animations/squad_v2.animation.json, RP manifest.
+- SOURCE ZIP와 mcaddon 완전한 byte identity, 각190,046 bytes, ZIP CRC·unpacked source 비교 PASS.
+- 양쪽 SHA-256: `5af1a01af738dc2d4f12193a861c6d93c6bd940065bb9595f09aaae63da61ba0`.
+- 모든 PNG·geometry 및 기존 외부 출처 metadata는 Alpha14와 바이트 동일하다. 새 외부 runtime asset/code나 AI 이미지는 추가하지 않았다. EXTERNAL_ASSET_PROVENANCE.md의 사실 변경이 없어 유지했다.
+
+호환성과 남은 위험:
+
+- legacy scalar wallet 및 짧은 raw JSON을 읽는다. Alpha15 이후 wallet/page format을 Alpha14가 읽도록 하는 downgrade는 지원하지 않는다. v1.1.5/Alpha14 migration은 backup world copy에서 실제 엔진 검증이 필요하다.
+- 최초 intent/death-count 자체를 저장하지 못한 즉시 강제 종료되면 in-memory retry는 복구할 수 없다. 디스크 durability, host/client race, 낮은 Simulation Distance, 장기 page/tombstone 성장과 새 journal 비용은 실측하지 않았다.
+- 일부 notification/log의 commit 시점 일치는 추가 polish가 필요하다. syntactically corrupt 데이터 보존은 구현했지만 모든 field type/shape를 자동 치료하지 않는다.
+- 전체 영어 script UI는 FAIL/미구현 범위다. 한국어 집중 정리와 en_US/ko_KR 기존 리소스를 유지했다. sound·corpse linger·phone layout·실제 애니메이션/카메라·저사양 FPS/TPS는 미완료/미검증이다.
+
+로컬 전달물은 SOURCE.zip, mcaddon, CHECK.txt, MANUAL_AUDIT.md, RUNTIME_CHECKLIST.md의 Alpha15 5파일이다. runtime source/package는 이 문서 저장소에 업로드하지 않는다. 상세 runtime gate는 RUNTIME_TEST_MATRIX.md와 첨부 체크리스트를 따른다.

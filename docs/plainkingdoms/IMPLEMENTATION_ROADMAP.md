@@ -271,6 +271,31 @@ R12 exit still requires real Bedrock verification for:
 - final external asset/license audit.
 
 
+### Alpha 15 third R12 batch — source audit checkpoint
+
+Implemented and packaged in 1.16.0 Remake Alpha 15:
+
+- ordinary Minecraft input/game-mode/rule passthrough and inventory-preserving tools;
+- recoverable wallet/world transactions, stable reward claims and ResourceAid outbox deduplication;
+- bounded alternate-bank JSON/journal pages and corruption-preserving diagnostics;
+- army handoff/materialization rollback, recruitment completion/tombstones and command-save-before-actor ordering;
+- request identity/permission/privacy revalidation and grouped Encounter/Siege/site reward state;
+- UserBusy/disconnect form locks, safe observer movement, camera/HUD behavior and role-gated combat animation.
+
+Validation: 71/71 mocked Script API checks and 37/37 static/package checks. Payload94 files/66 JSON; named functions638/duplicate0. SOURCE and mcaddon bytes match; SHA-256 `5af1a01af738dc2d4f12193a861c6d93c6bd940065bb9595f09aaae63da61ba0`.
+
+R12 remains open. The next work is evidence from real Bedrock:
+
+- all 20 touch/controller UI flows, phone portrait/landscape layout and camera exits;
+- host/client forms, permission revoke, recruitment/build/aid/reward races;
+- fresh/v1.1.5/Alpha14 backup-world migration, save/reload and new wallet/journal/page recovery;
+- low-Simulation-Distance/offline-owner march and abstract/physical HP continuity;
+- low-end mobile FPS/TPS and long-lived page/tombstone state size;
+- full English script UI, sound/death/corpse presentation and final external provenance review.
+
+No Add-On import/world launch/play was completed in this audit. Runtime rows are NOT_RUN/BLOCKED_RUNTIME; these source results do not close R12 or R13. Large NPC outbound campaign expansion remains lower priority than these gates.
+
+
 ## R13 — Full release validation
 
 Platforms:

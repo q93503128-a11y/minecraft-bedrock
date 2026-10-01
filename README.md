@@ -67,7 +67,7 @@ Project documents:
 
 Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
-Current local remake milestone: `1.15.0 Remake Alpha 14` — second R12 Marketplace-polish batch: latest-state guards for multiplayer/stale forms across recruitment, RallyPoint, reformation, construction, diplomacy, SharedCommand and dungeon start; normal Minecraft interaction passthrough outside system-tool contexts; per-nation neutral-clan hostility; and safer offline reward/resource-aid transaction ordering.
+Current local remake milestone: `1.16.0 Remake Alpha 15` — third R12 source audit checkpoint: ordinary Minecraft input passthrough, recoverable economy/world commits, reward/aid deduplication, army handoff/command ordering, multiplayer permission/privacy guards and role-specific animation fixes. Validation: 71/71 mocked Script API and 37/37 static/package checks; payload94 files/66 JSON; SOURCE ZIP and mcaddon bytes identical (SHA-256 `5af1a01af738dc2d4f12193a861c6d93c6bd940065bb9595f09aaae63da61ba0`). Actual Add-On import/world launch/play is NOT_RUN; real engine/input/multiplayer/performance gates are BLOCKED_RUNTIME. R12 remains open.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -99,7 +99,10 @@ Current completed foundation:
 - role-specific bow/crossbow/siege/charge combat animation states.
 
 Next major work:
+
 - run R12 real Bedrock touch/controller and host-client concurrency/permission tests;
 - finish Korean/English copy, sound, death/corpse and remaining role-animation polish;
-- NPC outbound strategic campaigns and richer multi-nation consequences;
+- validate fresh/v1.1.5/Alpha14 backup-world migration and the new wallet/journal/page formats;
+- measure low-Simulation-Distance army continuity, host/client races and low-end mobile performance;
+- expand NPC outbound campaigns only after the R12 correctness and polish gates;
 - R13 full release validation.

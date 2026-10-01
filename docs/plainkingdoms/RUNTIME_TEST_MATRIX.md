@@ -4,6 +4,17 @@ Date: 2026-10-01
 
 This file records mandatory runtime checks for the remake. Static checks never substitute for these.
 
+## Alpha 15 execution status
+
+Current package: `1.16.0 Remake Alpha 15` / runtime `1.16.0-remake.15`.
+SOURCE ZIP and mcaddon SHA-256: `5af1a01af738dc2d4f12193a861c6d93c6bd940065bb9595f09aaae63da61ba0`.
+
+**NOT_RUN**: actual Add-On import, world launch and play. Windows Bedrock installation was confirmed, but screen automation was stopped and the remaining work used source files only. This is not evidence that Bedrock is absent.
+
+**BLOCKED_RUNTIME**: real touch/controller, phone layout, camera/animation/pathfinding, multiplayer host/client, engine save/reload/migration, Simulation Distance and FPS/TPS measurements. No PASS_RUNTIME rows or game evidence were obtained. The 71 mocked Script API and 37 static/package PASS results cover source behavior only.
+
+Test on a new world and copies of v1.1.5/Alpha14 worlds. Keep the previous pack and world backup together: Alpha15 introduces `pk_economy_v1`, recovery receipts and alternate-bank JSON pages; downgrade reading by Alpha14 is not supported. Record engine version, device, input, simulation distance, pack hash, players, steps, before/after state, content log and video/screenshot evidence for each result.
+
 ## Army persistence / chunk independence
 
 For one army and multiple armies:
@@ -584,3 +595,78 @@ Any of the following blocks Marketplace candidate status:
 - combat state diverges between strategic and physical layers;
 - common UI loop traps or loses navigation;
 - multiplayer player A can unintentionally command player B's army.
+
+
+## Alpha 15 targeted runtime checklist
+
+## 20개 사용자 흐름
+
+모든 폼에서 닫기/취소/뒤로와 controller focus도 각각 확인한다. button label 잘림·body scroll·폰 세로/가로·HUD 겹침을 기록한다.
+
+| # | 테스트 | 실행 절차 | 기대 결과 | 실제 결과/증거 |
+|---|---|---|---|---|
+| 1 | 첫 왕국/온보딩 | 새 월드에서 장부 → 온보딩을 연다. 다음 행동을 누르고, 조작 안내/건너뛰기/재활성화도 각각 사용한다. | 실제 완료 상태와 단계가 맞고, 건너뛰어도 기능이 유지된다. | NOT_RUN |
+| 2 | 수도 창설 | 평평한 넓은 공터에서 장부 → 수도 창설. 가까운 다른 수도, 가려진 부지, 정상 부지로 각각 시도한다. | 이유+복구 안내, 국가 슬롯 중복 없음, 완공 뒤 생산 시작. | NOT_RUN |
+| 3 | 첫 생산 건물 | 건설도구 → 추천 → 농장/제재소. 첫 터치 후 같은 곳 재터치. 웅크리기 회전·배치 취소·반복 배치도 확인한다. | preview가 블록을 망가뜨리지 않고 확정 때만 비용1회. 완공 뒤20초 생산. | NOT_RUN |
+| 4 | 첫 병영 | 건설 → 군사 → 병영. 자원 부족/인구 부족/해금 부족/겹치는 부지와 정상 배치를 각각 시도한다. | 병영·비용·공사 상태가 일치하고 막힌 이유와 다음 행동이 보인다. | NOT_RUN |
+| 5 | 모집·취소·병렬 | 군단 → 군사 생산 → 새 군단 모집. 동일 병영2개 job, 별도 병영 job을 만든다. 취소 화면을 열고 완료를 기다린 뒤 취소한다. | 동일 병영 순차/다른 병영 병렬. 정상취소만1회 환불. 완료된 job 환불/재생성 없음. | NOT_RUN |
+| 6 | 병영 집결지 | 군사 생산 → 병영 집결지 → 현재 위치 사용. 영토 밖/다른 차원/정상 위치·기본값 복원을 테스트한다. 모집 중에도 바꾼다. | 모집 Queue 진행이 뒤로 가지 않고 실제 완성 군단이 최신 집결지에 나타난다. | NOT_RUN |
+| 7 | 이동/공격 이동 | 깃발로 근거리/완만한 아래 시선/거의 수평/96블록 경계 목표를 지정한다. 이동과 공격 이동 각각 사용한다. | 명령 의도대로 가며 작은 pixel 조준이 필수 아님. 동일 tap 중복 명령·메뉴 중복 없음. | NOT_RUN |
+| 8 | Army Banner 컨텍스트 | 내 군단, 권한 없는 중립/동맹, SharedVision-only 동맹, SharedCommand 동맹, 전쟁 군단을 각각 깃발로 터치한다. | 관계별 정보/명령 범위가 맞고 일반 item으로 entity를 터치하면 일반 상호작용이 유지된다. | NOT_RUN |
+| 9 | 대형 | 빠른 군단 지휘 → 대형에서 자동/방진/횡대/종대/쐐기/산개를 각각 고른다. 군단 이동 후 저장·재접속한다. | 선호 유지, 역할 전열·간격이 맞고 다른 군단의 설정이 바뀌지 않는다. | NOT_RUN |
+| 10 | 전술 카메라 | 카메라 ON/OFF, 다른 메뉴 왕복, 사망/재접속/차원 이동을 테스트한다. | 일반1/3인칭으로 돌아올 수 있고 menu만 열어도 강제 reset되지 않는다. HUD 깜박임 없음. | NOT_RUN |
+| 11 | 전략 지도 | 군단 → 전략/전쟁 → 전략 지도 → 내 군단. 모든 페이지·빈 목록·사라진 군단·뒤로를 확인한다. | 좌표/목표/HP/예상 시간이 정상이며 stale row로 명령/복제를 만들지 않는다. | NOT_RUN |
+| 12 | X/Z 명령 | 전략 지도 → 좌표 직접 지휘에서 빈칸, 문자, 음수,0, 정상 좌표, world 경계 밖을 입력한다. 확인에서 이동/공격/취소를 고른다. | 빈칸이0으로 취급되지 않으며 취소 때 명령 없음. 허용된 목적지만 저장된다. | NOT_RUN |
+| 13 | 외교 요청 | A가 B에게 동맹/휴전 요청. B가 확인 화면을 열고 A가 같은 요청을 교체한다. B가 오래된 요청을 수락한다. | 새 요청을 대신 수락하지 않는다. 정상 요청만 current 관계와 함께 저장·종료된다. | NOT_RUN |
+| 14 | 조약 enable/revoke | 동맹에서5개 권한을 각각 요청/승인/철회한다. 켜는 화면을 열어 둔 채 다른 쪽에서 먼저 승인/철회한다. | 표시 상태가 바뀌면 refresh 요구. current 관계가 alliance일 때만 권한 유효. | NOT_RUN |
+| 15 | SharedCommand | A가 B군단 공동 지휘 선택. B가 권한을 철회/관계를 종료한 직후 A가 열린 폼/깃발로 명령한다. | B군단 order/target/generation 불변. SharedVision만으로 지휘 불가. own선택 뒤 공동지휘 잔류 없음. | NOT_RUN |
+| 16 | 지원군 | 지원군+통행 권한 두 개를 각각 켜고 끄며 파견한다. 명령 도중 통행 권한을 철회한다. | 정상 파견은 전략 행군이며 teleport가 아니다. 목적지/경유 정책·거절 사유 확인. | NOT_RUN |
+| 17 | 공성 | 전쟁 국가를 고르고 목표 페이지를 모두 넘긴다. 선택 중 휴전/건물 변경을 시도한다. 실제 공성을 끝내고 접근/이탈한다. | 기존 블록 삭제 없음. fort/target/army HP 연속성, disable/breach, loot1회, 관계 변경 시 종료. | NOT_RUN |
+| 18 | 건물 upgrade/refresh | 건물 목록 → 관리 화면을 연 채 레벨/자원/다른 공사를 바꾼 뒤 업그레이드/재시공한다. | currentLevel+1·current비용만 적용. current rotation/외형·최대 부지 유지, 진행99% 저장 재시도 가능. | NOT_RUN |
+| 19 | site/던전/보스 | 두 사람이 같은 던전 시작 폼을 열고 동시에 확정. 각 wave와 마지막 적 처치. faction를 멀리서 반쯤 공격한 뒤 접근/이탈한다. | 중복 wave/보상 없음. 남은 garrison HP 유지. 중립 부족 적대는 해당 국가만 적용. | NOT_RUN |
+| 20 | 설정/복구/기본 플레이 | HUD 간결/상세, 성능3모드, 도구 복구를 사용한다. 일반 아이템·가득 찬 인벤토리·문/상자/채굴/설치/vanilla combat도 테스트한다. | ordinary item 유실 없음, 일반 플레이 유지. pk_admin 없는 사용자는 global 삭제불가. 관리자 확인 취소는 삭제0. | NOT_RUN |
+
+## 저장·멀티 race·장거리 시나리오
+
+| ID | 실행 절차 | 기대 결과 | 실제 결과/증거 |
+|---|---|---|---|
+| L1 | 한 군단/여러 군단에100/500/1000/2000블록 명령. 소유자는 움직이지 않고 지도의 좌표를30초마다 기록한다. 충분한 시간이 지난 뒤 다른 플레이어가 목적지에 접근한다. | 전략 좌표가 진전, 출발지 stale actor 없음, 도착지 materialization1회. | NOT_RUN |
+| L2 | A가 원거리 행군·모집 예약 후 disconnect. B는 world를 계속 실행. A 재접속. 이어서 저장/닫기/reload. | owneroffline 동안 진행, offline world time를 무한히 누적한 catch-up 없음, army/Queue/HP/권한 연속. | NOT_RUN |
+| L3 | 병영 기능정지/파괴로 Queue pause. 저장/reload 후 복구. 취소와 완료를 같은 시간에 시도. | pausedAt 유지, 멈춘 시간만큼 종료 지연, 취소·완료의1회 결과, unrelated Queue 불변. | NOT_RUN |
+| L4 | physical군단56블록 밖으로 보내고44블록 안으로 접근. 경계 왕복30회, 다른 플레이어 동시 접근. | hysteresis로 actor thrash 제한, 같은 ID 중복0, formation/supply/morale/site/support/conflict/generation 유지. | NOT_RUN |
+| L5 | 낮은 sim distance에서 nation전략전 시작. 절반 HP에서 관측자가 접근/이탈, 한 군단 retreat, 관계war→truce 전환. | abstract/physical HP 연속, stale membership 재편입 없음, 끝난 battle이 되살아나지 않음. | NOT_RUN |
+| L6 | 마지막 site 적/wave/보스 죽음 직전과 직후 save/reload; 동일 site UI를 두 사람이 열고 확정. | duplicate reward/wave0, terminalremaining0이 다음 wave/defeat로 복구. | NOT_RUN |
+| L7 | A→offlineB 지원25. A reconnect/reload, B 로그인, 양쪽 반복 reconnect. 지원 직후 조약 revoke. | A25차감/B25증가1회. 성립한 예약 전달, 새 지원 차단. | NOT_RUN |
+| L8 | Alpha14→Alpha15 복사 world: 기존자원, legacy player army roster, rotation, pausedQueue, sharedflags, site/campaign 값을 전후 비교. v1.1.5도 같은 방식. | 기존식별자/모든의도된값 유지, wallet로 첫 write 후에도값 동일, World army가 mirror보다 우선. | NOT_RUN |
+| L9 | 8개 nation·최대16군단·Queue12·건물180의 단계적 stress. 두 사용자가 서로 다른 shard에서 동시에 작업/취소. | nation ownership 침범0, 메모리/serialization/DP크기 안정, watchdog/content error 기록 없음. | NOT_RUN |
+| L10 | Server현황과 ArmyBanner/SharedVision 화면에서 neutral/ResourceAid-only/SharedVision/SharedCommand를 비교. 표시 중 권한 revoke 후 상세 클릭. | foreignresources노출0, 권한 없는 추가 정보/명령0. | NOT_RUN |
+
+## 저장 실패의 실제 엔진 검증
+
+정상 플레이에서 의도적으로 world 파일을 손상시키지 않는다. 별도 복사 test world와 개발용 fault-injection harness가 있을 때만 정확한 setter 실패 위치를 기록한다. 제공된 배포팩에는 failure injection switch가 없다. 이 harness가 없으면 아래 행은 NOT_RUN으로 유지한다.
+
+- receipt publish 전 실패: paid작업·지원·refund 모두 primary와 자원 변화0.
+- primarywrite 뒤 walletwrite 실패 / journalclear 실패: 전후 자원 합계·job/row를 기록하고 재시도/reload. 정확한1회 결과와 원래 record가 보여지는 lock 확인.
+- rewardwalletwrite 실패 / queueclear 실패: pendingpacket 유실0, 재접속 중복0, 뒤에 새 packet을 추가해도 원래 packet1회.
+- aidpendingwrite 실패 / outboxclear 실패 / recipientcleanup 실패: escrow유지와 owner watermark dedup, 수신25/송신25 정확히1회.
+- physical snapshot저장 실패: actor제거0. materializationrow 저장 실패: 새 proxy제거, virtualrow유지.
+- generation/armydeath/site-count 실패: retry가 배우/수비대/보상을 중복시키지 않음. 최초 intent조차 저장되지 않은 순간 강제 종료한 결과는 별도 한계로 기록.
+- 큰 Unicode state: primarypage/bank/index/receiptpage 저장 실패 후 기존 state를 그대로 읽을 수 있음. orphanpages 장기 bytecount 확인.
+
+## 전투·표현·성능
+
+- melee/창병 brace/기사 charge→recover/궁 bow/석궁 crossbow/공성 setup-fire-impact를 각각 촬영한다. 혼성10검10창10궁, 원거리 중심, 기사 중심을 비교한다.
+- retreat/kite/recover에서 sprintstate4, 실제charge에서state10. 공격 lock 만료 뒤 locomotion 복귀; 퇴각 명령 직후 예약 hit의 취소 확인.
+- 목표가 hit delay 동안 거리 밖으로 움직인 경우, 근접병만 있는 군단이 원거리에서 피해를 주지 않는다. 가시 arrow/bolt/siege가 두 번째damage를 주지 않는다.
+- arrow/bolt50ticks, siege80ticks 뒤 cosmetic actor가 정리되는지 관측한다. 실제 바닥 충돌/청크unload 뒤에도 영구 누적되지 않아야 한다.
+- corpse/death linger는 현재 구현 안 됨. deathanimation의 짧은가시성은 결과를 그대로 기록하고 PASS로 바꾸지 않는다.
+- 모바일에서 10분 이상 운영하고 FPS와Scriptms를 따로 기록한다. 3성능모드, 최대 loadedentities, preview/beacon/대형공사/war/siege/site 동시 실행, idleworld도 비교한다.
+- cameraON/OFF 실제감각, Survival관찰이동의 safe-ground거절/성공, ordinarymob환경에서 성능 변화를 확인한다.
+
+## 관리자 진단
+
+global vanilla cleanup은 자동 실행하지 않는다. `pk_admin` tag가 있는 사용자만 확인 폼을 사용할 수 있다. testworld의 관리자가 필요한 경우 `/tag @s add pk_admin`을 직접 사용한다. 이 삭제는 loadedoverworld의 vanilla동물/아이템/탈것까지 포함한다. 취소/권한철회 테스트부터 수행하며, 일반 world에서는 사용하지 않는다.
+
+## 결과 기록 양식
+
+각 실패에 재현 단계, 전후자원, armyID/generation, QueueID, siteID/wave, 관계/flag, game log, engine/device/input/시각을 남긴다. 모든행 PASS와 migration·성능·출처 releasegate를 충족하기 전 Marketplace ready로 표시하지 않는다.
