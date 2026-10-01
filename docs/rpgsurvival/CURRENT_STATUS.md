@@ -9,7 +9,7 @@ Current development release: **v0.23.2 REMAKE ALPHA2**
 Playable addon remains an external build artifact. This repository stores planning, status, audit, and provenance only.
 
 MCADDON SHA-256:
-`652a846f59d465b1015b4b22f42f84c18c35569931674655b70983698a1bf46d`
+`203af33097005938ae8946973eb0345f24e1df0534d230b9f8b9c5ca256e0176`
 
 ## Implemented in v0.23.2
 
