@@ -67,7 +67,7 @@ Project documents:
 
 Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
-Current local remake milestone: `1.14.0 Remake Alpha 13` — first R12 Marketplace-polish batch: state-driven onboarding, shorter Army/Realm/Settings navigation, compact mobile HUD, restored Recruitment Queue runtime processing/RallyPoint controls, and capital-side army reformation.
+Current local remake milestone: `1.15.0 Remake Alpha 14` — second R12 Marketplace-polish batch: latest-state guards for multiplayer/stale forms across recruitment, RallyPoint, reformation, construction, diplomacy, SharedCommand and dungeon start; normal Minecraft interaction passthrough outside system-tool contexts; per-nation neutral-clan hostility; and safer offline reward/resource-aid transaction ordering.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -99,7 +99,7 @@ Current completed foundation:
 - role-specific bow/crossbow/siege/charge combat animation states.
 
 Next major work:
-- continue R12 touch/controller runtime and multiplayer race/permission polish;
-- Korean/English copy, sound, death/corpse and remaining role-animation polish;
+- run R12 real Bedrock touch/controller and host-client concurrency/permission tests;
+- finish Korean/English copy, sound, death/corpse and remaining role-animation polish;
 - NPC outbound strategic campaigns and richer multi-nation consequences;
 - R13 full release validation.
