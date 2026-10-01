@@ -20,7 +20,7 @@ Baseline: PlainKingdoms v1.1.5
 - R10 campaign/siege/projectile layer: first functional implementation completed in 1.11.0 Remake Alpha 10 — Strategic Siege, temporary building disable/capital breach, supply/morale logistics, war score/loot, and cosmetic arrow/bolt/siege projectile presentation.
 - R11 tactical camera and strategic map: first functional implementation completed in 1.12.0 Remake Alpha 11 — follow-orbit camera-relative command view, tactical actionbar, army/conflict/nation/site/coordinate strategic command surfaces, and direct Army Banner entity context controls.
 - R11.5 pre-polish combat/NPC bridge: completed in 1.13.0 Remake Alpha 12 — chunk-independent NPC faction-site combat with physical/abstract garrison continuity and role-specific bow/crossbow/siege/charge animations.
-- R12 Marketplace polish: first implementation batch completed in 1.14.0 Remake Alpha 13 — onboarding, menu hierarchy/accessibility, compact mobile HUD, Recruitment Queue runtime repair, RallyPoint controls, and army reformation restoration. Touch/controller runtime, multiplayer abuse/race testing, localization, presentation polish and release audit remain active.
+- R12 Marketplace polish: second implementation batch completed in 1.15.0 Remake Alpha 14 — stale-form/latest-state guards across recruitment, RallyPoint, reformation, construction, diplomacy, SharedCommand and dungeon start; normal Minecraft block/entity interaction passthrough outside system-tool contexts; per-nation neutral-clan hostility; safer pending-reward/offline-aid transaction ordering. Real touch/controller/host-client runtime tests, localization, presentation polish, performance and final release audit remain active.
 
 Runtime verification remains pending until the later integrated test phase.
 
@@ -244,6 +244,32 @@ Still required before R12 exit:
 - final license/provenance audit.
 
 Static validation does not close these runtime requirements.
+
+
+### Alpha 14 second R12 batch
+
+Implemented statically in 1.15.0 Remake Alpha 14:
+- latest-state revalidation before Recruitment Queue cancel/refund;
+- latest-state RallyPoint mutation without rewriting stale queue data;
+- army reformation commit-time checks for existence, capital distance, combat state, unlocks, HP and resources;
+- building upgrade/refresh current-level and current-cost revalidation;
+- diplomacy request, alliance breakup, treaty permission and SharedCommand commit-time revalidation;
+- strategic nation context revalidation for War/Alliance/MilitaryAccess/Reinforcement changes;
+- system-tool-only block interception and Army-Banner-only army entity interception;
+- nation-slot-scoped neutral-clan hostility used consistently by strategic site UI;
+- current-site revalidation for strategic sites and dungeon start;
+- pending reward claim-before-grant ordering;
+- offline ResourceAid pending-save-before-sender-debit ordering.
+
+R12 exit still requires real Bedrock verification for:
+- controller and touch navigation/targeting;
+- host/client simultaneous forms and state races;
+- phone portrait/landscape density;
+- Korean/English complete copy/localization;
+- sound/death/corpse/siege presentation polish;
+- low-end mobile performance profiling;
+- final external asset/license audit.
+
 
 ## R13 — Full release validation
 
