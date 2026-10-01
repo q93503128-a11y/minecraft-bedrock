@@ -241,16 +241,11 @@ Alpha 7에서 “실제 대형”이란:
 
 ## 아직 남은 큰 리메이크
 
-### R8
-- 전략 군단 간 encounter detection
-- 플레이어가 없을 때 abstract combat
-- 플레이어 접근 중 전략↔실전투 reconciliation
-- 전략 전투 로그 / duration / reinforcement join
-
-### R9
-- War / Truce / Neutral / Alliance 정리
-- MilitaryAccess / ResourceAid / SharedVision / Reinforcement / SharedCommand treaty flag
-- 동맹 지원군 순간이동 중심 → Strategic Reinforce march
+### 캠페인 / 공성 후속
+- 수도·성벽·건물 대상 전략 공성 resolution
+- NPC 세력의 청크 밖 전략 전투
+- 보급 / 사기 / 약탈 / 포로 / 전쟁 결과 계층
+- 다자전/동맹 공동전 확장
 
 ### 전투 표현 후속
 - 실제 보이는 arrow/bolt/siege projectile
