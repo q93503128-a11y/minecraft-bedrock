@@ -2,7 +2,7 @@
 
 기준일: 2026-10-01  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.12.0 Remake Alpha 11`
+현재 로컬 개발 빌드: `1.13.0 Remake Alpha 12`
 
 ## 저장소 역할
 
@@ -242,15 +242,15 @@ Alpha 7에서 “실제 대형”이란:
 ## 아직 남은 큰 리메이크
 
 ### 캠페인 / 전쟁 후속
-- NPC 세력의 청크 밖 전략 전투
 - 성벽 segment를 별도 전략 목표로 승격
+- NPC 세력이 기지 밖으로 원정하는 독립 StrategicArmy 확장
 - 포로 / 전쟁 종결 보상 / 다자전·동맹 공동전 확장
 - 장기 보급선/보급 건물 연결
 
 ### 전투 표현 후속
-- siege setup/fire/impact 애니메이션 고도화
-- charge/brace/bow/crossbow 역할별 애니메이션 추가 확장
-- death/corpse 표현
+- 세부 siege setup/fire/impact 애니메이션 고도화
+- 역할별 melee/brace 후속 폴리싱
+- death/corpse linger 표현
 
 ### 지휘/UX 후속
 - 전략 지도 정보 밀도/시각 폴리싱
@@ -270,7 +270,7 @@ Alpha 7에서 “실제 대형”이란:
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
-Alpha 11까지 전술 카메라·전략 지도·직접 군단 컨텍스트 지휘가 연결됐다. 다음은 남은 전투 표현/NPC 전략전과 Marketplace 폴리싱을 진행한 뒤 내부 전수감사를 하고 실제 Bedrock 통합 테스트를 요청한다.
+Alpha 12까지 일반 NPC 세력의 청크 밖 전략전과 역할별 bow/crossbow/siege/charge 표현이 연결됐다. 다음 배치부터 R12 Marketplace 온보딩·접근성·모바일/컨트롤러·멀티 폴리싱으로 들어가며, 그 뒤 내부 전수감사 후 실제 Bedrock 통합 테스트를 요청한다.
 
 정적 검사는 Minecraft 런타임 정상 판정을 대신하지 않는다.
 
@@ -942,5 +942,144 @@ SharedVision만 있는 동맹은:
 - payload 94 files
 - Source ZIP / mcaddon byte-identical
 - SHA-256: `7c3a5688c0b4281dc2a9cc48b847f120e81317ad17f8504847948319825a33e3`
+
+현재도 사용자 실플레이 테스트 단계가 아니다.
+
+
+## Alpha 12 — NPC 전략전 / 역할별 전투 표현
+
+### 일반 NPC 세력도 청크 밖에서 전투
+
+기존 월드 세력 중 다음 faction site를 StrategicArmyState 군단이 플레이어 관측 없이 공격할 수 있다.
+
+- 약탈자 야영지
+- 고블린 정착지
+- 언데드 묘역
+- 적대화된 평원 중립 부족
+
+전략 공격 명령 시 army row에 `siteTargetId`를 저장한다.
+
+군단이 목표 12블록 안으로 들어오면:
+- 플레이어가 118블록 안에 없을 때 abstract site battle 진행
+- 플레이어가 접근하면 abstract 계산 중단
+- 실제 site defender Entity가 남은 전략 수비력 비율로 materialize
+
+한다.
+
+### 물리 수비대 ↔ 전략 수비력 연속성
+
+일반 faction site에는 strategic garrison HP를 유지한다.
+
+멀리서 전투:
+- garrison HP가 전략적으로 감소
+
+플레이어 접근:
+- 남은 garrison HP 비율을 실제 수비대 Entity health에 반영
+
+플레이어 이탈:
+- 142블록 밖에서 실제 수비대 HP를 다시 strategic garrison HP로 환산
+- 실제 수비대 Entity 제거
+- 청크/AI simulation 정지에 의존하지 않고 abstract 상태로 복귀
+
+따라서 “멀리서 반쯤 잡았는데 가까이 가면 풀피로 리셋”되는 구조를 피한다.
+
+### NPC 전략전 피해
+
+공격군:
+- 실제 composition
+- 현재 HP
+- formation
+- supply/morale
+
+을 사용한다.
+
+NPC 기지:
+- faction별 garrison HP
+- faction별 반격 DPS
+- 남은 garrison HP 비율
+
+을 사용한다.
+
+전략전 중 아군 HP/사기 손실도 같은 StrategicArmyState에 기록된다.
+
+아군 군단 전멸은 기존 generation/world-shard 사망 정합성을 그대로 사용한다.
+
+### 전략 제압 보상
+
+전략전으로 faction site를 제압해도 기존 현장 전투와 같은 site reward 계층을 사용한다.
+
+공동 참가 국가 슬롯을 `participants`에 기록하고 기존:
+- 자원
+- 유물
+- 오프라인 pending reward
+
+경로를 재사용한다.
+
+전략/물리 어느 방식으로 제압하든 site는 `defeated` 정본 하나만 가진다.
+
+### 공격 명령 정리
+
+generic Move / Attack Move / SharedCommand 명령을 새로 내리면 이전 `siteTargetId`를 제거한다.
+
+site가 제압되면:
+- 남은 군단의 siteTargetId 제거
+- 해당 site를 향한 Attack order를 Hold로 정리
+- stale 공격 상태가 재실체화 후 살아나는 현상을 막음
+
+### 역할별 공격 애니메이션
+
+친군 9종의 client-synced `plainkingdoms:anim_state` 범위를 0..11로 확장했다.
+
+새 state:
+- 7: bow
+- 8: crossbow
+- 9: siege_fire
+- 10: charge
+- 11: die resource mapping
+
+새 animation:
+- `animation.plainkingdoms.squad_bow`
+- `animation.plainkingdoms.squad_crossbow`
+- `animation.plainkingdoms.squad_siege_fire`
+- `animation.plainkingdoms.squad_charge`
+
+각 animation은 6명 전체를 동일하게 움직이는 대신 role property를 읽어 해당 대표 병사 슬롯을 중심으로 움직인다.
+
+기존 cosmetic:
+- arrow
+- bolt
+- siege shot
+
+과 hit-frame timing도 새 animation 길이에 맞춰 조정했다.
+
+실제 피해 권위는 여전히 Script hit frame 하나뿐이다.
+
+### Alpha 12 의도적 범위 밖
+
+아직 abstract화하지 않음:
+- 월드 보스
+- 던전 wave
+- NPC faction이 자기 기지를 떠나 원정하는 전략 군단
+- corpse/death linger entity
+
+`squad_die`와 die state mapping은 리소스에 존재하지만, 실제 entity death 후 충분히 보이는 corpse/death presentation은 R12/R13 폴리싱에서 별도 처리한다.
+
+### Alpha 12 정적/패키지 검사
+
+- JavaScript syntax PASS
+- JSON 66개 parse PASS
+- named function 576 / duplicate 0
+- BP/RP/module/dependency 1.13.0 정합
+- runtime VERSION `1.13.0-remake.12`
+- friendly anim_state 0..11: 9/9
+- bow/crossbow/siege_fire/charge/die client mapping: 9/9
+- Strategic NPC site process world loop 연결 확인
+- site physical→abstract HP sync 경로 확인
+- abstract→physical garrison ratio spawn 경로 확인
+- siteTargetId persistence/clear 경로 확인
+- Source ZIP / mcaddon CRC PASS
+- payload 94 files
+- Source ZIP / mcaddon byte-identical
+- SHA-256: `aa97ae304dd0c995fc6be9e5f1f06a938335ddbdd431dc603c1d80204a0def82`
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
