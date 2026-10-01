@@ -15,7 +15,8 @@ Baseline: PlainKingdoms v1.1.5
 - R5 army representation/animation: first functional implementation completed in 1.6.0 Remake Alpha 5 — Kenney CC0-derived six-soldier squad rig, mixed-composition role visibility, HP depletion visuals, animation-state bridge, and delayed hit frames.
 - R6 SquadBrain: first functional tactical brain implemented in 1.7.0 Remake Alpha 6 — target stability, spear brace, knight charge/recover, ranged kite/fireline, siege reposition, heavy/guard anchor, and explicit-order priority.
 - R7 formation and group movement: first functional implementation completed in 1.8.0 Remake Alpha 7 — Block/Line/Column/Wedge/Loose representative layouts, role-aware front/rear slots, Auto/manual preference persisted in StrategicArmyState, formation-aware multi-army destinations, and same-nation local separation.
-- R8+ remain active work.
+- R8 strategic encounters: first functional implementation completed in 1.9.0 Remake Alpha 8 — war-only virtual-army encounter detection, nearby reinforcement merge, time-based deterministic abstract combat, HP continuity into materialized battles, physical-to-abstract resume, battle log, and pre-encounter order restoration.
+- R9+ remain active work.
 
 Runtime verification remains pending until the later integrated test phase.
 
