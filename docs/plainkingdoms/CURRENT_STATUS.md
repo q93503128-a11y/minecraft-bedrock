@@ -1054,6 +1054,18 @@ site가 제압되면:
 
 실제 피해 권위는 여전히 Script hit frame 하나뿐이다.
 
+#### Sprint/charge 회귀 수정
+
+최종 검사에서 `charge`를 새 anim_state로 분리하면서 기존 빠른 이동 경로까지 charge 자세를 사용할 수 있는 문제를 발견했다.
+
+최종 Alpha 12에서는:
+- sprint = state 4
+- charge = state 10
+
+으로 완전히 분리했다.
+
+따라서 retreat / kite / recover는 sprint를 사용하고 실제 기사 charge 상태에서만 charge animation을 사용한다.
+
 ### Alpha 12 의도적 범위 밖
 
 아직 abstract화하지 않음:
@@ -1080,6 +1092,6 @@ site가 제압되면:
 - Source ZIP / mcaddon CRC PASS
 - payload 94 files
 - Source ZIP / mcaddon byte-identical
-- SHA-256: `aa97ae304dd0c995fc6be9e5f1f06a938335ddbdd431dc603c1d80204a0def82`
+- SHA-256: `fd7d479adaf88803a30a1d14de8b08c015f4c61c4efa1389bd3aa6cbfaa9a9f4`
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
