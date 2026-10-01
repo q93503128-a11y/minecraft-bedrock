@@ -484,6 +484,65 @@ Menu/accessibility:
 - failed ground target, recruitment, RallyPoint and reformation paths include both reason and recovery text.
 
 
+
+## Alpha 14 R12 concurrency / input regression
+
+Recruitment / RallyPoint stale forms:
+- open recruitment cancel form, let the selected job finish in the 1-second Queue loop, then press cancel; no refund and no completed army resurrection/removal;
+- open recruitment form, let another player/loop modify a different Queue entry, then cancel one job; unrelated latest entries remain unchanged;
+- open RallyPoint form while recruitment progresses; changing RallyPoint preserves every current Queue entry and timing;
+- cancel save failure does not refund resources before authoritative state removal succeeds.
+
+Army reformation:
+- open reformation form inside capital range, walk farther than 36 blocks, then confirm; commit is rejected;
+- open reformation form, enter Encounter before confirming; commit is rejected;
+- open reformation form, enter Siege before confirming; commit is rejected;
+- remove/destroy authoritative army while form is open; stale selection is rejected;
+- force world-army save failure; resources are refunded and loaded actor is not removed.
+
+Construction:
+- open building management, complete the same upgrade through another player/path, then confirm stale upgrade; stale requested level is rejected/recomputed rather than double-charged;
+- change capital requirements while upgrade form is open; final capital upgrade uses current requirements;
+- open refresh, upgrade building before confirming; refresh uses current level/rotation and cannot redraw the old level.
+
+Diplomacy / treaty / SharedCommand:
+- relation changes after diplomacy confirmation form opens; stale acceptance/request cannot restore an old relation;
+- alliance ends while treaty permission form is open; permission mutation is rejected;
+- treaty flag changes while form is open; final action uses current flag rather than old displayed state;
+- SharedCommand is revoked while allied army selection is open; no shared control context is created;
+- SharedCommand is revoked while Army Banner ally context is open; command is rejected;
+- enemy relation changes from War before context action; no old attack order is issued;
+- enemy physical actor disappears/moves while context is open; action uses latest authoritative position when valid and never throws on stale entity.
+
+Strategic nation/site:
+- War -> Truce/Neutral while capital attack/siege form is open; stale attack/siege is rejected;
+- Alliance or MilitaryAccess/Reinforcement revoked while allied capital action is open; move/reinforcement is rejected according to current permissions;
+- neutral clan is hostile to nation A but not nation B; A sees/uses hostile action while B keeps neutral interaction and is not treated as a combat enemy;
+- neutral-clan hostileSlots change while site form is open; final action follows current nation-scoped hostility;
+- faction site is defeated while strategic site form is open; stale move/attack action is rejected.
+
+Dungeon start:
+- two players open the same available dungeon start form;
+- player A starts expedition;
+- player B confirms from stale form;
+- only one active run exists, wave/participants/state are not reset or clobbered by B.
+
+Pending reward / ResourceAid:
+- simulate pending-claim state-save failure on login; no reward is granted yet and the pending record remains retryable;
+- successful claim removes pending record before grant and reconnect cannot duplicate the reward;
+- simulate offline ResourceAid pending-save failure; sender resources are not deducted;
+- successful offline ResourceAid stores pending reward before sender deduction;
+- online ResourceAid still transfers exactly once under current treaty permissions.
+
+Input interception:
+- director with empty hand opens doors/chests and interacts with ordinary world blocks normally;
+- director with ordinary non-system item keeps ordinary block interaction;
+- director interacts with ordinary NPC/entity without Army Banner and vanilla/add-on interaction remains available;
+- Army Banner on friendly/SharedCommand-valid army still opens the intended army context;
+- Builder/other PlainKingdoms system tools still intercept only their own intended block actions;
+- keyboard/mouse, controller and touch each complete the same basic command path without pointer-only assumptions.
+
+
 ## Accessibility/mobile
 
 - no required hover;
