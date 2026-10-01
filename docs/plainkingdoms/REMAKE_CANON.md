@@ -740,6 +740,39 @@ War remains a deliberate player action.
 
 Peace/truce and alliance require explicit acceptance where relevant.
 
+### Alpha 9 diplomacy implementation
+
+The first functional diplomacy/treaty layer is implemented.
+
+Relationship:
+- War
+- Truce
+- Neutral
+- Alliance
+
+Legacy `ally` values normalize to Alliance.
+
+Treaty permissions are symmetric relationship-pair state and are separate from Alliance:
+- MilitaryAccess
+- ResourceAid
+- SharedVision
+- Reinforcement
+- SharedCommand
+
+Enabling a permission requires a request accepted by the other nation. Either nation may revoke an enabled permission immediately.
+
+MilitaryAccess is enforced in both strategic and physical army movement. War permits invasion; Neutral or Alliance without MilitaryAccess blocks foreign military entry.
+
+ResourceAid supports online delivery and nation-slot pending delivery for offline recipients.
+
+SharedVision exposes allied army location/status/composition/HP only. It explicitly does not teleport the player and does not imply control.
+
+SharedCommand permits limited Army Banner control of allied armies while the treaty remains valid. The controlled army continues to obey its owner's MilitaryAccess relationships.
+
+Strategic Reinforcement replaces normal allied-army teleporting. It requires both Reinforcement and MilitaryAccess permissions and uses the same chunk-independent StrategicArmyState movement as any other long-distance march.
+
+Peace accepted during War enters a timed Truce before returning to Neutral.
+
 ## 20. Allied reinforcements
 
 Replace normal reinforcement teleporting with strategic movement.
