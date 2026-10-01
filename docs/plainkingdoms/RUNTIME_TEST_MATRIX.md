@@ -1,6 +1,6 @@
 # PlainKingdoms Remake Runtime Test Matrix
 
-Date: 2026-09-30
+Date: 2026-10-01
 
 This file records mandatory runtime checks for the remake. Static checks never substitute for these.
 
