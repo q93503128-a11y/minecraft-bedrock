@@ -2,7 +2,7 @@
 
 기준일: 2026-10-01  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.10.0 Remake Alpha 9`
+현재 로컬 개발 빌드: `1.11.0 Remake Alpha 10`
 
 ## 저장소 역할
 
@@ -241,16 +241,15 @@ Alpha 7에서 “실제 대형”이란:
 
 ## 아직 남은 큰 리메이크
 
-### 캠페인 / 공성 후속
-- 수도·성벽·건물 대상 전략 공성 resolution
+### 캠페인 / 전쟁 후속
 - NPC 세력의 청크 밖 전략 전투
-- 보급 / 사기 / 약탈 / 포로 / 전쟁 결과 계층
-- 다자전/동맹 공동전 확장
+- 성벽 segment를 별도 전략 목표로 승격
+- 포로 / 전쟁 종결 보상 / 다자전·동맹 공동전 확장
+- 장기 보급선/보급 건물 연결
 
 ### 전투 표현 후속
-- 실제 보이는 arrow/bolt/siege projectile
-- siege setup/fire/impact
-- charge/brace/ranged role-specific animation 추가 확장
+- siege setup/fire/impact 애니메이션 고도화
+- charge/brace/bow/crossbow 역할별 애니메이션 추가 확장
 - death/corpse 표현
 
 ### 지휘/UX 후속
@@ -271,7 +270,7 @@ Alpha 7에서 “실제 대형”이란:
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
-Alpha 9까지 전략 전투와 외교/조약/전략 지원군이 연결됐다. 다음은 캠페인/공성 확장과 지휘 UX·전술 카메라·전략 지도·투사체 표현을 더 묶은 뒤 내부 회귀감사를 하고 실제 Bedrock 통합 테스트를 요청한다.
+Alpha 10까지 전략 공성·보급/사기·약탈/전쟁점수·가시 투사체가 연결됐다. 다음은 전술 카메라·전략 지도·컨텍스트 지휘 UX와 남은 전투 표현을 더 묶은 뒤 내부 회귀감사를 하고 실제 Bedrock 통합 테스트를 요청한다.
 
 정적 검사는 Minecraft 런타임 정상 판정을 대신하지 않는다.
 
@@ -626,5 +625,157 @@ SharedCommand 조약이 활성화되면:
 - payload 86 files
 - Source ZIP / mcaddon byte-identical
 - SHA-256: `b2dbe716f2f0ba090769183503da4b6c02445975fbfba005268e3d0dc381a7d2`
+
+현재도 사용자 실플레이 테스트 단계가 아니다.
+
+
+## Alpha 10 — 전략 공성 / 캠페인 물류 / 가시 투사체
+
+### Strategic Siege
+
+새 world state:
+- `pk_strategic_sieges_v1`
+- `pk_campaign_state_v1`
+- `pk_campaign_log_v1`
+
+군령 → 공성 / 캠페인에서:
+1. 전쟁 중인 국가 선택
+2. 수도 또는 건물 선택
+3. 현재 선택 군단/전군에 `order = siege`
+4. 실제 물리/StrategicArmyState 행군
+5. 목표 10블록 안에서 공성 시작
+
+1~16개 군단은 공성 시작 반경 안에 유지되는 별도 집결 offset을 사용한다.
+
+### 공성 대상 / 방어층
+
+초기 전략 공성 대상:
+- 수도
+- 감시탑
+- 병영
+- 창고
+- 대장간
+- 사격장
+- 마구간
+- 시장
+- 도서관
+- 병원
+- 농장
+- 광산
+- 제재소
+- 주택
+
+공성은:
+- 도시 전체 fortification layer
+- 개별 target HP
+
+두 단계를 가진다.
+
+수도 레벨과 작동 중인 감시탑이 fortification/defense를 높인다.
+
+### 공성 결과
+
+비수도 건물 돌파:
+- 블록을 파괴해서 세이브 구조를 망가뜨리지 않음
+- 3분간 해당 건물 기능 정지
+- 생산/병영/감시탑 계산에서 제외
+
+수도 돌파:
+- 4분간 수도 전략 방어력 약화
+- 공격국 전쟁점수/공성승/약탈 증가
+- 방어국 전쟁점수/공성패 반영
+
+공격국은 대상 종류/레벨에 따른 목재·석재·식량·철 약탈 보상을 받는다.
+
+### 보급 / 사기
+
+StrategicArmyState에:
+- `supply` 0..100
+- `morale` 0..100
+
+을 유지한다.
+
+보급:
+- 자국 영토: 빠른 회복
+- ResourceAid + MilitaryAccess 동맹 영토: 느린 회복
+- 일반 야전: 감소
+- 적 영토: 더 빠른 감소
+
+낮은 보급/사기는:
+- 전략 이동 속도
+- 물리 이동 속도
+- 전략 전투 피해
+- 물리 전투 피해
+
+를 함께 낮춘다.
+
+전투/공성 피해는 사기도 낮추며, 승리한 전략 전투/공성은 생존군 사기를 일부 회복한다.
+
+### 공성의 전략/물리 연속성
+
+공성 중에도 같은 StrategicArmyState HP를 정본으로 사용한다.
+
+플레이어가 접근한 관측 공성에서는:
+- 참가 군단이 물리 actor로 보임
+- 공성탄/화살/볼트 연출 표시
+- 방어 피해로 바뀐 전략 HP를 물리 actor health에도 동기화
+
+평화/휴전/동맹 전환 시 양국 사이의 진행 공성도 종료한다.
+
+### 가시 투사체
+
+새 cosmetic projectile entity:
+- `plainkingdoms:visual_arrow`
+- `plainkingdoms:visual_bolt`
+- `plainkingdoms:visual_siege_shot`
+
+Script가 `minecraft:projectile` component의 `shoot()`을 사용해 실제 궤적으로 발사한다.
+
+중요:
+- projectile 자체에는 impact_damage가 없음
+- 실제 피해는 기존 animation hit-frame Script가 권위
+- 따라서 가시 투사체 + Script 피해가 중복 적용되지 않음
+
+일반 군단 원거리 전투와 관측 공성 양쪽에서 사용한다.
+
+새 이미지 생성은 없으며 기존 PlainKingdoms 병종 텍스처를 투사체 렌더에 재사용한다.
+
+### 호출기 / 성능 진단
+
+군단 호출기:
+- 보급
+- 사기
+- 전략/관측 공성
+- siege id
+
+를 표시한다.
+
+성능 진단:
+- 전략 공성 수
+- 관측 공성 수
+- 저보급 군단 수
+
+를 추가했다.
+
+### Alpha 10 정적/패키지 검사
+
+- JavaScript syntax PASS
+- JSON 65개 parse PASS
+- named function 544 / duplicate 0
+- BP/RP/module/dependency 1.11.0 정합
+- runtime VERSION `1.11.0-remake.10`
+- Strategic Siege / campaign world-state wire 확인
+- peace/non-war 공성 취소 경로 확인
+- strategic + physical logistics 성능 영향 확인
+- temporary building disable / capital breach 경로 확인
+- 공성 UI/명령 경로 확인
+- 1~16군단 공성 집결 좌표 unique + 10블록 trigger 내부 확인
+- cosmetic projectile 3종 BP/RP/geometry/texture 참조 확인
+- projectile impact_damage 없음 확인
+- 일반 ranged + 관측 siege projectile spawn 경로 확인
+- Source ZIP / mcaddon CRC PASS
+- payload 93 files
+- Source ZIP / mcaddon byte-identical
+- SHA-256: `26d884b1f8903f37e4848aba21eedff0c094cf57752baccd6abca6cb1a966402`
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
