@@ -645,6 +645,22 @@ Normal player controls resume cleanly when leaving command mode.
 
 Camera must be comfortable on touch and controller, not designed only around mouse edge scrolling.
 
+### Alpha 11 tactical camera implementation
+
+The first functional tactical command camera is implemented as a Behavior Pack camera preset:
+- identifier: `plainkingdoms:tactical`;
+- inherits `minecraft:follow_orbit`;
+- uses `camera_relative` control scheme;
+- radius 18;
+- elevated entity/view offsets;
+- starting pitch 52 degrees.
+
+The player remains the commander entity. The camera is a session mode, not a replacement character controller.
+
+Entering/exiting uses the Script camera API and reconnect/init paths clear the custom camera. While active, a compact actionbar exposes selection, moving-army, encounter and siege counts.
+
+The normal first/third-person Minecraft command flow remains fully usable without tactical mode.
+
 ## 17. Strategic map
 
 Strategic map/army locator becomes a real command surface.
@@ -661,6 +677,27 @@ Each army card/marker shows:
 - reinforce/recall availability.
 
 Distant movement can be issued directly from this layer.
+
+### Alpha 11 strategic map implementation
+
+The first functional strategic-map command surface is implemented with `server-ui`.
+
+It supports:
+- own-army list with HP, order, current position, target and ETA;
+- individual army context and formation;
+- direct X/Z Move or Attack Move through `ModalFormData`;
+- active Encounter/Siege list and reinforcement dispatch;
+- nation/capital destinations with context-aware War/Alliance/Reinforcement actions;
+- world-site Move/Attack Move commands;
+- explicit observer teleport as a separate non-command action.
+
+Army Banner interaction with a physical army now opens a direct entity context menu:
+- own army selection/order shortcuts;
+- SharedCommand ally control where treaty allows;
+- enemy-war Attack Move targeting;
+- SharedVision information without teleport/control escalation.
+
+Alpha 11 deliberately does not introduce a custom JSON-UI drawn 2D minimap. The current milestone prioritizes reliable cross-input command paths and cooperative Add-On compatibility before richer visual cartography.
 
 ## 18. Abstract distant combat
 
