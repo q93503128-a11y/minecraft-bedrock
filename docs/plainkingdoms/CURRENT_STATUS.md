@@ -2,7 +2,7 @@
 
 기준일: 2026-10-01  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.8.0 Remake Alpha 7`
+현재 로컬 개발 빌드: `1.9.0 Remake Alpha 8`
 
 ## 저장소 역할
 
@@ -279,3 +279,208 @@ Alpha 7에서 “실제 대형”이란:
 Alpha 7까지 전투/대형 기반이 연결됐지만, R8 전략 전투와 R9 외교/지원군 흐름을 더 연결한 뒤 내부 회귀감사를 하고 실제 Bedrock 통합 테스트를 요청한다.
 
 정적 검사는 Minecraft 런타임 정상 판정을 대신하지 않는다.
+
+
+## Alpha 8 — 전략 조우 / 추상 전투 / 실전 전환
+
+### Strategic Encounter 정본
+
+새 world state:
+- `pk_strategic_encounters_v1`
+- `pk_strategic_encounter_log_v1`
+
+Encounter는:
+- id
+- 양측 nation slot
+- 전투 중심 좌표
+- abstract / physical 상태
+- 참가 군단 목록
+- 각 참가 군단의 전투 전 order / target
+- startedAt / lastStepAt / round / deterministic seed
+
+를 저장한다.
+
+StrategicArmyState row에는:
+- `encounterId`
+
+가 추가됐다.
+
+기존 row는 빈 encounterId로 자동 호환된다.
+
+### 조우 감지
+
+전쟁 관계인 두 국가의 virtual army만 전략 조우 후보가 된다.
+
+초기 거리:
+- 적군 조우: 12블록
+- 같은 전투 지원군 합류: 18블록
+
+24블록 spatial grid로 후보를 제한한다.
+
+같은 양국의 군단이 같은 지역에 몰려 있으면 여러 1:1 전투를 마구 만드는 대신 기존 Encounter에 합류시키는 쪽을 우선한다.
+
+한 pass에서 새 Encounter 생성은 최대 4개로 제한한다.
+
+### 청크 밖 추상 전투
+
+관측 플레이어가 없으면 1초 단위로 abstract round를 진행한다.
+
+입력:
+- 현재 StrategicArmyState HP / HP max
+- 실제 composition
+- 병종 상성
+- HP 비율
+- formation preference / Auto에서 추정한 대형
+- deterministic seed / round
+
+반영:
+- 창병 → 기사 대기병 우세
+- 기사 → 궁/석궁 압박
+- 중장/근위의 방어
+- Wedge 기병 공격 보정
+- Line 원거리 공격 보정
+- Block 전열 방어 보정
+
+피해는 동시에 계산한다.
+
+군단 HP가 0에 도달하면:
+- world army shard에서 제거
+- generation 증가
+- 오프라인 owner 정산 기록
+- Encounter 참가 목록에서 제거
+
+한다.
+
+### 전투 시간
+
+추상 전투를 즉시 판정하지 않는다.
+
+현재 순수 계산 smoke test 예:
+- 창 30 vs 기사 30: 약 45초, 창 승
+- 기사 30 vs 궁 30: 약 13초, 기사 승
+- 검 30 vs 검 30: 약 69초 수준의 소모전
+- 중장 30 vs 검 30: 약 70초, 중장 우세
+
+이는 실게임 프레임/틱 검증이 아니라 현재 실제 Alpha 8 계산 함수를 추출해 돌린 코드 단위 smoke test다.
+
+### 플레이어 접근 → 실제 전투
+
+Encounter 중심에서 약 34블록 안에 플레이어가 접근하면:
+- abstract damage 즉시 중단
+- encounter state → physical
+- surviving StrategicArmyState HP 유지
+- 참가 군단 order를 전투용 attack으로 유지
+- 기존 materialization 계층이 같은 HP/편성/대형으로 실제 Entity를 생성
+
+한다.
+
+전투 중 플레이어가 떠나고 참가 군단이 다시 모두 virtual 상태가 되면:
+- encounter state → abstract
+- 현재 남은 HP에서 추상 전투 재개
+
+한다.
+
+따라서 “청크 밖 계산 결과”와 “눈앞의 전투 결과”가 별도 복사본이 아니다.
+
+### 전투 종료 후 원래 행군 재개
+
+Encounter 생성 시 각 군단의:
+- 이전 order
+- 이전 targetX/Y/Z
+
+를 저장한다.
+
+승리/평화 종료 시 생존 군단은 encounterId를 지우고 이전 명령을 복원한다.
+
+즉 원정 중 적군을 만나 승리한 군단은 원래 목적지를 향한 행군을 다시 이어간다.
+
+### 플레이어 명령으로 교전 이탈
+
+플레이어가 교전 중인 군단에:
+- 새 이동/공격 이동
+- 정지
+- 긴급 수도 복구
+
+같은 명령을 내리면 해당 군단은 Strategic Encounter 참가 목록에서 이탈한다.
+
+물리 actor의 `pk_encounter_id`도 함께 지운다.
+
+### 평화/동맹 관계 변경
+
+두 국가의 관계가 더 이상 war가 아니게 되면 해당 양국의 진행 Encounter를 정리하고 생존 군단의 이전 명령을 복구한다.
+
+### 전쟁 로그 UI
+
+군령 → 전략 전투 / 전쟁 로그 추가.
+
+표시:
+- 진행 중 Encounter
+- abstract / physical 여부
+- 양국 이름
+- 참가 군단 수
+- 좌표
+- 최근 전투 시작 / 지원군 / 전멸 / 실전 전환 / 종료 로그
+
+진행 중 Encounter를 선택하면 지휘관을 전투 인근 상공으로 이동시킬 수 있다.
+
+### 군단 호출기 연동
+
+Encounter 중인 군단은:
+- 전략 전투 교전
+- 실전투 교전
+
+상태를 군단 호출기에 표시한다.
+
+### 성능 진단
+
+성능 진단에:
+- 진행 중 전략 전투 수
+- physical 전환 전투 수
+- 최근 전략/조우 루프 ms
+
+를 추가했다.
+
+Encounter가 없고 새 조우도 발생하지 않은 pass에서는 모든 군단 shard를 매초 다시 저장하지 않는다.
+
+### Alpha 8 범위 밖
+
+아직 이번 단계에 넣지 않음:
+- NPC 월드 세력의 청크 밖 추상 전투
+- 수도/성벽/건물 공성 resolution
+- 3국 이상 다자전
+- 동맹국이 한 Encounter의 제3측/공동측으로 들어오는 처리
+- supply / morale / prisoner / loot campaign layer
+- treaty permission
+- strategic allied reinforcement command
+- 실제 projectile / siege impact 연출
+
+이 항목들은 R9 이후 캠페인/외교 계층과 함께 확장한다.
+
+### Alpha 8 정적/코드 단위 검사
+
+- JavaScript syntax PASS
+- JSON 58개 parse PASS
+- named function 480 / duplicate 0
+- BP/RP/module 1.9.0 정합
+- BP→RP dependency 1.9.0 정합
+- encounter world keys / schema 확인
+- strategic movement encounter pause 확인
+- war-only encounter detection 확인
+- 24블록 spatial grid 확인
+- same-battle reinforcement merge 경로 확인
+- abstract ↔ physical transition 경로 확인
+- player command encounter detach 경로 확인
+- peace relation encounter cancel 경로 확인
+- army locator encounter status 확인
+- performance diagnostic encounter metrics 확인
+- 실제 Alpha 8 전략 피해 함수 추출 smoke test PASS
+- Source ZIP / mcaddon CRC PASS
+- Source ZIP / mcaddon byte-identical
+- payload 86 files
+- SHA-256: `1615047d9ac9e365e70dc029e537c3c90670f2bb49986039a6c53f6a31a89bb2`
+
+## 검증 정책
+
+현재도 사용자 실플레이 테스트 단계가 아니다.
+
+R8은 코드/정적/순수 계산 smoke test 단계다. 실제 Bedrock에서 전쟁 국가 두 개를 구성해 500~2000블록 원정 중 조우, owner offline, 접근/이탈 전환, 지원군 합류, 승리 후 원래 목적지 재행군을 최종 통합 테스트에서 반드시 검증해야 한다.
