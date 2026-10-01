@@ -19,7 +19,7 @@ Baseline: PlainKingdoms v1.1.5
 - R9 diplomacy and campaigns: first functional diplomacy/treaty layer implemented in 1.10.0 Remake Alpha 9 — War/Truce/Neutral/Alliance, five treaty permissions, physical/strategic MilitaryAccess enforcement, offline-capable ResourceAid, SharedVision, SharedCommand, and non-teleport Strategic Reinforcement march.
 - R10 campaign/siege/projectile layer: first functional implementation completed in 1.11.0 Remake Alpha 10 — Strategic Siege, temporary building disable/capital breach, supply/morale logistics, war score/loot, and cosmetic arrow/bolt/siege projectile presentation.
 - R11 tactical camera and strategic map: first functional implementation completed in 1.12.0 Remake Alpha 11 — follow-orbit camera-relative command view, tactical actionbar, army/conflict/nation/site/coordinate strategic command surfaces, and direct Army Banner entity context controls.
-- R12+ remain active work.
+- R11.5 pre-polish combat/NPC bridge: completed in 1.13.0 Remake Alpha 12 — chunk-independent NPC faction-site combat with physical/abstract garrison continuity and role-specific bow/crossbow/siege/charge animations.\n- R12+ remain active work.
 
 Runtime verification remains pending until the later integrated test phase.
 
