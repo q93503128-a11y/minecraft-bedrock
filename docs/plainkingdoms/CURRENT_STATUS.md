@@ -2,7 +2,7 @@
 
 기준일: 2026-10-01  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.11.0 Remake Alpha 10`
+현재 로컬 개발 빌드: `1.12.0 Remake Alpha 11`
 
 ## 저장소 역할
 
@@ -253,10 +253,10 @@ Alpha 7에서 “실제 대형”이란:
 - death/corpse 표현
 
 ### 지휘/UX 후속
-- tactical camera
-- strategic map 재설계
-- context command UI 추가 정리
-- mobile/controller 전수 UX
+- 전략 지도 정보 밀도/시각 폴리싱
+- touch/controller 실제 입력 전수검사
+- 전술 카메라 실제 감도/거리 튜닝
+- 컨텍스트 메뉴 문구/깊이 최종 정리
 
 ### Marketplace 마감
 - 온보딩
@@ -270,7 +270,7 @@ Alpha 7에서 “실제 대형”이란:
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
-Alpha 10까지 전략 공성·보급/사기·약탈/전쟁점수·가시 투사체가 연결됐다. 다음은 전술 카메라·전략 지도·컨텍스트 지휘 UX와 남은 전투 표현을 더 묶은 뒤 내부 회귀감사를 하고 실제 Bedrock 통합 테스트를 요청한다.
+Alpha 11까지 전술 카메라·전략 지도·직접 군단 컨텍스트 지휘가 연결됐다. 다음은 남은 전투 표현/NPC 전략전과 Marketplace 폴리싱을 진행한 뒤 내부 전수감사를 하고 실제 Bedrock 통합 테스트를 요청한다.
 
 정적 검사는 Minecraft 런타임 정상 판정을 대신하지 않는다.
 
@@ -777,5 +777,170 @@ Script가 `minecraft:projectile` component의 `shoot()`을 사용해 실제 궤�
 - payload 93 files
 - Source ZIP / mcaddon byte-identical
 - SHA-256: `26d884b1f8903f37e4848aba21eedff0c094cf57752baccd6abca6cb1a966402`
+
+현재도 사용자 실플레이 테스트 단계가 아니다.
+
+
+## Alpha 11 — 전술 카메라 / 전략 지도 / 컨텍스트 지휘
+
+### 전술 카메라
+
+새 Behavior Pack camera preset:
+- `plainkingdoms:tactical`
+- `inherit_from: minecraft:follow_orbit`
+- `control_scheme: camera_relative`
+- radius 18
+- entity offset [0, 4, 0]
+- view offset [0, 2.5]
+- 시작 pitch 52°
+
+목표는 완전한 별도 RTS 캐릭터 조작이 아니라 기존 Minecraft 플레이어를 지휘관으로 유지하면서 가까운 전투를 읽기 쉬운 높은 시점에서 보는 것이다.
+
+전술 카메라는 session-only다.
+- 토글 ON/OFF 가능
+- 접속/초기화 경로에서 camera clear
+- camera mode 자체를 세이브 정본으로 남기지 않음
+
+전술 카메라 ON 동안 actionbar에:
+- 현재 선택 군단/전군
+- 선택 수
+- 이동 중 수
+- Encounter 수
+- Siege 수
+- 군령 메뉴 힌트
+
+를 주기적으로 표시한다.
+
+### 전략 지도
+
+기존 세계 지도/관찰 이동 중심 UI를 실제 지휘 surface로 재구성했다.
+
+메인:
+- 내 군단 지도
+- 전쟁 / 공성 지도
+- 국가 / 거점 지도
+- 좌표 직접 지휘
+- 전술 카메라
+- 지휘관 관찰 이동
+- 군단 지휘 메뉴
+
+관찰 이동은 지휘 기능과 분리해 명시적으로 선택할 때만 사용한다.
+
+### 군단 지도
+
+각 StrategicArmyState에 대해:
+- 현재 좌표
+- 목표 좌표
+- ETA
+- HP
+- 현재 명령
+- virtual / physical / encounter / siege 상태
+
+를 표시한다.
+
+군단 선택 후:
+- 해당 군단 선택
+- X/Z 직접 명령
+- 대형 변경
+- 수도 귀환
+- 전술 카메라
+- 관찰 이동
+
+으로 이어진다.
+
+### 좌표 직접 지휘
+
+`ModalFormData`의 X/Z 입력을 사용한다.
+
+숫자 검증 뒤:
+- Move
+- Attack Move
+
+중 하나를 선택해 StrategicArmyState의 실제 목적지로 전달한다.
+
+### 전쟁 / 공성 지도
+
+현재 국가가 참가하는:
+- Strategic Encounter
+- Strategic Siege
+
+를 한 화면에서 본다.
+
+진행 중 전투/공성에:
+- 선택 군단 현장 투입
+- 관찰 이동
+
+을 제공한다.
+
+공격국의 기존 Siege 대상은 Alpha 10의 실제 `StrategicSiege` target record를 재사용한다.
+
+### 국가 / 거점 지도
+
+국가 수도와 월드 거점을 전략 목적지로 사용한다.
+
+관계/조약에 따라:
+- 자국 수도 집결
+- 전쟁국 수도 공격/공성
+- 동맹국 수도 이동
+- Reinforcement 파견
+- 외교 화면
+- 월드 거점 Move / Attack Move
+
+등의 컨텍스트 명령을 노출한다.
+
+### 군단 직접 터치 컨텍스트
+
+군령 깃발을 들고 실제 군단 Entity를 터치하면 바로 해당 군단 컨텍스트 메뉴를 연다.
+
+자국 군단:
+- 선택
+- Attack Move 모드
+- Hold
+- Formation
+
+SharedCommand 동맹 군단:
+- 공동 지휘 대상으로 선택 가능
+
+전쟁 상대:
+- 현재 선택한 자국 군단을 적 위치로 Attack Move
+
+SharedVision만 있는 동맹은:
+- 상태 정보만 확인
+- 지휘 권한이나 순간이동은 부여하지 않음
+
+### Alpha 11의 지도 표현 범위
+
+현재 전략 지도는 `server-ui` 기반의 정보/명령 surface다.
+
+즉 아직 custom JSON UI로 그린 완전한 2D 미니맵 화면은 아니다.
+일반 Add-On/Marketplace 호환성과 터치 안정성을 우선해:
+- 상태
+- ETA
+- 좌표
+- 관계
+- 전투/공성
+- 실제 명령
+
+을 먼저 완성했다.
+
+### Alpha 11 정적/패키지 검사
+
+- JavaScript syntax PASS
+- JSON 66개 parse PASS
+- named function 564 / duplicate 0
+- BP/RP/module/dependency 1.12.0 정합
+- runtime VERSION `1.12.0-remake.11`
+- tactical camera preset parse PASS
+- follow_orbit / camera_relative wiring 확인
+- setCamera / clear wiring 확인
+- 전략 지도 5개 주요 command surface 함수 경로 확인
+- ModalForm X/Z 명령 경로 확인
+- Army Banner direct entity context event 확인
+- 관찰 이동과 전략 명령 UI 분리 확인
+- Alpha 10 → Alpha 11 payload 변경 파일 4개
+- Source ZIP / mcaddon CRC PASS
+- payload 94 files
+- Source ZIP / mcaddon byte-identical
+- SHA-256: `7c3a5688c0b4281dc2a9cc48b847f120e81317ad17f8504847948319825a33e3`
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
