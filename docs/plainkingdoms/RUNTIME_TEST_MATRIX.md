@@ -385,6 +385,35 @@ Menu/UX:
 - touch targets remain large enough on phone layout;
 - no hover-dependent information.
 
+## NPC strategic sites / role animation Alpha 12
+
+NPC strategic site:
+- send army 500+ blocks to Raider Camp while player remains at capital;
+- send army to Goblin Camp and Undead Crypt under same conditions;
+- strategic garrison HP decreases while site chunk is not loaded;
+- attacker HP/morale losses persist in StrategicArmyState;
+- attacker casualty is removed through normal generation/world-shard path;
+- walk into a partially damaged site and verify physical defenders spawn at matching remaining-strength fraction;
+- leave during physical site combat and verify live defender HP becomes strategic garrison HP before defender removal;
+- re-enter and confirm no full-health reset;
+- abstract victory marks site defeated and no defenders respawn;
+- abstract victory pays existing site rewards including offline pending reward;
+- generic new Move/Attack Move clears siteTargetId;
+- completed physical site combat clears stale site attack orders;
+- neutral clan abstract combat occurs only for nation slots that explicitly made that clan hostile;
+- world boss and dungeon waves do not accidentally enter faction-site abstract resolver.
+
+Role animation:
+- Archer representative slot uses bow animation;
+- Crossbow representative slot uses crossbow animation;
+- Siege representative slot uses siege_fire animation;
+- Knight charge uses charge posture;
+- mixed army does not force sword/spear representatives into bow/crossbow-only arm poses;
+- attack state returns to ordinary locomotion after lock expiry;
+- cosmetic projectile remains zero-damage presentation;
+- one authoritative hit-frame damage event per attack;
+- anim_state 0..11 stays valid on all friendly entity variants.
+
 ## Accessibility/mobile
 
 - no required hover;
