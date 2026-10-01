@@ -189,18 +189,74 @@ Performance:
 - rotated barracks default RallyPoint;
 - rotated resident workplace apron.
 
-## Diplomacy
+## Diplomacy / treaties Alpha 9
 
-- alliance request/accept/decline;
-- truce;
-- war;
-- treaty permissions;
-- allied military access;
-- reinforcement;
-- shared command denied/allowed;
-- relationship persistence;
-- disconnect/reconnect;
-- three-nation interactions.
+Relationship:
+- Alliance request / accept / decline;
+- War declaration from Neutral;
+- accepted peace request -> Truce;
+- War declaration blocked during active Truce;
+- Truce expires to Neutral;
+- legacy saved relation `ally` reads as Alliance;
+- relationship persists across save/reload.
+
+Treaties:
+- request/accept each of MilitaryAccess, ResourceAid, SharedVision, Reinforcement, SharedCommand;
+- OFF -> ON cannot happen without receiver acceptance;
+- either side can revoke ON -> OFF immediately;
+- leaving Alliance clears active treaty flags;
+- revoking SharedCommand immediately invalidates active shared-control context.
+
+MilitaryAccess:
+- physical army cannot enter Neutral foreign territory;
+- virtual army cannot cross the same border;
+- Alliance without MilitaryAccess still blocks entry;
+- Alliance + MilitaryAccess permits entry;
+- War permits invasion of enemy territory;
+- army already inside territory after permission revoke is allowed to move outward but not deeper inward;
+- third-party territory can stop a long reinforcement route.
+
+ResourceAid:
+- online allied recipient receives 25-unit resource support;
+- offline allied recipient receives pending reward on next login;
+- aid denied without ResourceAid treaty;
+- treaty revoked while form is open prevents final transfer.
+
+SharedVision:
+- allied army coordinates/composition/HP/order/encounter are visible;
+- SharedVision does not teleport the player;
+- SharedVision does not permit Army Banner control.
+
+SharedCommand:
+- command one allied army;
+- command all allied armies;
+- ground Move;
+- ground Attack Move;
+- Hold;
+- gather to controlling player's current position;
+- no undeclared-context ReferenceError on gather;
+- owner offline still permits world-state command;
+- command respects controlled army owner's MilitaryAccess;
+- treaty revoke while control is active returns control to own nation.
+
+Strategic Reinforcement:
+- requires Alliance + Reinforcement + MilitaryAccess;
+- selected one army and all-army modes;
+- no teleport at order issue;
+- 500 / 1000 / 2000 block march without owner following;
+- owner disconnect while march is active;
+- supportForSlot persists through virtualize/materialize;
+- arrival notifies ally and switches to Hold;
+- ordinary new command clears supportForSlot;
+- route blocked by third-party neutral territory without access;
+- reinforce army can enter target ally territory only with MilitaryAccess.
+
+Multiplayer:
+- simultaneous treaty requests;
+- simultaneous revoke/request race;
+- three-nation MilitaryAccess combinations;
+- alliance breakup while support army is inside former ally territory;
+- save/reload with active treaties and reinforcement march.
 
 ## Accessibility/mobile
 
