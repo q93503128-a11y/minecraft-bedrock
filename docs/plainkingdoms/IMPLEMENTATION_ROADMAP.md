@@ -13,8 +13,9 @@ Baseline: PlainKingdoms v1.1.5
 - R3 recruitment / RallyPoint: first functional implementation completed in 1.4.0 Remake Alpha 3.
 - R4 building experience: first functional implementation completed in 1.5.0 Remake Alpha 4 — categories, 90° rotation, entrance marker, repeat placement, road/wall two-point construction.
 - R5 army representation/animation: first functional implementation completed in 1.6.0 Remake Alpha 5 — Kenney CC0-derived six-soldier squad rig, mixed-composition role visibility, HP depletion visuals, animation-state bridge, and delayed hit frames.
-- R6 SquadBrain: first functional tactical brain implemented in 1.7.0 Remake Alpha 6 — target stability, spear brace, knight charge/recover, ranged kite/fireline, siege reposition, heavy/guard anchor, and explicit-order priority. Individual representative-slot positioning remains R7.
-- R7+ remain active work.
+- R6 SquadBrain: first functional tactical brain implemented in 1.7.0 Remake Alpha 6 — target stability, spear brace, knight charge/recover, ranged kite/fireline, siege reposition, heavy/guard anchor, and explicit-order priority.
+- R7 formation and group movement: first functional implementation completed in 1.8.0 Remake Alpha 7 — Block/Line/Column/Wedge/Loose representative layouts, role-aware front/rear slots, Auto/manual preference persisted in StrategicArmyState, formation-aware multi-army destinations, and same-nation local separation.
+- R8+ remain active work.
 
 Runtime verification remains pending until the later integrated test phase.
 
