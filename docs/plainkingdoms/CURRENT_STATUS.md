@@ -2,7 +2,7 @@
 
 기준일: 2026-10-01  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.9.0 Remake Alpha 8`
+현재 로컬 개발 빌드: `1.10.0 Remake Alpha 9`
 
 ## 저장소 역할
 
@@ -276,7 +276,7 @@ Alpha 7에서 “실제 대형”이란:
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
-Alpha 8까지 전투/대형/전략 조우 기반이 연결됐다. R9 외교·조약·전략 지원군과 주요 지휘 UX를 더 연결한 뒤 내부 회귀감사를 하고 실제 Bedrock 통합 테스트를 요청한다.
+Alpha 9까지 전략 전투와 외교/조약/전략 지원군이 연결됐다. 다음은 캠페인/공성 확장과 지휘 UX·전술 카메라·전략 지도·투사체 표현을 더 묶은 뒤 내부 회귀감사를 하고 실제 Bedrock 통합 테스트를 요청한다.
 
 정적 검사는 Minecraft 런타임 정상 판정을 대신하지 않는다.
 
@@ -484,3 +484,152 @@ Encounter가 없고 새 조우도 발생하지 않은 pass에서는 모든 군�
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
 R8은 코드/정적/순수 계산 smoke test 단계다. 실제 Bedrock에서 전쟁 국가 두 개를 구성해 500~2000블록 원정 중 조우, owner offline, 접근/이탈 전환, 지원군 합류, 승리 후 원래 목적지 재행군을 최종 통합 테스트에서 반드시 검증해야 한다.
+
+
+## Alpha 9 — 외교 / 조약 권한 / 전략 지원군
+
+### 관계 상태
+
+외교 관계를 다음 네 단계로 정리했다.
+- War
+- Truce
+- Neutral
+- Alliance
+
+기존 저장값 `ally`는 로드 시 `alliance`로 호환한다.
+
+전쟁 중 평화 요청을 상대가 수락하면 즉시 Neutral이 아니라 Truce로 전환한다.
+현재 휴전 시간은 5분이며, 휴전 중 재선전은 차단된다.
+시간이 지나면 자동으로 Neutral로 전환한다.
+
+### 조약 권한 분리
+
+동맹 관계 자체와 별도로 다음 5개 권한을 world state `pk_treaties_v1`에 저장한다.
+
+- MilitaryAccess / 군사 통행
+- ResourceAid / 자원 지원
+- SharedVision / 정보 공유
+- Reinforcement / 지원군 파견
+- SharedCommand / 공동 지휘
+
+OFF → ON:
+- 요청
+- 상대 수락
+- 활성화
+
+ON → OFF:
+- 어느 한쪽이 즉시 철회 가능
+
+Alliance가 종료되면 활성 조약 권한도 함께 종료된다.
+
+### MilitaryAccess
+
+군사 통행은 UI 표기만이 아니라 이동 계층에 실제로 연결했다.
+
+전략 군단:
+- 목적지 명령 시 foreign territory 검사
+- virtual march 중 매 이동 step 검사
+- 권한이 없는 Neutral/Alliance 영토 경계에서 정지
+
+물리 군단:
+- local steering candidate마다 foreign territory 검사
+- 권한이 없는 영토 진입을 차단
+
+War 상태인 상대 영토에는 침공할 수 있다.
+Alliance만으로 자동 통행되지는 않는다.
+
+### ResourceAid
+
+ResourceAid 조약이 활성화된 동맹에만 자원 지원 가능.
+
+- 목재 / 석재 / 식량 / 철 25 단위
+- 상대 접속 중: 즉시 지급
+- 상대 오프라인: nation-slot pending reward로 저장 후 다음 접속 시 지급
+
+### SharedVision
+
+SharedVision은 다음 정보만 공유한다.
+- 동맹 군단 위치
+- 편성
+- HP
+- 현재 명령
+- 전략/실전 교전 상태
+
+정보 공유는 플레이어 순간이동이나 군단 명령 권한을 부여하지 않는다.
+
+최종 감사 중 초기 구현이 SharedVision 군단 선택 시 `safeObserverTeleport`를 호출하던 문제를 발견해 제거했다.
+
+### SharedCommand
+
+SharedCommand 조약이 활성화되면:
+- 동맹 전체 군단
+- 특정 동맹 군단
+
+중 하나를 공동 지휘 대상으로 선택할 수 있다.
+
+공동 지휘 상태에서:
+- 군령 깃발 Move
+- Attack Move
+- Hold
+- 내 위치 집결
+
+을 사용한다.
+
+실제 이동은 그 군단 소유 국가의 MilitaryAccess 관계를 기준으로 검사한다.
+
+조약 철회 또는 동맹 종료 시 현재 공동 지휘 context도 즉시 무효화한다.
+
+최종 감사에서 공동 지휘 상태의 `내 위치 집결` 함수가 선언되지 않은 `ctx`를 참조하는 런타임 ReferenceError 가능성을 발견했고, 함수 내부에서 `sharedCommandContext(player)`를 명시적으로 해석하도록 수정했다.
+
+### Reinforcement — 순간이동 제거
+
+기존 동맹 지원군 순간이동을 정상 흐름에서 제거했다.
+
+지원군 전략 파견 조건:
+- Alliance
+- Reinforcement treaty
+- MilitaryAccess treaty
+
+선택 군단/전군에:
+- `order = reinforce`
+- `supportForSlot = 동맹 국가 슬롯`
+- 동맹 수도 인근의 서로 다른 그룹 destination
+
+을 부여한다.
+
+지원군은 기존 물리/virtual 이동 계층을 그대로 사용하므로:
+- 가까우면 실제 이동
+- 멀어지면 StrategicArmyState 행군
+- 소유자가 따라가지 않아도 계속 이동
+- 동맹 목적지 도착 시 Hold
+
+로 전환된다.
+
+새로운 일반 이동/공격/정지 명령을 내리면 `supportForSlot`은 해제된다.
+
+### Alpha 9 정적/패키지 검사
+
+최종 정본 기준:
+- JavaScript syntax PASS
+- JSON 58개 parse PASS
+- named function 496 / duplicate 0
+- BP/RP/module 1.10.0 정합
+- BP→RP dependency 1.10.0 정합
+- runtime VERSION `1.10.0-remake.9`
+- 5 treaty flags wire 확인
+- treaty request/accept/revoke 경로 확인
+- Truce expiry 경로 확인
+- MilitaryAccess strategic + physical path 확인
+- ResourceAid offline pending reward path 확인
+- SharedVision no-teleport invariant 확인
+- SharedCommand ground/order path 확인
+- shared-command gather ReferenceError 회귀검사 확인
+- Strategic Reinforcement `reinforce/supportForSlot` 경로 확인
+- legacy `ally` → `alliance` compatibility 확인
+- Alpha 8 대비 payload 변경 파일 3개만 확인
+- Source ZIP / mcaddon CRC PASS
+- payload 86 files
+- Source ZIP / mcaddon byte-identical
+- SHA-256: `b2dbe716f2f0ba090769183503da4b6c02445975fbfba005268e3d0dc381a7d2`
+
+현재도 사용자 실플레이 테스트 단계가 아니다.
