@@ -67,7 +67,7 @@ Project documents:
 
 Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
-Current local remake milestone: `1.9.0 Remake Alpha 8` — war-only strategic encounters, reinforcement joining, time-based abstract combat, HP-continuous physical battle materialization, and battle logging on top of the Alpha 7 formation/SquadBrain foundation.
+Current local remake milestone: `1.10.0 Remake Alpha 9` — War/Truce/Neutral/Alliance diplomacy, five separately negotiated treaty permissions, physical/strategic MilitaryAccess enforcement, offline-capable resource aid, SharedVision/SharedCommand, and allied reinforcement through real StrategicArmyState march instead of teleport.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -84,22 +84,21 @@ Current completed foundation:
 - nation/world-authoritative StrategicArmyState;
 - long-range terrain command fallback;
 - barracks recruitment queue and RallyPoint;
-- three primary system tools;
 - categorized/rotatable construction and two-point infrastructure;
-- Kenney CC0-derived mixed-composition six-representative squad presentation;
+- CC0-derived mixed-composition squad presentation;
 - animation-synchronized combat hit frames;
-- SquadBrain role behavior;
-- Auto/manual Block, Line, Column, Wedge and Loose formations;
+- SquadBrain and five Auto/manual formations;
 - formation-aware multi-army targets and local separation;
-- strategic War encounter detection;
-- nearby strategic reinforcement merge;
-- deterministic time-based abstract army combat;
-- abstract -> physical -> abstract battle continuity using the same StrategicArmyState HP;
-- battle log and pre-encounter route restoration.
+- strategic War encounters and time-based abstract combat;
+- abstract/physical battle continuity using authoritative HP;
+- War / Truce / Neutral / Alliance relationship state;
+- MilitaryAccess / ResourceAid / SharedVision / Reinforcement / SharedCommand permissions;
+- strategic and physical foreign-territory access enforcement;
+- strategic allied reinforcement march without teleport.
 
 Next major work:
-- R9 diplomacy states/treaty permissions and strategic allied reinforcement march;
-- campaign consequences / supply / siege expansion;
+- campaign/siege/supply consequences;
 - visible ranged and siege projectile presentation;
 - tactical camera and strategic-map command surface;
+- deeper context command UI;
 - Marketplace onboarding/accessibility/mobile/multiplayer validation.
