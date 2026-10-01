@@ -416,6 +416,74 @@ Role animation:
 - one authoritative hit-frame damage event per attack;
 - anim_state 0..11 stays valid on all friendly entity variants.
 
+
+## Alpha 13 R12 onboarding / recruitment regression
+
+Onboarding:
+- fresh player sees Capital as first next action;
+- capital completion advances to first production building;
+- farm/lumber/mine completion advances to Barracks;
+- Barracks advances to recruitment;
+- a queued or existing authoritative StrategicArmyState satisfies first recruitment;
+- RallyPoint set/default action advances the RallyPoint step;
+- a real accepted army ground Move/Attack Move advances movement;
+- a real friendly hit advances combat;
+- diplomacy request or valid war declaration advances diplomacy;
+- single-player world with no other nation does not get permanently blocked by diplomacy;
+- skip onboarding hides progress without disabling gameplay;
+- re-enable onboarding restores state-derived progress rather than resetting world state.
+
+Recruitment Queue:
+- one Barracks, 3 jobs: jobs train strictly sequentially;
+- two or more Barracks: scheduler assigns jobs by earliest predicted completion and separate Barracks run in parallel;
+- required Barracks level filters locked compositions correctly;
+- Queue max 12 enforced;
+- army cap includes queued commitments;
+- available population subtracts queued 10-man commitments;
+- resource payment occurs once at enqueue;
+- cancel before start returns the full reserved cost;
+- cancel during training returns the full reserved cost and reschedules following jobs;
+- deleted Barracks pauses the job without completing it;
+- downgraded/insufficient Barracks pauses the job;
+- Strategic Siege temporary disable pauses the job;
+- restore Barracks resumes with readyAt shifted by full paused duration;
+- save/reload while paused preserves pausedAt and cannot cause early completion;
+- owner disconnect while the world remains active does not stop Queue processing;
+- completion while owner offline writes one authoritative world army row;
+- owner reconnect mirrors authoritative row without duplicate actor;
+- existing armyId in world shard removes stale completion job instead of duplicating the army;
+- failed world-shard save leaves job retryable and does not silently lose the army;
+- completed army appears at the selected Barracks RallyPoint;
+- default RallyPoint is the Barracks entrance;
+- current-position RallyPoint requires Overworld and own territory.
+
+Army reformation:
+- army farther than 36 blocks from capital is blocked with recovery guidance;
+- Encounter participant is blocked;
+- Siege participant is blocked;
+- eligible army can switch to every unlocked preset;
+- locked preset remains blocked;
+- positive resource delta is charged once;
+- cheaper preset produces no refund;
+- current HP percentage is preserved against the new HP max;
+- generation increases;
+- old loaded actor is removed before rematerialization;
+- encounter/siege/site/support state is cleared;
+- authoritative world row remains the source of truth after reconnect.
+
+Menu/accessibility:
+- Army root exposes common command/recruitment in one step;
+- strategy/war and maintenance actions are grouped one level deeper;
+- Realm root does not require legacy Settings/Atlas/Locator hotbar items;
+- only Ledger/Builder/Army Banner are force-restored to hotbar slots;
+- compact HUD is default for a fresh player;
+- compact/detailed HUD toggle persists;
+- compact HUD stays readable on phone portrait/landscape;
+- no onboarding step requires hover or precision drag;
+- controller can traverse every new ActionForm without pointer-only affordances;
+- failed ground target, recruitment, RallyPoint and reformation paths include both reason and recovery text.
+
+
 ## Accessibility/mobile
 
 - no required hover;
