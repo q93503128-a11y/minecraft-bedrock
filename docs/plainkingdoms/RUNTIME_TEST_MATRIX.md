@@ -110,6 +110,50 @@ Observe:
 - no attacking through impossible geometry;
 - losses reflected visually and strategically.
 
+## Strategic encounters Alpha 8
+
+Detection:
+- two virtual armies from nations at War enter <=12 blocks -> one Encounter;
+- Neutral/Alliance armies do not create an Encounter;
+- multiple nearby armies from the same two nations merge into the same local battle where possible rather than spawning many 1v1 encounters;
+- same-side army entering <=18 blocks joins as reinforcement;
+- max-new-encounter pass budget is respected.
+
+Abstract battle:
+- no player nearby -> HP changes over time, not instant winner selection;
+- sword vs sword lasts a meaningful duration;
+- spear-heavy force has a real advantage against knight-heavy force;
+- knight-heavy force has a real advantage against ranged-heavy force;
+- heavy/guard composition receives defensive value;
+- formation modifiers remain secondary to composition;
+- deterministic resolution does not change simply because a chunk reloads;
+- destroyed army disappears from authoritative world shard and cannot revive from a stale actor.
+
+Observed transition:
+- player approaches active Encounter -> abstract HP loss stops;
+- survivors materialize with the same HP they had strategically;
+- physical deaths update the same authoritative rows;
+- player leaves -> actors virtualize -> the same Encounter returns to abstract mode;
+- no duplicate physical and virtual copies exist.
+
+Command/diplomacy:
+- new player Move/Attack/Retreat/Hold command can remove that army from encounter membership;
+- emergency recall removes encounter membership;
+- War -> peace/neutral/alliance cancels the bilateral encounter;
+- surviving armies restore their pre-battle order/target after normal battle completion or peace;
+- a victorious marching army resumes its original long-distance route.
+
+Logging/UI:
+- encounter appears in strategic battle log;
+- support join / army loss / materialize / abstract resume / final result are logged;
+- army locator marks an army as strategic-battle or physical-battle participant;
+- selecting an active encounter can navigate the commander to the battle area.
+
+Performance:
+- no active/new encounter pass does not rewrite every army shard;
+- spatial grid prevents all-world full pair scan;
+- strategic encounter loop time appears in performance diagnostics.
+
 ## Strategic combat
 
 - two virtual armies meet with nobody present;
