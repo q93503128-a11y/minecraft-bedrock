@@ -67,7 +67,7 @@ Project documents:
 
 Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
-Current local remake milestone: `1.10.0 Remake Alpha 9` — War/Truce/Neutral/Alliance diplomacy, five separately negotiated treaty permissions, physical/strategic MilitaryAccess enforcement, offline-capable resource aid, SharedVision/SharedCommand, and allied reinforcement through real StrategicArmyState march instead of teleport.
+Current local remake milestone: `1.11.0 Remake Alpha 10` — nation-vs-nation Strategic Siege, temporary building disable/capital breach, supply/morale campaign logistics, war score/loot, and visible cosmetic arrow/bolt/siege projectiles while Script hit frames remain authoritative for damage.
 
 PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
 
@@ -80,25 +80,27 @@ Canonical remake documents:
 - `docs/plainkingdoms/EXTERNAL_ASSET_PROVENANCE.md`
 
 Current completed foundation:
-- proactive physical/strategic army handoff;
-- nation/world-authoritative StrategicArmyState;
+- chunk-independent world-authoritative StrategicArmyState;
 - long-range terrain command fallback;
-- barracks recruitment queue and RallyPoint;
+- recruitment Queue/RallyPoint;
 - categorized/rotatable construction and two-point infrastructure;
 - CC0-derived mixed-composition squad presentation;
 - animation-synchronized combat hit frames;
 - SquadBrain and five Auto/manual formations;
-- formation-aware multi-army targets and local separation;
-- strategic War encounters and time-based abstract combat;
-- abstract/physical battle continuity using authoritative HP;
-- War / Truce / Neutral / Alliance relationship state;
-- MilitaryAccess / ResourceAid / SharedVision / Reinforcement / SharedCommand permissions;
-- strategic and physical foreign-territory access enforcement;
-- strategic allied reinforcement march without teleport.
+- formation-aware multi-army movement;
+- abstract/physical strategic battle continuity;
+- four-state diplomacy and five treaty permissions;
+- strategic allied reinforcement march;
+- Strategic Siege against capitals/buildings;
+- supply/morale logistics across strategic and physical simulation;
+- temporary building disable and capital breach;
+- war score/loot campaign result state;
+- cosmetic arrow/bolt/siege projectile presentation with zero projectile damage.
 
 Next major work:
-- campaign/siege/supply consequences;
-- visible ranged and siege projectile presentation;
-- tactical camera and strategic-map command surface;
+- R11 tactical camera and strategic-map command surface;
 - deeper context command UI;
-- Marketplace onboarding/accessibility/mobile/multiplayer validation.
+- NPC strategic campaign/siege and richer multi-nation war consequences;
+- role-specific combat/death animation polish;
+- R12 Marketplace onboarding/accessibility/mobile/multiplayer polish;
+- R13 full release validation.
