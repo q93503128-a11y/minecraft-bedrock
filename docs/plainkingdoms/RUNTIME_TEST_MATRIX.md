@@ -408,6 +408,8 @@ Role animation:
 - Crossbow representative slot uses crossbow animation;
 - Siege representative slot uses siege_fire animation;
 - Knight charge uses charge posture;
+- retreat/kite/recover use sprint, not charge;
+- switching charge -> recover returns from charge state without getting stuck;
 - mixed army does not force sword/spear representatives into bow/crossbow-only arm poses;
 - attack state returns to ordinary locomotion after lock expiry;
 - cosmetic projectile remains zero-damage presentation;
