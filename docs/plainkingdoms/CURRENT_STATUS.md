@@ -2,7 +2,7 @@
 
 기준일: 2026-10-01  
 기준 원본: 사용자 제공 `PlainKingdoms_v1.1.5.mcaddon`  
-현재 로컬 개발 빌드: `1.14.0 Remake Alpha 13`
+현재 로컬 개발 빌드: `1.15.0 Remake Alpha 14`
 
 ## 저장소 역할
 
@@ -270,7 +270,7 @@ Alpha 7에서 “실제 대형”이란:
 
 현재도 사용자 실플레이 테스트 단계가 아니다.
 
-Alpha 13에서 R12 Marketplace 폴리싱 1차를 시작했다. 온보딩·메뉴 계층·간결 HUD를 정리했고, Alpha 12 실제 소스 감사에서 발견한 모집 Queue 런타임 함수 누락을 복구했다. 다음 R12 배치는 touch/controller 실제 런타임, 멀티 권한/동시성, 문구/현지화, 전투 표현 폴리싱을 계속한다.
+Alpha 14에서 R12 Marketplace 폴리싱 2차를 진행했다. 폼이 열린 사이 세계 상태가 변하는 멀티/비동기 race를 모집·RallyPoint·재편성·건설·외교·공동지휘·던전·보상 경로에서 재검증하도록 수정했고, 일반 Minecraft 블록/엔티티 상호작용을 시스템 지휘 도구가 아닐 때 불필요하게 가로채지 않도록 입력 범위를 좁혔다. 다음 단계는 실제 Bedrock touch/controller/host-client 런타임 검증과 현지화·표현·성능 폴리싱이다.
 
 정적 검사는 Minecraft 런타임 정상 판정을 대신하지 않는다.
 
@@ -1289,3 +1289,180 @@ RallyPoint는 내 영토/오버월드 조건을 검사한다.
 - 저사양 모바일 성능
 
 따라서 Alpha 13은 R12 폴리싱의 첫 정적 구현 배치이며 Marketplace 후보 완료 상태가 아니다.
+
+
+## Alpha 14 — R12 멀티 안전성 / 입력 폴리싱
+
+버전:
+- 패키지: `1.15.0 Remake Alpha 14`
+- runtime VERSION: `1.15.0-remake.14`
+
+### 폼 stale-state / 멀티 race 방어
+
+Bedrock server-ui 폼은 열린 뒤 사용자가 선택하기 전까지 세계 상태가 바뀔 수 있다.
+
+Alpha 14에서는 “폼을 열었을 때의 오래된 state”를 그대로 다시 저장하지 않고, 실제 커밋 직전에 최신 world-authoritative state를 다시 읽어 조건을 재검증하도록 다음 경로를 수정했다.
+
+#### 모집 취소
+
+`cancelRecruitmentJob`은:
+- 최신 recruitment shard를 다시 읽고
+- 해당 job이 아직 존재하는지 확인하고
+- 완료/이미 취소된 job에는 환불하지 않으며
+- 최신 Queue에서 해당 job만 제거하고
+- 같은 병영의 후속 작업을 재스케줄한 뒤
+- state 저장 성공 후 자원을 환불한다.
+
+따라서 모집 화면을 열어 둔 사이 1초 Queue loop가 작업을 완료하거나 다른 변경이 발생해도 오래된 `state` 전체를 덮어쓰지 않는다.
+
+#### RallyPoint
+
+`mutateBarracksRally`은 클릭 시점에:
+- 현재 병영 record
+- 최신 recruitment shard
+
+를 다시 읽고 `rallies`만 변경한다.
+
+Queue 자체는 최신 상태 그대로 유지하므로 RallyPoint 화면을 오래 열어 둔 상태에서 병영 생산이 진행돼도 Queue를 과거 상태로 되돌리지 않는다.
+
+#### 군단 재편성
+
+재편성 확정 시:
+- 최신 StrategicArmyState 재조회
+- 군단 존재 여부
+- Encounter/Siege 참가 여부
+- 수도 36블록 거리
+- 편성 해금
+- 현재 HP/composition/resources
+
+을 다시 검사한다.
+
+world-authoritative save가 실패하면 자원을 되돌리고 기존 physical actor를 삭제하지 않는다.
+
+#### 건물 업그레이드 / refresh
+
+업그레이드는 확정 시 현재 건물 레벨을 다시 읽고:
+- 요청 레벨이 정확히 `currentLevel + 1`인지
+- 현재 업그레이드 비용
+- 수도 업그레이드 요구조건
+- 현재 footprint 충돌
+
+을 재검사한다.
+
+refresh도 최신 level/rotation을 사용해, 폼이 열린 사이 업그레이드된 건물을 과거 레벨로 다시 그리는 경로를 차단했다.
+
+### 외교 / 조약 / 공동지휘 race 방어
+
+다음 동작은 최종 선택/확정 시 최신 외교 상태를 다시 확인한다.
+
+- 외교 요청 2차 확인
+- 동맹 해제
+- Treaty permission ON/OFF
+- SharedCommand 군단 선택
+- Army Banner 동맹 군단 컨텍스트
+- 전쟁 상대 군단 공격
+- 전략 지도 국가 수도 Move/Attack/Siege/Reinforcement
+
+예:
+- SharedCommand 폼을 열어 둔 사이 권한이 철회되면 명령을 보내지 않는다.
+- War 상태가 끝난 뒤 열린 공격 폼으로 이전 전쟁 명령을 실행하지 않는다.
+- 적 physical entity가 사라졌으면 최신 authoritative army 위치를 사용하고 그것도 없으면 중단한다.
+
+### 일반 Minecraft 상호작용 입력 범위
+
+Alpha 13 이전 코드는 `TAG_DIRECTOR` 플레이어의 block/entity interaction을 광범위하게 cancel할 수 있었다.
+
+Alpha 14에서는:
+- 블록 interaction은 PlainKingdoms 시스템 도구를 들었을 때만 intercept
+- 엔티티 interaction은 Army Banner로 군단을 지휘할 때만 intercept
+- 일반 블록/일반 엔티티 interaction은 Minecraft에 그대로 통과
+
+하도록 범위를 줄였다.
+
+즉 RTS 지휘가 문/상자/생활형 상호작용을 불필요하게 차단하지 않도록 했다.
+
+### 중립 부족 적대 상태
+
+중립 부족은 원래 nation-slot별 `hostileSlots`를 사용했지만 일부 UI는 site의 전역 `hostile`만 보고 있었다.
+
+새 `siteHostileToSlot(site, slot)`을 통해:
+- 중립 부족: 해당 nation slot이 `hostileSlots`에 있을 때만 적대
+- 일반 적대 faction site: 기존처럼 전역 적대
+
+로 UI와 전투 판정을 맞췄다.
+
+한 국가가 중립 부족을 공격했다고 다른 국가까지 적대 UI/Attack Move를 받는 문제를 막는다.
+
+### 던전 시작 race
+
+던전 상세 폼을 연 뒤 다른 플레이어가 먼저 원정을 시작하는 상황을 고려해:
+- 확정 시 site를 다시 조회
+- active/defeated/built 상태 재검증
+- 최신 상태가 이미 시작됐으면 stale 시작 요청 중단
+
+으로 변경했다.
+
+기존 진행 상태/참가자/wave를 오래된 폼이 덮어쓰는 경로를 차단한다.
+
+### pending reward / 오프라인 ResourceAid 트랜잭션 순서
+
+pending reward 지급은:
+1. 해당 pending record를 제거한 상태를 먼저 저장
+2. 저장 성공 후 실제 플레이어 자원 지급
+
+순서로 변경했다.
+
+claim 저장이 실패하면 보상을 지급하지 않고 재시도 안내를 남긴다.
+
+오프라인 ResourceAid는 반대로:
+1. 상대 nation-slot pending reward 저장
+2. 저장 성공 확인
+3. 송신자 자원 차감
+
+순서로 변경했다.
+
+따라서 pending 저장 실패 후 송신자 자원만 사라지는 경로를 막았다.
+
+### Alpha 14 정적/패키지 검사
+
+- JavaScript syntax PASS
+- top-level stub load PASS
+- JSON 66개 parse PASS
+- named function 612 / duplicate 0
+- BP/RP/module/dependency 1.15.0 정합
+- runtime VERSION `1.15.0-remake.14`
+- targeted R12 race/input static checks 28/28 PASS
+- Recruitment cancel latest-state revalidation 확인
+- RallyPoint latest-state mutation 확인
+- authoritative `saveArmyRoster` result 확인
+- reformation current state/capital distance/combat-state revalidation 확인
+- building upgrade/refresh current-level revalidation 확인
+- diplomacy/treaty/SharedCommand revalidation 확인
+- non-system block/entity interaction passthrough 확인
+- neutral-clan hostility per nation slot 확인
+- dungeon stale-start guard 확인
+- pending reward claim-before-grant 확인
+- offline ResourceAid queue-before-debit 확인
+- friendly BP anim_state 0..11: 9/9
+- friendly RP sprint=4 / charge=10 mapping: 9/9
+- Alpha 13 대비 변경 payload 파일 3개
+- payload 94 files
+- Source ZIP CRC PASS
+- archive/source tree byte identity PASS
+- Source ZIP / mcaddon byte-identical
+- SHA-256: `1f4eaa3977ccbbf1de5437afa9ce907350f63733227f29b195694e147f3756dc`
+
+### 런타임 검증이 아직 필요한 항목
+
+이번 배치도 정적/패키지 검증이다.
+
+실제 Bedrock에서 반드시 확인:
+- touch/controller 메뉴 이동과 Army Banner targeting
+- host/client가 같은 recruitment/RallyPoint/building/diplomacy form을 동시에 사용하는 race
+- SharedCommand revoke 직후 client 행동
+- 두 플레이어 동시 dungeon start
+- 저장 실패를 실제로 유도한 pending reward / ResourceAid 동작
+- 일반 문/상자/NPC interaction이 director 상태에서도 정상인지
+- 저사양 모바일에서 메뉴/HUD/전략 loop 성능
+
+따라서 Alpha 14는 R12 두 번째 구현 배치이며 Marketplace 후보 완료 상태가 아니다.
