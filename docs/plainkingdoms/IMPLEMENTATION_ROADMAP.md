@@ -17,7 +17,7 @@ Baseline: PlainKingdoms v1.1.5
 - R7 formation and group movement: first functional implementation completed in 1.8.0 Remake Alpha 7 — Block/Line/Column/Wedge/Loose representative layouts, role-aware front/rear slots, Auto/manual preference persisted in StrategicArmyState, formation-aware multi-army destinations, and same-nation local separation.
 - R8 strategic encounters: first functional implementation completed in 1.9.0 Remake Alpha 8 — war-only virtual-army encounter detection, nearby reinforcement merge, time-based deterministic abstract combat, HP continuity into materialized battles, physical-to-abstract resume, battle log, and pre-encounter order restoration.
 - R9 diplomacy and campaigns: first functional diplomacy/treaty layer implemented in 1.10.0 Remake Alpha 9 — War/Truce/Neutral/Alliance, five treaty permissions, physical/strategic MilitaryAccess enforcement, offline-capable ResourceAid, SharedVision, SharedCommand, and non-teleport Strategic Reinforcement march.
-- R10+ remain active work.
+- R10 campaign/siege/projectile layer: first functional implementation completed in 1.11.0 Remake Alpha 10 — Strategic Siege, temporary building disable/capital breach, supply/morale logistics, war score/loot, and cosmetic arrow/bolt/siege projectile presentation.\n- R11+ remain active work.
 
 Runtime verification remains pending until the later integrated test phase.
 
@@ -171,16 +171,26 @@ Add role logic for spear brace, knight charge, ranged spacing, siege setup.
 - ally notifications;
 - strategic shared information.
 
-## R10 — Tactical camera and strategic map
+## R10 — Campaign siege and projectile layer
+
+- nation-vs-nation strategic building/capital siege;
+- fortification and target HP;
+- temporary building disable and capital breach;
+- supply/morale logistics;
+- war score and loot;
+- visible cosmetic arrow/bolt/siege projectiles;
+- observed/strategic siege continuity.
+
+## R11 — Tactical camera and strategic map
 
 - optional raised command camera;
 - touch/gamepad-friendly camera movement;
 - army selection;
 - destination preview;
 - map-based distant orders;
-- ETA and encounter markers.
+- ETA, encounter and siege markers.
 
-## R11 — Marketplace polish
+## R12 — Marketplace polish
 
 - onboarding;
 - tutorial prompts;
@@ -193,7 +203,7 @@ Add role logic for spear brace, knight charge, ranged spacing, siege setup.
 - performance profiles;
 - multiplayer abuse tests.
 
-## R12 — Full release validation
+## R13 — Full release validation
 
 Platforms:
 - Windows keyboard/mouse;
