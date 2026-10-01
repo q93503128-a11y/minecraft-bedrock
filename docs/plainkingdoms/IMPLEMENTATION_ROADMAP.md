@@ -18,7 +18,7 @@ Baseline: PlainKingdoms v1.1.5
 - R8 strategic encounters: first functional implementation completed in 1.9.0 Remake Alpha 8 — war-only virtual-army encounter detection, nearby reinforcement merge, time-based deterministic abstract combat, HP continuity into materialized battles, physical-to-abstract resume, battle log, and pre-encounter order restoration.
 - R9 diplomacy and campaigns: first functional diplomacy/treaty layer implemented in 1.10.0 Remake Alpha 9 — War/Truce/Neutral/Alliance, five treaty permissions, physical/strategic MilitaryAccess enforcement, offline-capable ResourceAid, SharedVision, SharedCommand, and non-teleport Strategic Reinforcement march.
 - R10 campaign/siege/projectile layer: first functional implementation completed in 1.11.0 Remake Alpha 10 — Strategic Siege, temporary building disable/capital breach, supply/morale logistics, war score/loot, and cosmetic arrow/bolt/siege projectile presentation.
-- R11+ remain active work.
+- R11 tactical camera and strategic map: first functional implementation completed in 1.12.0 Remake Alpha 11 — follow-orbit camera-relative command view, tactical actionbar, army/conflict/nation/site/coordinate strategic command surfaces, and direct Army Banner entity context controls.\n- R12+ remain active work.
 
 Runtime verification remains pending until the later integrated test phase.
 
@@ -184,12 +184,23 @@ Add role logic for spear brace, knight charge, ranged spacing, siege setup.
 
 ## R11 — Tactical camera and strategic map
 
-- optional raised command camera;
-- touch/gamepad-friendly camera movement;
-- army selection;
-- destination preview;
-- map-based distant orders;
-- ETA, encounter and siege markers.
+Implemented in 1.12.0 Remake Alpha 11:
+- custom follow-orbit tactical camera preset;
+- camera-relative controls;
+- session toggle and safe camera clear;
+- tactical actionbar status;
+- army strategic list with HP/order/current/target/ETA;
+- conflict map for active encounters and sieges;
+- nation/capital and world-site destination command surfaces;
+- direct numeric X/Z Move/Attack Move;
+- context-aware war/alliance/reinforcement actions;
+- Army Banner direct army-entity context menu;
+- observer teleport kept as an explicit separate action.
+
+Further polish remains:
+- touch/controller runtime tuning;
+- information-density tuning;
+- optional richer visual map representation if it can remain Marketplace/cooperative-safe.
 
 ## R12 — Marketplace polish
 
