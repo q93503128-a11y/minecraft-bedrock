@@ -786,6 +786,28 @@ Flow:
 
 Emergency recall/teleport remains a recovery/admin fallback, not the main fantasy.
 
+### Alpha 10 campaign/siege implementation
+
+Nation-vs-nation war now supports explicit strategic siege orders against capitals and stored building records.
+
+A siege has:
+- attacker and defender nation;
+- target building identity;
+- attacker army IDs;
+- strategic/observed state;
+- fortification HP;
+- target HP.
+
+The attacking army still physically/strategically marches to the target. Siege begins only once it reaches the local siege trigger radius.
+
+Fortification is derived from capital level and operational watchtowers. After the fortification layer is broken, siege damage reaches the target.
+
+Successful non-capital siege temporarily disables that building rather than deleting its world blocks. Successful capital siege temporarily weakens strategic capital defense. Results update war score, siege win/loss counters, loot value, and resource rewards.
+
+StrategicArmyState now carries supply and morale. Home territory replenishes supply; a ResourceAid+MilitaryAccess ally can provide slower replenishment; field/enemy operations consume it. Low supply/morale reduces strategic and local movement/combat efficiency.
+
+Visible ranged combat uses script-spawned cosmetic projectile entities for arrow, bolt, and siege shot. They have no impact damage. Existing server-authoritative animation hit-frame logic remains the only damage source.
+
 ## 21. Accessibility and readability
 
 Required:
