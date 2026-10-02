@@ -226,6 +226,8 @@ A high-tier boss requires all of the following:
 
 Enemy threat must rise visually as progression rises.
 
+Vanilla enemy families are allowed and desirable in early progression, but higher stages must increasingly introduce visibly upgraded variants and custom-model enemies. A stronger zombie should be allowed to become a brute/muscular/armored/warped variant with different silhouette and animation; an unchanged vanilla zombie with millions of HP is rejected.
+
 Late-game bosses cannot reuse low-tier presentation with only higher HP.
 
 Boss and enemy reference research may include Minecraft Java/Bedrock mods and non-Minecraft RPGs. External assets may only be imported when licensing/provenance allows it.
@@ -280,6 +282,19 @@ Examples:
 - class trainer -> job/skills,
 - dungeon altar/gate -> dungeon setup,
 - compendium item/NPC -> bestiary.
+
+### Runtime HUD placement canon
+
+Persistent HUD information must be separated by purpose instead of compressed into one ActionBar line.
+
+- top corner: Day / World Tier / RPG Stage,
+- bottom-left: player HP / level / EXP and immediately relevant combat state,
+- top-center: target/enemy information,
+- near the crosshair: short damage feedback,
+- objective corner: active dungeon / boss / event tracking,
+- CP is not a permanent HUD value; it belongs in equipment/build/status surfaces.
+
+Damage feedback must read like combat feedback, not chat/debug output. Enemy HUD must communicate threat visually and numerically without filling the entire screen.
 
 ## 12. External 3D model integration policy
 
