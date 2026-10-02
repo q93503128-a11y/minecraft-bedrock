@@ -4,37 +4,36 @@ Last updated: 2026-10-02
 Project: Minecraft Bedrock Wildbound / 야수각인  
 Repository role: planning, design canon, implementation status, provenance, and runtime test records.
 
-> Runtime addon source/builds are produced separately unless explicitly promoted into this repository. A document saying a feature is implemented means it exists in the referenced build; it does not mean Bedrock runtime validation has passed.
+> Runtime addon source/builds are produced separately unless explicitly promoted into this repository. Static validation never counts as Bedrock runtime validation.
 
 ## Canonical documents
 
 - `REMAKE_CANON.md` — binding remake direction and quality bar
-- `CURRENT_STATUS.md` — latest known build/status and open risks
+- `CURRENT_STATUS.md` — latest build/status and open risks
 - `UX_UI_SPEC.md` — UI/UX architecture and acceptance criteria
-- `EXTERNAL_ASSET_PROVENANCE.md` — external model/UI sources, licenses, and integration rules
-- `IMPLEMENTATION_ROADMAP.md` — staged implementation order
+- `EXTERNAL_ASSET_PROVENANCE.md` — external sources/licenses/integration rules
+- `IMPLEMENTATION_ROADMAP.md` — implementation order
 - `RUNTIME_TEST_MATRIX.md` — real Bedrock test matrix
 
 ## Current runtime baseline
 
-Current local build at the time this documentation was created:
+- Current build: `Wildbound_v1.28.2_REMAKE_ALPHA3.mcaddon`
+- Data version: `1282`
+- ALPHA2 runtime UI/UX verdict: **FAIL**
+- ALPHA3 static/package validation: **PASS**
+- ALPHA3 actual Bedrock runtime validation: **NOT_RUN**
 
-- `Wildbound_v1.28.1_REMAKE_ALPHA2.mcaddon`
-- data version: `1281`
-- source baseline: clean `v1.27.7`, not ALPHA1
-- static validation: passed
-- real Bedrock runtime validation: **NOT_RUN after ALPHA2 rebuild**
+ALPHA1 was rejected for retaining too much native form UI, broken entity-UV portraits, and excessive periodic work.
 
-ALPHA1 is rejected as a remake-quality baseline. It retained too much ActionForm UI, misused entity skin textures as icons, and added excessive periodic runtime work.
+ALPHA2 successfully proved custom JSON UI routing worked in-engine, but its UI/UX was also rejected after real screenshots: the fixed 3-panel deck was too cramped, text/card density was too high, the visual hierarchy was poor, and some core paths still used native gray forms.
+
+ALPHA3 is the next runtime checkpoint and specifically targets those failures.
 
 ## Documentation rule
 
-Every substantial Wildbound implementation batch must update at least:
-
+Every substantial Wildbound implementation batch must update:
 1. `CURRENT_STATUS.md`
-2. the relevant design/spec document if behavior changed
-3. `EXTERNAL_ASSET_PROVENANCE.md` when any third-party asset/source changes
-4. `RUNTIME_TEST_MATRIX.md` when a runtime result is observed
+2. relevant design/spec docs
+3. `EXTERNAL_ASSET_PROVENANCE.md` for third-party changes
+4. `RUNTIME_TEST_MATRIX.md` for runtime evidence
 5. `IMPLEMENTATION_ROADMAP.md` when milestones move
-
-Do not allow runtime work and planning docs to drift apart.
