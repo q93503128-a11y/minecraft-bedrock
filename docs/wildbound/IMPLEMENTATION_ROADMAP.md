@@ -16,11 +16,11 @@ Status: COMPLETE
 - identify instant-damage boss architecture
 - identify ranch roles
 - record ALPHA1 failure
-- record ALPHA2 UI/UX runtime failure
+- record ALPHA2 UI/UX runtime failure\n- record ALPHA3 small-window layout hard failure
 
 ## R1 — UI/UX architecture replacement
 
-Status: **ALPHA3 IMPLEMENTED STATICALLY / RUNTIME PENDING**
+Status: **ALPHA4 IMPLEMENTED STATICALLY / RUNTIME PENDING**
 
 ALPHA2 result:
 - custom routing worked;
