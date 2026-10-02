@@ -1,7 +1,7 @@
 # Wildbound / 야수각인 Remake Canon
 
 Last updated: 2026-10-02  
-Current documented build: `Wildbound_v1.28.2_REMAKE_ALPHA3.mcaddon`  
+Current documented build: `Wildbound_v1.28.3_REMAKE_ALPHA4.mcaddon`  
 Clean remake baseline: `v1.27.7`
 
 > This file is binding unless deliberately revised.
