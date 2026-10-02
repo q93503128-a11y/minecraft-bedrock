@@ -2,140 +2,92 @@
 
 Last updated: 2026-10-02
 
-## 1. Primary UX objective
+## Primary rule
 
-Creature management must be one coherent workspace with readable decisions, not a chain of modal menus and not a dense dashboard that becomes unreadable when the game window shrinks.
+Readability and stable interaction outrank information density.
 
-## 2. Runtime lesson from ALPHA2
+## Rejected layouts
 
-ALPHA2's fixed `party | storage | detail` three-column layout is **rejected**.
+### ALPHA2
+Fixed 3-column `party | storage | detail` was too cramped.
 
-The concept was reasonable at large width, but real Bedrock screenshots at a smaller window showed:
-- three narrow columns;
-- tiny text;
-- excessive information per card;
-- weak selected-state hierarchy;
-- poor visual balance;
-- mixed custom/native screen language.
+### ALPHA3
+The stacked layout still used a fixed total of many logical-pixel blocks. In a small Minecraft window, the logical UI viewport became shorter than the designed content height and the controls collapsed into strips/overlays.
 
-Therefore, “show everything side by side” is no longer a binding requirement. Readability takes priority.
+Therefore:
 
-## 3. ALPHA3 deck layout
+**No core Wildbound screen may assume its entire content fits vertically.**
 
-The core deck is ordered vertically:
+## ALPHA4 layout rule
 
-**selected creature summary -> party 2x2 -> storage 2x3 -> fixed bottom toolbar**
+Every core screen has:
+- one bounded outer shell;
+- fixed small header/close region;
+- one viewport-sized scrolling body;
+- content-sized vertical stack inside that scroll body.
 
-Reasons:
-- each interactive card keeps roughly half-screen width even in a narrow window;
-- party remains visible;
-- selection context remains visible;
-- storage remains directly accessible;
-- navigation controls never require scrolling.
+If content is taller than the window, it scrolls. It must never compress into unreadable strips.
 
-Storage page size is 6.
+## Deck information architecture
 
-## 4. Input budgets
+Order:
+1. selected creature summary
+2. PARTY
+   - 2x2 party slots
+3. STORAGE
+   - 2x3 stored creature cards per page
+4. NAVIGATION / management actions
 
-Targets:
-- inspect creature: 1 selection
-- deploy into empty party slot: <= 2 inputs
-- replace when party is full: creature -> deploy -> one of four visible party slots
-- ability/evolution/detail: <= 2 inputs after selection
-- return to deck without losing page/selection where possible
+Cards prioritize:
+- name
+- level
+- role
+- selected/party/injury/growth marker
 
-Do not restore long chains such as:
-`storage -> creature -> card -> quick manage -> detail -> ability`.
+Advanced stats remain secondary.
 
-## 5. Information hierarchy
+## UX budgets
 
-Storage cards:
-1. selected/party/injury marker
-2. name
-3. level
-4. role
-5. at most one compact growth marker
+- inspect: 1 selection
+- deploy: <=2 inputs when an empty slot exists
+- full-party replacement: select creature -> deploy -> visible party slot
+- ability/evolution/detail: <=2 inputs after selection
+- page/selection state persists where practical
 
-Selected summary:
-- name/grade/status
-- level/role/trait
-- attack and unlocked ability count
-- next growth state or replacement-mode instruction
+## Portrait policy
 
-Advanced statistics stay in secondary views.
+Never display raw entity UV skins as portraits. A stable role/icon fallback is better than a broken pseudo-portrait until a dedicated portrait pipeline exists.
 
-## 6. Navigation
+## Visual language
 
-- bottom navigation/action positions are fixed;
-- back/hub behavior is predictable;
-- selection/page/filter state persists where practical;
-- dangerous actions are kept out of the default deck toolbar;
-- controller focus must follow visual order;
-- touch targets must remain usable at mobile scale.
-
-## 7. Portrait/icon policy
-
-Never display a Minecraft entity skin/UV sheet directly as a portrait.
-
-Until a real dedicated portrait pipeline exists, a stable role/item emblem or text-first card is preferable to a broken or misleading pseudo-portrait.
-
-## 8. Visual language
-
-Current target:
 - dark slate base
 - muted gold accent
-- red only for destructive/danger state
-- one consistent panel family
+- danger red only for destructive state
+- one consistent custom shell
 - high-contrast Korean text
-- minimal simultaneous accent colors
+- no mixed native-gray/custom core flow
 
-External Kenney CC0 panel shapes remain the source basis, but ALPHA3 palette-adjusts them into a consistent Wildbound theme.
+## Device acceptance
 
-## 9. Core custom-routed screens
+Highest priority:
+- the exact small desktop window that broke ALPHA3.
 
-ALPHA3 routes these through the Wildbound visual system:
-- main hub
-- deck/storage
-- companion management
-- ranch
-- guide / guide pages
-- growth
-- exploration compass
-- settings
-- party presets / preset slot
-- bestiary
-
-Native Bedrock dialogs may still be used for small confirmations, text fields and destructive confirmation steps.
-
-## 10. Device/runtime requirements
-
-Must test:
-- same small desktop window that exposed ALPHA2
-- 1920x1080
+Then:
 - 1280x720
-- 768x1024
-- 412x915
-- 390x844
-- 360x640
-- controller
-- touch
-- GUI scale variations
+- 1920x1080
+- tablet/mobile sizes
+- controller/touch
+- GUI scale variants
 
-## 11. Failure conditions
+## Immediate failure conditions
 
-Reject the checkpoint if:
-- core flow falls back to the old gray vertical menu;
-- the small window recreates ALPHA2-level text/card crowding;
-- labels overlap/clip;
-- party is hidden during replacement;
-- page/filter/selection state is lost unnecessarily;
-- controller focus is inconsistent;
-- mobile touch targets become too small;
-- UV-sheet portraits return;
-- visual polish increases input count.
+- black strips or collapsed controls
+- detached icons/text over world
+- overlapping labels/cards
+- unreadable Korean
+- core path returning to legacy gray menu
+- inability to scroll to controls
+- broken controller/touch focus
+- UV-sheet icons
 
-## 12. Status
-
-ALPHA2: **runtime FAIL** for UI/UX.
-
-ALPHA3: **static implementation complete, runtime NOT_RUN**.
+ALPHA4 is not accepted until real Bedrock passes the small-window gate.
