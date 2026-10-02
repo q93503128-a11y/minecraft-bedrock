@@ -358,6 +358,33 @@ Current order after v0.23.1 runtime feedback:
 9. Upgrade bosses with new models/animations/arenas.
 10. Continue UI/UX remake.
 
+## 15. External-first visual implementation rule
+
+This is a binding project rule.
+
+**Do not author original visual design in code when a suitable external Bedrock source exists.**
+
+For all player-facing presentation, priority order is:
+
+1. legally reusable external Bedrock model / texture / animation / JSON UI / UI framework,
+2. legally reusable external Minecraft Java asset only when a clean Bedrock port is feasible,
+3. reference-only commercial/ARR work for quality benchmarking,
+4. original integration/glue code only for compatibility, state, routing, data binding, progression, and gameplay logic.
+
+The implementation layer may write adapter code, namespace changes, data transport, compatibility wrappers, and gameplay systems. It must not invent substitute art direction, placeholder UI skins, hand-authored weapon silhouettes, or custom visual layouts when external high-quality design can be used instead.
+
+### Practical consequences
+
+- HUD: replace temporary internally designed panels with an external open-source Bedrock HUD/UI design or framework. Do not polish the temporary panel art into a final design.
+- Equipment UI: use an external RPG/inventory UI layout/design as the visual base; preserve our equipment logic behind it.
+- Weapons/armor: import complete external model sets where licensing allows. Do not create replacement weapon geometry from scratch as a shortcut.
+- Enemies/bosses: prefer externally authored models/animations; only adapt AI, stats, progression gates, and compatibility code internally.
+- Biomes/world visuals: prefer external reusable biome/world-generation assets and adapt spawn/progression/content rules around them.
+- Animation/VFX: use external reusable work first; internally authored effects are a fallback only when no acceptable legal source exists.
+- Temporary programmer-art or placeholder visual assets are rejected from release builds.
+
+The v0.24.0 HUD frame and the currently visible replacement weapon are considered **technical pipeline tests, not accepted final visual design**.
+
 ## 15. Quality rejection rules
 
 Reject or defer a feature if any of the following is true:
