@@ -1,216 +1,118 @@
 # Wildbound / 야수각인 Remake Canon
 
 Last updated: 2026-10-02  
-Current documented build: `Wildbound_v1.28.1_REMAKE_ALPHA2.mcaddon`  
+Current documented build: `Wildbound_v1.28.2_REMAKE_ALPHA3.mcaddon`  
 Clean remake baseline: `v1.27.7`
 
-> This file is the binding design canon for the Wildbound remake unless deliberately revised.
+> This file is binding unless deliberately revised.
 
 ## 1. Core identity
 
-Wildbound is a creature capture, growth, evolution, combat, exploration, and ranch system that must remain part of Minecraft survival rather than replace Minecraft survival.
+Wildbound must remain a creature-capture/growth/evolution/combat/ranch system inside Minecraft survival, not a separate grind that replaces Minecraft.
 
 Target loop:
 
-**Minecraft survival/exploration -> naturally encounter beasts -> capture/grow/evolve -> beasts improve survival/base/exploration -> player returns to Minecraft progression.**
+**Minecraft survival/exploration -> natural beast encounter -> capture/grow/evolve -> beast improves survival/base/exploration -> back to Minecraft progression.**
 
-A separate grind loop where the player mostly ignores mining, building, dimensions, structures, and vanilla progression is considered a design failure.
-
-## 2. Existing strengths that must be preserved
-
-Unless intentionally redesigned with migration:
+## 2. Preserve
 
 - unlimited storage
 - maximum 4 active companions
-- no feeding/hunger maintenance chores
+- no feeding/hunger chores
 - conditional automatic abilities
-- one evolution lineage per creature family
+- one evolution lineage per family
 - no friendly fire
-- existing worlds and stored creature data should remain compatible
-- capture and management should not require tedious repetitive maintenance
+- save compatibility where possible
+- low-maintenance pet ownership
 
-## 3. Quality-over-quantity rule
+## 3. Quality over quantity
 
-Wildbound already has hundreds of forms. New creature count is frozen unless a new creature adds real gameplay value.
+Hundreds of forms already exist. New count is frozen unless it adds real value.
 
-Do not solve quality problems by adding more forms.
+A remastered family needs meaningful identity through silhouette, movement, combat, signature ability, ecology, ranch utility and/or real evolution transformation. Recolor/stat/overlay-only change is insufficient.
 
-Each remastered family should gain meaningful identity through some combination of:
+## 4. Evolution
 
-- silhouette/body-plan difference
-- movement language
-- attack language
-- signature skill
-- habitat/ecology
-- ranch utility
-- evolution transformation
-- audio/VFX identity
+Evolution should change body plan/proportion/posture/limbs/horns/wings/tail/motion/attack/VFX where appropriate. Final/Zenith forms may not simply be larger glowing base forms.
 
-A recolor, armor overlay, stat increase, or renamed duplicate does not count as a meaningful evolution.
+External models are allowed only with compatible licensing and lineage fit.
 
-## 4. Evolution quality bar
+## 5. Combat
 
-Evolution must visibly transform the creature.
+Important attacks should read:
 
-Preferred changes:
+**telegraph -> animation -> projectile/hit zone -> impact -> recovery**
 
-- body proportions
-- head/limb/tail/wing/horn structure
-- posture
-- locomotion
-- attack animation
-- signature effect
-- combat role where appropriate
+Invisible instant damage should not define creature or boss combat.
 
-Final/Zenith forms must not look like the base form with only a glow, helmet, or larger scale.
+## 6. Bosses
 
-External models may be used when the license permits it, but lineage fit is mandatory. A random cool model is not acceptable if it breaks the family identity.
+Major bosses require readable telegraphs, multiple patterns, punish/recovery windows, distinctive mechanic, encounter-space identity, and appropriate model/animation/VFX/audio/reward identity.
 
-## 5. Combat presentation
+## 7. Ranch
 
-Important attacks should follow:
+Ranch value should come from visible/useful creature life and work: farming, collection, defense, scouting, processing, recovery/training and collection display.
 
-**anticipation / telegraph -> animation -> projectile or visible hit zone -> impact -> recovery**
+No hunger/cleaning/constant manual feeding. Avoid expensive decorative ticking.
 
-Instant invisible damage should be minimized.
+## 8. Survival integration
 
-Creatures should use family/archetype combat languages, for example:
+Use vanilla resources, dimensions, structures, biomes and progression milestones. Companions should assist Minecraft rather than fully automate it.
 
-- canine: pursuit, leap, bite, flank
-- bird: lift, dive, ranged feather/wind
-- crab/tank: guard, claw sweep, armor break
-- caster: charge, projectile, zone control
-- serpent: coil, lunge, breath, area denial
+## 9. UI/UX
 
-The ability catalog must create visible gameplay diversity, not only many names and numeric variants.
+UI/UX is a first-class system.
 
-## 6. Boss quality bar
+Hard goals:
+- party visible during storage/replacement
+- selected/page/filter state persists where practical
+- common actions use few inputs
+- destructive actions separated
+- fixed navigation
+- readable Korean
+- mobile/controller support
+- no entity UV-sheet portraits
 
-A Wildbound boss must feel like a boss encounter, not a high-HP creature.
+### ALPHA2 lesson
 
-Required for major bosses:
+A fixed three-column “party | storage | detail” layout is **not** mandatory and is rejected when width becomes cramped.
 
-- recognizable silhouette
-- dedicated encounter identity
-- readable telegraphs
-- multiple attacks
-- recovery/punish windows
-- at least one distinctive mechanic
-- phase or pressure change when justified
-- visible projectiles/hit zones
-- appropriate VFX/audio
-- arena/lair/world-space identity
-- meaningful reward/progression connection
+Real ALPHA2 screenshots proved that technically custom JSON UI can still have poor UX. Readability and information hierarchy outrank dashboard density.
 
-Shared generic patterns may exist as secondary filler, but cannot define the entire fight.
+ALPHA3 therefore uses a narrow-safe stacked deck:
+**selected summary -> party 2x2 -> storage 2x3 -> fixed toolbar.**
 
-## 7. Ranch direction
+Legacy gray vertical forms are not acceptable for core navigation.
 
-The ranch must be worth building because captured creatures visibly live and work there.
+## 10. Performance
 
-Preferred functions:
+- avoid high-frequency global scans
+- separate locomotion from expensive targeting
+- filter by distance/state
+- cache where safe
+- prefer events over polling
+- bound ranch helpers
+- clean up telegraphs/helpers
+- test unload/multiplayer
 
-- crop tending
-- drop collection
-- patrol/defense
-- scouting/marking
-- resource processing
-- recovery/training
-- collection display / creature life
-
-Avoid:
-
-- hunger bars
-- cleaning chores
-- constant manual feeding
-- repetitive pet micromanagement
-- excessive ticking entities solely for decoration
-
-Ranch production should connect to physical storage/world behavior where practical.
-
-## 8. Minecraft survival integration
-
-Wildbound progression should use Minecraft progression and exploration.
-
-Examples:
-
-- vanilla resources as evolution/crafting inputs
-- biome and structure-linked encounters
-- Nether/ocean/ancient-city/End milestones
-- survival actions contributing to creature growth or discovery
-- companions supporting mining, traversal, farming, exploration, and defense
-
-Companions should assist rather than fully automate Minecraft.
-
-## 9. UI/UX is a first-class system
-
-A visually attractive UI with bad navigation is still rejected.
-
-Main management goals:
-
-- party visible while browsing storage
-- storage and selected-creature details visible together
-- selected creature state persists
-- common actions require minimal inputs
-- dangerous actions isolated
-- fixed/consistent navigation controls
-- clear information hierarchy
-- mobile/controller readability
-- no broken entity UV sheets used as portraits
-
-Legacy gray vertical ActionForm chains are not the target presentation.
-
-See `UX_UI_SPEC.md`.
-
-## 10. Performance budget
-
-Do not add presentation systems without a runtime budget.
-
-Rules:
-
-- avoid full-world/global scans on high-frequency timers
-- separate locomotion updates from expensive combat target searches
-- use distance/state filtering
-- cache nearby targets when safe
-- prefer event-driven work over polling
-- keep ranch decorative entities bounded
-- clean up spawned helpers/telegraphs
-- test multiplayer ownership and chunk unload behavior
-
-A feature that creates severe frame/tick degradation is not accepted because it is visually impressive.
+Visual polish does not excuse severe tick/frame cost.
 
 ## 11. External assets
 
-External UI/model/animation assets are allowed and encouraged when they materially raise quality.
+Every imported asset requires source/license/file-scope/provenance, commercial-use compatibility when relevant, attribution when required, dependency wiring, and actual runtime validation.
 
-Hard requirements:
+Never rip Marketplace/ARR/unclear assets.
 
-- known source
-- known license
-- commercial-use compatibility if the project may be monetized
-- attribution where required
-- asset-level provenance, not only repository-level assumptions
-- dependency chain imported correctly
-- runtime validation after conversion
+## 12. Rejected checkpoints
 
-Never rip Marketplace, All Rights Reserved, or unclear-license assets.
+### ALPHA1
+Rejected for native-form-heavy UI, UV-sheet portraits, excessive periodic work, and overstated remaster scope.
 
-## 12. Rejected ALPHA1 lesson
+### ALPHA2 UI/UX
+Rejected after real runtime screenshots for cramped fixed three-column layout, low text/card readability, weak hierarchy, inconsistent custom/native screen language and unfocused color use.
 
-`v1.28.0 REMAKE ALPHA1` is not a quality baseline.
+Gameplay/model/performance work from ALPHA2 may remain when independently valid.
 
-Reasons:
+## 13. Acceptance
 
-- retained default ActionForm structure
-- external UI art was used mostly as button icons rather than a real layout
-- vanilla entity UV textures were displayed as portraits, causing broken/disassembled icons
-- excessive periodic systems worsened performance
-- scope of creature/model remaster was smaller than claimed
-
-Future build descriptions must match the actual implementation scope.
-
-## 13. Acceptance principle
-
-A remake checkpoint is accepted only when actual Bedrock runtime testing confirms the intended behavior.
-
-Static JSON/JS checks are necessary but insufficient.
+A checkpoint is accepted only after actual Bedrock runtime validation. Static JSON/JS/reference checks are necessary but insufficient.
