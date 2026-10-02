@@ -4,155 +4,110 @@ Last updated: 2026-10-02
 
 ## Policy
 
-Every external asset integrated into Wildbound must record:
+For every imported asset record source, license, author/project, modifications, target files, and runtime validation. Repository/code license does not automatically cover art/model/audio assets. Marketplace, ARR, and unclear-license content is reference-only.
 
-- source project/repository
-- original file(s)
-- license
-- author/maintainer where known
-- modifications/conversion
-- target Wildbound files/entities
-- runtime validation status
-
-Repository code license and artwork/model license must be treated separately.
-
-All Rights Reserved / Marketplace / unclear-license content is reference-only.
-
-## Active / current remake sources
-
-### Kenney — UI Pack: Pixel Adventure
+## Kenney — UI Pack: Pixel Adventure
 
 Purpose:
-- Wildbound custom UI panels/frames
+- Wildbound custom UI frame/panel primitives
 
 License:
-- CC0 / public-domain dedication as published by Kenney for the asset pack
+- CC0 as published by Kenney
 
-Source family:
+Development source family:
 - Kenney Pixel Adventure UI assets
-- mirrored/open repository copy used during development: `shorepine/kenney`
+- development mirror inspected: `shorepine/kenney`
 
-Current local Wildbound derivative/integrated files include:
-
+Source-derived files retained:
 - `textures/ui/wildbound_external/kenney_panel_blue.png`
 - `textures/ui/wildbound_external/kenney_panel_gold.png`
 - `textures/ui/wildbound_external/kenney_panel_bronze.png`
 - `textures/ui/wildbound_external/kenney_panel_red.png`
 - `textures/ui/wildbound_external/kenney_frame.png`
 
-Modification:
-- selected source tiles used as Wildbound panel/frame primitives
-- integrated into Bedrock JSON UI
+ALPHA3 Wildbound derivatives:
+- `wb_frame.png`
+- `wb_panel.png`
+- `wb_panel_focus.png`
+- `wb_panel_accent.png`
+- `wb_panel_danger.png`
 
-Status:
-- file/static validation complete
-- real Bedrock UI runtime validation pending
+ALPHA3 modification:
+- source panel pixels/shapes remain Kenney-derived;
+- palette normalized to dark slate + muted gold + danger red;
+- ALPHA2 mixed cyan/red/gold presentation rejected after runtime review.
 
-### FrenchKrab — mc-blockbench-models
+Runtime status:
+- ALPHA2 custom UI source integration rendered in Bedrock;
+- ALPHA3 derivative palette/layout: NOT_RUN.
+
+## FrenchKrab — mc-blockbench-models
 
 Repository:
 - `FrenchKrab/mc-blockbench-models`
 
-License:
-- CC BY 4.0 according to repository licensing used for integration
+License used for integration:
+- CC BY 4.0
 
-Requirement:
-- attribution must be retained in distribution notices where these assets ship
+Attribution must remain with distributed derivatives.
 
-Current imported model families:
+### Tree monster basis
 
-#### Tree monster source
-
-Used as a basis for the Thornback late-evolution remake.
-
-Wildbound targets include:
+Used for Thornback late-evolution remaster:
 - Briar Titan
 - Grove Oracle
 - Zenith Thornback
 
 Modification:
-- converted/adapted to Bedrock geometry
-- evolution-stage silhouette variants added rather than using one identical geometry at different scales
+- converted/adapted to Bedrock geometry;
+- stage-specific silhouette variants added.
 
-Runtime status:
-- static/reference validation complete
-- real Bedrock rendering/animation validation pending for ALPHA2
+### krab.bbmodel
 
-#### krab.bbmodel
+Used as a basis for abyss/crab lineage work.
 
-Used as a basis for the abyss/crab lineage remaster.
-
-Original model contains:
+Original source contained:
 - geometry
 - embedded texture
-- idle animation
-- walk animation
-- jump animation
+- idle
+- walk
+- jump animation data
 
 Modification:
-- parsed/converted into Bedrock geometry/animation data
-- Wildbound-specific stage silhouettes/armor/claw details may be layered or adapted per evolution stage
+- parsed/converted to Bedrock geometry/animation representation;
+- stage-specific Wildbound adaptation may add silhouette/armor/claw differences.
 
 Runtime status:
-- conversion/static inspection performed
-- final in-game appearance must be validated before expanding this pipeline to many families
+- static/reference validation complete;
+- detailed in-engine model regression remains pending.
 
-## Candidate sources researched but not automatically approved
+## Candidate sources
 
-Potential sources must still receive file-level license review before integration.
+Additional FrenchKrab models and other open assets may be researched but require file-level license review before import.
 
-Examples investigated:
-- additional FrenchKrab Blockbench models such as goat/reindeer/fish families
-- open-source Bedrock UI frameworks and Mojang sample UI patterns
+## Reference-only examples
 
-A repository being visible on GitHub does not imply its art is reusable.
-
-## Reference-only sources
-
-The following kinds of projects may inform UX/combat design but their assets must not be copied unless their license explicitly permits it:
-
-- Cobblemon asset sets with noncommercial restrictions
-- SERP Pokédrock / ARR Bedrock Pokémon add-ons
+Do not copy assets without explicit permission/license:
+- Cobblemon noncommercial/restricted asset sets
+- SERP Pokédrock / ARR packs
 - Marketplace content
-- ARR CurseForge Bedrock packs
+- ARR CurseForge packs
 - proprietary Pokémon art/logos/icons
-- Java mods whose code license does not cover model/texture/audio assets
+- Java mod artwork merely because its code is open source
 
 ## Import pipeline
 
-Preferred model import process:
+1. verify license
+2. obtain original bbmodel or complete Bedrock asset set
+3. inspect texture references
+4. preserve/convert bones
+5. convert geometry
+6. convert animations
+7. wire client entity/geometry/texture/animations/controllers/render controller
+8. static/reference validation
+9. actual Bedrock spawn/render/animation/multiplayer test
+10. only then scale the pipeline
 
-1. verify license/provenance
-2. obtain original `.bbmodel` or complete Bedrock asset package
-3. inspect texture resolution and embedded/external texture references
-4. preserve or convert bone hierarchy
-5. convert geometry to Bedrock-compatible format
-6. convert/import animations
-7. wire:
-   - client entity
-   - geometry
-   - texture
-   - animations
-   - animation controller if needed
-   - render controller
-8. run reference/static checks
-9. test in actual Bedrock:
-   - spawn
-   - scale
-   - orientation
-   - idle
-   - movement
-   - attack
-   - death/despawn
-   - multiplayer visibility
-10. only then reuse the pipeline for additional families
+## Attribution
 
-## Attribution rule
-
-Where CC BY or similar attribution is required, include:
-- original author/project
-- source
-- license
-- modified/adapted notice
-
-CC0 sources do not require attribution, but provenance should still be retained internally.
+For CC BY derivatives include project/author, source, license, and modification notice. CC0 attribution is optional but provenance remains recorded internally.
