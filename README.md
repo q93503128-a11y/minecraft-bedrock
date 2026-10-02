@@ -113,22 +113,22 @@ Next major work:
 Clean remake baseline: `Wildbound v1.27.7`.
 
 Current documented local milestone:
-- `Wildbound v1.28.1 REMAKE ALPHA2`
-- data version `1281`
-- rebuilt from clean v1.27.7 after rejecting ALPHA1 as an insufficient remake-quality baseline
-- static/package validation passed
-- real Bedrock runtime validation for ALPHA2: **NOT_RUN**
+- `Wildbound v1.28.2 REMAKE ALPHA3`
+- data version `1282`
+- ALPHA2 real-runtime UI/UX verdict: **FAIL**
+- ALPHA3 static/package validation: **PASS**
+- ALPHA3 real Bedrock runtime validation: **NOT_RUN**
 
-Core direction:
-- creature capture/growth/evolution remains integrated with Minecraft survival rather than replacing it;
-- UI/UX is being rebuilt around a custom Wildbound management workspace instead of legacy gray ActionForm chains;
-- active party, storage, and selected-creature management should coexist in one coherent flow;
-- entity UV sheets may never be used directly as portraits;
-- new creature quantity is frozen until existing families gain real silhouette, animation, combat, evolution, and ranch identity;
-- bosses move away from invisible instant damage toward readable telegraph -> dodge -> impact patterns;
-- ranch utility should be visible/useful without feeding/cleaning micromanagement;
-- expensive AI/target scanning must respect a performance budget;
-- external models/UI may be integrated only with explicit license/provenance tracking and runtime validation.
+ALPHA2 runtime screenshots proved that merely routing to custom JSON UI was not enough: the fixed 3-panel deck became cramped in a small game window, text/card density was too high, visual hierarchy was weak, and several core paths still fell back to native gray forms.
+
+ALPHA3 therefore changes the core UI architecture again:
+- normal Beast Seal use opens the unified custom Wildbound hub;
+- creature deck is stacked for narrow-window readability: selected summary -> 2x2 party -> 2x3 storage -> fixed toolbar;
+- storage page size is 6 instead of 12;
+- Growth, Compass, Settings, Bestiary, Presets and Guide are routed into the same custom visual system;
+- deck cards do not use entity UV-sheet portraits;
+- slate + muted-gold palette replaces ALPHA2's mixed cyan/red/gold card language;
+- ALPHA2 gameplay/model/performance foundations are retained while the UI layer is replaced.
 
 Canonical Wildbound documents:
 - `docs/wildbound/README.md`
