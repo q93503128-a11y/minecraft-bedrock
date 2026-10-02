@@ -106,3 +106,40 @@ Next major work:
 - measure low-Simulation-Distance army continuity, host/client races and low-end mobile performance;
 - expand NPC outbound campaigns only after the R12 correctness and polish gates;
 - R13 full release validation.
+
+
+## Wildbound / 야수각인 Remake
+
+Clean remake baseline: `Wildbound v1.27.7`.
+
+Current documented local milestone:
+- `Wildbound v1.28.1 REMAKE ALPHA2`
+- data version `1281`
+- rebuilt from clean v1.27.7 after rejecting ALPHA1 as an insufficient remake-quality baseline
+- static/package validation passed
+- real Bedrock runtime validation for ALPHA2: **NOT_RUN**
+
+Core direction:
+- creature capture/growth/evolution remains integrated with Minecraft survival rather than replacing it;
+- UI/UX is being rebuilt around a custom Wildbound management workspace instead of legacy gray ActionForm chains;
+- active party, storage, and selected-creature management should coexist in one coherent flow;
+- entity UV sheets may never be used directly as portraits;
+- new creature quantity is frozen until existing families gain real silhouette, animation, combat, evolution, and ranch identity;
+- bosses move away from invisible instant damage toward readable telegraph -> dodge -> impact patterns;
+- ranch utility should be visible/useful without feeding/cleaning micromanagement;
+- expensive AI/target scanning must respect a performance budget;
+- external models/UI may be integrated only with explicit license/provenance tracking and runtime validation.
+
+Canonical Wildbound documents:
+- `docs/wildbound/README.md`
+- `docs/wildbound/REMAKE_CANON.md`
+- `docs/wildbound/CURRENT_STATUS.md`
+- `docs/wildbound/UX_UI_SPEC.md`
+- `docs/wildbound/EXTERNAL_ASSET_PROVENANCE.md`
+- `docs/wildbound/IMPLEMENTATION_ROADMAP.md`
+- `docs/wildbound/RUNTIME_TEST_MATRIX.md`
+
+Documentation policy:
+- every substantial Wildbound implementation batch must update current status;
+- UI/UX, provenance, roadmap, and runtime matrix must be updated whenever their underlying implementation changes;
+- static validation must never be recorded as equivalent to real Bedrock runtime validation.
