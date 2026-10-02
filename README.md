@@ -113,22 +113,20 @@ Next major work:
 Clean remake baseline: `Wildbound v1.27.7`.
 
 Current documented local milestone:
-- `Wildbound v1.28.2 REMAKE ALPHA3`
-- data version `1282`
-- ALPHA2 real-runtime UI/UX verdict: **FAIL**
-- ALPHA3 static/package validation: **PASS**
-- ALPHA3 real Bedrock runtime validation: **NOT_RUN**
+- `Wildbound v1.28.3 REMAKE ALPHA4`
+- data version `1283`
+- ALPHA3 real-runtime UI verdict: **HARD FAIL**
+- ALPHA4 static/package validation: **PASS**
+- ALPHA4 real Bedrock runtime validation: **NOT_RUN**
 
-ALPHA2 runtime screenshots proved that merely routing to custom JSON UI was not enough: the fixed 3-panel deck became cramped in a small game window, text/card density was too high, visual hierarchy was weak, and several core paths still fell back to native gray forms.
+ALPHA3 failed because its fixed logical-pixel UI blocks exceeded the available logical UI height in the user's small Minecraft window. Bedrock compressed/clipped the controls into black strips, floating icons and detached text over the world.
 
-ALPHA3 therefore changes the core UI architecture again:
-- normal Beast Seal use opens the unified custom Wildbound hub;
-- creature deck is stacked for narrow-window readability: selected summary -> 2x2 party -> 2x3 storage -> fixed toolbar;
-- storage page size is 6 instead of 12;
-- Growth, Compass, Settings, Bestiary, Presets and Guide are routed into the same custom visual system;
-- deck cards do not use entity UV-sheet portraits;
-- slate + muted-gold palette replaces ALPHA2's mixed cyan/red/gold card language;
-- ALPHA2 gameplay/model/performance foundations are retained while the UI layer is replaced.
+ALPHA4 removes the fixed-total-height assumption:
+- every core Wildbound screen uses a viewport-sized scrolling panel;
+- content keeps normal card width and scrolls vertically when the window is short;
+- deck order remains selected summary -> party 2x2 -> storage 2x3 -> navigation;
+- no fixed 300+ logical-pixel screen stack is forced into a short viewport;
+- gameplay/model/boss/ranch/performance foundations are retained.
 
 Canonical Wildbound documents:
 - `docs/wildbound/README.md`
@@ -140,6 +138,6 @@ Canonical Wildbound documents:
 - `docs/wildbound/RUNTIME_TEST_MATRIX.md`
 
 Documentation policy:
-- every substantial Wildbound implementation batch must update current status;
-- UI/UX, provenance, roadmap, and runtime matrix must be updated whenever their underlying implementation changes;
-- static validation must never be recorded as equivalent to real Bedrock runtime validation.
+- every substantial Wildbound implementation batch updates current status;
+- runtime failures are recorded explicitly rather than hidden by static validation;
+- static validation never equals real Bedrock runtime validation.
