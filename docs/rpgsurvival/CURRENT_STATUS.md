@@ -1,133 +1,150 @@
 # RPG Survival Current Status
 
-Last updated: 2026-10-01
+Last updated: 2026-10-02
 
 ## Runtime baseline
 
-Current development release: **v0.23.2 REMAKE ALPHA2**
+Current development release: **v0.24.0 REMAKE ALPHA3**
 
 Playable addon remains an external build artifact. This repository stores planning, status, audit, and provenance only.
 
 MCADDON SHA-256:
-`203af33097005938ae8946973eb0345f24e1df0534d230b9f8b9c5ca256e0176`
+`0f2882921ac2fe186e15b484e0a9d4ea5bb46a83a45c25806990a6a3ed4b2990`
 
-## Implemented in v0.23.2
+## Carried forward from v0.23.2
 
-### Sequential RPG progression gate
+- sequential RPG stages S0-S7,
+- structural anti-early-endgame loot/enemy gates,
+- +20 enhancement with large growth milestones up to 60x,
+- Korean large-number formatting,
+- World Tier + milestone progression,
+- rejected War Scythe absent from generated equipment pools.
 
-A new progression-stage system is implemented on top of World Tier.
+## Implemented in v0.24.0
 
-- S0: 개척 — enhance cap +3
-- S1: 초기 RPG — +5
-- S2: 네더 시대 — +8
-- S3: 중반 정복 — +10
-- S4: 엔드 진입 — +12
-- S5: 엔드게임 — +15
-- S6: 심화 엔드게임 — +18
-- S7: 정점 — +20
+### Persistent RPG HUD architecture
 
-Stages are sequential. A later milestone cannot bypass an unfinished earlier stage.
+The legacy single-line ActionBar HUD was removed.
 
-Current milestone requirements include World Tier, Nether/End reach, field-boss clears, Ender Dragon clear, and Wither clear.
+A persistent JSON UI HUD now uses an adapted MIT MinUI title-channel/preserved-title transport. The runtime sends only changed values, one value per tick, and the client stores each keyed HUD value independently.
 
-### Anti-early-endgame loot rules
+Current layout:
 
-Generated equipment is now capped by current RPG stage.
+- top-right: Day / World Tier / RPG Stage,
+- top-left: active dungeon or field-boss objective,
+- top-center: targeted enemy card,
+- bottom-left: player HP / level / EXP / passive status,
+- near crosshair: floating combat damage,
+- bottom-center: short notices.
 
-Reward source rarity ceilings are separate for:
+Combat Power is intentionally absent from the persistent HUD. CP remains a build/equipment/status value.
 
-- regular mobs,
-- field bosses,
-- dungeons,
-- world events.
+### Target HUD
 
-Regular mobs cannot become the primary source of top current-stage loot.
+Looking at or recently fighting an enemy now shows a separate target card with:
 
-Dungeon themes and difficulty also have progression-stage gates in addition to World Tier.
+- name,
+- RPG level,
+- rank,
+- threat damage multiplier,
+- affixes/status effects,
+- HP bar text,
+- current/max RPG HP.
 
-Field bosses have minimum RPG stages. The Void Hunter does not enter the normal rotation until post-Dragon stage.
+Field bosses receive a BOSS presentation.
 
-Ambient mob rank scaling now uses the gated effective progression level rather than unrestricted world age alone.
+### Damage feedback
 
-### Enhancement remake foundation
+Damage no longer gets appended to the old status line.
 
-Maximum enhancement changed from +10 to **+20**.
+The HUD now presents the most recent hit near the crosshair, with:
 
-Scalable base stats now use a milestone multiplier curve:
+- compact large-number formatting,
+- critical marker,
+- combo count,
+- merged combo total,
+- skill/summon labels.
 
-- +0 = 1.00x
-- +5 = 1.80x
-- +10 = 4.10x
-- +15 = 12.80x
-- +18 = 30.50x
-- +20 = 60.00x
+The damage layer deliberately has no large background card so it reads as combat feedback rather than a debug panel.
 
-Enhancement fragment cost rises nonlinearly toward the upper levels.
+### Title-collision protection
 
-Attempting to enhance beyond the current RPG-stage cap is rejected.
+The HUD transport uses the title channel internally, so all RPG Survival cinematic titles now go through a shared display helper.
 
-This is the numerical foundation only; full late-game enemy/equipment balance will be expanded as later content is added.
+HUD packets pause while these titles are visible:
 
-### Large-number presentation
+- level-up,
+- Blood Moon,
+- field-boss announcement,
+- dungeon wave/boss,
+- dungeon clear/fail,
+- hunt completion.
 
-A reusable RPG number formatter now supports Korean large-number units from 만/억/조 upward.
+This prevents the persistent HUD from immediately overwriting encounter presentation.
 
-HUD, equipment power, boss HP, comparison values, and several UI stat surfaces have been moved to compact formatting.
+### Equipment UX pass
 
-### Progression UX
+The equipment flow now treats CP as an equipment/build metric rather than permanent HUD clutter.
 
-The main/world UI now displays RPG Stage alongside World Tier.
+Changes include:
 
-The Adventure screen shows the next progression stage and its outstanding requirements, such as:
+- EQUIPMENT-focused hierarchy,
+- CP and RPG fragments at the equipment header,
+- explicit five-slot presentation,
+- PWR / enhancement / lock state on slot cards,
+- upgrade recommendations before detailed stats,
+- bag items sorted by upgrade delta,
+- ATK / DEF terminology separated from percentage amplification/reduction.
 
-- required World Tier,
-- Nether/End reach,
-- field-boss clear count,
-- Ender Dragon clear,
-- Wither clear.
+This is still using the current form layer; a later visual pass may route these screens through a fuller custom JSON UI inventory/equipment layout after runtime verification.
 
-### Rejected external War Scythe
+### Deprecated War Scythe cleanup
 
-The previous external War Scythe is no longer part of generated equipment pools.
+The rejected external War Scythe 3D attachable, geometry, and animation were removed.
 
-Its ID remains only for compatibility with old test items/worlds and is labeled as a deprecated asset.
+The legacy item ID and 2D icon remain only for old test-world compatibility. It no longer participates in normal generated loot.
 
-Reason for rejection:
+A new high-quality 3D weapon will not be accepted until it passes the held-model runtime pipeline.
 
-- runtime model did not read visually as a scythe,
-- source geometry/texture quality is below remake target,
-- successful JSON loading is not sufficient for model acceptance.
+### Licensing/provenance
 
-## Static validation for v0.23.2
+MinUI title-channel HUD architecture is adapted under MIT. Its full license and attribution are included in the Resource Pack.
+
+The deprecated War Scythe compatibility texture remains under the prior Apache-2.0 notice.
+
+## Static validation for v0.24.0
 
 Passed:
 
-- 24 JavaScript files: syntax check,
+- 26 JavaScript files: syntax check,
 - 61 JSON files: strict parse,
-- 113 relative JavaScript imports: all resolved,
-- BP/RP v0.23.2 manifest dependency check,
-- rejected scythe absent from generated weapon bases,
-- sequential stage guards present,
-- +0..+20 stat/cost curve shape smoke test,
-- Korean large-number formatter smoke test,
-- 11 geometry references: 0 missing,
-- 23 animation references: 0 missing,
-- 27 client texture references: 0 missing,
-- 6 custom item-icon references: 0 missing,
-- BP/RP mcpack ZIP CRC,
-- mcaddon ZIP CRC,
+- 120 relative JavaScript imports: all resolved,
+- BP/RP v0.24.0 manifest dependency check,
+- official-style `RP/ui/_ui_defs.json` routing check,
+- all 10 HUD transport keys linked to JSON UI controls,
+- persistent HUD contains no CP and no legacy ActionBar renderer,
+- cinematic title calls routed through collision-protected helper,
+- 5 HUD frame textures use 9-slice rendering,
+- rejected War Scythe 3D files absent,
+- 10 geometry references: 0 missing,
+- 21 animation references: 0 missing,
+- 26 client texture references: 0 missing,
+- 4 custom RPG item-icon references: 0 missing,
+- MinUI license/notice present,
+- BP/RP mcpack CRC,
+- mcaddon CRC,
 - source ZIP CRC.
 
-Minecraft runtime testing is still required for actual gameplay behavior.
+Minecraft 26.52 runtime testing is still required for the JSON UI HUD and final small-window placement.
 
 ## Next implementation batch
 
-1. Build the repeatable held-model import pipeline around current Bedrock attachable conventions.
-2. Select 2–3 genuinely high-quality, legally reusable weapon assets.
-3. Calibrate each asset separately in first person, third person, swing/action, inventory icon, and glint.
-4. Only after runtime success, expand weapon families in quantity.
-5. Begin material/ore expansion with distinct roles rather than color-only tiers.
-6. Add more RPG content loops: elites, field events, dungeon room variants, rare veins, boss-exclusive crafting, relic/rune/accessory paths.
-7. Continue replacing legacy boss presentation with dedicated models, animations, arenas, and phase mechanics.
+1. Runtime-test v0.24 HUD at small and normal window sizes; adjust only measured layout issues.
+2. Build the reliable external held-model import pipeline and replace the deprecated weapon with 2-3 high-quality licensed weapons.
+3. Add enemy visual progression: vanilla early mobs -> upgraded/variant forms -> custom-model late-game enemies.
+4. First target family: zombie progression including a visibly stronger muscular/brute zombie rather than HP-only scaling.
+5. Research and import legally reusable biome/world-generation assets; each new biome must ship with its own enemy/material/content identity.
+6. Connect new biomes to progression stage gates so endgame regions/enemies cannot appear in early play.
+7. Continue boss model/animation/arena remake and expand material/ore roles.
 
 See `REMAKE_CANON.md` for binding design rules.
