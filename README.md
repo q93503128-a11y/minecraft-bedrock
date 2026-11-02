@@ -1,6 +1,16 @@
 # Minecraft Bedrock Projects
 
-Canonical planning/documentation repository for Minecraft Bedrock projects.
+Canonical long-term repository for Minecraft Bedrock project documentation, Add-On source, resources, tooling, validation material, and selected reproducible build checkpoints.
+
+## Repository policy
+
+- GitHub is the durable source of truth for project material that must survive local workspace or ChatGPT Library cleanup.
+- Store planning/design documents together with actual Bedrock Add-On source when available, including Behavior Packs, Resource Packs, scripts, JSON definitions, configuration, project-owned assets, tests, tooling, license/provenance records, and status/handoff documents.
+- Do not leave the only current copy of important source, resources, or project state inside ChatGPT Library, a temporary workspace, or an uncommitted local folder.
+- Before deleting Library/local backup copies, verify that the latest relevant source, resources, and documentation are committed and pushed, and that the repository records any material that is intentionally kept elsewhere.
+- Packaged `.mcaddon` / `.mcpack` / `.mcworld` files are optional checkpoints rather than a substitute for source. Track validated packages when useful; large or reproducible generated outputs may be kept out of normal source history when the repository still contains enough material to rebuild them.
+- Third-party assets may be committed only when their license permits redistribution, with required attribution/provenance preserved.
+- Each active project should identify its current canonical source location, latest validated state, known runtime gaps, and any external-only artifacts in its status documentation.
 
 ## Lucky Block Add-On
 
@@ -69,7 +79,7 @@ Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
 
 Current local remake milestone: `1.16.0 Remake Alpha 15` — third R12 source audit checkpoint: ordinary Minecraft input passthrough, recoverable economy/world commits, reward/aid deduplication, army handoff/command ordering, multiplayer permission/privacy guards and role-specific animation fixes. Validation: 71/71 mocked Script API and 37/37 static/package checks; payload94 files/66 JSON; SOURCE ZIP and mcaddon bytes identical (SHA-256 `5af1a01af738dc2d4f12193a861c6d93c6bd940065bb9595f09aaae63da61ba0`). Actual Add-On import/world launch/play is NOT_RUN; real engine/input/multiplayer/performance gates are BLOCKED_RUNTIME. R12 remains open.
 
-PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical planning/documentation repository; runtime Bedrock source/build work is handled separately unless explicitly promoted here.
+PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical long-term repository for its documentation and, going forward, its preservable Bedrock source/resources as they are promoted from the working environment. Until that migration is complete, status documentation must explicitly identify any runtime source, packaged build, or asset that still exists only outside GitHub.
 
 Canonical remake documents:
 - `docs/plainkingdoms/REMAKE_CANON.md`
