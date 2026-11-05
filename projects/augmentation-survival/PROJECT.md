@@ -2,7 +2,7 @@
 
 ## Source of truth
 
-This is a Bedrock port of `projects/augmentation-survival/` in `q93503128-a11y/minecraft-java-mod-builds`. It does not invent an additional growth track. The Java repository is read-only. Canon priority is preserved: `AUGMENTS.md` → `AUGMENT_PROPOSAL_HISTORY.md` → `GAME_DESIGN.md` → `PROJECT.md` → `MODPACK_BASELINE.md` → implementation. The original canon files copied to `docs/java-canon/` are byte-for-byte snapshots from Java revision `e4b2dd41e1564a4b713c722a004f87e76921c0da`, the latest `main` observed for this work.
+This is a Bedrock port of `projects/augmentation-survival/` in `q93503128-a11y/minecraft-java-mod-builds`. It does not invent an additional growth track. The Java repository is read-only. Canon priority is preserved: `AUGMENTS.md` → `AUGMENT_PROPOSAL_HISTORY.md` → `GAME_DESIGN.md` → `PROJECT.md` → `MODPACK_BASELINE.md` → implementation. The original canon files copied to `docs/java-canon/` are byte-for-byte snapshots from Java `main` revision `d0b7c8af21146964620a48ff60a68325ef34a181`.
 
 See [STATUS.md](STATUS.md), the generated [149-entry port matrix](docs/PORT_MATRIX.csv), and [implementation decisions](docs/PORT_DECISIONS.md).
 
@@ -38,6 +38,7 @@ The pack is generated at `build/AugmentationSurvival-0.1.0.mcaddon`. The build o
 - The advanced device offers the canonical five 3:1 adjacent-tier synthesis transactions. Inputs are checked and consumed on the server; output failure triggers an input rollback.
 - Player augment levels are stored in a versioned dynamic property, intended to survive relog/restart through Bedrock entity persistence; persistence across actual reconnects has not yet been tested.
 - `강건함` currently uses the stable `health_boost` effect, refreshed after spawn and every 200 ticks from the saved level. BDS measures +4 health points per level, while Java canon specifies +2; this is a known numeric mismatch, not a completed port. The stable health component exposes a read-only effective maximum, so exact parity needs a different supported mechanism.
+- The shared server damage handler partially ports `날 선 감각`, `질긴 피부`, `가벼운 착지`, and `튼튼한 폐`. BDS verifies the tested level curves and the multiplicative defense combinations. These remain partial because root player actions, natural fall/drowning, Java's post-mitigation order, delayed-damage provenance, and client acquisition have not all been verified.
 
 ## Isolated BDS checks
 

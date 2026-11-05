@@ -128,6 +128,82 @@ GameTest.registerAsync("AugmentationSurvival", "strong_lungs_reduces_drowning_da
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
+GameTest.registerAsync("AugmentationSurvival", "tough_skin_reduces_incoming_damage_by_level", async (test) => {
+  const cases = [
+    { level: 1, name: "ASToughSkinLevel1", expected: 9.8 },
+    { level: 2, name: "ASToughSkinLevel2", expected: 9.6 },
+    { level: 3, name: "ASToughSkinLevel3", expected: 9.4 },
+    { level: 4, name: "ASToughSkinLevel4", expected: 9.2 },
+    { level: 5, name: "ASToughSkinLevel5", expected: 9 },
+  ];
+  const players = cases.map((entry, index) => ({
+    ...entry,
+    player: test.spawnSimulatedPlayer({ x: 2 + index * 2, y: 3, z: 3 }, entry.name, GameMode.survival),
+  }));
+  await test.idle(2);
+
+  for (const entry of players) {
+    const health = entry.player.getComponent("minecraft:health");
+    ensure(health, `Health component was unavailable for Tough Skin level ${entry.level}.`);
+    const before = health.currentValue;
+    const applied = entry.player.applyDamage(10, { cause: EntityDamageCause.magic });
+    await test.idle(1);
+    const damageTaken = before - health.currentValue;
+    ensure(applied, `BDS rejected simulated damage at Tough Skin level ${entry.level}.`);
+    ensure(Math.abs(damageTaken - entry.expected) < 1e-5, `Tough Skin level ${entry.level} expected ${entry.expected} from 10 damage; got ${damageTaken}.`);
+  }
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "light_landing_reduces_fall_damage_by_level", async (test) => {
+  const cases = [
+    { level: 1, name: "ASLightLandingLevel1", expected: 8.8 },
+    { level: 2, name: "ASLightLandingLevel2", expected: 7.6 },
+    { level: 3, name: "ASLightLandingLevel3", expected: 6.4 },
+    { level: 4, name: "ASLightLandingLevel4", expected: 5.2 },
+    { level: 5, name: "ASLightLandingLevel5", expected: 4 },
+  ];
+  const players = cases.map((entry, index) => ({
+    ...entry,
+    player: test.spawnSimulatedPlayer({ x: 2 + index * 2, y: 3, z: 3 }, entry.name, GameMode.survival),
+  }));
+  await test.idle(2);
+
+  for (const entry of players) {
+    const health = entry.player.getComponent("minecraft:health");
+    ensure(health, `Health component was unavailable for Light Landing level ${entry.level}.`);
+    const before = health.currentValue;
+    const applied = entry.player.applyDamage(10, { cause: EntityDamageCause.fall });
+    await test.idle(1);
+    const damageTaken = before - health.currentValue;
+    ensure(applied, `BDS rejected simulated fall damage at Light Landing level ${entry.level}.`);
+    ensure(Math.abs(damageTaken - entry.expected) < 1e-5, `Light Landing level ${entry.level} expected ${entry.expected} from 10 fall damage; got ${damageTaken}.`);
+  }
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "defense_reductions_stack_multiplicatively", async (test) => {
+  const fallPlayer = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASDefenseStackFall", GameMode.survival);
+  const drowningPlayer = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 3 }, "ASDefenseStackDrowning", GameMode.survival);
+  const fallHealth = fallPlayer.getComponent("minecraft:health");
+  const drowningHealth = drowningPlayer.getComponent("minecraft:health");
+  ensure(fallHealth && drowningHealth, "A stacked-defense player health component was unavailable.");
+  await test.idle(2);
+
+  const fallBefore = fallHealth.currentValue;
+  const fallApplied = fallPlayer.applyDamage(10, { cause: EntityDamageCause.fall });
+  await test.idle(1);
+  const fallDamage = fallBefore - fallHealth.currentValue;
+  const drowningBefore = drowningHealth.currentValue;
+  const drowningApplied = drowningPlayer.applyDamage(10, { cause: EntityDamageCause.drowning });
+  await test.idle(1);
+  const drowningDamage = drowningBefore - drowningHealth.currentValue;
+
+  ensure(fallApplied && Math.abs(fallDamage - 3.6) < 1e-5, `Tough Skin × Light Landing expected 3.6 damage; got ${fallDamage}.`);
+  ensure(drowningApplied && Math.abs(drowningDamage - 4.95) < 1e-5, `Tough Skin × Strong Lungs expected 4.95 damage; got ${drowningDamage}.`);
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
 GameTest.registerAsync("AugmentationSurvival", "core_synthesis_is_atomic_and_conserves_items", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreSynthesis", GameMode.survival);
   const inventory = inventoryOf(player);

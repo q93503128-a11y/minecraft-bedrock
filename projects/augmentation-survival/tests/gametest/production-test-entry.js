@@ -32,6 +32,48 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
+    const toughSkinLevels = {
+      ASToughSkinLevel1: 1,
+      ASToughSkinLevel2: 2,
+      ASToughSkinLevel3: 3,
+      ASToughSkinLevel4: 4,
+      ASToughSkinLevel5: 5,
+    };
+    const toughSkinLevel = toughSkinLevels[player.name];
+    if (toughSkinLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:tough_skin": toughSkinLevel,
+      }));
+      return;
+    }
+    const lightLandingLevels = {
+      ASLightLandingLevel1: 1,
+      ASLightLandingLevel2: 2,
+      ASLightLandingLevel3: 3,
+      ASLightLandingLevel4: 4,
+      ASLightLandingLevel5: 5,
+    };
+    const lightLandingLevel = lightLandingLevels[player.name];
+    if (lightLandingLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:light_landing": lightLandingLevel,
+      }));
+      return;
+    }
+    if (player.name === "ASDefenseStackFall") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:tough_skin": 5,
+        "augmentation_survival:light_landing": 5,
+      }));
+      return;
+    }
+    if (player.name === "ASDefenseStackDrowning") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:tough_skin": 5,
+        "augmentation_survival:strong_lungs": 3,
+      }));
+      return;
+    }
     if (player.name !== "ASCoreCommitProduction") return;
 
     const coreId = "augmentation_survival:common_augment_core";
