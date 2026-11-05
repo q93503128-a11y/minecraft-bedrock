@@ -31,7 +31,7 @@ Updated: 2026-11-05 (M0.5)
 - Recipe discovery is checked during cooking, but persistence across disconnect/reconnect or server restart is unverified. The current `bds-runner` removes the isolated world's database at run start; simulated players also report empty XUID values, so they do not represent a stable real player identity.
 - The model generator regenerated the editable `.bbmodel` sources, geometry, textures, and a walk cycle. Hierarchy/UV metadata were inspected from source JSON, but loading the models through Blockbench MCP timed out, so they were not inspected in the app viewport. No Bedrock screenshot, block-orientation check, UI check, or client content-log review was captured. No visual quality sign-off is granted.
 - An initial ordinary-weapon test failed because the player picked up the meat before the test counted ground drops. The assertion now counts both player inventory and ground drops; the subsequent 7/7 run passes. Failed transcripts are retained in `.bds/logs/`.
-- GitHub Actions passed on M0 commit `9322b7d`; the M0.5 commit's workflow run must be checked after push.
+- GitHub Actions for M0.5 commit `e26fcc6` passed on Ubuntu 24.04, including `build:models`, `build:addon`, and the pinned BDS engine suite; [workflow run](https://github.com/q93503128-a11y/minecraft-bedrock/actions/runs/41976910682). GitHub annotated the run because the upstream Actions versions target Node.js 20 while the runner is forcing Node.js 24; the job still passed.
 
 ## M1 entry gate
 
