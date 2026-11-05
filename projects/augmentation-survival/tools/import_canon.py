@@ -82,16 +82,23 @@ def main(source: Path, target: Path) -> None:
             "java_source_paths": source_paths,
             "interaction_contract_refs": interaction_refs,
             "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs else "NO_DIRECT_MENTION_FOUND",
+            "compatibility_class": (
+                "A" if slug == "keen_edge" else
+                "B" if slug == "strong_lungs" else
+                "UNASSESSED"
+            ),
             "bedrock_method": (
                 "health_boost effect refreshed from saved level" if slug == "sturdiness" else
                 "Scale root melee damage in the stable entityHurt before-event; BDS verifies level 5 via production handler" if slug == "keen_edge" else
+                "Scale player drowning damage in the stable entityHurt before-event by 15% per level; max level 3" if slug == "strong_lungs" else
                 "Attempt player minecraft:movement currentValue multiplier" if slug == "quick_feet" else
                 "Attempt player minecraft:underwater_movement currentValue multiplier" if slug == "webbed_feet" else
                 "Not assessed"
             ),
             "api_constraints": (
-                "D exact parity: health_boost is +4 HP/level vs Java +2; effectiveMax is read-only" if slug == "sturdiness" else
+                "health_boost route is +4 HP/level vs Java +2; effectiveMax is read-only; exact alternative not assessed" if slug == "sturdiness" else
                 "Stable before-event; BDS simulated-player entityAttack event is verified; physical client melee and acquisition path remain untested" if slug == "keen_edge" else
+                "Stable before-event BDS verified; Bedrock applies the reduction before its remaining mitigation while Java applies it post-mitigation; armor/effect stacking parity is not yet verified" if slug == "strong_lungs" else
                 "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed" if slug == "quick_feet" else
                 "BDS 1.26.62.1: level 3 value persisted for one idle tick; lower-level persistence not reached; alternative not assessed" if slug == "webbed_feet" else
                 "Not assessed"
@@ -99,11 +106,12 @@ def main(source: Path, target: Path) -> None:
             "test_method": (
                 "BDS GameTest: max health at levels 1 and 5; core retained before selection result" if slug == "sturdiness" else
                 "BDS GameTest: production before-event handler scales 10 simulated-player entityAttack damage to 12 at level 5; test-only production-pack entry seeds the pack-scoped property" if slug == "keen_edge" else
+                "BDS GameTest: production before-event handler reduces 10 simulated-player drowning damage to 8.5/7/5.5 at levels 1/2/3; test-only production-pack entry seeds the pack-scoped property" if slug == "strong_lungs" else
                 "Exploratory BDS GameTest: immediate exact level 1 multiplier accepted, then default observed on next tick; excluded from passing suite" if slug == "quick_feet" else
                 "Exploratory BDS GameTest: exact level 3 multiplier verified after one tick; lower-level follow-up assertion not reached; excluded from passing suite" if slug == "webbed_feet" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge"} else "NOT_PORTED",
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "strong_lungs"} else "NOT_PORTED",
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}
@@ -120,7 +128,7 @@ def main(source: Path, target: Path) -> None:
         json.dumps({"source_revision": source_revision, "expected_counts": catalog["expected_counts"], "augments": records}, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    fields = ["id", "name_ko", "tier", "tier_ko", "max_level", "canonical_effect_ko", "catalog_discrepancy", "java_source_paths", "interaction_contract_refs", "interaction_mapping_status", "bedrock_method", "api_constraints", "test_method", "port_status"]
+    fields = ["id", "name_ko", "tier", "tier_ko", "max_level", "canonical_effect_ko", "catalog_discrepancy", "java_source_paths", "interaction_contract_refs", "interaction_mapping_status", "compatibility_class", "bedrock_method", "api_constraints", "test_method", "port_status"]
     with (target / "docs/PORT_MATRIX.csv").open("w", encoding="utf-8-sig", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writeheader()

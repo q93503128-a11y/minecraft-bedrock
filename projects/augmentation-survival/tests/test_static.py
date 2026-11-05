@@ -15,8 +15,17 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"강건함", "날 선 감각", "튼튼한 폐"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
+
+    def test_api_compatibility_classes_are_evidence_scoped(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        by_id = {item["id"].split(":", 1)[1]: item for item in data["augments"]}
+        self.assertEqual("A", by_id["keen_edge"]["compatibility_class"])
+        self.assertEqual("B", by_id["strong_lungs"]["compatibility_class"])
+        self.assertEqual("UNASSESSED", by_id["tough_skin"]["compatibility_class"])
+        self.assertEqual("UNASSESSED", by_id["sturdiness"]["compatibility_class"])
+        self.assertNotIn("D exact parity", by_id["sturdiness"]["api_constraints"])
 
     def test_movement_attribute_experiments_are_not_counted_as_ports(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
@@ -37,6 +46,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("commitCoreSelection(player, coreId, selected)", script)
         self.assertIn("world.afterEvents.itemUse.subscribe", script)
         self.assertIn("world.beforeEvents.entityHurt.subscribe", (ROOT / "BP/scripts/combat.js").read_text(encoding="utf-8"))
+        self.assertIn("EntityDamageCause.drowning", (ROOT / "BP/scripts/combat.js").read_text(encoding="utf-8"))
         self.assertIn("world.afterEvents.playerSpawn", script)
 
     def test_disconnect_clears_ui_state_and_stale_form_tokens_cannot_unlock_new_session(self):

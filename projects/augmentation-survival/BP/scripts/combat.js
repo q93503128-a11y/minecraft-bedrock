@@ -3,6 +3,9 @@ import { getStoredAugmentLevel } from "./progression.js";
 
 const KEEN_EDGE = "augmentation_survival:keen_edge";
 const PRECISE_AIM = "augmentation_survival:precise_aim";
+const STRONG_LUNGS = "augmentation_survival:strong_lungs";
+const STRONG_LUNGS_MAX_LEVEL = 3;
+const STRONG_LUNGS_REDUCTION_PER_LEVEL = 0.15;
 const MAX_DAMAGE_SCALE = 2;
 
 /**
@@ -34,4 +37,27 @@ export function applyRootDamageModifier(event) {
   if (Number.isFinite(scaled) && scaled > 0 && scaled <= event.damage * MAX_DAMAGE_SCALE) event.damage = scaled;
 }
 
-world.beforeEvents.entityHurt.subscribe(applyRootDamageModifier);
+/**
+ * Java applies Strong Lungs in its post-mitigation protection layer. The stable
+ * Bedrock before-event is the available server-authoritative hook; its exact
+ * interaction with armor/effect mitigation is tracked as a parity limitation.
+ * @param {import("@minecraft/server").EntityHurtBeforeEvent} event
+ */
+export function applyIncomingDamageModifier(event) {
+  if (!(event?.hurtEntity instanceof Player) || !event.damageSource || !(event.damage > 0) || !Number.isFinite(event.damage)) return;
+  if (event.damageSource.cause !== EntityDamageCause.drowning) return;
+
+  const level = getStoredAugmentLevel(event.hurtEntity, STRONG_LUNGS, STRONG_LUNGS_MAX_LEVEL);
+  if (level === 0) return;
+  const scaled = event.damage * (1 - STRONG_LUNGS_REDUCTION_PER_LEVEL * level);
+  if (Number.isFinite(scaled) && scaled >= 0 && scaled <= event.damage) event.damage = scaled;
+}
+
+/** Keep attacker bonuses ahead of defender reductions on the shared damage event. */
+/** @param {import("@minecraft/server").EntityHurtBeforeEvent} event */
+export function applyAugmentDamageModifiers(event) {
+  applyRootDamageModifier(event);
+  applyIncomingDamageModifier(event);
+}
+
+world.beforeEvents.entityHurt.subscribe(applyAugmentDamageModifiers);

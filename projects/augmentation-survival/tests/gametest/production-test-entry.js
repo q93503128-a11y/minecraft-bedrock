@@ -20,6 +20,18 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
+    const strongLungsLevels = {
+      ASStrongLungsLevel1: 1,
+      ASStrongLungsLevel2: 2,
+      ASStrongLungsLevel3: 3,
+    };
+    const strongLungsLevel = strongLungsLevels[player.name];
+    if (strongLungsLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:strong_lungs": strongLungsLevel,
+      }));
+      return;
+    }
     if (player.name !== "ASCoreCommitProduction") return;
 
     const coreId = "augmentation_survival:common_augment_core";

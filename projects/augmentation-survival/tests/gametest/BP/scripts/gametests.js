@@ -103,6 +103,31 @@ GameTest.registerAsync("AugmentationSurvival", "keen_edge_scales_server_root_mel
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
+GameTest.registerAsync("AugmentationSurvival", "strong_lungs_reduces_drowning_damage_by_level", async (test) => {
+  const cases = [
+    { level: 1, name: "ASStrongLungsLevel1", expected: 8.5 },
+    { level: 2, name: "ASStrongLungsLevel2", expected: 7 },
+    { level: 3, name: "ASStrongLungsLevel3", expected: 5.5 },
+  ];
+  const players = cases.map((entry, index) => ({
+    ...entry,
+    player: test.spawnSimulatedPlayer({ x: 2 + index * 2, y: 3, z: 3 }, entry.name, GameMode.survival),
+  }));
+  await test.idle(2);
+
+  for (const entry of players) {
+    const health = entry.player.getComponent("minecraft:health");
+    ensure(health, `Health component was unavailable for Strong Lungs level ${entry.level}.`);
+    const before = health.currentValue;
+    const applied = entry.player.applyDamage(10, { cause: EntityDamageCause.drowning });
+    await test.idle(1);
+    const damageTaken = before - health.currentValue;
+    ensure(applied, `BDS rejected simulated drowning damage at Strong Lungs level ${entry.level}.`);
+    ensure(Math.abs(damageTaken - entry.expected) < 1e-6, `Strong Lungs level ${entry.level} expected ${entry.expected} from 10 drowning damage; got ${damageTaken}.`);
+  }
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
 GameTest.registerAsync("AugmentationSurvival", "core_synthesis_is_atomic_and_conserves_items", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreSynthesis", GameMode.survival);
   const inventory = inventoryOf(player);

@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 3841,
+  "durationMs": 3518,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
@@ -13,6 +13,10 @@
     },
     {
       "id": "AugmentationSurvival:keen_edge_scales_server_root_melee_damage",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:strong_lungs_reduces_drowning_damage_by_level",
       "outcome": "pass"
     },
     {
