@@ -1,8 +1,12 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 3589,
+  "durationMs": 3999,
   "verdicts": [
+    {
+      "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
+      "outcome": "pass"
+    },
     {
       "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
       "outcome": "pass"
@@ -13,6 +17,10 @@
     },
     {
       "id": "AugmentationSurvival:keen_edge_scales_server_root_melee_damage",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:precise_aim_scales_server_projectile_damage_source",
       "outcome": "pass"
     },
     {

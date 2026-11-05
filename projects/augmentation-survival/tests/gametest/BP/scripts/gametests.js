@@ -1,11 +1,20 @@
 import { EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
+import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
+import { listAvailableCandidates } from "./offers.js";
 
 const TAG = "augmentation_survival";
 const STRUCTURE = "gametests:glass_cells";
 const CORE = "augmentation_survival:common_augment_core";
 const NEXT_CORE = "augmentation_survival:uncommon_augment_core";
+const ENABLED_CANDIDATE_IDS = [
+  "augmentation_survival:keen_edge",
+  "augmentation_survival:precise_aim",
+  "augmentation_survival:tough_skin",
+  "augmentation_survival:light_landing",
+  "augmentation_survival:strong_lungs",
+];
 
 function ensure(condition, message) {
   if (!condition) throw new Error(message);
@@ -25,6 +34,27 @@ function countItem(inventory, typeId) {
   }
   return count;
 }
+
+GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_effects_and_preserves_locked_tiers", async (test) => {
+  const common = listAvailableCandidates("common", AUGMENTS, {});
+  ensure(common.length === ENABLED_CANDIDATE_IDS.length, `Expected ${ENABLED_CANDIDATE_IDS.length} enabled common candidates; got ${common.length}.`);
+  ensure(ENABLED_CANDIDATE_IDS.every(id => common.some(augment => augment.id === id)), "The enabled common candidate set diverged from its BDS-verified allowlist.");
+  ensure(!common.some(augment => augment.id === "augmentation_survival:sturdiness"), "The known +4 vs +2 max-health mismatch was exposed as a core candidate.");
+
+  for (const tier of ["uncommon", "rare", "epic", "legendary", "mythic"]) {
+    ensure(listAvailableCandidates(tier, AUGMENTS, {}).length === 0, `${tier} exposed unported candidates.`);
+  }
+  const maxedLevels = Object.fromEntries(common.map(augment => [augment.id, augment.max_level]));
+  ensure(listAvailableCandidates("common", AUGMENTS, maxedLevels).length === 0, "Maxed BDS-verified candidates remained eligible.");
+
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASLockedTierCore", GameMode.survival);
+  const inventory = inventoryOf(player);
+  inventory.setItem(0, new ItemStack(NEXT_CORE, 1));
+  ensure(player.useItemInSlot(0), "Simulated player could not use an uncommon core with no enabled candidates.");
+  await test.idle(2);
+  ensure(countItem(inventory, NEXT_CORE) === 1, "Using a locked-tier core consumed it despite there being no enabled candidates.");
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);
@@ -102,6 +132,59 @@ GameTest.registerAsync("AugmentationSurvival", "keen_edge_scales_server_root_mel
   ensure(Math.abs(damageTaken - 12) < 1e-6, `Keen Edge level 5 expected 12 damage from a 10-damage root melee event; got ${damageTaken}; observed=${JSON.stringify(observed)}.`);
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "precise_aim_scales_server_projectile_damage_source", async (test) => {
+  const control = test.spawnSimulatedPlayer({ x: 2, y: 3, z: 2 }, "ASPreciseAimControl", GameMode.survival);
+  const attacker = test.spawnSimulatedPlayer({ x: 2, y: 3, z: 4 }, "ASPreciseAim", GameMode.survival);
+  const ownerlessAttacker = test.spawnSimulatedPlayer({ x: 2, y: 3, z: 6 }, "ASPreciseAimOwnerless", GameMode.survival);
+  const controlTarget = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 2 }, "ASPreciseAimControlTarget", GameMode.survival);
+  const target = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 4 }, "ASPreciseAimTarget", GameMode.survival);
+  const ownerlessTarget = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 6 }, "ASPreciseAimOwnerlessTarget", GameMode.survival);
+  await test.idle(2);
+
+  /** @type {Map<string, {damage:number,cause:string,projectileId?:string,ownerId?:string,attackerId?:string}>} */
+  const hits = new Map();
+  const callback = (event) => {
+    if (!event?.hurtEntity || ![controlTarget.id, target.id, ownerlessTarget.id].includes(event.hurtEntity.id)) return;
+    const projectile = event.damageSource.damagingProjectile;
+    hits.set(event.hurtEntity.id, {
+      damage: event.damage,
+      cause: event.damageSource.cause,
+      projectileId: projectile?.id,
+      ownerId: projectile?.getComponent("minecraft:projectile")?.owner?.id,
+      attackerId: event.damageSource.damagingEntity?.id,
+    });
+  };
+  world.beforeEvents.entityHurt.subscribe(callback);
+
+  const controlArrow = control.dimension.spawnEntity("minecraft:arrow", { x: 2, y: 4, z: 2 });
+  const arrow = attacker.dimension.spawnEntity("minecraft:arrow", { x: 2, y: 4, z: 4 });
+  const ownerlessArrow = ownerlessAttacker.dimension.spawnEntity("minecraft:arrow", { x: 2, y: 4, z: 6 });
+  const controlProjectile = controlArrow.getComponent("minecraft:projectile");
+  const projectile = arrow.getComponent("minecraft:projectile");
+  const ownerlessProjectile = ownerlessArrow.getComponent("minecraft:projectile");
+  ensure(controlProjectile && projectile && ownerlessProjectile, "A spawned arrow did not expose minecraft:projectile.");
+  controlProjectile.owner = control;
+  projectile.owner = attacker;
+  ensure(projectile.owner?.id === attacker.id, "The arrow did not retain its simulated player owner.");
+  const controlApplied = controlTarget.applyDamage(10, { damagingEntity: control, damagingProjectile: controlArrow });
+  const augmentedApplied = target.applyDamage(10, { damagingEntity: attacker, damagingProjectile: arrow });
+  const ownerlessApplied = ownerlessTarget.applyDamage(10, { damagingEntity: ownerlessAttacker, damagingProjectile: ownerlessArrow });
+  await test.idle(1);
+  world.beforeEvents.entityHurt.unsubscribe(callback);
+  const controlHit = hits.get(controlTarget.id);
+  const augmentedHit = hits.get(target.id);
+  const ownerlessHit = hits.get(ownerlessTarget.id);
+  ensure(controlApplied && augmentedApplied && ownerlessApplied, "BDS rejected one of the synthetic projectile-attributed damage events.");
+  ensure(controlHit && augmentedHit && ownerlessHit, `A synthetic projectile damage event was missing; captured=${JSON.stringify([...hits.values()])}.`);
+  ensure(controlHit.cause === EntityDamageCause.projectile && augmentedHit.cause === EntityDamageCause.projectile && ownerlessHit.cause === EntityDamageCause.projectile, "Damage inputs did not produce projectile damage events.");
+  ensure(controlHit.projectileId === controlArrow.id && augmentedHit.projectileId === arrow.id && ownerlessHit.projectileId === ownerlessArrow.id, "The hurt events did not preserve their supplied projectile entities.");
+  ensure(controlHit.ownerId === control.id && augmentedHit.ownerId === attacker.id && !ownerlessHit.ownerId, "A hurt event did not preserve the expected projectile owner.");
+  ensure(controlHit.attackerId === control.id && augmentedHit.attackerId === attacker.id && ownerlessHit.attackerId === ownerlessAttacker.id, "A hurt event did not preserve its damaging entity.");
+  ensure(Math.abs(controlHit.damage - 10) < 1e-5 && Math.abs(ownerlessHit.damage - 10) < 1e-5, `Unaugmented or ownerless projectiles should retain 10 damage; control=${controlHit.damage}, ownerless=${ownerlessHit.damage}.`);
+  ensure(Math.abs(augmentedHit.damage - 12) < 1e-5, `Precise Aim level 5 should scale 10 attributed projectile damage to 12; got ${augmentedHit.damage}.`);
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "strong_lungs_reduces_drowning_damage_by_level", async (test) => {
   const cases = [

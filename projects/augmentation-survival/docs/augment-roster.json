@@ -1,5 +1,5 @@
 {
-  "source_revision": "d0b7c8af21146964620a48ff60a68325ef34a181",
+  "source_revision": "5962141975b1fea600b0bdb2ae9b697dc7de9cb5",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -24,7 +24,8 @@
       "bedrock_method": "health_boost effect refreshed from saved level",
       "api_constraints": "health_boost route is +4 HP/level vs Java +2; effectiveMax is read-only; exact alternative not assessed",
       "test_method": "BDS GameTest: max health at levels 1 and 5; core retained before selection result",
-      "port_status": "PARTIAL_BDS_VERIFIED"
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:keen_edge",
@@ -45,7 +46,8 @@
       "bedrock_method": "Scale root melee damage in the stable entityHurt before-event; BDS verifies level 5 via production handler",
       "api_constraints": "Stable before-event; BDS simulated-player entityAttack event is verified; physical client melee and acquisition path remain untested",
       "test_method": "BDS GameTest: production before-event handler scales 10 simulated-player entityAttack damage to 12 at level 5; test-only production-pack entry seeds the pack-scoped property",
-      "port_status": "PARTIAL_BDS_VERIFIED"
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:precise_aim",
@@ -60,13 +62,31 @@
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/CombatTuning.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/projectile/FocusedAimAugmentService.java"
       ],
-      "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "interaction_contract_refs": [
+        {
+          "line": 53,
+          "text": "- `ROOT_PROJECTILE`: 플레이어가 직접 발사한 원본 물리 투사체 적중"
+        },
+        {
+          "line": 54,
+          "text": "- `DERIVED_PROJECTILE`: `분산 사격` 등 증강이 만든 보조 물리 투사체"
+        },
+        {
+          "line": 67,
+          "text": "- **ROOT 직접 적중/직접 처치** = `ROOT_MELEE` 또는 `ROOT_PROJECTILE`."
+        },
+        {
+          "line": 126,
+          "text": "`분산 사격` 보조탄은 `DERIVED_PROJECTILE`이므로 관통/도탄/추적/연쇄는 이어받지만 `벼락`, `약점 표식` 같은 ROOT 카운터를 올리지 않는다."
+        }
+      ],
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "B",
+      "bedrock_method": "Scale player-owned projectile damage in the stable entityHurt before-event by 4% per level; max level 5",
+      "api_constraints": "Stable damage source exposes damagingProjectile and projectile owner. Current owner attribution cannot distinguish every ROOT_PROJECTILE from a player-owned DERIVED_PROJECTILE; physical arrow collision and acquisition remain untested",
+      "test_method": "BDS GameTest: production before-event handler scales a synthetic 10-damage projectile source to 12 at level 5; unaugmented and ownerless projectile sources stay at 10; a physical arrow-hit experiment did not hit and is not counted as passing",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:tough_skin",
@@ -86,7 +106,8 @@
       "bedrock_method": "Scale all incoming player damage in the stable entityHurt before-event by 2% per level; max level 5",
       "api_constraints": "B partial: Java applies after vanilla mitigation and skips delayed-damage context; Bedrock modifies before remaining mitigation and has no delayed-damage provenance mapping yet; armor/effect stacking parity unverified",
       "test_method": "BDS GameTest: production before-event handler reduces 10 magic damage to 9.8/9.6/9.4/9.2/9.0 at levels 1–5; composition with typed reductions also tested",
-      "port_status": "PARTIAL_BDS_VERIFIED"
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:quick_feet",
@@ -108,7 +129,8 @@
       "bedrock_method": "Attempt player minecraft:movement currentValue multiplier",
       "api_constraints": "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed",
       "test_method": "Exploratory BDS GameTest: immediate exact level 1 multiplier accepted, then default observed on next tick; excluded from passing suite",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:light_landing",
@@ -128,7 +150,8 @@
       "bedrock_method": "Scale player fall damage in the stable entityHurt before-event by 12% per level; max level 5",
       "api_constraints": "B partial: Bedrock cause fall maps the tested damage path, but its before-event runs before remaining mitigation while Java applies after mitigation; natural landing and Feather Falling stacking unverified",
       "test_method": "BDS GameTest: production before-event handler reduces 10 simulated fall damage to 8.8/7.6/6.4/5.2/4.0 at levels 1–5; composition with Tough Skin also tested",
-      "port_status": "PARTIAL_BDS_VERIFIED"
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:miners_hand",
@@ -153,7 +176,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:logging_knack",
@@ -174,7 +198,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:bumper_crop",
@@ -194,7 +219,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:seed_saver",
@@ -214,7 +240,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:efficient_metabolism",
@@ -234,7 +261,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:hearty_meal",
@@ -254,7 +282,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:webbed_feet",
@@ -275,7 +304,8 @@
       "bedrock_method": "Attempt player minecraft:underwater_movement currentValue multiplier",
       "api_constraints": "BDS 1.26.62.1: level 3 value persisted for one idle tick; lower-level persistence not reached; alternative not assessed",
       "test_method": "Exploratory BDS GameTest: exact level 3 multiplier verified after one tick; lower-level follow-up assertion not reached; excluded from passing suite",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:fishing_sense",
@@ -295,7 +325,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:long_breath",
@@ -315,7 +346,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:strong_lungs",
@@ -335,7 +367,8 @@
       "bedrock_method": "Scale player drowning damage in the stable entityHurt before-event by 15% per level; max level 3",
       "api_constraints": "Stable before-event BDS verified; Bedrock applies the reduction before its remaining mitigation while Java applies it post-mitigation; armor/effect stacking parity is not yet verified",
       "test_method": "BDS GameTest: production before-event handler reduces 10 simulated-player drowning damage to 8.5/7/5.5 at levels 1/2/3; test-only production-pack entry seeds the pack-scoped property",
-      "port_status": "PARTIAL_BDS_VERIFIED"
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:cold_adaptation",
@@ -355,7 +388,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:fast_eating",
@@ -375,7 +409,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:fuel_saver",
@@ -395,7 +430,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:rapid_strikes",
@@ -417,7 +453,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:extra_piece",
@@ -437,7 +474,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:recovery",
@@ -458,7 +496,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:catch_breath",
@@ -484,7 +523,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:loot_scoop",
@@ -504,7 +544,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:nocturnal",
@@ -537,7 +578,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:sun_affinity",
@@ -565,7 +607,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:last_strength",
@@ -588,7 +631,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:tool_care",
@@ -608,7 +652,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:dexterity",
@@ -628,7 +673,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:treasure_fishing",
@@ -650,7 +696,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:long_reach",
@@ -667,7 +714,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:underwater_work",
@@ -684,7 +732,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:pickup_hand",
@@ -704,7 +753,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:brace",
@@ -730,7 +780,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:shield_grip",
@@ -750,7 +801,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:step_up",
@@ -770,7 +822,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:terrain_resistance",
@@ -787,7 +840,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:twins",
@@ -807,7 +861,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:long_jump",
@@ -827,7 +882,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:ride_current",
@@ -848,7 +904,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:urgent_steps",
@@ -880,7 +937,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:rider",
@@ -900,7 +958,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:armor_care",
@@ -920,7 +979,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:fast_brewing",
@@ -940,7 +1000,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:taming_knack",
@@ -959,7 +1020,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:momentum_shift",
@@ -993,7 +1055,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:mantle",
@@ -1014,7 +1077,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:ore_sense",
@@ -1033,7 +1097,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:arrow_saver",
@@ -1058,7 +1123,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:replant",
@@ -1080,7 +1146,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:pockets",
@@ -1103,7 +1170,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:night_vision",
@@ -1123,7 +1191,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:tunneling",
@@ -1148,7 +1217,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:boss_hunter",
@@ -1168,7 +1238,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:return_to_sender",
@@ -1197,7 +1268,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:tree_climb",
@@ -1217,7 +1289,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:focused_aim",
@@ -1238,7 +1311,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:tree_felling",
@@ -1263,7 +1337,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:continuous_mining",
@@ -1293,7 +1368,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:sweeping_harvest",
@@ -1313,7 +1389,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:eat_while_walking",
@@ -1333,7 +1410,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:chest_finder",
@@ -1352,7 +1430,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:danger_sense",
@@ -1371,7 +1450,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:kill_streak",
@@ -1403,7 +1483,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:experience_preservation",
@@ -1429,7 +1510,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:reserve_meal",
@@ -1449,7 +1531,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:armor_pierce",
@@ -1474,7 +1557,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:auto_refill",
@@ -1494,7 +1578,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:bargaining",
@@ -1514,7 +1599,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:damage_adaptation",
@@ -1539,7 +1625,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:healing_share",
@@ -1580,7 +1667,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:pearl_mastery",
@@ -1601,7 +1689,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:potion_diffusion",
@@ -1634,7 +1723,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:portable_riptide",
@@ -1655,7 +1745,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:healing_amplification",
@@ -1688,7 +1779,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:lifesteal",
@@ -1715,7 +1807,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:elastic_storage",
@@ -1745,7 +1838,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:candidate_reroll",
@@ -1765,7 +1859,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:piercing_arrow",
@@ -1790,7 +1885,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:sweeping_enhancement",
@@ -1815,7 +1911,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:double_jump",
@@ -1849,7 +1946,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:water_run",
@@ -1870,7 +1968,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:last_stand",
@@ -1905,7 +2004,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:chain_arrow",
@@ -1934,7 +2034,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:return_home",
@@ -1957,7 +2058,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:overflow_healing",
@@ -1991,7 +2093,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:cleanse",
@@ -2015,7 +2118,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:scatter_shot",
@@ -2056,7 +2160,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:emergency_totem",
@@ -2082,7 +2187,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:keep_inventory",
@@ -2106,7 +2212,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:enchant_refresh",
@@ -2126,7 +2233,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:chain_explosion",
@@ -2153,7 +2261,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:pull",
@@ -2190,7 +2299,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:delayed_damage",
@@ -2235,7 +2345,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:shield_throw",
@@ -2260,7 +2371,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:status_reflect",
@@ -2291,7 +2403,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:weakness_mark",
@@ -2330,7 +2443,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:swap",
@@ -2359,7 +2473,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:shield",
@@ -2399,7 +2514,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:ballistic_barrier",
@@ -2419,7 +2535,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:temporary_platform",
@@ -2443,7 +2560,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:berserk",
@@ -2468,7 +2586,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:lightning",
@@ -2518,7 +2637,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:echo_strike",
@@ -2550,7 +2670,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:healing_wave",
@@ -2574,7 +2695,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:strong_mind",
@@ -2601,7 +2723,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:combat_cycle",
@@ -2642,7 +2765,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:shield_burst",
@@ -2673,7 +2797,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:speed_conversion",
@@ -2699,7 +2824,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:heavy_strike",
@@ -2721,7 +2847,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:life_wave",
@@ -2756,7 +2883,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:brawl",
@@ -2777,7 +2905,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:aerial_combo",
@@ -2812,7 +2941,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:retrace",
@@ -2862,7 +2992,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:tracking_arrow",
@@ -2887,7 +3018,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:ricochet",
@@ -2974,7 +3106,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:wall_slam",
@@ -3004,7 +3137,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:shrink",
@@ -3047,7 +3181,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:companion_rescue",
@@ -3066,7 +3201,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:remote_storage",
@@ -3094,7 +3230,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:death_return",
@@ -3117,7 +3254,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:phase_shift",
@@ -3142,7 +3280,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:threat_suppression",
@@ -3167,7 +3306,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:enchant_resonance",
@@ -3186,7 +3326,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:rewind",
@@ -3211,7 +3352,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:time_acceleration",
@@ -3238,7 +3380,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:clone",
@@ -3273,7 +3416,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:life_link",
@@ -3299,7 +3443,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:ability_haste",
@@ -3335,7 +3480,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:double_charge",
@@ -3376,7 +3522,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:revive",
@@ -3403,7 +3550,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:reincarnation",
@@ -3435,7 +3583,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:invincibility",
@@ -3490,7 +3639,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:glass_cannon",
@@ -3512,7 +3662,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:hunt_record",
@@ -3541,7 +3692,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:overtime",
@@ -3571,7 +3723,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:area_acceleration",
@@ -3598,7 +3751,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:forbidden_magic",
@@ -3618,7 +3772,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:replay",
@@ -3678,7 +3833,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:time_stop",
@@ -3703,7 +3859,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:spatial_link",
@@ -3733,7 +3890,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:abundance",
@@ -3768,7 +3926,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:instant_mining",
@@ -3798,7 +3957,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:domination",
@@ -3832,7 +3992,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:divine_punishment",
@@ -3855,7 +4016,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:gigantification",
@@ -3878,7 +4040,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:second_choice",
@@ -3910,7 +4073,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:authority_theft",
@@ -3935,7 +4099,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     },
     {
       "id": "augmentation_survival:flight",
@@ -3981,7 +4146,8 @@
       "bedrock_method": "Not assessed",
       "api_constraints": "Not assessed",
       "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED"
+      "port_status": "NOT_PORTED",
+      "candidate_enabled": false
     }
   ]
 }

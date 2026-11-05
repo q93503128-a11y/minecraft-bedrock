@@ -13,6 +13,12 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
+    if (player.name === "ASPreciseAim") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:precise_aim": 5,
+      }));
+      return;
+    }
     if (player.name === "ASSturdinessLevel1" || player.name === "ASSturdinessLevel5") {
       const level = player.name === "ASSturdinessLevel1" ? 1 : 5;
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify({

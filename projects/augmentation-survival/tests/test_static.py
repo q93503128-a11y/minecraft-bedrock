@@ -15,13 +15,16 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "질긴 피부", "가벼운 착지", "튼튼한 폐"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
     def test_api_compatibility_classes_are_evidence_scoped(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         by_id = {item["id"].split(":", 1)[1]: item for item in data["augments"]}
         self.assertEqual("A", by_id["keen_edge"]["compatibility_class"])
+        self.assertEqual("B", by_id["precise_aim"]["compatibility_class"])
         self.assertEqual("B", by_id["strong_lungs"]["compatibility_class"])
         self.assertEqual("B", by_id["tough_skin"]["compatibility_class"])
         self.assertEqual("B", by_id["light_landing"]["compatibility_class"])

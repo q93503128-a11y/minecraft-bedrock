@@ -4,10 +4,11 @@ import { AUGMENTS } from "./augment-data.js";
 import { applySturdinessEffect } from "./passives.js";
 import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progression.js";
 import { synthesizeCore } from "./cores.js";
+import { listAvailableCandidates } from "./offers.js";
 import "./combat.js";
 
 const NS = "augmentation_survival";
-/** @typedef {{id:string, name_ko:string, tier:string, tier_ko:string, max_level:number, canonical_effect_ko:string}} Augment */
+/** @typedef {{id:string, name_ko:string, tier:string, tier_ko:string, max_level:number, canonical_effect_ko:string, candidate_enabled:boolean}} Augment */
 const COMMON_CORE = `${NS}:common_augment_core`;
 const TIERS = ["common", "uncommon", "rare", "epic", "legendary", "mythic"];
 /** @type {Record<string, string>} */
@@ -73,7 +74,7 @@ function countItem(player, typeId) {
 /** @param {string} tier @param {Player} player @returns {Augment[]} */
 function availableOffers(tier, player) {
   const levels = playerLevels(player);
-  const pool = AUGMENT_LIST.filter(augment => augment.tier === tier && (Number(levels[augment.id]) || 0) < augment.max_level);
+  const pool = listAvailableCandidates(tier, AUGMENT_LIST, levels);
   for (let index = pool.length - 1; index > 0; index--) {
     const swap = Math.floor(Math.random() * (index + 1));
     [pool[index], pool[swap]] = [pool[swap], pool[index]];
@@ -88,7 +89,10 @@ async function openOffer(player, coreId) {
   if (!tier || countItem(player, coreId) < 1) return;
   const offers = availableOffers(tier, player);
   if (offers.length === 0) {
-    player.sendMessage("이 등급의 증강은 모두 최대 레벨이에요. 코어를 그대로 돌려받습니다.");
+    const hasCandidates = AUGMENT_LIST.some(augment => augment.tier === tier && augment.candidate_enabled);
+    player.sendMessage(hasCandidates
+      ? "이 등급의 증강은 모두 최대 레벨이에요. 코어를 그대로 돌려받습니다."
+      : "이 등급에는 아직 Bedrock 검증 후보가 없습니다. 코어를 소모하지 않았습니다.");
     return;
   }
   if (offers.length < 3) {

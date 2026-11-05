@@ -66,6 +66,15 @@ def main(source: Path, target: Path) -> None:
             for line_number, line in enumerate(interaction_lines, start=1)
             if slug in line or name in line or entry["canonical_name_ko"] in line
         ]
+        if slug == "precise_aim":
+            interaction_refs.extend(
+                {"line": line_number, "text": line.strip()}
+                for line_number, line in enumerate(interaction_lines, start=1)
+                if line.strip().startswith("- `ROOT_PROJECTILE`:")
+                or line.strip().startswith("- `DERIVED_PROJECTILE`:")
+                or line.strip().startswith("- **ROOT 직접 적중/직접 처치**")
+                or line.strip().startswith("`분산 사격` 보조탄은")
+            )
         source_mismatch = []
         if name != entry["canonical_name_ko"]:
             source_mismatch.append(f"catalog name={entry['canonical_name_ko']}")
@@ -84,12 +93,14 @@ def main(source: Path, target: Path) -> None:
             "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs else "NO_DIRECT_MENTION_FOUND",
             "compatibility_class": (
                 "A" if slug == "keen_edge" else
+                "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
                 "UNASSESSED"
             ),
             "bedrock_method": (
                 "health_boost effect refreshed from saved level" if slug == "sturdiness" else
                 "Scale root melee damage in the stable entityHurt before-event; BDS verifies level 5 via production handler" if slug == "keen_edge" else
+                "Scale player-owned projectile damage in the stable entityHurt before-event by 4% per level; max level 5" if slug == "precise_aim" else
                 "Scale all incoming player damage in the stable entityHurt before-event by 2% per level; max level 5" if slug == "tough_skin" else
                 "Scale player fall damage in the stable entityHurt before-event by 12% per level; max level 5" if slug == "light_landing" else
                 "Scale player drowning damage in the stable entityHurt before-event by 15% per level; max level 3" if slug == "strong_lungs" else
@@ -100,6 +111,7 @@ def main(source: Path, target: Path) -> None:
             "api_constraints": (
                 "health_boost route is +4 HP/level vs Java +2; effectiveMax is read-only; exact alternative not assessed" if slug == "sturdiness" else
                 "Stable before-event; BDS simulated-player entityAttack event is verified; physical client melee and acquisition path remain untested" if slug == "keen_edge" else
+                "Stable damage source exposes damagingProjectile and projectile owner. Current owner attribution cannot distinguish every ROOT_PROJECTILE from a player-owned DERIVED_PROJECTILE; physical arrow collision and acquisition remain untested" if slug == "precise_aim" else
                 "B partial: Java applies after vanilla mitigation and skips delayed-damage context; Bedrock modifies before remaining mitigation and has no delayed-damage provenance mapping yet; armor/effect stacking parity unverified" if slug == "tough_skin" else
                 "B partial: Bedrock cause fall maps the tested damage path, but its before-event runs before remaining mitigation while Java applies after mitigation; natural landing and Feather Falling stacking unverified" if slug == "light_landing" else
                 "Stable before-event BDS verified; Bedrock applies the reduction before its remaining mitigation while Java applies it post-mitigation; armor/effect stacking parity is not yet verified" if slug == "strong_lungs" else
@@ -110,6 +122,7 @@ def main(source: Path, target: Path) -> None:
             "test_method": (
                 "BDS GameTest: max health at levels 1 and 5; core retained before selection result" if slug == "sturdiness" else
                 "BDS GameTest: production before-event handler scales 10 simulated-player entityAttack damage to 12 at level 5; test-only production-pack entry seeds the pack-scoped property" if slug == "keen_edge" else
+                "BDS GameTest: production before-event handler scales a synthetic 10-damage projectile source to 12 at level 5; unaugmented and ownerless projectile sources stay at 10; a physical arrow-hit experiment did not hit and is not counted as passing" if slug == "precise_aim" else
                 "BDS GameTest: production before-event handler reduces 10 magic damage to 9.8/9.6/9.4/9.2/9.0 at levels 1–5; composition with typed reductions also tested" if slug == "tough_skin" else
                 "BDS GameTest: production before-event handler reduces 10 simulated fall damage to 8.8/7.6/6.4/5.2/4.0 at levels 1–5; composition with Tough Skin also tested" if slug == "light_landing" else
                 "BDS GameTest: production before-event handler reduces 10 simulated-player drowning damage to 8.5/7/5.5 at levels 1/2/3; test-only production-pack entry seeds the pack-scoped property" if slug == "strong_lungs" else
@@ -117,7 +130,8 @@ def main(source: Path, target: Path) -> None:
                 "Exploratory BDS GameTest: exact level 3 multiplier verified after one tick; lower-level follow-up assertion not reached; excluded from passing suite" if slug == "webbed_feet" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "tough_skin", "light_landing", "strong_lungs"} else "NOT_PORTED",
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs"},
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}
@@ -134,7 +148,7 @@ def main(source: Path, target: Path) -> None:
         json.dumps({"source_revision": source_revision, "expected_counts": catalog["expected_counts"], "augments": records}, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    fields = ["id", "name_ko", "tier", "tier_ko", "max_level", "canonical_effect_ko", "catalog_discrepancy", "java_source_paths", "interaction_contract_refs", "interaction_mapping_status", "compatibility_class", "bedrock_method", "api_constraints", "test_method", "port_status"]
+    fields = ["id", "name_ko", "tier", "tier_ko", "max_level", "canonical_effect_ko", "catalog_discrepancy", "java_source_paths", "interaction_contract_refs", "interaction_mapping_status", "compatibility_class", "bedrock_method", "api_constraints", "test_method", "port_status", "candidate_enabled"]
     with (target / "docs/PORT_MATRIX.csv").open("w", encoding="utf-8-sig", newline="") as file:
         writer = csv.DictWriter(file, fieldnames=fields)
         writer.writeheader()

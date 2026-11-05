@@ -31,6 +31,8 @@ def main() -> None:
     script_modules[0]["entry"] = "scripts/engine-test-entry.js"
     production_manifest_path.write_text(json.dumps(production_manifest, indent=2) + "\n", encoding="utf-8")
     shutil.copy2(PROJECT / "BP/scripts/cores.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/cores.js")
+    shutil.copy2(PROJECT / "BP/scripts/offers.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/offers.js")
+    shutil.copy2(PROJECT / "BP/scripts/augment-data.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/augment-data.js")
 
     manifests = [json.loads(path.read_text(encoding="utf-8")) for path in OUTPUT.glob("*/manifest.json")]
     uuids = [manifest["header"]["uuid"] for manifest in manifests]
