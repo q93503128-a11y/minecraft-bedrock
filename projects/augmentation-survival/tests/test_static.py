@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -30,6 +30,9 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("B", by_id["light_landing"]["compatibility_class"])
         self.assertEqual("UNASSESSED", by_id["sturdiness"]["compatibility_class"])
         self.assertNotIn("D exact parity", by_id["sturdiness"]["api_constraints"])
+        self.assertEqual("B", by_id["bumper_crop"]["compatibility_class"])
+        self.assertEqual("C", by_id["miners_hand"]["compatibility_class"])
+        self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
 
     def test_movement_attribute_experiments_are_not_counted_as_ports(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
@@ -51,6 +54,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("world.afterEvents.itemUse.subscribe", script)
         self.assertIn("world.beforeEvents.entityHurt.subscribe", (ROOT / "BP/scripts/combat.js").read_text(encoding="utf-8"))
         self.assertIn("EntityDamageCause.drowning", (ROOT / "BP/scripts/combat.js").read_text(encoding="utf-8"))
+        self.assertIn("world.afterEvents.playerBreakBlock.subscribe", (ROOT / "BP/scripts/harvest.js").read_text(encoding="utf-8"))
         self.assertIn("world.afterEvents.playerSpawn", script)
 
     def test_disconnect_clears_ui_state_and_stale_form_tokens_cannot_unlock_new_session(self):

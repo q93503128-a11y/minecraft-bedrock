@@ -1,8 +1,10 @@
-import { EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
+import { BlockPermutation, EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
+import { applyBumperCropHarvest, bumperCropBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
+import { LEVELS_KEY } from "./progression.js";
 
 const TAG = "augmentation_survival";
 const STRUCTURE = "gametests:glass_cells";
@@ -14,6 +16,7 @@ const ENABLED_CANDIDATE_IDS = [
   "augmentation_survival:tough_skin",
   "augmentation_survival:light_landing",
   "augmentation_survival:strong_lungs",
+  "augmentation_survival:bumper_crop",
 ];
 
 function ensure(condition, message) {
@@ -55,6 +58,84 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
   ensure(countItem(inventory, NEXT_CORE) === 1, "Using a locked-tier core consumed it despite there being no enabled candidates.");
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "bumper_crop_matches_maturity_and_all_five_exact_chance_thresholds", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASBumperCrop", GameMode.survival);
+  const cropBlock = player.dimension.getBlock({
+    x: Math.floor(player.location.x),
+    y: Math.floor(player.location.y) + 2,
+    z: Math.floor(player.location.z),
+  });
+  ensure(cropBlock, "The crop bonus spawn location was not loaded.");
+  const event = {
+    brokenBlockPermutation: BlockPermutation.resolve("minecraft:wheat", { growth: 7 }),
+    block: cropBlock,
+    dimension: player.dimension,
+    player,
+  };
+  const spawnLocation = cropBlock.location;
+  const wheatCount = () => player.dimension.getEntities({
+    type: "minecraft:item",
+    location: spawnLocation,
+    maxDistance: 4,
+  }).reduce((count, entity) => {
+    const stack = entity.getComponent("minecraft:item")?.itemStack;
+    return count + (stack?.typeId === "minecraft:wheat" ? stack.amount : 0);
+  }, 0);
+  const productCount = (product) => player.dimension.getEntities({
+    type: "minecraft:item",
+    location: spawnLocation,
+    maxDistance: 4,
+  }).reduce((count, entity) => {
+    const stack = entity.getComponent("minecraft:item")?.itemStack;
+    return count + (stack?.typeId === product ? stack.amount : 0);
+  }, 0);
+
+  for (let level = 1; level <= 5; level += 1) {
+    const chance = bumperCropBonusChance(level);
+    ensure(Math.abs(chance - 0.08 * level) < 1e-12, `Level ${level} chance should be ${0.08 * level}; got ${chance}.`);
+    player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:bumper_crop": level }));
+    const before = wheatCount();
+    ensure(applyBumperCropHarvest(event, () => chance - 1e-9), `Level ${level} did not grant below its exact chance boundary.`);
+    ensure(wheatCount() === before + 1, `Level ${level} did not spawn exactly one extra wheat item.`);
+    ensure(!applyBumperCropHarvest(event, () => chance), `Level ${level} granted at its exclusive chance boundary.`);
+    ensure(wheatCount() === before + 1, `Level ${level} spawned an item at its exclusive chance boundary.`);
+  }
+
+  for (const [blockId, growth, product] of [
+    ["minecraft:wheat", 7, "minecraft:wheat"],
+    ["minecraft:carrots", 7, "minecraft:carrot"],
+    ["minecraft:potatoes", 7, "minecraft:potato"],
+    ["minecraft:beetroot", 3, "minecraft:beetroot"],
+  ]) {
+    const cropEvent = {
+      ...event,
+      brokenBlockPermutation: BlockPermutation.resolve(blockId, { growth }),
+    };
+    const before = productCount(product);
+    ensure(applyBumperCropHarvest(cropEvent, () => 0), `${blockId} did not receive its canonical extra product when the roll succeeded.`);
+    ensure(productCount(product) === before + 1, `${blockId} did not spawn exactly one ${product}.`);
+  }
+
+  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:bumper_crop": 5 }));
+  let rolls = 0;
+  const immature = {
+    ...event,
+    brokenBlockPermutation: BlockPermutation.resolve("minecraft:wheat", { growth: 6 }),
+  };
+  ensure(!applyBumperCropHarvest(immature, () => { rolls += 1; return 0; }), "An immature wheat crop received a bonus.");
+  ensure(rolls === 0, "An immature crop consumed a bonus roll.");
+  const unsupported = {
+    ...event,
+    brokenBlockPermutation: BlockPermutation.resolve("minecraft:short_grass"),
+  };
+  ensure(!applyBumperCropHarvest(unsupported, () => { rolls += 1; return 0; }), "A non-crop block received a bonus.");
+  ensure(rolls === 0, "An unsupported block consumed a bonus roll.");
+  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({}));
+  ensure(!applyBumperCropHarvest(event, () => { rolls += 1; return 0; }), "An unowned augment granted a crop bonus.");
+  ensure(rolls === 0, "An unowned augment consumed a bonus roll.");
+  test.succeed();
+}).maxTicks(40).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);

@@ -8,7 +8,7 @@
 | [plainkingdoms](plainkingdoms/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](plainkingdoms/PROJECT.md) |
 | [wildbound](wildbound/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](wildbound/PROJECT.md) |
 | [rpg-survival](rpg-survival/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](rpg-survival/PROJECT.md) |
-| [augmentation-survival](augmentation-survival/) | 초기 애드온 / 부분 BDS 검증 6종, 미이식 143종 | [PROJECT.md](augmentation-survival/PROJECT.md) · [STATUS.md](augmentation-survival/STATUS.md) |
+| [augmentation-survival](augmentation-survival/) | 초기 애드온 / 부분 BDS 검증 7종, 미이식 142종 | [PROJECT.md](augmentation-survival/PROJECT.md) · [STATUS.md](augmentation-survival/STATUS.md) |
 
 새 프로젝트 등록 시 `PROJECT.md`와 `STATUS.md`를 먼저 마련하고 구현 시 실제 BP/RP/원본/테스트를 같은 경로에 둔다. 모든 프로젝트 상태는 실제 최신 저장소와 런타임 검증을 기준으로 기록한다.
 

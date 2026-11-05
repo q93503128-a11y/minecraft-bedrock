@@ -95,6 +95,8 @@ def main(source: Path, target: Path) -> None:
                 "A" if slug == "keen_edge" else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
+                "B" if slug == "bumper_crop" else
+                "C" if slug == "miners_hand" else
                 "UNASSESSED"
             ),
             "bedrock_method": (
@@ -104,6 +106,8 @@ def main(source: Path, target: Path) -> None:
                 "Scale all incoming player damage in the stable entityHurt before-event by 2% per level; max level 5" if slug == "tough_skin" else
                 "Scale player fall damage in the stable entityHurt before-event by 12% per level; max level 5" if slug == "light_landing" else
                 "Scale player drowning damage in the stable entityHurt before-event by 15% per level; max level 3" if slug == "strong_lungs" else
+                "On stable playerBreakBlock after-event, inspect the saved mature vanilla crop permutation and independently spawn its ordinary product with exact 8% per-level chance; max level 5" if slug == "bumper_crop" else
+                "No stable API changes vanilla block-breaking speed; start/break events expose no progress value" if slug == "miners_hand" else
                 "Attempt player minecraft:movement currentValue multiplier" if slug == "quick_feet" else
                 "Attempt player minecraft:underwater_movement currentValue multiplier" if slug == "webbed_feet" else
                 "Not assessed"
@@ -115,6 +119,8 @@ def main(source: Path, target: Path) -> None:
                 "B partial: Java applies after vanilla mitigation and skips delayed-damage context; Bedrock modifies before remaining mitigation and has no delayed-damage provenance mapping yet; armor/effect stacking parity unverified" if slug == "tough_skin" else
                 "B partial: Bedrock cause fall maps the tested damage path, but its before-event runs before remaining mitigation while Java applies after mitigation; natural landing and Feather Falling stacking unverified" if slug == "light_landing" else
                 "Stable before-event BDS verified; Bedrock applies the reduction before its remaining mitigation while Java applies it post-mitigation; armor/effect stacking parity is not yet verified" if slug == "strong_lungs" else
+                "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot only. Stable after-event provides the pre-break permutation and player, but not the calculated ordinary drop list; Java modded crops and tool-specific crop drops are unresolved" if slug == "bumper_crop" else
+                "Class C: stable start/break events can observe block interactions but expose no vanilla break-progress/speed control; reconstructing hold, tool, hardness, and cancellation behavior would differ, especially across touch/controller input" if slug == "miners_hand" else
                 "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed" if slug == "quick_feet" else
                 "BDS 1.26.62.1: level 3 value persisted for one idle tick; lower-level persistence not reached; alternative not assessed" if slug == "webbed_feet" else
                 "Not assessed"
@@ -126,12 +132,14 @@ def main(source: Path, target: Path) -> None:
                 "BDS GameTest: production before-event handler reduces 10 magic damage to 9.8/9.6/9.4/9.2/9.0 at levels 1–5; composition with typed reductions also tested" if slug == "tough_skin" else
                 "BDS GameTest: production before-event handler reduces 10 simulated fall damage to 8.8/7.6/6.4/5.2/4.0 at levels 1–5; composition with Tough Skin also tested" if slug == "light_landing" else
                 "BDS GameTest: production before-event handler reduces 10 simulated-player drowning damage to 8.5/7/5.5 at levels 1/2/3; test-only production-pack entry seeds the pack-scoped property" if slug == "strong_lungs" else
+                "BDS GameTest calls the shared handler with synthetic break-event payloads: mature wheat at each exact level threshold, immature and unsupported blocks, and one ordinary product for each mapped vanilla crop; real block-break event delivery remains untested" if slug == "bumper_crop" else
+                "Static stable API declaration review: start and after-break events expose no break-progress or vanilla mining-speed mutation; alternate custom hold/mining route not implemented" if slug == "miners_hand" else
                 "Exploratory BDS GameTest: immediate exact level 1 multiplier accepted, then default observed on next tick; excluded from passing suite" if slug == "quick_feet" else
                 "Exploratory BDS GameTest: exact level 3 multiplier verified after one tick; lower-level follow-up assertion not reached; excluded from passing suite" if slug == "webbed_feet" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop"},
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}

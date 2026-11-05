@@ -1,10 +1,14 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 7044,
+  "durationMs": 7112,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:bumper_crop_matches_maturity_and_all_five_exact_chance_thresholds",
       "outcome": "pass"
     },
     {

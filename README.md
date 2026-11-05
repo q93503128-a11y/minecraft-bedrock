@@ -10,7 +10,7 @@
 | PlainKingdoms Remake | [projects/plainkingdoms/](projects/plainkingdoms/) | 기존 문서 보존 / 실행 소스 미이관 |
 | Wildbound Remake | [projects/wildbound/](projects/wildbound/) | 기존 문서 보존 / 실행 소스 미이관 |
 | RPG Survival | [projects/rpg-survival/](projects/rpg-survival/) | 기존 문서 보존 / 실행 소스 미이관 |
-| Augmentation Survival | [projects/augmentation-survival/](projects/augmentation-survival/) | 초기 애드온 / 부분 BDS 검증 6종, 미이식 143종 |
+| Augmentation Survival | [projects/augmentation-survival/](projects/augmentation-survival/) | 초기 애드온 / 부분 BDS 검증 7종, 미이식 142종 |
 
 폐기 프로젝트 Lucky Block은 2026-11-05 사용자 지시에 따라 현재 main에서 소스·패키지·문서·전용 CI를 제거했다. Git 커밋 기록은 강제 삭제하지 않는다.
 
