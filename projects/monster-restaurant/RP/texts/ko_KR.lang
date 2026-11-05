@@ -1,0 +1,5 @@
+item.monster_restaurant:skillet.name=요리 팬
+item.monster_restaurant:boar_meat.name=멧돼지 고기
+item.monster_restaurant:roast_boar.name=멧돼지 구이
+entity.monster_restaurant:mushroom_boar.name=버섯 멧돼지
+tile.monster_restaurant:skillet.name=요리 팬

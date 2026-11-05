@@ -1,0 +1,26 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "monster_restaurant:boar_meat",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "boar_meat"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "item.monster_restaurant:boar_meat.name"
+      },
+      "minecraft:max_stack_size": 64,
+      "minecraft:food": {
+        "nutrition": 2,
+        "saturation_modifier": 0.3
+      }
+    }
+  }
+}

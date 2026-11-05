@@ -1,0 +1,26 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:item": {
+    "description": {
+      "identifier": "monster_restaurant:skillet",
+      "menu_category": {
+        "category": "items"
+      }
+    },
+    "components": {
+      "minecraft:icon": {
+        "textures": {
+          "default": "skillet"
+        }
+      },
+      "minecraft:display_name": {
+        "value": "item.monster_restaurant:skillet.name"
+      },
+      "minecraft:max_stack_size": 1,
+      "minecraft:block_placer": {
+        "block": "monster_restaurant:skillet",
+        "replace_block_item": true
+      }
+    }
+  }
+}

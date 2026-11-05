@@ -1,0 +1,19 @@
+{
+  "format_version": "1.20.10",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "monster_restaurant:skillet"
+    },
+    "tags": ["crafting_table"],
+    "pattern": [" I ", "ISI", "PPP"],
+    "key": {
+      "I": { "item": "minecraft:iron_ingot" },
+      "S": { "item": "minecraft:stick" },
+      "P": { "item": "minecraft:oak_planks" }
+    },
+    "result": {
+      "item": "monster_restaurant:skillet",
+      "count": 1
+    }
+  }
+}

@@ -46,3 +46,17 @@ Official game product page: https://store.steampowered.com/app/452570/Battle_Che
 - When implementing in Bedrock, honor vanilla presentation and controller/touch; a PC-only game UI pattern may need simplifying.
 
 Record source, access date, observable scene/feature, applied choice, rejected choice, and unverified assumptions. Do not mislabel marketing descriptions as hands-on tests.
+
+## M0 application note — 2026-11-05
+
+This M0 prototype exposes one recipe at the cooking station and keeps the interaction local to the station. The prior official Cuisineer screenshot reference places small dish requests beside customers, and the Dave the Diver reference separates compact in-world service feedback from management controls. Those patterns support keeping future restaurant requests near customers and persistent management out of the HUD; neither pattern is copied into this single-recipe cooking form. The official Cuisineer gameplay trailer description also frames ingredient gathering as feeding cooking and restaurant service. For M0, that relationship is reduced to one chain: defeat the boar → collect meat → cook roast → eat it.
+
+Travellers Rest documents explicit open/close control and role-focused staff, supporting the later choice that restaurant operation is opt-in. It does not justify adding an operation toggle or staff system to this M0 slice.
+
+Sources checked for this pass:
+
+- [Cuisineer official publisher page](https://marvelousgames.com/games/cuisineer) and [gameplay trailer](https://www.youtube.com/watch?v=3RTQrsFeRHA).
+- [DAVE THE DIVER official page](https://mintrocketgames.com/en/DaveTheDiver) and the documented official screenshot source listed above.
+- [Travellers Rest official publisher page](https://www.isolatedgames.com/travellers-rest/) and its documented staff/open-close references listed above.
+
+**Evidence limit:** This pass reviewed official descriptions, the cited official screenshot, and trailer metadata/description; it did not perform frame-by-frame footage analysis or hands-on play. Input timing, accessibility, and actual UI readability remain unverified and are not quality-approved.

@@ -1,0 +1,17 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Monster Restaurant Resource Pack",
+    "description": "Models, textures, and language for Monster Restaurant.",
+    "uuid": "a39f9b7e-b5d8-48bb-9567-7ac26de9bd8e",
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 26, 0]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "734ccf31-3122-4cb5-9a0e-e90ca47c1f9e",
+      "version": [0, 1, 0]
+    }
+  ]
+}

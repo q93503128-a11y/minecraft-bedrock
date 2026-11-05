@@ -1,0 +1,15 @@
+{
+  "resource_pack_name": "monster_restaurant",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "skillet": {
+      "textures": "textures/items/skillet"
+    },
+    "boar_meat": {
+      "textures": "textures/items/boar_meat"
+    },
+    "roast_boar": {
+      "textures": "textures/items/roast_boar"
+    }
+  }
+}
