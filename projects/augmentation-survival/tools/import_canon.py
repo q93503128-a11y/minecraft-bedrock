@@ -110,6 +110,7 @@ def main(source: Path, target: Path) -> None:
                 "On stable playerBreakBlock after-event, independently spawn a mapped vanilla crop planting item with exact 15% per-level chance; max level 3" if slug == "seed_saver" else
                 "No stable API changes vanilla block-breaking speed; start/break events expose no progress value" if slug in {"miners_hand", "logging_knack"} else
                 "Attempt player minecraft:movement currentValue multiplier" if slug == "quick_feet" else
+                "Stable player exhaustion component can be read and written; exact per-action reduction route not yet verified" if slug == "efficient_metabolism" else
                 "Attempt player minecraft:underwater_movement currentValue multiplier" if slug == "webbed_feet" else
                 "Not assessed"
             ),
@@ -124,6 +125,7 @@ def main(source: Path, target: Path) -> None:
                 "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot planting items only. Java runs this 15% per-level roll independently after Bumper Crop; actual block-break delivery and external/modded crops remain unresolved" if slug == "seed_saver" else
                 "Class C: stable start/break events can observe block interactions but expose no vanilla break-progress/speed control; reconstructing hold, tool, hardness, and cancellation behavior would differ, especially across touch/controller input" if slug in {"miners_hand", "logging_knack"} else
                 "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed" if slug == "quick_feet" else
+                "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified" if slug == "efficient_metabolism" else
                 "BDS 1.26.62.1: level 3 value persisted for one idle tick; lower-level persistence not reached; alternative not assessed" if slug == "webbed_feet" else
                 "Not assessed"
             ),
@@ -138,6 +140,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS GameTest calls the shared crop handler with synthetic events: exact 15/30/45% boundaries, mapped planting items, and independent rolls alongside Bumper Crop; real player block-break delivery remains untested" if slug == "seed_saver" else
                 "Static stable API declaration review: start and after-break events expose no break-progress or vanilla mining-speed mutation; alternate custom hold/mining route not implemented" if slug in {"miners_hand", "logging_knack"} else
                 "Exploratory BDS GameTest: immediate exact level 1 multiplier accepted, then default observed on next tick; excluded from passing suite" if slug == "quick_feet" else
+                "BDS GameTest: set exhaustion to 1.25 and read the same value after two ticks; hunger 20 and saturation 5 are unchanged; natural exhaustion deltas are not tested" if slug == "efficient_metabolism" else
                 "Exploratory BDS GameTest: exact level 3 multiplier verified after one tick; lower-level follow-up assertion not reached; excluded from passing suite" if slug == "webbed_feet" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),

@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 7610,
+  "durationMs": 6994,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
@@ -9,6 +9,10 @@
     },
     {
       "id": "AugmentationSurvival:crop_bonus_augments_match_maturity_levels_products_and_independent_rolls",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:exhaustion_component_write_probe",
       "outcome": "pass"
     },
     {

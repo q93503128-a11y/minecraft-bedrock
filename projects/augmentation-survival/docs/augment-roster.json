@@ -258,9 +258,9 @@
       "interaction_contract_refs": [],
       "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
       "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "bedrock_method": "Stable player exhaustion component can be read and written; exact per-action reduction route not yet verified",
+      "api_constraints": "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified",
+      "test_method": "BDS GameTest: set exhaustion to 1.25 and read the same value after two ticks; hunger 20 and saturation 5 are unchanged; natural exhaustion deltas are not tested",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

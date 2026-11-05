@@ -186,6 +186,39 @@ GameTest.registerAsync("AugmentationSurvival", "crop_bonus_augments_match_maturi
   test.succeed();
 }).maxTicks(40).structureName(STRUCTURE).tag(TAG);
 
+GameTest.registerAsync("AugmentationSurvival", "exhaustion_component_write_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASExhaustionProbe", GameMode.survival);
+  const exhaustion = player.getComponent("minecraft:player.exhaustion");
+  const hunger = player.getComponent("minecraft:player.hunger");
+  const saturation = player.getComponent("minecraft:player.saturation");
+  ensure(exhaustion && hunger && saturation, "A player food attribute component was unavailable.");
+
+  const initial = {
+    exhaustion: exhaustion.currentValue,
+    hunger: hunger.currentValue,
+    saturation: saturation.currentValue,
+  };
+  const accepted = exhaustion.setCurrentValue(1.25);
+  await test.idle(2);
+  const afterIdle = {
+    exhaustion: exhaustion.currentValue,
+    hunger: hunger.currentValue,
+    saturation: saturation.currentValue,
+  };
+  player.applyDamage(1, { cause: EntityDamageCause.magic });
+  await test.idle(2);
+  const afterDamage = {
+    exhaustion: exhaustion.currentValue,
+    hunger: hunger.currentValue,
+    saturation: saturation.currentValue,
+  };
+  console.warn(`AS_EXHAUSTION_PROBE ${JSON.stringify({ accepted, initial, afterIdle, afterDamage })}`);
+  ensure(accepted, "The exhaustion component rejected a value in its documented range.");
+  ensure(afterIdle.exhaustion === 1.25, `Expected exhaustion to remain writable across ticks; got ${afterIdle.exhaustion}.`);
+  ensure(afterIdle.hunger === initial.hunger && afterIdle.saturation === initial.saturation, "Changing exhaustion immediately changed hunger or saturation.");
+  test.succeed();
+}).maxTicks(40).structureName(STRUCTURE).tag(TAG);
+
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);
   const inventory = inventoryOf(player);
