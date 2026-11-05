@@ -29,7 +29,7 @@ Updated: 2026-11-05
 - The attack test uses a simulated player. Natural biome/light spawn frequency is not measured.
 - The recipe-discovery property is verified in memory after cooking, but persistence across player disconnect/reconnect or server restart is not tested.
 - Models, texture mapping, animation, block appearance, icons, and UI have no visual quality sign-off. Blockbench MCP is connected and reports v5.2.1, but it has no active project; no Minecraft client MCP tool was available.
-- The GitHub Actions workflow exists but has not yet been run on GitHub.
+- GitHub Actions run for commit `f19f7ca` passed on Ubuntu 24.04, including the pinned BDS GameTests; [workflow run](https://github.com/q93503128-a11y/minecraft-bedrock/actions/runs/41973748414). It uploaded `monster-restaurant-engine-test-results` with the engine transcript and package.
 
 ## Repeatable commands
 
