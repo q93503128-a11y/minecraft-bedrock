@@ -3,7 +3,7 @@
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Harness: `@bedrock-core/bds-runner` 0.2.1; isolated behavior/resource/test packs; the GameTest experiment is enabled only in the runner-owned disposable world.
 - Command: `npm run test:engine`.
-- Latest result: **PASS — 12 passed, 0 failed**, 3.999 seconds; no script errors or infrastructure error. Machine-readable results are in `BDS_TEST_RESULTS_2026-11-05.json`.
+- Latest result: **PASS — 12 passed, 0 failed**, 7.044 seconds; no script errors or infrastructure error. Machine-readable results are in `BDS_TEST_RESULTS_2026-11-05.json`.
 
 | GameTest | Result | What it establishes |
 | --- | --- | --- |
@@ -13,7 +13,7 @@
 | `core_synthesis_is_atomic_and_conserves_items` | PASS | The production 3:1 helper upgrades three common cores to one uncommon core; a duplicate request without new inputs and a request with fewer than three leave inventory unchanged; a full inventory rejects output and leaves the original input stack intact. Does not automate the visible synthesis form or bulk synthesis. |
 | `damage_event_exposes_simulated_player_damage` | PASS | BDS 1.26.62.1 provides the documented before/after hurt-event payload for direct simulated-player damage. |
 | `keen_edge_scales_server_root_melee_damage` | PASS (partial port) | The production BP's before-event handler changes 10 `entityAttack` damage to 12 at level 5. A test-only entry seeds the level in the production pack's dynamic-property namespace. Does not exercise a physical client melee swing or the acquisition UI. |
-| `precise_aim_scales_server_projectile_damage_source` | PASS (partial port) | A synthetic projectile damage source carrying a spawned arrow and player owner reaches the production before-event handler: level 5 changes 10 damage to 12; an unaugmented owner and an ownerless projectile remain at 10. This verifies server attribution and scaling, not projectile flight, collision, or root-versus-derived provenance. |
+| `precise_aim_scales_server_projectile_damage_source` | PASS (partial port) | Synthetic projectile damage sources carrying spawned arrows and player owners reach the production before-event handler: 1 damage becomes 1.04/1.08/1.12/1.16/1.20 at levels 1–5; an unaugmented owner and an ownerless projectile remain at 1. This verifies server attribution and scaling, not projectile flight, collision, or root-versus-derived provenance. |
 | `strong_lungs_reduces_drowning_damage_by_level` | PASS (partial port) | The production before-event handler changes 10 simulated-player drowning damage to 8.5 / 7 / 5.5 at levels 1 / 2 / 3. The test-only production-pack entry seeds each level. Its multiplier composes with Tough Skin as tested below. Java applies Strong Lungs post-mitigation; Bedrock applies this before vanilla mitigation, so armor/effect parity and natural underwater damage are not established by this synthetic-cause test. |
 | `tough_skin_reduces_incoming_damage_by_level` | PASS (partial port) | The production handler changes synthetic 10 magic damage to 9.8 / 9.6 / 9.4 / 9.2 / 9.0 at levels 1–5. Java applies Tough Skin after vanilla mitigation and excludes delayed-damage context; the Bedrock event currently precedes mitigation and lacks delayed-damage provenance. |
 | `light_landing_reduces_fall_damage_by_level` | PASS (partial port) | The production handler changes synthetic 10 fall damage to 8.8 / 7.6 / 6.4 / 5.2 / 4.0 at levels 1–5. Natural landing and Feather Falling/effect interactions remain untested. |

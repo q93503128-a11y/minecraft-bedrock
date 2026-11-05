@@ -13,9 +13,17 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
-    if (player.name === "ASPreciseAim") {
+    const preciseAimLevels = {
+      ASPreciseAimLevel1: 1,
+      ASPreciseAimLevel2: 2,
+      ASPreciseAimLevel3: 3,
+      ASPreciseAimLevel4: 4,
+      ASPreciseAimLevel5: 5,
+    };
+    const preciseAimLevel = preciseAimLevels[player.name];
+    if (preciseAimLevel) {
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
-        "augmentation_survival:precise_aim": 5,
+        "augmentation_survival:precise_aim": preciseAimLevel,
       }));
       return;
     }

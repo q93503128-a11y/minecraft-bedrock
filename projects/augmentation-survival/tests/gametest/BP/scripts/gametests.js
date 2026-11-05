@@ -135,19 +135,20 @@ GameTest.registerAsync("AugmentationSurvival", "keen_edge_scales_server_root_mel
 
 GameTest.registerAsync("AugmentationSurvival", "precise_aim_scales_server_projectile_damage_source", async (test) => {
   const control = test.spawnSimulatedPlayer({ x: 2, y: 3, z: 2 }, "ASPreciseAimControl", GameMode.survival);
-  const attacker = test.spawnSimulatedPlayer({ x: 2, y: 3, z: 4 }, "ASPreciseAim", GameMode.survival);
+  const attackers = [1, 2, 3, 4, 5].map((level, index) => ({
+    level,
+    player: test.spawnSimulatedPlayer({ x: 2, y: 3, z: 2 + index }, `ASPreciseAimLevel${level}`, GameMode.survival),
+  }));
   const ownerlessAttacker = test.spawnSimulatedPlayer({ x: 2, y: 3, z: 6 }, "ASPreciseAimOwnerless", GameMode.survival);
-  const controlTarget = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 2 }, "ASPreciseAimControlTarget", GameMode.survival);
   const target = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 4 }, "ASPreciseAimTarget", GameMode.survival);
-  const ownerlessTarget = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 6 }, "ASPreciseAimOwnerlessTarget", GameMode.survival);
   await test.idle(2);
 
-  /** @type {Map<string, {damage:number,cause:string,projectileId?:string,ownerId?:string,attackerId?:string}>} */
-  const hits = new Map();
+  /** @type {Array<{damage:number,cause:string,projectileId?:string,ownerId?:string,attackerId?:string}>} */
+  const hits = [];
   const callback = (event) => {
-    if (!event?.hurtEntity || ![controlTarget.id, target.id, ownerlessTarget.id].includes(event.hurtEntity.id)) return;
+    if (!event?.hurtEntity || event.hurtEntity.id !== target.id) return;
     const projectile = event.damageSource.damagingProjectile;
-    hits.set(event.hurtEntity.id, {
+    hits.push({
       damage: event.damage,
       cause: event.damageSource.cause,
       projectileId: projectile?.id,
@@ -158,33 +159,43 @@ GameTest.registerAsync("AugmentationSurvival", "precise_aim_scales_server_projec
   world.beforeEvents.entityHurt.subscribe(callback);
 
   const controlArrow = control.dimension.spawnEntity("minecraft:arrow", { x: 2, y: 4, z: 2 });
-  const arrow = attacker.dimension.spawnEntity("minecraft:arrow", { x: 2, y: 4, z: 4 });
   const ownerlessArrow = ownerlessAttacker.dimension.spawnEntity("minecraft:arrow", { x: 2, y: 4, z: 6 });
   const controlProjectile = controlArrow.getComponent("minecraft:projectile");
-  const projectile = arrow.getComponent("minecraft:projectile");
   const ownerlessProjectile = ownerlessArrow.getComponent("minecraft:projectile");
-  ensure(controlProjectile && projectile && ownerlessProjectile, "A spawned arrow did not expose minecraft:projectile.");
+  const projectiles = attackers.map(({ player }, index) => ({
+    player,
+    arrow: player.dimension.spawnEntity("minecraft:arrow", { x: 2, y: 4, z: 2 + index }),
+  })).map(entry => ({ ...entry, component: entry.arrow.getComponent("minecraft:projectile") }));
+  ensure(controlProjectile && ownerlessProjectile && projectiles.every(entry => entry.component), "A spawned arrow did not expose minecraft:projectile.");
   controlProjectile.owner = control;
-  projectile.owner = attacker;
-  ensure(projectile.owner?.id === attacker.id, "The arrow did not retain its simulated player owner.");
-  const controlApplied = controlTarget.applyDamage(10, { damagingEntity: control, damagingProjectile: controlArrow });
-  const augmentedApplied = target.applyDamage(10, { damagingEntity: attacker, damagingProjectile: arrow });
-  const ownerlessApplied = ownerlessTarget.applyDamage(10, { damagingEntity: ownerlessAttacker, damagingProjectile: ownerlessArrow });
+  for (const entry of projectiles) entry.component.owner = entry.player;
+  ensure(projectiles.every(entry => entry.component.owner?.id === entry.player.id), "A spawned arrow did not retain its simulated player owner.");
+  const controlApplied = target.applyDamage(1, { damagingEntity: control, damagingProjectile: controlArrow });
+  await test.idle(12);
+  const augmentedApplied = [];
+  for (const entry of projectiles) {
+    augmentedApplied.push(target.applyDamage(1, { damagingEntity: entry.player, damagingProjectile: entry.arrow }));
+    await test.idle(12);
+  }
+  const ownerlessApplied = target.applyDamage(1, { damagingEntity: ownerlessAttacker, damagingProjectile: ownerlessArrow });
   await test.idle(1);
   world.beforeEvents.entityHurt.unsubscribe(callback);
-  const controlHit = hits.get(controlTarget.id);
-  const augmentedHit = hits.get(target.id);
-  const ownerlessHit = hits.get(ownerlessTarget.id);
-  ensure(controlApplied && augmentedApplied && ownerlessApplied, "BDS rejected one of the synthetic projectile-attributed damage events.");
-  ensure(controlHit && augmentedHit && ownerlessHit, `A synthetic projectile damage event was missing; captured=${JSON.stringify([...hits.values()])}.`);
-  ensure(controlHit.cause === EntityDamageCause.projectile && augmentedHit.cause === EntityDamageCause.projectile && ownerlessHit.cause === EntityDamageCause.projectile, "Damage inputs did not produce projectile damage events.");
-  ensure(controlHit.projectileId === controlArrow.id && augmentedHit.projectileId === arrow.id && ownerlessHit.projectileId === ownerlessArrow.id, "The hurt events did not preserve their supplied projectile entities.");
-  ensure(controlHit.ownerId === control.id && augmentedHit.ownerId === attacker.id && !ownerlessHit.ownerId, "A hurt event did not preserve the expected projectile owner.");
-  ensure(controlHit.attackerId === control.id && augmentedHit.attackerId === attacker.id && ownerlessHit.attackerId === ownerlessAttacker.id, "A hurt event did not preserve its damaging entity.");
-  ensure(Math.abs(controlHit.damage - 10) < 1e-5 && Math.abs(ownerlessHit.damage - 10) < 1e-5, `Unaugmented or ownerless projectiles should retain 10 damage; control=${controlHit.damage}, ownerless=${ownerlessHit.damage}.`);
-  ensure(Math.abs(augmentedHit.damage - 12) < 1e-5, `Precise Aim level 5 should scale 10 attributed projectile damage to 12; got ${augmentedHit.damage}.`);
+  ensure(controlApplied && augmentedApplied.every(Boolean) && ownerlessApplied, "BDS rejected one of the synthetic projectile-attributed damage events.");
+  ensure(hits.length === 7, `Expected seven projectile damage events; captured=${JSON.stringify(hits)}.`);
+  ensure(hits.every(hit => hit.cause === EntityDamageCause.projectile), "Damage inputs did not produce projectile damage events.");
+  ensure(hits[0].projectileId === controlArrow.id && hits[0].ownerId === control.id && hits[0].attackerId === control.id, "The unaugmented control source lost its projectile attribution.");
+  ensure(Math.abs(hits[0].damage - 1) < 1e-5, `Unaugmented projectile damage expected 1; got ${hits[0].damage}.`);
+  for (const [index, entry] of attackers.entries()) {
+    const hit = hits[index + 1];
+    const expected = 1 + 0.04 * entry.level;
+    ensure(hit.projectileId === projectiles[index].arrow.id && hit.ownerId === entry.player.id && hit.attackerId === entry.player.id, `Level ${entry.level} source attribution did not match its owner.`);
+    ensure(Math.abs(hit.damage - expected) < 1e-5, `Precise Aim level ${entry.level} expected ${expected} damage from 1; got ${hit.damage}.`);
+  }
+  const ownerlessHit = hits.at(-1);
+  ensure(ownerlessHit.projectileId === ownerlessArrow.id && !ownerlessHit.ownerId && ownerlessHit.attackerId === ownerlessAttacker.id, "The ownerless projectile source lost its expected attribution.");
+  ensure(Math.abs(ownerlessHit.damage - 1) < 1e-5, `An ownerless projectile should retain 1 damage; got ${ownerlessHit.damage}.`);
   test.succeed();
-}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
+}).maxTicks(100).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "strong_lungs_reduces_drowning_damage_by_level", async (test) => {
   const cases = [

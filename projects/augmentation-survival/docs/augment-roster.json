@@ -84,7 +84,7 @@
       "compatibility_class": "B",
       "bedrock_method": "Scale player-owned projectile damage in the stable entityHurt before-event by 4% per level; max level 5",
       "api_constraints": "Stable damage source exposes damagingProjectile and projectile owner. Current owner attribution cannot distinguish every ROOT_PROJECTILE from a player-owned DERIVED_PROJECTILE; physical arrow collision and acquisition remain untested",
-      "test_method": "BDS GameTest: production before-event handler scales a synthetic 10-damage projectile source to 12 at level 5; unaugmented and ownerless projectile sources stay at 10; a physical arrow-hit experiment did not hit and is not counted as passing",
+      "test_method": "BDS GameTest: production before-event handler scales 1-damage owner-attributed projectile sources to 1.04/1.08/1.12/1.16/1.20 at levels 1–5; unaugmented and ownerless sources stay at 1; a physical arrow-hit experiment did not hit and is not counted as passing",
       "port_status": "PARTIAL_BDS_VERIFIED",
       "candidate_enabled": true
     },

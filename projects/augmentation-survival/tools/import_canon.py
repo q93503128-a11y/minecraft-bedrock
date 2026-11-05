@@ -122,7 +122,7 @@ def main(source: Path, target: Path) -> None:
             "test_method": (
                 "BDS GameTest: max health at levels 1 and 5; core retained before selection result" if slug == "sturdiness" else
                 "BDS GameTest: production before-event handler scales 10 simulated-player entityAttack damage to 12 at level 5; test-only production-pack entry seeds the pack-scoped property" if slug == "keen_edge" else
-                "BDS GameTest: production before-event handler scales a synthetic 10-damage projectile source to 12 at level 5; unaugmented and ownerless projectile sources stay at 10; a physical arrow-hit experiment did not hit and is not counted as passing" if slug == "precise_aim" else
+                "BDS GameTest: production before-event handler scales 1-damage owner-attributed projectile sources to 1.04/1.08/1.12/1.16/1.20 at levels 1–5; unaugmented and ownerless sources stay at 1; a physical arrow-hit experiment did not hit and is not counted as passing" if slug == "precise_aim" else
                 "BDS GameTest: production before-event handler reduces 10 magic damage to 9.8/9.6/9.4/9.2/9.0 at levels 1–5; composition with typed reductions also tested" if slug == "tough_skin" else
                 "BDS GameTest: production before-event handler reduces 10 simulated fall damage to 8.8/7.6/6.4/5.2/4.0 at levels 1–5; composition with Tough Skin also tested" if slug == "light_landing" else
                 "BDS GameTest: production before-event handler reduces 10 simulated-player drowning damage to 8.5/7/5.5 at levels 1/2/3; test-only production-pack entry seeds the pack-scoped property" if slug == "strong_lungs" else
