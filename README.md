@@ -1,153 +1,40 @@
 # Minecraft Bedrock Projects
 
-Canonical long-term repository for Minecraft Bedrock project documentation, Add-On source, resources, tooling, validation material, and selected reproducible build checkpoints.
+문승준의 Minecraft Bedrock Edition 애드온 **멀티프로젝트 소스 저장소**이다. 기획서만이 아니라 재현 가능한 실제 Behavior Pack/Resource Pack 소스, Blockbench 원본, 도구, 검증 결과를 프로젝트별로 관리한다.
 
-## Repository policy
+## 프로젝트 목록
 
-- GitHub is the durable source of truth for project material that must survive local workspace or ChatGPT Library cleanup.
-- Store planning/design documents together with actual Bedrock Add-On source when available, including Behavior Packs, Resource Packs, scripts, JSON definitions, configuration, project-owned assets, tests, tooling, license/provenance records, and status/handoff documents.
-- Do not leave the only current copy of important source, resources, or project state inside ChatGPT Library, a temporary workspace, or an uncommitted local folder.
-- Before deleting Library/local backup copies, verify that the latest relevant source, resources, and documentation are committed and pushed, and that the repository records any material that is intentionally kept elsewhere.
-- Packaged `.mcaddon` / `.mcpack` / `.mcworld` files are optional checkpoints rather than a substitute for source. Track validated packages when useful; large or reproducible generated outputs may be kept out of normal source history when the repository still contains enough material to rebuild them.
-- Third-party assets may be committed only when their license permits redistribution, with required attribution/provenance preserved.
-- Each active project should identify its current canonical source location, latest validated state, known runtime gaps, and any external-only artifacts in its status documentation.
+| 프로젝트 | 경로 | 현재 GitHub 상태 |
+| --- | --- | --- |
+| Monster Restaurant (가칭) | [projects/monster-restaurant/](projects/monster-restaurant/) | 기획 초안 / 미구현 |
+| PlainKingdoms Remake | [projects/plainkingdoms/](projects/plainkingdoms/) | 기존 문서 보존 / 실행 소스 미이관 |
+| Wildbound Remake | [projects/wildbound/](projects/wildbound/) | 기존 문서 보존 / 실행 소스 미이관 |
+| RPG Survival | [projects/rpg-survival/](projects/rpg-survival/) | 기존 문서 보존 / 실행 소스 미이관 |
 
-## Lucky Block Add-On
+폐기 프로젝트 Lucky Block은 2026-11-05 사용자 지시에 따라 현재 main에서 소스·패키지·문서·전용 CI를 제거했다. Git 커밋 기록은 강제 삭제하지 않는다.
 
-Active project: a five-tier Lucky Block Add-On with externally licensed real assets, varied rewards/events and a first-Ender-Dragon late-game gate.
+## 저장소 구조
 
-Current source milestone:
-- `0.8.0` — first native Bedrock 3D Legendary weapon integration
+- `projects/<slug>/`: **프로젝트의 단일 정본 위치**. 기획, 상태, BP/RP, 에셋 원본, 검증 코드를 같은 폴더에서 관리.
+- `projects/README.md`: 프로젝트 등록·상태 인덱스.
+- `AGENTS.md`: AI 에이전트와 개발자의 공용 작업 계약.
+- `docs/BUILD_STANDARD.md`: Bedrock 개발·패키징·검증 기준.
+- `docs/QUALITY_STANDARD.md`: 외부 게임 레퍼런스, UI/UX, 플레이어 문구, 모델, 사운드, 성능의 공용 품질 기준.
+- `.github/workflows/`: 실제 소스가 있는 프로젝트에서만 검증된 workflow를 프로젝트별로 추가.
 
-Latest packaged development build:
-- `build/LuckyBlock_0.2.0.mcaddon`
+## 작업 시작 순서
 
-0.8.0 source now contains:
-- five Lucky Block tiers and five Lucky Fragment tiers;
-- actual Microsoft MIT + CorvaeOboro CC0 production visuals;
-- 15 CC0 Loy's Goodies 3D reward models with original embedded textures;
-- distinct scripted functionality across those 15 rewards;
-- Common/Rare/Epic weighted external reward pools;
-- mining, logging, farming and combat acquisition;
-- first-open natural chest/trapped-chest/barrel exploration acquisition with anti-abuse tracking;
-- persistent first-Ender-Dragon late-game unlock.
+1. [AGENTS.md](AGENTS.md)와 공용 표준 문서를 읽는다.
+2. [projects/README.md](projects/README.md)에서 대상 프로젝트를 확인한다.
+3. 대상 `PROJECT.md`, `GAME_DESIGN.md`(있다면), `STATUS.md`, 실제 소스를 확인한다.
+4. **현재 게임 버전/Bedrock API 호환성 및 외부 게임 레퍼런스를 조사**하고 구현·검수를 진행한다.
+5. 최종 변경은 재현 가능한 소스/원본/검증 기록과 함께 저장·커밋한다.
 
-Important:
-- 0.4.0 is not the completed add-on.
-- The latest downloadable package remains 0.2.0 until the next packaging checkpoint.
-- No placeholder image/model/icon/sound is allowed.
-- Fishing, true held combat equipment, pets/mounts, structures/events, post-dragon custom mobs/bosses and Mythic content packages remain under development.
+## 중요 원칙
 
-Project documents:
-- `docs/LUCKY_BLOCK_CANON.md`
-- `docs/EXTERNAL_ASSET_CATALOG.md`
-- `docs/LICENSE_NOTES.md`
-- `docs/IMPLEMENTATION_ROADMAP.md`
-- `docs/ACQUISITION_BALANCE.md`
-- `addon/LuckyBlock/STATUS.md`
-- `addon/LuckyBlock/THIRD_PARTY_NOTICES.md`
-
-- external source revisions pinned in `addon/LuckyBlock/vendor/ASSET_REGISTRY.json`;
-- source-specific integration modules under `BP/scripts/integrations/`;
-- one-BP + one-RP cooperative packaging policy with RP world scope;
-
-- four pinned external sources currently active in the vendor registry;
-- FrenchKrab CC BY 4.0 cardboard sword/axe/shield integrated through a separate source adapter with attribution;
-- 18 external reward IDs currently referenced by the reward registry.
-
-- Inhabitants Impaler as an actual pre-dragon elite with original model/animation/texture/audio;
-- Inhabitants Warped Clam as an actual post-dragon End enemy with persistent Dragon-gate spawning;
-- Lucky-specific combat stats, special attacks and drops for both custom enemies.
-
-- Inhabitants Bogre as a phased Lucky miniboss using its original model, 21 animations, texture and combat audio;
-- jump-dodge shockwave mechanics and temporary vulnerability windows instead of HP-sponge-only difficulty;
-- Bogre encounter outcomes in Epic/Legendary Lucky reward pools.
-
-- Bogre rebalanced to a 1800-HP post-dragon Legendary encounter;
-- Bosses of Mass Destruction Obsidilith integrated as a 9000-HP Mythic post-dragon boss;
-- original Obsidilith rune, particle art and combat audio with rune-shield / exposed-window mechanics;
-- no placeholder or assistant-drawn art in the new boss batch.
-
-- LC Studios Slasher Sword Addon vendored as a native Bedrock held Legendary weapon with original icons, FP/TP models, animations, beams, particles, sounds and combat script;
-- Slasher compatibility-ported from @minecraft/server 1.18.0 to 2.9.0 and gated behind first Ender Dragon kill;
-- Slasher Blade repair drops integrated into Bogre and Obsidilith.
-
-
-## PlainKingdoms Marketplace Remake
-
-Planning baseline: uploaded Bedrock build `PlainKingdoms v1.1.5`.
-
-Current local remake milestone: `1.16.0 Remake Alpha 15` — third R12 source audit checkpoint: ordinary Minecraft input passthrough, recoverable economy/world commits, reward/aid deduplication, army handoff/command ordering, multiplayer permission/privacy guards and role-specific animation fixes. Validation: 71/71 mocked Script API and 37/37 static/package checks; payload94 files/66 JSON; SOURCE ZIP and mcaddon bytes identical (SHA-256 `5af1a01af738dc2d4f12193a861c6d93c6bd940065bb9595f09aaae63da61ba0`). Actual Add-On import/world launch/play is NOT_RUN; real engine/input/multiplayer/performance gates are BLOCKED_RUNTIME. R12 remains open.
-
-PlainKingdoms is being remade as a Minecraft-first kingdom game with direct world play, tactical army command, and chunk-independent strategic simulation. GitHub is the canonical long-term repository for its documentation and, going forward, its preservable Bedrock source/resources as they are promoted from the working environment. Until that migration is complete, status documentation must explicitly identify any runtime source, packaged build, or asset that still exists only outside GitHub.
-
-Canonical remake documents:
-- `docs/plainkingdoms/REMAKE_CANON.md`
-- `docs/plainkingdoms/RTS_REFERENCE_AND_UX.md`
-- `docs/plainkingdoms/IMPLEMENTATION_ROADMAP.md`
-- `docs/plainkingdoms/RUNTIME_TEST_MATRIX.md`
-- `docs/plainkingdoms/CURRENT_STATUS.md`
-- `docs/plainkingdoms/EXTERNAL_ASSET_PROVENANCE.md`
-
-Current completed foundation:
-- chunk-independent world-authoritative StrategicArmyState;
-- long-range terrain command fallback;
-- recruitment Queue/RallyPoint;
-- categorized/rotatable construction and two-point infrastructure;
-- CC0-derived mixed-composition squad presentation;
-- animation-synchronized combat hit frames;
-- SquadBrain and five Auto/manual formations;
-- formation-aware multi-army movement;
-- abstract/physical strategic nation battle continuity;
-- four-state diplomacy and five treaty permissions;
-- strategic allied reinforcement march;
-- Strategic Siege, supply/morale, temporary disable/breach, war score and loot;
-- cosmetic arrow/bolt/siege projectile presentation;
-- tactical follow-orbit camera and strategic command map;
-- direct Army Banner context interaction;
-- chunk-independent hostile faction-site combat with persistent garrison state;
-- role-specific bow/crossbow/siege/charge combat animation states.
-
-Next major work:
-
-- run R12 real Bedrock touch/controller and host-client concurrency/permission tests;
-- finish Korean/English copy, sound, death/corpse and remaining role-animation polish;
-- validate fresh/v1.1.5/Alpha14 backup-world migration and the new wallet/journal/page formats;
-- measure low-Simulation-Distance army continuity, host/client races and low-end mobile performance;
-- expand NPC outbound campaigns only after the R12 correctness and polish gates;
-- R13 full release validation.
-
-
-## Wildbound / 야수각인 Remake
-
-Clean remake baseline: `Wildbound v1.27.7`.
-
-Current documented local milestone:
-- `Wildbound v1.28.3 REMAKE ALPHA4`
-- data version `1283`
-- ALPHA3 real-runtime UI verdict: **HARD FAIL**
-- ALPHA4 static/package validation: **PASS**
-- ALPHA4 real Bedrock runtime validation: **NOT_RUN**
-
-ALPHA3 failed because its fixed logical-pixel UI blocks exceeded the available logical UI height in the user's small Minecraft window. Bedrock compressed/clipped the controls into black strips, floating icons and detached text over the world.
-
-ALPHA4 removes the fixed-total-height assumption:
-- every core Wildbound screen uses a viewport-sized scrolling panel;
-- content keeps normal card width and scrolls vertically when the window is short;
-- deck order remains selected summary -> party 2x2 -> storage 2x3 -> navigation;
-- no fixed 300+ logical-pixel screen stack is forced into a short viewport;
-- gameplay/model/boss/ranch/performance foundations are retained.
-
-Canonical Wildbound documents:
-- `docs/wildbound/README.md`
-- `docs/wildbound/REMAKE_CANON.md`
-- `docs/wildbound/CURRENT_STATUS.md`
-- `docs/wildbound/UX_UI_SPEC.md`
-- `docs/wildbound/EXTERNAL_ASSET_PROVENANCE.md`
-- `docs/wildbound/IMPLEMENTATION_ROADMAP.md`
-- `docs/wildbound/RUNTIME_TEST_MATRIX.md`
-
-Documentation policy:
-- every substantial Wildbound implementation batch updates current status;
-- runtime failures are recorded explicitly rather than hidden by static validation;
-- static validation never equals real Bedrock runtime validation.
+- 각 프로젝트의 소스/문서를 다른 프로젝트와 섞지 않는다.
+- 프로젝트별 `PROJECT.md`가 현재 정본 상태와 외부에만 있는 소스를 명시한다.
+- 소스가 없는 프로젝트를 '실행 가능'이라고 표시하지 않는다.
+- 실제 Bedrock 월드 실행과 시각 검증을 하지 않은 결과는 검증 완료가 아니다.
+- 생성 패키지(.mcaddon/.mcpack)는 소스의 대체품이 아니며 필요할 때만 재현 가능한 배포 체크포인트로 보존한다.
+- 제3자 자산의 라이선스·원천·수정 이력을 기록하며 배포 권한이 없는 파일을 넣지 않는다.

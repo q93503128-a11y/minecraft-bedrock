@@ -1,0 +1,11 @@
+# Reproducible outputs and local secrets
+**/node_modules/
+**/dist/
+**/temp/
+**/.cache/
+*.log
+.env
+.env.*
+!*.example
+.DS_Store
+Thumbs.db
