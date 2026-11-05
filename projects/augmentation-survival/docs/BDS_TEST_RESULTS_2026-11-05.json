@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 6319,
+  "durationMs": 7002,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
@@ -9,6 +9,10 @@
     },
     {
       "id": "AugmentationSurvival:sturdiness_effect_scales_max_health",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_selection_commits_level_and_preserves_core_on_rejection",
       "outcome": "pass"
     }
   ],

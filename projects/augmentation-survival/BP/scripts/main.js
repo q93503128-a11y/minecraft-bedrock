@@ -2,10 +2,10 @@ import { ItemStack, Player, system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { AUGMENTS } from "./augment-data.js";
 import { applySturdinessEffect } from "./passives.js";
+import { commitCoreSelection, LEVELS_KEY } from "./progression.js";
 
 const NS = "augmentation_survival";
 /** @typedef {{id:string, name_ko:string, tier:string, tier_ko:string, max_level:number, canonical_effect_ko:string}} Augment */
-const LEVELS_KEY = `${NS}:levels_v1`;
 const COMMON_CORE = `${NS}:common_augment_core`;
 const TIERS = ["common", "uncommon", "rare", "epic", "legendary", "mythic"];
 /** @type {Record<string, string>} */
@@ -36,15 +36,6 @@ function levelOf(player, augment) {
   const levels = playerLevels(player);
   const level = Number(levels[augment.id]);
   return Number.isInteger(level) && level > 0 ? Math.min(level, augment.max_level) : 0;
-}
-
-/** @param {Player} player @param {Augment} augment */
-function writeLevel(player, augment) {
-  const levels = playerLevels(player);
-  const next = Math.min(augment.max_level, (Number(levels[augment.id]) || 0) + 1);
-  levels[augment.id] = next;
-  player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
-  return next;
 }
 
 /** @param {Player} player */
@@ -137,20 +128,14 @@ async function openOffer(player, coreId) {
     const selected = pending.offers[response.selection];
     if (!selected || !AUGMENT_BY_ID.has(selected.id)) return;
     // Final validation and both mutations run in one server callback before any await.
-    if (countItem(player, coreId) < 1) {
-      player.sendMessage("코어를 찾을 수 없어 선택을 완료하지 못했어요.");
+    const result = commitCoreSelection(player, coreId, selected);
+    if (!result.ok) {
+      player.sendMessage(result.reason === "max_level"
+        ? "이 증강은 이미 최대 레벨이에요. 코어를 소모하지 않았습니다."
+        : "코어를 찾을 수 없어 선택을 완료하지 못했어요.");
       return;
     }
-    if (levelOf(player, selected) >= selected.max_level) {
-      player.sendMessage("이 증강은 이미 최대 레벨이에요. 코어를 소모하지 않았습니다.");
-      return;
-    }
-    const previousState = player.getDynamicProperty(LEVELS_KEY);
-    const nextLevel = writeLevel(player, selected);
-    if (!removeItems(player, coreId, 1)) {
-      player.setDynamicProperty(LEVELS_KEY, previousState);
-      return;
-    }
+    const nextLevel = result.level;
     player.sendMessage(`${selected.name_ko} Lv.${nextLevel} 획득!`);
     if (selected.id === `${NS}:sturdiness`) applySturdiness(player);
   } catch {

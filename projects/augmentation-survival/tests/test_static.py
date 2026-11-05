@@ -23,8 +23,9 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_script_has_server_side_inventory_and_persistent_state(self):
         script = (ROOT / "BP/scripts/main.js").read_text(encoding="utf-8")
-        self.assertIn("setDynamicProperty(LEVELS_KEY", script)
-        self.assertIn("removeItems(player, coreId, 1)", script)
+        progression = (ROOT / "BP/scripts/progression.js").read_text(encoding="utf-8")
+        self.assertIn("setDynamicProperty(LEVELS_KEY", progression)
+        self.assertIn("commitCoreSelection(player, coreId, selected)", script)
         self.assertIn("world.afterEvents.itemUse.subscribe", script)
         self.assertIn("world.afterEvents.playerSpawn", script)
 

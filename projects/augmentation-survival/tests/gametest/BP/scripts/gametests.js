@@ -1,6 +1,7 @@
 import { GameMode, ItemStack } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
 import { applySturdinessEffect } from "./passives.js";
+import { commitCoreSelection, LEVELS_KEY } from "./progression.js";
 
 const TAG = "augmentation_survival";
 const STRUCTURE = "gametests:glass_cells";
@@ -46,5 +47,24 @@ GameTest.registerAsync("AugmentationSurvival", "sturdiness_effect_scales_max_hea
   applySturdinessEffect(player, 5);
   await test.idle(1);
   ensure(health.effectiveMax === baseMax + 20, `Expected +20 max health at level 5; got ${health.effectiveMax - baseMax}.`);
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "core_selection_commits_level_and_preserves_core_on_rejection", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreCommit", GameMode.survival);
+  const inventory = inventoryOf(player);
+  const augment = { id: "augmentation_survival:sturdiness", max_level: 5 };
+  inventory.setItem(0, new ItemStack(CORE, 2));
+
+  const first = commitCoreSelection(player, CORE, augment);
+  ensure(first.ok && first.level === 1, "A valid selection did not commit level 1.");
+  ensure(countItem(inventory, CORE) === 1, "A successful selection did not consume exactly one core.");
+  const savedLevels = JSON.parse(player.getDynamicProperty(LEVELS_KEY));
+  ensure(savedLevels[augment.id] === 1, "The selected level was not saved on the player.");
+
+  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ [augment.id]: 5 }));
+  const rejected = commitCoreSelection(player, CORE, augment);
+  ensure(!rejected.ok && rejected.reason === "max_level", "A max-level augment was not rejected.");
+  ensure(countItem(inventory, CORE) === 1, "A rejected selection consumed a core.");
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);

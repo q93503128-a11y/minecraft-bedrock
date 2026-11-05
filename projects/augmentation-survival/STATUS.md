@@ -10,7 +10,7 @@ The source roster and repeatable `.mcaddon` build are present. This is an early 
 - Runtime gameplay fully implemented and verified: **0 / 149**.
 - Partial behavior with direct BDS verification: **1 / 149** (`강건함`: tested max-health scaling at levels 1 and 5; award and persistence restoration remain untested).
 - Unported: **148 / 149**.
-- Core offer/device/synthesis loop: source implemented. BDS verified only that a simulated player's core is retained before a selection result; actual form choice, level award, post-choice core consumption, and persistence are not verified.
+- Core offer/device/synthesis loop: source implemented. BDS verifies the shared server transaction consumes one core and stores a level, rejects max-level choices without consumption, and retains the core before a form result; actual UI selection and reconnect persistence are not verified.
 - Canonical name/max-level differences between `AUGMENTS.md` and the Java catalog: **3**, recorded per entry.
 - Entries without a Java source file containing the stable catalog ID: **7**; absence of a literal ID is not treated as proof of no implementation.
 
@@ -21,8 +21,8 @@ The source roster and repeatable `.mcaddon` build are present. This is an early 
 - Roster import: **PASS**, 149 entries and expected tier counts.
 - Static checks: **PASS**, 4 tests.
 - JSON, manifests, item/icon/recipe references and recipe unlocks: **PASS**.
-- `.mcaddon` build: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (30,957 bytes).
-- Official BDS **1.26.62.1**, isolated world: **PASS**, 2 passed / 0 failed. Results: `docs/BDS_TEST_REPORT_2026-11-05.md`; machine result was generated under ignored `.bds/logs/augmentation-survival-results.json`.
+- `.mcaddon` build: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (31,847 bytes).
+- Official BDS **1.26.62.1**, isolated world: **PASS**, 3 passed / 0 failed. Results: `docs/BDS_TEST_REPORT_2026-11-05.md` and `docs/BDS_TEST_RESULTS_2026-11-05.json`.
 - Not run: client import and real UI review, mobile/controller navigation, real-player core selection and level award, saved state after reconnect/server restart, death/dimension changes, multiplayer races.
 
 ## Known source and platform gaps
