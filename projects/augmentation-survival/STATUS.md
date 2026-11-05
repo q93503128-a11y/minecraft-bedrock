@@ -8,7 +8,7 @@ The source roster and repeatable `.mcaddon` build are present. This is an early 
 
 - Canonical roster inventoried from the read-only Java checkout: **149 / 149** (20/27/31/41/20/10 across six tiers).
 - Runtime gameplay fully implemented and verified: **0 / 149**.
-- Partial behavior with direct BDS verification: **1 / 149** (`강건함`: tested max-health scaling at levels 1 and 5; award and persistence restoration remain untested).
+- Partial behavior with direct BDS verification: **1 / 149** (`강건함`: `health_boost` adds +4 HP/level, but Java specifies +2; acquisition and persistence restoration also remain untested).
 - Source implementation awaiting engine verification: **1 / 149** (`날 선 감각`: root melee modifier uses the stable before-event; BDS simulated-player event routing did not provide an event payload).
 - Unported: **147 / 149**.
 - Core offer/device/synthesis loop: source implemented. BDS verifies the shared server transaction consumes one core and stores a level, rejects max-level choices without consumption, and retains the core before a form result; actual UI selection and reconnect persistence are not verified.
@@ -22,7 +22,7 @@ The source roster and repeatable `.mcaddon` build are present. This is an early 
 - Roster import: **PASS**, 149 entries and expected tier counts.
 - Static checks: **PASS**, 4 tests.
 - JSON, manifests, item/icon/recipe references and recipe unlocks: **PASS**.
-- `.mcaddon` build: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (32,804 bytes).
+- `.mcaddon` build: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (32,816 bytes).
 - Official BDS **1.26.62.1**, isolated world: **PASS**, 3 passed / 0 failed. Results: `docs/BDS_TEST_REPORT_2026-11-05.md` and `docs/BDS_TEST_RESULTS_2026-11-05.json`.
 - Not run: client import and real UI review, mobile/controller navigation, real-player core selection and level award, saved state after reconnect/server restart, death/dimension changes, multiplayer races.
 

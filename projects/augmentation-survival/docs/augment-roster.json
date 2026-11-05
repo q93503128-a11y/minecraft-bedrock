@@ -21,7 +21,7 @@
       "interaction_contract_refs": [],
       "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
       "bedrock_method": "health_boost effect refreshed from saved level",
-      "api_constraints": "Stable effect API; persistence and acquisition flow not tested",
+      "api_constraints": "D exact parity: health_boost is +4 HP/level vs Java +2; effectiveMax is read-only",
       "test_method": "BDS GameTest: max health at levels 1 and 5; core retained before selection result",
       "port_status": "PARTIAL_BDS_VERIFIED"
     },

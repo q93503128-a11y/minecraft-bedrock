@@ -88,7 +88,7 @@ def main(source: Path, target: Path) -> None:
                 "Not assessed"
             ),
             "api_constraints": (
-                "Stable effect API; persistence and acquisition flow not tested" if slug == "sturdiness" else
+                "D exact parity: health_boost is +4 HP/level vs Java +2; effectiveMax is read-only" if slug == "sturdiness" else
                 "Stable before-event; only root entityAttack is classified; SimulatedPlayer event routing is unverified" if slug == "keen_edge" else
                 "Not assessed"
             ),

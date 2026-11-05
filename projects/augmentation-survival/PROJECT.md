@@ -36,7 +36,7 @@ The pack is generated at `build/AugmentationSurvival-0.1.0.mcaddon`. The build o
 - The basic device opens a paged, read-only inventory of owned augments.
 - The advanced device offers the canonical five 3:1 adjacent-tier synthesis transactions. Inputs are checked and consumed on the server; output failure triggers an input rollback.
 - Player augment levels are stored in a versioned dynamic property, intended to survive relog/restart through Bedrock entity persistence; persistence across actual reconnects has not yet been tested.
-- `강건함` is connected to the stable `health_boost` effect, refreshed after spawn and every 200 ticks from the saved level. BDS GameTest verifies the max-health increase at levels 1 and 5; acquisition and saved-level restoration are not yet engine-tested, so the augment is not counted as fully ported.
+- `강건함` currently uses the stable `health_boost` effect, refreshed after spawn and every 200 ticks from the saved level. BDS measures +4 health points per level, while Java canon specifies +2; this is a known numeric mismatch, not a completed port. The stable health component exposes a read-only effective maximum, so exact parity needs a different supported mechanism.
 
 ## Isolated BDS checks
 
