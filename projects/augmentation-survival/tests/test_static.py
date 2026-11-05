@@ -18,6 +18,14 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual({"강건함"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
         self.assertEqual("IMPLEMENTED_UNVERIFIED", next(item["port_status"] for item in data["augments"] if item["name_ko"] == "날 선 감각"))
 
+    def test_movement_attribute_experiments_are_not_counted_as_ports(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        movement = {item["name_ko"]: item for item in data["augments"] if item["name_ko"] in {"빠른 발", "물갈퀴"}}
+        self.assertEqual({"빠른 발", "물갈퀴"}, set(movement))
+        for item in movement.values():
+            self.assertEqual("NOT_PORTED", item["port_status"])
+            self.assertIn("BDS 1.26.62.1", item["api_constraints"])
+
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         self.assertEqual(3, sum(bool(item["catalog_discrepancy"]) for item in data["augments"]))

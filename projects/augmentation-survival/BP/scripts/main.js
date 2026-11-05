@@ -1,8 +1,9 @@
-import { ItemStack, Player, system, world } from "@minecraft/server";
+import { Player, system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { AUGMENTS } from "./augment-data.js";
 import { applySturdinessEffect } from "./passives.js";
 import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progression.js";
+import { synthesizeCore } from "./cores.js";
 import "./combat.js";
 
 const NS = "augmentation_survival";
@@ -67,35 +68,6 @@ function countItem(player, typeId) {
     if (stack?.typeId === typeId) count += stack.amount;
   }
   return count;
-}
-
-/** @param {Player} player @param {string} typeId @param {number} quantity */
-function removeItems(player, typeId, quantity) {
-  const inventory = inventoryOf(player);
-  if (!inventory || countItem(player, typeId) < quantity) return false;
-  let remaining = quantity;
-  for (let slot = 0; slot < inventory.size && remaining > 0; slot++) {
-    const stack = inventory.getItem(slot);
-    if (stack?.typeId !== typeId) continue;
-    const take = Math.min(stack.amount, remaining);
-    if (take === stack.amount) inventory.setItem(slot, undefined);
-    else {
-      stack.amount -= take;
-      inventory.setItem(slot, stack);
-    }
-    remaining -= take;
-  }
-  return remaining === 0;
-}
-
-/** @param {Player} player @param {string} typeId @param {number} [quantity] */
-function giveItem(player, typeId, quantity = 1) {
-  const inventory = inventoryOf(player);
-  if (!inventory) return false;
-  const remainder = inventory.addItem(new ItemStack(typeId, quantity));
-  if (!remainder) return true;
-  // The transaction is already committed only after an output slot is available.
-  return false;
 }
 
 /** @param {string} tier @param {Player} player @returns {Augment[]} */
@@ -261,21 +233,11 @@ async function openSynthesis(player) {
     if (response.canceled || !step) return;
     const fromId = CORE_FOR_TIER[step.from];
     const toId = CORE_FOR_TIER[step.to];
-    if (countItem(player, fromId) < 3) {
-      player.sendMessage("합성할 코어가 부족해요.");
-      return;
-    }
-    // Output capacity is guaranteed by the three consumed inputs, but roll back on failure.
-    if (!removeItems(player, fromId, 3)) return;
-    let outputAdded = false;
-    try {
-      outputAdded = giveItem(player, toId, 1);
-    } catch {
-      outputAdded = false;
-    }
-    if (!outputAdded) {
-      try { giveItem(player, fromId, 3); } catch { /* best-effort rollback while the player inventory is valid */ }
-      player.sendMessage("인벤토리에 공간이 없어 합성을 취소했어요.");
+    const result = synthesizeCore(player, fromId, toId);
+    if (!result.ok) {
+      if (result.reason === "insufficient_input") player.sendMessage("합성할 코어가 부족해요.");
+      else if (result.reason === "no_output_space") player.sendMessage("인벤토리에 공간이 없어 합성을 취소했어요.");
+      else player.sendMessage("코어 합성을 완료하지 못했어요. 코어 상태를 확인해 주세요.");
       return;
     }
     player.sendMessage(`${TIER_KO[step.from]} 코어 3개를 ${TIER_KO[step.to]} 코어 1개로 합성했어요.`);

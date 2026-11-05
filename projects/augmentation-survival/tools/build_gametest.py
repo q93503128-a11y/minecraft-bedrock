@@ -20,6 +20,7 @@ def main() -> None:
     shutil.copytree(TEST_BP, OUTPUT / "AugmentationSurvival_GameTests")
     shutil.copy2(PROJECT / "BP/scripts/passives.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/passives.js")
     shutil.copy2(PROJECT / "BP/scripts/progression.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/progression.js")
+    shutil.copy2(PROJECT / "BP/scripts/cores.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/cores.js")
 
     manifests = [json.loads(path.read_text(encoding="utf-8")) for path in OUTPUT.glob("*/manifest.json")]
     uuids = [manifest["header"]["uuid"] for manifest in manifests]
