@@ -18,6 +18,15 @@
 - Packaged build: NONE.
 - Runtime test: NOT_RUN.
 
+## Production specification (v0.2 proposal)
+
+- [M1 gameplay & acceptance contract](docs/M1_PLAYABLE_SLICE.md)
+- [Economy prototype and meaningful earnings](docs/ECONOMY_EXPERIMENT.md)
+- [Technical implementation risks and API gate](docs/TECHNICAL_GATE.md)
+- [Visual/gameplay references](docs/EXTERNAL_REFERENCES.md)
+
+These are design proposals; real Bedrock pack content is **not yet created**. No numerical balance or compatibility claim is final before in-game verification.
+
 ## Source layout when implementation starts
 
 `BP/` for behavior pack and scripts; `RP/` for models/textures/sound; `assets/blockbench/` for editable models; `tests/` and `tools/` for repeatable validation. Do not add empty placeholder packs merely to suggest completion.

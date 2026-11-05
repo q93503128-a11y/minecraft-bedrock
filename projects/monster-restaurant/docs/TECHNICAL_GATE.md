@@ -1,0 +1,86 @@
+# Bedrock Implementation Feasibility & Risk Gate — 2026-11-05
+
+**Document type:** Design/technical feasibility notes, **not proof that gameplay runs**. Official stable API entry points have been reviewed; exact game and module versions remain to be selected in M0.
+
+## Grounded current API entry points
+
+- Minecraft Creator stable BlockCustomComponent (onPlayerInteract, block placement/break) is documented:
+  https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockcustomcomponent?view=minecraft-bedrock-stable
+- World dynamic properties for durable per-world data:
+  https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/world?view=minecraft-bedrock-stable
+- Server-UI API reference (ActionFormData, ModalFormData, MessageFormData):
+  https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/?view=minecraft-bedrock-stable
+- Entity behavior/navigation:
+  https://learn.microsoft.com/en-us/minecraft/creator/documents/entitybehaviorintroduction?view=minecraft-bedrock-stable
+- Block custom component examples:
+  https://learn.microsoft.com/en-us/minecraft/creator/documents/scripting/components-tutorial?view=minecraft-bedrock-stable
+
+**Caution:** Source examples may reference previous event signatures (e.g. old `worldInitialize`). Before implementation read current stable module docs; never paste legacy sample verbatim without verifying current API.
+
+## Proposed architecture
+
+| Domain | Authoritative state | Engine concept | Top risk |
+| --- | --- | --- | --- |
+| Monster hunt | Entity/server drop behavior | BP entities, loot tables, RP models | spawn rules and old-world compatibility |
+| Cooking | Stateful station, pending dish | BP block custom component + server Script | duplicate item consumption/results on cancel/restart |
+| Cookbook | Per-player discoveries | Script-owned persistent properties | save size / identity and migration |
+| Restaurant | World/shop ownership, open/closed, order records | Counter custom block + persistent world records | location binding and permissions |
+| Customers | Active order ID, reachable service point | Custom entity + navigation & goals | dynamic building pathfinding |
+| Staff | Assignment, current order ownership | Entity, local task state + ordered settlement | restart and double delivery |
+| Currency | Shop/owner balance and spend/earn ledger | server-side controlled dynamic properties | repeated calls / duplicate payout |
+
+## State machine sketches
+
+### Cooking station
+
+`IDLE -> INGREDIENTS_RESERVED -> COOKING -> READY -> CLAIMED -> IDLE`
+
+- Every transition guarded by station identity and generation/transaction token.
+- On break/crash/rejoin: **no duplication and no silent loss**. Implement explicit recovery; do not assume dynamic properties are transactional database operations.
+- GUI opens by interaction; items are actually consumed/created by one authority.
+
+### Restaurant order
+
+`QUEUED -> REQUESTED -> FULFILLING -> SETTLED -> CUSTOMER_EXIT`
+
+Alternative:
+`REQUESTED -> CANCELLED` (on closure, invalid path, absence, etc.; no payment)
+
+- Request/order IDs unique within shop; order states change via server-authoritative single arbitration.
+- Claim delivery from player or waiter once, then deduct ready dish once; pay exactly once.
+- Use conditional processing and durable committed states, including post-restart reconciliation rules. **Don't claim atomicity solely from calling setDynamicProperty.**
+
+### Worker lifecycle
+
+`UNHIRED -> HIRED_IDLE -> ACTIVE_SERVICE -> HIRED_IDLE`
+`ACTIVE_SERVICE -> PAUSED` (closed/offline/unreachable/insufficient funds)
+
+- Worker is representation of a durable assignment; entity disappearance should not erase legal employment or permit duplicate employee rewards.
+- While shop owner/chunk not active, no arbitrary background wage debt.
+
+## NPC pathfinding acceptance gate
+
+- Vanilla entity navigation exists, but does not prove arbitrary player-made restaurant routing will succeed.
+- M1 requires a real customer walking from a reachable entrance to counter and leaving. No invisible 'NPC completed order' replacement.
+- An employee should visibly move ready food to counter where the customer is waiting.
+- Test doorways, 1-wide/2-wide aisles, stairs, fences, floor slabs, path obstructions, unloaded chunks, interrupted orders.
+- If route fails: player sees a short path-related prompt and can fix the layout. Don't automatically teleport NPC through walls, cheat invisible income or claim this test PASS.
+- Full dynamic seating and customer dining is M3 after navigation success, not prematurely considered done.
+
+## Visual/UI gate
+
+- Official Cuisineer and DAVE THE DIVER gameplay screenshots show customer-facing **in-world order requests**, not a wall of debug text.
+- Distill into one compact food icon / name per customer. Do not fill vanilla HUD with counters.
+- Cook UI prioritizes craftable recipes, actual ingredient availability, one clear action. Guide prioritizes source → use; avoid development data on screen.
+- Tests on small windows, Korean/English, controller/touch input, cancel/back states.
+
+## Before source generation (Codex M0)
+
+1. Verify currently installed target Bedrock build and latest stable `@minecraft/server`/`@minecraft/server-ui`; record exact pinned versions.
+2. Confirm API event signature and UI interface against official docs.
+3. Create minimal functional BP/RP with actual manifests, unique UUIDs and stable namespace.
+4. Build/validate reproducible `.mcaddon` before integration.
+5. Test one block interaction + server UI + persistent state + visible custom entity in actual game, separately logging failures.
+6. Integrate content only when the runtime gate is passed.
+
+**No source is created by this planning document.**
