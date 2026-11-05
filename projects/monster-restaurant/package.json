@@ -7,7 +7,7 @@
     "build:models": "python assets/blockbench/build_models.py",
     "build:addon": "python tools/build_addon.py",
     "build:engine-tests": "python tools/build_gametest.py",
-    "test:engine": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag monster_restaurant --expect-registered 6 --json .bds/logs/monster-restaurant-results.json",
+    "test:engine": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag monster_restaurant --expect-registered 7 --json .bds/logs/monster-restaurant-results.json",
     "deploy:client-dev-packs": "powershell -NoProfile -ExecutionPolicy Bypass -File tools/deploy_client_dev_packs.ps1"
   },
   "devDependencies": {

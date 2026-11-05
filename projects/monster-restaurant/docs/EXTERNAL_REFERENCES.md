@@ -60,3 +60,10 @@ Sources checked for this pass:
 - [Travellers Rest official publisher page](https://www.isolatedgames.com/travellers-rest/) and its documented staff/open-close references listed above.
 
 **Evidence limit:** This pass reviewed official descriptions, the cited official screenshot, and trailer metadata/description; it did not perform frame-by-frame footage analysis or hands-on play. Input timing, accessibility, and actual UI readability remain unverified and are not quality-approved.
+
+## M0.5 model revision — mushroom boar and skillet
+
+- **Minecraft Mooshroom (official game reference):** [Minecraft Mob Menagerie: Mooshroom](https://www.minecraft.net/en-us/article/mooshroom) describes and shows a familiar pigmented body with prominent red caps and pale spots. This supports a cap silhouette readable at a glance; Monster Restaurant uses one broad layered cap on a boar and does not copy the cow body, cap mesh, or texture.
+- **Cuisineer (external game reference):** [official publisher page](https://marvelous-usa.com/games/cuisineer/) frames ingredient gathering as creature combat feeding a cooking loop. This supports giving the mushroom boar a recognizable food ingredient role and keeping the pan silhouette legible as the cooking station. It does not justify copying Cuisineer's creatures, materials, or UI.
+
+The source revision broadens the boar's head and muzzle, separates dark hooves from the legs, layers the mushroom cap, and adds a simple alternating leg cycle for walking. The skillet geometry now has a distinct dark cooking surface, raised metal side walls and rim, and a clear rear handle. These are model-source and texture-pipeline changes only. They remain **NOT visually approved** until the models can be loaded in Blockbench and reviewed in an actual Bedrock client screenshot; no third-party art assets were copied or redistributed.

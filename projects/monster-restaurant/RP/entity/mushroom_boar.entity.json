@@ -13,10 +13,11 @@
         "default": "geometry.monster_restaurant.mushroom_boar"
       },
       "animations": {
-        "idle": "animation.monster_restaurant.mushroom_boar.idle"
+        "idle": "animation.monster_restaurant.mushroom_boar.idle",
+        "walk": "animation.monster_restaurant.mushroom_boar.walk"
       },
       "scripts": {
-        "animate": ["idle"]
+        "animate": ["idle", {"walk": "query.modified_move_speed > 0.01"}]
       },
       "render_controllers": ["controller.render.monster_restaurant.mushroom_boar"]
     }

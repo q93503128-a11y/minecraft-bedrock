@@ -23,30 +23,48 @@ def box(name, origin, size, color, bone="body"):
 
 BOAR = [
     box("body", [-5, 4, -6], [10, 6, 12], "hide", "body"),
-    box("head", [-3, 5, -11], [6, 4, 6], "hide", "head"),
-    box("snout", [-2, 6, -13], [4, 2, 3], "muzzle", "head"),
-    box("nose", [-1, 6, -13.25], [2, 1, 0.25], "nose", "head"),
-    box("mushroom_stem", [-1, 9, -2], [2, 2, 4], "stem", "cap"),
-    box("mushroom_cap", [-7, 10, -5], [14, 2, 10], "cap", "cap"),
-    box("spot_front", [-5, 12, -2], [2, 0.75, 2], "spot", "cap"),
-    box("spot_back", [2, 12, 1], [2, 0.75, 2], "spot", "cap"),
-    box("spot_left", [-2, 12, 3], [2, 0.75, 1], "spot", "cap"),
-    box("front_left_leg", [-4, 0, -4], [2, 4, 2], "hoof", "front_left_leg"),
-    box("front_right_leg", [2, 0, -4], [2, 4, 2], "hoof", "front_right_leg"),
-    box("back_left_leg", [-4, 0, 3], [2, 4, 2], "hoof", "back_left_leg"),
-    box("back_right_leg", [2, 0, 3], [2, 4, 2], "hoof", "back_right_leg"),
-    box("left_tusk", [-3.5, 5, -10], [1, 2, 1], "ivory", "head"),
-    box("right_tusk", [2.5, 5, -10], [1, 2, 1], "ivory", "head"),
-    box("left_eye", [-3.25, 7, -9.25], [0.75, 0.75, 0.75], "eye", "head"),
-    box("right_eye", [2.5, 7, -9.25], [0.75, 0.75, 0.75], "eye", "head"),
+    box("shoulder", [-4, 6, -8], [8, 4, 6], "hide", "body"),
+    box("head", [-4, 4, -12], [8, 6, 7], "hide", "head"),
+    box("muzzle", [-3, 5, -14], [6, 3, 3], "muzzle", "head"),
+    box("nose", [-1, 6, -14.25], [2, 1, 0.25], "nose", "head"),
+    box("left_ear", [-4, 9, -10], [2, 2, 2], "hide", "head"),
+    box("right_ear", [2, 9, -10], [2, 2, 2], "hide", "head"),
+    box("mushroom_stem", [-2, 9, -2], [4, 3, 4], "stem", "cap"),
+    box("cap_underside", [-8, 11, -6], [16, 1, 12], "cap_shadow", "cap"),
+    box("mushroom_cap", [-7, 12, -5], [14, 2, 10], "cap", "cap"),
+    box("cap_crown", [-5, 14, -3], [10, 1, 6], "cap", "cap"),
+    box("spot_front_left", [-5, 14, -3], [2, 1, 2], "spot", "cap"),
+    box("spot_front_right", [2, 14, -3], [2, 1, 2], "spot", "cap"),
+    box("spot_back", [-1, 14, 2], [2, 1, 2], "spot", "cap"),
+    box("front_left_leg", [-4, 0, -4], [2, 4, 2], "hide", "front_left_leg"),
+    box("front_left_hoof", [-4, 0, -4], [2, 1, 2], "hoof", "front_left_leg"),
+    box("front_right_leg", [2, 0, -4], [2, 4, 2], "hide", "front_right_leg"),
+    box("front_right_hoof", [2, 0, -4], [2, 1, 2], "hoof", "front_right_leg"),
+    box("back_left_leg", [-4, 0, 3], [2, 4, 2], "hide", "back_left_leg"),
+    box("back_left_hoof", [-4, 0, 3], [2, 1, 2], "hoof", "back_left_leg"),
+    box("back_right_leg", [2, 0, 3], [2, 4, 2], "hide", "back_right_leg"),
+    box("back_right_hoof", [2, 0, 3], [2, 1, 2], "hoof", "back_right_leg"),
+    box("left_tusk", [-3, 4, -12], [1, 2, 2], "ivory", "head"),
+    box("right_tusk", [2, 4, -12], [1, 2, 2], "ivory", "head"),
+    box("left_eye", [-4, 7, -10], [1, 1, 1], "eye", "head"),
+    box("right_eye", [3, 7, -10], [1, 1, 1], "eye", "head"),
+    box("tail_root", [-1, 6, 6], [2, 2, 2], "hide", "body"),
+    box("tail_tip", [-1, 7, 7], [2, 1, 2], "hoof", "body"),
 ]
 
 SKILLET = [
-    box("bowl", [-6, 5, -6], [12, 2, 12], "iron"),
-    box("inside", [-5, 7, -5], [10, 1, 10], "seasoned_iron"),
-    box("rim", [-7, 7, -7], [14, 1, 14], "rim"),
-    box("handle_neck", [-1, 6, 7], [2, 2, 3], "iron"),
-    box("wood_handle", [-1, 6, 10], [2, 2, 5], "wood"),
+    box("base", [-6, 5, -6], [12, 1, 12], "seasoned_iron"),
+    box("front_wall", [-6, 6, -6], [12, 2, 1], "iron"),
+    box("back_wall", [-6, 6, 5], [12, 2, 1], "iron"),
+    box("left_wall", [-6, 6, -5], [1, 2, 10], "iron"),
+    box("right_wall", [5, 6, -5], [1, 2, 10], "iron"),
+    box("cooking_surface", [-5, 6, -5], [10, 1, 10], "seasoned_iron"),
+    box("front_lip", [-6, 8, -6], [12, 1, 2], "rim"),
+    box("back_lip", [-6, 8, 4], [12, 1, 2], "rim"),
+    box("left_lip", [-6, 8, -4], [2, 1, 8], "rim"),
+    box("right_lip", [4, 8, -4], [2, 1, 8], "rim"),
+    box("handle_neck", [-1, 6, 6], [2, 2, 3], "iron"),
+    box("wood_handle", [-1, 6, 9], [2, 2, 5], "wood"),
     box("handle_cap", [-1.5, 6, 14], [3, 2, 1], "brass"),
     box("left_rest", [-6, 3, -4], [2, 2, 2], "iron"),
     box("right_rest", [4, 3, -4], [2, 2, 2], "iron"),
@@ -55,6 +73,7 @@ SKILLET = [
 
 PALETTES = {
     "hide": ((105, 60, 39), (136, 82, 52), (82, 47, 34), (178, 113, 67)),
+    "cap_shadow": ((94, 42, 36), (120, 51, 41), (71, 35, 32), (151, 66, 49)),
     "muzzle": ((209, 163, 118), (230, 192, 150), (173, 126, 89), (238, 210, 174)),
     "nose": ((67, 44, 38), (89, 54, 45), (52, 37, 34), (120, 75, 59)),
     "stem": ((221, 198, 151), (237, 218, 178), (184, 158, 113), (247, 229, 192)),
@@ -289,6 +308,44 @@ def bbmodel(name, geometry_id, boxes, placements, width, height, texture_path, t
     return model
 
 
+def boar_animations(bone_uuids):
+    def animator(bone, channels):
+        return {
+            bone_uuids[bone]: {
+                "name": bone,
+                "type": "bone",
+                "keyframes": [
+                    {
+                        "channel": channel,
+                        "time": time,
+                        "interpolation": "linear",
+                        "data_points": [{axis: str(value) for axis, value in zip(("x", "y", "z"), values)}],
+                    }
+                    for channel, keys in channels.items()
+                    for time, values in keys
+                ],
+            }
+        }
+
+    idle_animators = {}
+    idle_animators.update(animator("body", {
+        "position": [(0, (0, 0, 0)), (1, (0, 0.15, 0)), (2, (0, 0, 0))],
+        "rotation": [(0, (0, 0, -1)), (1, (0, 0, 1)), (2, (0, 0, -1))],
+    }))
+    idle_animators.update(animator("cap", {
+        "rotation": [(0, (0, 0, -1)), (1, (0, 0, 1)), (2, (0, 0, -1))],
+    }))
+    walk_animators = {}
+    for bone, swing in (("front_left_leg", -22), ("back_right_leg", -22), ("front_right_leg", 22), ("back_left_leg", 22)):
+        walk_animators.update(animator(bone, {
+            "rotation": [(0, (swing, 0, 0)), (0.25, (0, 0, 0)), (0.5, (-swing, 0, 0)), (0.75, (0, 0, 0)), (1, (swing, 0, 0))],
+        }))
+    return [
+        {"name": "animation.monster_restaurant.mushroom_boar.idle", "uuid": "10000000-1111-4111-8111-000000000001", "loop": "loop", "length": 2, "animators": idle_animators},
+        {"name": "animation.monster_restaurant.mushroom_boar.walk", "uuid": "10000000-1111-4111-8111-000000000002", "loop": "loop", "length": 1, "animators": walk_animators},
+    ]
+
+
 def find_outliner_children(outliner, target_uuid):
     for node in outliner:
         if node.get("uuid") == target_uuid:
@@ -322,7 +379,32 @@ def main():
     write_json(SOURCE / "mushroom_boar.bbmodel", bbmodel(
         "Mushroom Boar", "geometry.monster_restaurant.mushroom_boar", BOAR, boar_uv, 128, boar_h,
         "../../RP/textures/entity/mushroom_boar.png", boar_texture, boar_bones,
+        boar_animations({name: f"a0000000-1111-4111-8111-{index:012x}" for index, (name, _, _) in enumerate(boar_bones)}),
     ))
+    write_json(ENTITY_MODELS.parent / ".." / "animations" / "mushroom_boar.animation.json", {
+        "format_version": "1.8.0",
+        "animations": {
+            "animation.monster_restaurant.mushroom_boar.idle": {
+                "loop": True,
+                "animation_length": 2.0,
+                "bones": {
+                    "body": {
+                        "position": {"0.0": [0, 0, 0], "1.0": [0, 0.15, 0], "2.0": [0, 0, 0]},
+                        "rotation": {"0.0": [0, 0, -1], "1.0": [0, 0, 1], "2.0": [0, 0, -1]},
+                    },
+                    "cap": {"rotation": {"0.0": [0, 0, -1], "1.0": [0, 0, 1], "2.0": [0, 0, -1]}},
+                },
+            },
+            "animation.monster_restaurant.mushroom_boar.walk": {
+                "loop": True,
+                "animation_length": 1.0,
+                "bones": {
+                    name: {"rotation": {"0.0": [swing, 0, 0], "0.25": [0, 0, 0], "0.5": [-swing, 0, 0], "0.75": [0, 0, 0], "1.0": [swing, 0, 0]}}
+                    for name, swing in (("front_left_leg", -22), ("back_right_leg", -22), ("front_right_leg", 22), ("back_left_leg", 22))
+                },
+            },
+        },
+    })
 
     skillet_bones = [("root", None, [0, 0, 0]), ("body", "root", [0, 0, 0])]
     skillet_texture, skillet_uv, skillet_h = make_texture(SKILLET, 64)

@@ -121,6 +121,31 @@ def validate_references():
     return len(items), len(geometry_ids)
 
 
+def validate_spawn_rules():
+    rules = read_json(BP / "spawn_rules" / "mushroom_boar.json")["minecraft:spawn_rules"]
+    description = rules["description"]
+    if description["identifier"] != f"{NAMESPACE}:mushroom_boar":
+        fail("Mushroom boar spawn rule identifier does not match its entity")
+    if description.get("population_control") != "monster":
+        fail("Mushroom boar must use the monster population group")
+    conditions = rules.get("conditions", [])
+    if len(conditions) != 1:
+        fail("Mushroom boar must have one explicit spawn condition set")
+    condition = conditions[0]
+    if "minecraft:is_experimental" in condition:
+        fail("Production spawn rules must not require the experimental API toggle")
+    if "minecraft:spawns_on_surface" not in condition:
+        fail("Mushroom boar spawn rule must restrict spawns to the surface")
+    if set(condition.get("minecraft:spawns_on_block_filter", [])) != {"minecraft:grass_block", "minecraft:podzol"}:
+        fail("Mushroom boar surface blocks must remain grass block and podzol")
+    if condition.get("minecraft:brightness_filter", {}).get("max") != 7:
+        fail("Mushroom boar spawn brightness ceiling must remain 7")
+    biome_tests = condition.get("minecraft:biome_filter", {}).get("any_of", [])
+    biome_tags = {entry.get("value") for entry in biome_tests if entry.get("test") == "has_biome_tag"}
+    if biome_tags != {"forest", "taiga"}:
+        fail("Mushroom boar spawn biomes must remain forest and taiga")
+
+
 def validate_pngs():
     pngs = sorted(RP.rglob("*.png"))
     if len(pngs) < 5:
@@ -161,6 +186,7 @@ def main():
     json_files = validate_json()
     validate_manifests()
     item_count, geometry_count = validate_references()
+    validate_spawn_rules()
     pngs = validate_pngs()
     validate_script()
     package_path = package()
