@@ -1,0 +1,18 @@
+{
+  "tag": "augmentation_survival",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 6319,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:sturdiness_effect_scales_max_health",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}

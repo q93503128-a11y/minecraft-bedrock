@@ -1,0 +1,37 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:recipe_shaped": {
+    "description": {
+      "identifier": "augmentation_survival:advanced_augment_device"
+    },
+    "tags": [
+      "crafting_table"
+    ],
+    "pattern": [
+      "IDI",
+      "GAG",
+      "IDI"
+    ],
+    "key": {
+      "I": {
+        "item": "minecraft:iron_ingot"
+      },
+      "D": {
+        "item": "minecraft:diamond"
+      },
+      "G": {
+        "item": "minecraft:gold_ingot"
+      },
+      "A": {
+        "item": "augmentation_survival:augment_device"
+      }
+    },
+    "result": {
+      "item": "augmentation_survival:advanced_augment_device",
+      "count": 1
+    },
+    "unlock": {
+      "context": "AlwaysUnlocked"
+    }
+  }
+}

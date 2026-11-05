@@ -1,0 +1,29 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Augmentation Survival BP",
+    "description": "Java Augmentation Survival port for Bedrock Edition.",
+    "uuid": "365c78a0-d74a-4f42-8e4b-2c147e1dc447",
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 26, 0]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "2f0e4ae9-8db6-49e8-90a0-b9157b7d465d",
+      "version": [0, 1, 0]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "710e79a5-24e9-466d-b67f-75e47600b173",
+      "version": [0, 1, 0],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    { "uuid": "e92ec459-cc68-452e-92f3-040ff9e602ae", "version": [0, 1, 0] },
+    { "module_name": "@minecraft/server", "version": "2.11.0" },
+    { "module_name": "@minecraft/server-ui", "version": "2.3.0" }
+  ]
+}

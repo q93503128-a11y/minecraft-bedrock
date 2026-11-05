@@ -1,0 +1,24 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Augmentation Survival Engine Tests",
+    "description": "Isolated server GameTests; never part of the player add-on.",
+    "uuid": "07b39e27-c5b7-46a8-a96a-b570c1c12238",
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 26, 0]
+  },
+  "modules": [
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "af3c6053-cbd7-4c83-8d7c-e4ef14b9aa23",
+      "version": [0, 1, 0],
+      "entry": "scripts/gametests.js"
+    }
+  ],
+  "dependencies": [
+    { "uuid": "365c78a0-d74a-4f42-8e4b-2c147e1dc447", "version": [0, 1, 0] },
+    { "module_name": "@minecraft/server", "version": "2.11.0" },
+    { "module_name": "@minecraft/server-gametest", "version": "1.0.0-beta" }
+  ]
+}

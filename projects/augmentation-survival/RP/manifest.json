@@ -1,0 +1,13 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Augmentation Survival RP",
+    "description": "Icons and localization for Augmentation Survival.",
+    "uuid": "e92ec459-cc68-452e-92f3-040ff9e602ae",
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 26, 0]
+  },
+  "modules": [
+    { "type": "resources", "uuid": "491cc8b8-2216-4fa3-ad4d-4e23bcfe1094", "version": [0, 1, 0] }
+  ]
+}

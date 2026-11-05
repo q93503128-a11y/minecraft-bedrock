@@ -1,0 +1,14 @@
+{
+  "resource_pack_name": "augmentation_survival",
+  "texture_name": "atlas.items",
+  "texture_data": {
+    "as_common_core": { "textures": "textures/items/common_core" },
+    "as_uncommon_core": { "textures": "textures/items/uncommon_core" },
+    "as_rare_core": { "textures": "textures/items/rare_core" },
+    "as_epic_core": { "textures": "textures/items/epic_core" },
+    "as_legendary_core": { "textures": "textures/items/legendary_core" },
+    "as_mythic_core": { "textures": "textures/items/mythic_core" },
+    "as_device": { "textures": "textures/items/device" },
+    "as_advanced_device": { "textures": "textures/items/advanced_device" }
+  }
+}

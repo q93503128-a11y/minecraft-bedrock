@@ -1,0 +1,12 @@
+{
+  "format_version": "1.26.0",
+  "minecraft:item": {
+    "description": { "identifier": "augmentation_survival:augment_device", "menu_category": { "category": "items" } },
+    "components": {
+      "minecraft:icon": { "textures": { "default": "as_device" } },
+      "minecraft:display_name": { "value": "item.augmentation_survival:augment_device.name" },
+      "minecraft:max_stack_size": 1,
+      "minecraft:use_modifiers": { "use_duration": 0.1, "movement_modifier": 1.0 }
+    }
+  }
+}

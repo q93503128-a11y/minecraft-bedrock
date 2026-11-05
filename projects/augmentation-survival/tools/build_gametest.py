@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+"""Assemble isolated production packs plus a separate BDS GameTest pack."""
+from __future__ import annotations
+
+import json
+import shutil
+from pathlib import Path
+
+PROJECT = Path(__file__).resolve().parents[1]
+OUTPUT = PROJECT / "build/gametest-packs"
+TEST_BP = PROJECT / "tests/gametest/BP"
+
+
+def main() -> None:
+    if OUTPUT.exists():
+        shutil.rmtree(OUTPUT)
+    OUTPUT.mkdir(parents=True)
+    shutil.copytree(PROJECT / "BP", OUTPUT / "AugmentationSurvival_BP")
+    shutil.copytree(PROJECT / "RP", OUTPUT / "AugmentationSurvival_RP")
+    shutil.copytree(TEST_BP, OUTPUT / "AugmentationSurvival_GameTests")
+    shutil.copy2(PROJECT / "BP/scripts/passives.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/passives.js")
+
+    manifests = [json.loads(path.read_text(encoding="utf-8")) for path in OUTPUT.glob("*/manifest.json")]
+    uuids = [manifest["header"]["uuid"] for manifest in manifests]
+    uuids.extend(module["uuid"] for manifest in manifests for module in manifest.get("modules", []))
+    if len(uuids) != len(set(uuids)):
+        raise SystemExit("Engine test packs contain duplicate header/module UUIDs.")
+    game_tests = json.loads((OUTPUT / "AugmentationSurvival_GameTests/manifest.json").read_text(encoding="utf-8"))
+    if not any(dependency.get("module_name") == "@minecraft/server-gametest" for dependency in game_tests.get("dependencies", [])):
+        raise SystemExit("GameTest module dependency is missing from the isolated test pack.")
+    if not any(dependency.get("uuid") == "365c78a0-d74a-4f42-8e4b-2c147e1dc447" for dependency in game_tests["dependencies"]):
+        raise SystemExit("The engine test pack must depend on the production behavior pack.")
+    print(f"ENGINE_TEST_PACKS_READY: {OUTPUT.relative_to(PROJECT)} ({len(manifests)} separate packs)")
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,21 @@
+{
+  "name": "augmentation-survival-bedrock",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build:addon": "python tools/build_icons.py && python tools/build_addon.py",
+    "test:static": "python -m unittest discover -s tests -v",
+    "build:engine-tests": "python tools/build_gametest.py",
+    "test:engine": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival --expect-registered 2 --json .bds/logs/augmentation-survival-results.json",
+    "check:api": "tsc -p tsconfig.json",
+    "verify": "npm run test:static && npm run check:api && npm run build:addon"
+  },
+  "devDependencies": {
+    "@minecraft/server": "2.11.0",
+    "@minecraft/server-ui": "2.3.0",
+    "@bedrock-core/bds-runner": "0.2.1",
+    "typescript": "5.9.3"
+  }
+}
