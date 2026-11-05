@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual("IMPLEMENTED_UNVERIFIED", next(item["port_status"] for item in data["augments"] if item["name_ko"] == "날 선 감각"))
+        self.assertEqual({"강건함", "날 선 감각"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
     def test_movement_attribute_experiments_are_not_counted_as_ports(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

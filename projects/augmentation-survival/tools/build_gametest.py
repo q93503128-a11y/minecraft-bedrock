@@ -15,11 +15,21 @@ def main() -> None:
     if OUTPUT.exists():
         shutil.rmtree(OUTPUT)
     OUTPUT.mkdir(parents=True)
-    shutil.copytree(PROJECT / "BP", OUTPUT / "AugmentationSurvival_BP")
+    production_bp = OUTPUT / "AugmentationSurvival_BP"
+    shutil.copytree(PROJECT / "BP", production_bp)
     shutil.copytree(PROJECT / "RP", OUTPUT / "AugmentationSurvival_RP")
     shutil.copytree(TEST_BP, OUTPUT / "AugmentationSurvival_GameTests")
-    shutil.copy2(PROJECT / "BP/scripts/passives.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/passives.js")
-    shutil.copy2(PROJECT / "BP/scripts/progression.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/progression.js")
+    shutil.copy2(
+        PROJECT / "tests/gametest/production-test-entry.js",
+        production_bp / "scripts/engine-test-entry.js",
+    )
+    production_manifest_path = production_bp / "manifest.json"
+    production_manifest = json.loads(production_manifest_path.read_text(encoding="utf-8"))
+    script_modules = [module for module in production_manifest.get("modules", []) if module.get("type") == "script"]
+    if len(script_modules) != 1 or script_modules[0].get("entry") != "scripts/main.js":
+        raise SystemExit("Production BP script entry changed; update the isolated GameTest entry wrapper.")
+    script_modules[0]["entry"] = "scripts/engine-test-entry.js"
+    production_manifest_path.write_text(json.dumps(production_manifest, indent=2) + "\n", encoding="utf-8")
     shutil.copy2(PROJECT / "BP/scripts/cores.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/cores.js")
 
     manifests = [json.loads(path.read_text(encoding="utf-8")) for path in OUTPUT.glob("*/manifest.json")]

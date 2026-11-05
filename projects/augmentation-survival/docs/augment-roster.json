@@ -40,10 +40,10 @@
       ],
       "interaction_contract_refs": [],
       "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "bedrock_method": "Scale root melee damage in the stable entityHurt before-event",
-      "api_constraints": "Stable before-event; only root entityAttack is classified; SimulatedPlayer event routing is unverified",
-      "test_method": "Not yet engine-verified; SimulatedPlayer hurt callback did not provide an event payload",
-      "port_status": "IMPLEMENTED_UNVERIFIED"
+      "bedrock_method": "Scale root melee damage in the stable entityHurt before-event; BDS verifies level 5 via production handler",
+      "api_constraints": "Stable before-event; BDS simulated-player entityAttack event is verified; physical client melee and acquisition path remain untested",
+      "test_method": "BDS GameTest: production before-event handler scales 10 simulated-player entityAttack damage to 12 at level 5; test-only production-pack entry seeds the pack-scoped property",
+      "port_status": "PARTIAL_BDS_VERIFIED"
     },
     {
       "id": "augmentation_survival:precise_aim",

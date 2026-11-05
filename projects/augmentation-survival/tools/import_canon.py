@@ -84,26 +84,26 @@ def main(source: Path, target: Path) -> None:
             "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs else "NO_DIRECT_MENTION_FOUND",
             "bedrock_method": (
                 "health_boost effect refreshed from saved level" if slug == "sturdiness" else
-                "Scale root melee damage in the stable entityHurt before-event" if slug == "keen_edge" else
+                "Scale root melee damage in the stable entityHurt before-event; BDS verifies level 5 via production handler" if slug == "keen_edge" else
                 "Attempt player minecraft:movement currentValue multiplier" if slug == "quick_feet" else
                 "Attempt player minecraft:underwater_movement currentValue multiplier" if slug == "webbed_feet" else
                 "Not assessed"
             ),
             "api_constraints": (
                 "D exact parity: health_boost is +4 HP/level vs Java +2; effectiveMax is read-only" if slug == "sturdiness" else
-                "Stable before-event; only root entityAttack is classified; SimulatedPlayer event routing is unverified" if slug == "keen_edge" else
+                "Stable before-event; BDS simulated-player entityAttack event is verified; physical client melee and acquisition path remain untested" if slug == "keen_edge" else
                 "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed" if slug == "quick_feet" else
                 "BDS 1.26.62.1: level 3 value persisted for one idle tick; lower-level persistence not reached; alternative not assessed" if slug == "webbed_feet" else
                 "Not assessed"
             ),
             "test_method": (
                 "BDS GameTest: max health at levels 1 and 5; core retained before selection result" if slug == "sturdiness" else
-                "Not yet engine-verified; SimulatedPlayer hurt callback did not provide an event payload" if slug == "keen_edge" else
+                "BDS GameTest: production before-event handler scales 10 simulated-player entityAttack damage to 12 at level 5; test-only production-pack entry seeds the pack-scoped property" if slug == "keen_edge" else
                 "Exploratory BDS GameTest: immediate exact level 1 multiplier accepted, then default observed on next tick; excluded from passing suite" if slug == "quick_feet" else
                 "Exploratory BDS GameTest: exact level 3 multiplier verified after one tick; lower-level follow-up assertion not reached; excluded from passing suite" if slug == "webbed_feet" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug == "sturdiness" else "IMPLEMENTED_UNVERIFIED" if slug == "keen_edge" else "NOT_PORTED",
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge"} else "NOT_PORTED",
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}

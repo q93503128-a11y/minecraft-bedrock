@@ -1,8 +1,6 @@
-import { GameMode, ItemStack } from "@minecraft/server";
+import { EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
 import { synthesizeCore } from "./cores.js";
-import { applySturdinessEffect } from "./passives.js";
-import { commitCoreSelection, LEVELS_KEY } from "./progression.js";
 
 const TAG = "augmentation_survival";
 const STRUCTURE = "gametests:glass_cells";
@@ -38,6 +36,73 @@ GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_c
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
+GameTest.registerAsync("AugmentationSurvival", "damage_event_exposes_simulated_player_damage", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASDamageEvent", GameMode.survival);
+  const health = player.getComponent("minecraft:health");
+  ensure(health, "Simulated player health component was unavailable.");
+  await test.idle(1);
+
+  /** @type {{damage:number,cause:string,hurtEntityId:string}|undefined} */
+  let beforeDamage;
+  /** @type {{damage:number,cause:string,hurtEntityId:string}|undefined} */
+  let afterDamage;
+  const beforeCallback = (event) => {
+    if (!event?.hurtEntity || event.hurtEntity.id !== player.id) return;
+    beforeDamage = { damage: event.damage, cause: event.damageSource.cause, hurtEntityId: event.hurtEntity.id };
+  };
+  const afterCallback = (event) => {
+    if (!event?.hurtEntity || event.hurtEntity.id !== player.id) return;
+    afterDamage = { damage: event.damage, cause: event.damageSource.cause, hurtEntityId: event.hurtEntity.id };
+  };
+  world.beforeEvents.entityHurt.subscribe(beforeCallback);
+  world.afterEvents.entityHurt.subscribe(afterCallback);
+  const applied = player.applyDamage(10, { cause: EntityDamageCause.magic });
+  await test.idle(1);
+  world.beforeEvents.entityHurt.unsubscribe(beforeCallback);
+  world.afterEvents.entityHurt.unsubscribe(afterCallback);
+
+  ensure(applied, "Simulated player rejected direct test damage.");
+  ensure(beforeDamage?.hurtEntityId === player.id, `Before-event payload missing for simulated player; captured ${JSON.stringify(beforeDamage)}.`);
+  ensure(afterDamage?.hurtEntityId === player.id, `After-event payload missing for simulated player; captured ${JSON.stringify(afterDamage)}.`);
+  ensure(beforeDamage.cause === EntityDamageCause.magic && afterDamage.cause === EntityDamageCause.magic, "Damage event cause did not match the applied magic damage.");
+  ensure(Math.abs(health.defaultValue - health.currentValue - 10) < 1e-6, `Unarmored magic damage expected 10 health loss; got ${health.defaultValue - health.currentValue}.`);
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "keen_edge_scales_server_root_melee_damage", async (test) => {
+  const attacker = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASKeenEdge", GameMode.survival);
+  const target = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 3 }, "ASKeenTarget", GameMode.survival);
+  const health = target.getComponent("minecraft:health");
+  ensure(health, "Target player health component was unavailable.");
+  await test.idle(1);
+  ensure(attacker.name === "ASKeenEdge", "The production-pack test hook did not recognize the simulated attacker.");
+
+  /** @type {{damage:number,cause:string,attackerId?:string,attackerType?:string,attackerIsPlayer?:boolean}|undefined} */
+  let observed;
+  const callback = (event) => {
+    if (!event?.hurtEntity || event.hurtEntity.id !== target.id) return;
+    observed = {
+      damage: event.damage,
+      cause: event.damageSource.cause,
+      attackerId: event.damageSource.damagingEntity?.id,
+      attackerType: event.damageSource.damagingEntity?.typeId,
+      attackerIsPlayer: event.damageSource.damagingEntity instanceof Player,
+    };
+  };
+  world.beforeEvents.entityHurt.subscribe(callback);
+  const initialHealth = health.currentValue;
+  const applied = target.applyDamage(10, {
+    cause: EntityDamageCause.entityAttack,
+    damagingEntity: attacker,
+  });
+  await test.idle(1);
+  world.beforeEvents.entityHurt.unsubscribe(callback);
+  const damageTaken = initialHealth - health.currentValue;
+  ensure(applied, "The simulated player target rejected root melee test damage.");
+  ensure(Math.abs(damageTaken - 12) < 1e-6, `Keen Edge level 5 expected 12 damage from a 10-damage root melee event; got ${damageTaken}; observed=${JSON.stringify(observed)}.`);
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
 GameTest.registerAsync("AugmentationSurvival", "core_synthesis_is_atomic_and_conserves_items", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreSynthesis", GameMode.survival);
   const inventory = inventoryOf(player);
@@ -64,35 +129,33 @@ GameTest.registerAsync("AugmentationSurvival", "core_synthesis_is_atomic_and_con
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "sturdiness_effect_scales_max_health", async (test) => {
-  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASSturdiness", GameMode.survival);
-  const health = player.getComponent("minecraft:health");
-  ensure(health, "Simulated player health component was unavailable.");
-  const baseMax = health.effectiveMax;
-  applySturdinessEffect(player, 1);
-  await test.idle(1);
-  ensure(health.effectiveMax === baseMax + 4, `Expected +4 max health at level 1; got ${health.effectiveMax - baseMax}.`);
-  applySturdinessEffect(player, 5);
-  await test.idle(1);
-  ensure(health.effectiveMax === baseMax + 20, `Expected +20 max health at level 5; got ${health.effectiveMax - baseMax}.`);
+  const level1 = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASSturdinessLevel1", GameMode.survival);
+  const level5 = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 3 }, "ASSturdinessLevel5", GameMode.survival);
+  const health1 = level1.getComponent("minecraft:health");
+  const health5 = level5.getComponent("minecraft:health");
+  ensure(health1 && health5, "Simulated player health component was unavailable.");
+  const baseMax1 = health1.effectiveMax;
+  const baseMax5 = health5.effectiveMax;
+  await test.idle(2);
+  ensure(health1.effectiveMax === baseMax1 + 4, `Expected production +4 max health at level 1; got ${health1.effectiveMax - baseMax1}.`);
+  ensure(health5.effectiveMax === baseMax5 + 20, `Expected production +20 max health at level 5; got ${health5.effectiveMax - baseMax5}.`);
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "core_selection_commits_level_and_preserves_core_on_rejection", async (test) => {
-  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreCommit", GameMode.survival);
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreCommitProduction", GameMode.survival);
   const inventory = inventoryOf(player);
-  const augment = { id: "augmentation_survival:sturdiness", max_level: 5 };
-  inventory.setItem(0, new ItemStack(CORE, 2));
+  const health = player.getComponent("minecraft:health");
+  ensure(health, "Simulated player health component was unavailable.");
+  const baseMax = health.effectiveMax;
+  await test.idle(2);
 
-  const first = commitCoreSelection(player, CORE, augment);
-  ensure(first.ok && first.level === 1, "A valid selection did not commit level 1.");
-  ensure(countItem(inventory, CORE) === 1, "A successful selection did not consume exactly one core.");
-  const savedLevels = JSON.parse(player.getDynamicProperty(LEVELS_KEY));
-  ensure(savedLevels[augment.id] === 1, "The selected level was not saved on the player.");
-
-  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ [augment.id]: 5 }));
-  const rejected = commitCoreSelection(player, CORE, augment);
-  ensure(!rejected.ok && rejected.reason === "max_level", "A max-level augment was not rejected.");
-  ensure(countItem(inventory, CORE) === 1, "A rejected selection consumed a core.");
+  const tags = player.getTags();
+  ensure(tags.includes("as_test_core_level_one"), "Production pack did not commit level 1.");
+  ensure(tags.includes("as_test_core_level_stored"), "Production pack did not read back the committed level from its own dynamic-property namespace.");
+  ensure(tags.includes("as_test_core_max_rejected"), "Production pack did not reject the max-level selection.");
+  ensure(countItem(inventory, CORE) === 1, "Production transaction did not consume exactly one core across commit and rejection.");
+  ensure(health.effectiveMax === baseMax + 4, `Production pack did not restore the committed level 1 into Sturdiness; expected +4 HP, got ${health.effectiveMax - baseMax}.`);
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
