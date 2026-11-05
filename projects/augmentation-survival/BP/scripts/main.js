@@ -13,13 +13,28 @@ const TIERS = ["common", "uncommon", "rare", "epic", "legendary", "mythic"];
 const TIER_KO = { common: "일반", uncommon: "고급", rare: "희귀", epic: "영웅", legendary: "전설", mythic: "신화" };
 const CORE_FOR_TIER = Object.fromEntries(TIERS.map(tier => [tier, `${NS}:${tier}_augment_core`]));
 const CORE_TIER = Object.fromEntries(TIERS.map(tier => [CORE_FOR_TIER[tier], tier]));
-const OPEN_FORMS = new Set();
+const OPEN_FORMS = new Map();
 const PENDING_OFFERS = new Map();
+let NEXT_OFFER_TOKEN = 0;
+let NEXT_FORM_TOKEN = 0;
 const SYNTHESIS = TIERS.slice(0, -1).map((tier, index) => ({ from: tier, to: TIERS[index + 1] }));
 /** @type {Augment[]} */
 const AUGMENT_LIST = AUGMENTS;
 /** @type {Map<string, Augment>} */
 const AUGMENT_BY_ID = new Map(AUGMENT_LIST.map(augment => [augment.id, augment]));
+
+/** @param {Player} player */
+function claimForm(player) {
+  if (OPEN_FORMS.has(player.id)) return undefined;
+  const token = ++NEXT_FORM_TOKEN;
+  OPEN_FORMS.set(player.id, token);
+  return token;
+}
+
+/** @param {Player} player @param {number} token */
+function releaseForm(player, token) {
+  if (OPEN_FORMS.get(player.id) === token) OPEN_FORMS.delete(player.id);
+}
 
 /** @param {Player} player */
 function playerLevels(player) {
@@ -107,7 +122,8 @@ async function openOffer(player, coreId) {
   if (offers.length < 3) {
     player.sendMessage(`선택 가능한 증강이 ${offers.length}개 남았어요.`);
   }
-  PENDING_OFFERS.set(player.id, { coreId, offers });
+  const offerToken = ++NEXT_OFFER_TOKEN;
+  PENDING_OFFERS.set(player.id, { offerToken, coreId, offers });
   const form = new ActionFormData()
     .title(`${TIER_KO[tier]} 증강 코어`)
     .body(offers.map((augment, index) => {
@@ -118,12 +134,12 @@ async function openOffer(player, coreId) {
     form.button(`${index + 1}. ${augment.name_ko} · Lv.${levelOf(player, augment) + 1}/${augment.max_level}`);
   }
 
-  OPEN_FORMS.add(player.id);
+  OPEN_FORMS.set(player.id, offerToken);
   try {
     const response = await form.show(player);
     if (response.canceled || response.selection === undefined || response.selection >= offers.length) return;
     const pending = PENDING_OFFERS.get(player.id);
-    if (!pending || pending.coreId !== coreId || pending.offers.length !== offers.length) return;
+    if (!pending || pending.offerToken !== offerToken || pending.coreId !== coreId || pending.offers.length !== offers.length) return;
     const selected = pending.offers[response.selection];
     if (!selected || !AUGMENT_BY_ID.has(selected.id)) return;
     // Final validation and both mutations run in one server callback before any await.
@@ -140,8 +156,8 @@ async function openOffer(player, coreId) {
   } catch {
     // A busy screen, player leaving, or form rejection leaves the core untouched.
   } finally {
-    OPEN_FORMS.delete(player.id);
-    PENDING_OFFERS.delete(player.id);
+    releaseForm(player, offerToken);
+    if (PENDING_OFFERS.get(player.id)?.offerToken === offerToken) PENDING_OFFERS.delete(player.id);
   }
 }
 
@@ -169,7 +185,8 @@ async function showOwnedPage(player, page = 0) {
   const prev = safePage > 0;
   let nextPage = -1;
   let selectedAugment;
-  OPEN_FORMS.add(player.id);
+  const formToken = claimForm(player);
+  if (formToken === undefined) return;
   try {
     const response = await form.show(player);
     if (response.canceled || response.selection === undefined) return;
@@ -179,7 +196,7 @@ async function showOwnedPage(player, page = 0) {
   } catch {
     // No state changes occur in this read-only screen.
   } finally {
-    OPEN_FORMS.delete(player.id);
+    releaseForm(player, formToken);
   }
   if (selectedAugment) await showAugmentDetail(player, selectedAugment, safePage);
   else if (nextPage >= 0) await showOwnedPage(player, nextPage);
@@ -191,13 +208,14 @@ async function showAugmentDetail(player, augment, page) {
     .title(`${augment.name_ko} · Lv.${augment.level}/${augment.max_level}`)
     .body(`${TIER_KO[augment.tier]} 증강\n\n${augment.canonical_effect_ko}`)
     .button("보유 증강 목록으로");
-  OPEN_FORMS.add(player.id);
+  const formToken = claimForm(player);
+  if (formToken === undefined) return;
   try {
     await form.show(player);
   } catch {
     // The read-only detail form does not mutate player state.
   } finally {
-    OPEN_FORMS.delete(player.id);
+    releaseForm(player, formToken);
   }
   await showOwnedPage(player, page);
 }
@@ -211,14 +229,15 @@ async function openBasicDevice(player) {
     .button(`보유 증강 확인 (${ownedAugments(player).length}/149)`)
     .button("닫기");
   let openInventory = false;
-  OPEN_FORMS.add(player.id);
+  const formToken = claimForm(player);
+  if (formToken === undefined) return;
   try {
     const response = await form.show(player);
     openInventory = !response.canceled && response.selection === 0;
   } catch {
     // UI unavailable; no items or state are changed.
   } finally {
-    OPEN_FORMS.delete(player.id);
+    releaseForm(player, formToken);
   }
   if (openInventory) await showOwnedPage(player, 0);
 }
@@ -234,7 +253,8 @@ async function openSynthesis(player) {
     form.button(`${TIER_KO[step.from]} 3개 → ${TIER_KO[step.to]} 1개\n보유 ${countItem(player, sourceId)}`);
   }
   form.button("닫기");
-  OPEN_FORMS.add(player.id);
+  const formToken = claimForm(player);
+  if (formToken === undefined) return;
   try {
     const response = await form.show(player);
     const step = response.selection === undefined ? undefined : SYNTHESIS[response.selection];
@@ -262,7 +282,7 @@ async function openSynthesis(player) {
   } catch {
     // No inputs are consumed if the form does not return a selection.
   } finally {
-    OPEN_FORMS.delete(player.id);
+    releaseForm(player, formToken);
   }
 }
 
@@ -280,10 +300,17 @@ function applyImplementedPassives() {
 world.afterEvents.itemUse.subscribe(({ source, itemStack }) => {
   if (!(source instanceof Player)) return;
   const itemId = itemStack.typeId;
-  if (CORE_TIER[itemId]) system.run(() => void openOffer(source, itemId));
-  else if (itemId === `${NS}:augment_device`) system.run(() => void openBasicDevice(source));
-  else if (itemId === `${NS}:advanced_augment_device`) system.run(() => void openSynthesis(source));
+  if (CORE_TIER[itemId]) system.run(() => void openOffer(source, itemId).catch(() => {}));
+  else if (itemId === `${NS}:augment_device`) system.run(() => void openBasicDevice(source).catch(() => {}));
+  else if (itemId === `${NS}:advanced_augment_device`) system.run(() => void openSynthesis(source).catch(() => {}));
 });
 
-world.afterEvents.playerSpawn.subscribe(({ player }) => system.runTimeout(() => applySturdiness(player), 1));
+world.afterEvents.playerLeave.subscribe(({ playerId }) => {
+  OPEN_FORMS.delete(playerId);
+  PENDING_OFFERS.delete(playerId);
+});
+
+world.afterEvents.playerSpawn.subscribe(({ player }) => system.runTimeout(() => {
+  try { applySturdiness(player); } catch { /* The player can leave before this deferred callback runs. */ }
+}, 1));
 system.runInterval(applyImplementedPassives, 200);

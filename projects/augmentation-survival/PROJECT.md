@@ -33,6 +33,7 @@ The pack is generated at `build/AugmentationSurvival-0.1.0.mcaddon`. The build o
 
 - Exact Java-shaped recipe for a common core and both device tiers.
 - Using a core presents up to three eligible, unmaxed augments of that core's tier. The selection remains pending until the server confirms the player still has a core; only then is one core removed and the selected level saved.
+- Form locks and pending choices carry session tokens. Player leave clears their UI state, and an older delayed form response cannot clear or commit over a later session.
 - The basic device opens a paged, read-only inventory of owned augments.
 - The advanced device offers the canonical five 3:1 adjacent-tier synthesis transactions. Inputs are checked and consumed on the server; output failure triggers an input rollback.
 - Player augment levels are stored in a versioned dynamic property, intended to survive relog/restart through Bedrock entity persistence; persistence across actual reconnects has not yet been tested.

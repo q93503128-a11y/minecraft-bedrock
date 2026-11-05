@@ -3,7 +3,7 @@
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Harness: `@bedrock-core/bds-runner` 0.2.1; generated isolated behavior/resource/test packs; GameTest experiment enabled only in the runner-owned disposable world.
 - Command: `npm run test:engine`.
-- Result: **PASS — 3 passed, 0 failed**, runtime 4.7 seconds; no script errors or infrastructure error in the machine summary.
+- Result: **PASS — 3 passed, 0 failed**, runtime 6.5 seconds on the latest run; no script errors or infrastructure error in the machine summary.
 
 | GameTest | Result | What it establishes |
 | --- | --- | --- |

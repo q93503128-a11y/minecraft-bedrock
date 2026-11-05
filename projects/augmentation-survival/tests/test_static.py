@@ -31,6 +31,12 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("world.beforeEvents.entityHurt.subscribe", (ROOT / "BP/scripts/combat.js").read_text(encoding="utf-8"))
         self.assertIn("world.afterEvents.playerSpawn", script)
 
+    def test_disconnect_clears_ui_state_and_stale_form_tokens_cannot_unlock_new_session(self):
+        script = (ROOT / "BP/scripts/main.js").read_text(encoding="utf-8")
+        self.assertIn("world.afterEvents.playerLeave.subscribe", script)
+        self.assertIn("if (OPEN_FORMS.get(player.id) === token) OPEN_FORMS.delete(player.id)", script)
+        self.assertIn("pending.offerToken !== offerToken", script)
+
 
 if __name__ == "__main__":
     unittest.main()
