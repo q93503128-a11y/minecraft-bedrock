@@ -68,3 +68,4 @@ GameTest.registerAsync("AugmentationSurvival", "core_selection_commits_level_and
   ensure(countItem(inventory, CORE) === 1, "A rejected selection consumed a core.");
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+

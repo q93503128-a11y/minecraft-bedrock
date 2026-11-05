@@ -13,6 +13,12 @@ function levelsOf(player) {
   return {};
 }
 
+/** @param {Player} player @param {string} augmentId @param {number} maxLevel */
+export function getStoredAugmentLevel(player, augmentId, maxLevel) {
+  const level = Number(levelsOf(player)[augmentId]);
+  return Number.isInteger(level) && level > 0 ? Math.min(level, maxLevel) : 0;
+}
+
 /**
  * Server-authoritative core-to-level transaction. The level is written first and
  * restored if the core cannot be removed, so callers never partially commit.

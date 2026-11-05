@@ -2,7 +2,8 @@ import { ItemStack, Player, system, world } from "@minecraft/server";
 import { ActionFormData } from "@minecraft/server-ui";
 import { AUGMENTS } from "./augment-data.js";
 import { applySturdinessEffect } from "./passives.js";
-import { commitCoreSelection, LEVELS_KEY } from "./progression.js";
+import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progression.js";
+import "./combat.js";
 
 const NS = "augmentation_survival";
 /** @typedef {{id:string, name_ko:string, tier:string, tier_ko:string, max_level:number, canonical_effect_ko:string}} Augment */
@@ -33,9 +34,7 @@ function playerLevels(player) {
 
 /** @param {Player} player @param {Augment} augment */
 function levelOf(player, augment) {
-  const levels = playerLevels(player);
-  const level = Number(levels[augment.id]);
-  return Number.isInteger(level) && level > 0 ? Math.min(level, augment.max_level) : 0;
+  return getStoredAugmentLevel(player, augment.id, augment.max_level);
 }
 
 /** @param {Player} player */

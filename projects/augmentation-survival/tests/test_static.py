@@ -16,6 +16,7 @@ class StaticAddonTests(unittest.TestCase):
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         self.assertEqual({"강건함"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual("IMPLEMENTED_UNVERIFIED", next(item["port_status"] for item in data["augments"] if item["name_ko"] == "날 선 감각"))
 
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
@@ -27,6 +28,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("setDynamicProperty(LEVELS_KEY", progression)
         self.assertIn("commitCoreSelection(player, coreId, selected)", script)
         self.assertIn("world.afterEvents.itemUse.subscribe", script)
+        self.assertIn("world.beforeEvents.entityHurt.subscribe", (ROOT / "BP/scripts/combat.js").read_text(encoding="utf-8"))
         self.assertIn("world.afterEvents.playerSpawn", script)
 
 

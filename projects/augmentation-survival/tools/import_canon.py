@@ -82,10 +82,22 @@ def main(source: Path, target: Path) -> None:
             "java_source_paths": source_paths,
             "interaction_contract_refs": interaction_refs,
             "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs else "NO_DIRECT_MENTION_FOUND",
-            "bedrock_method": "health_boost effect refreshed from saved level" if slug == "sturdiness" else "Not assessed",
-            "api_constraints": "Stable effect API; persistence and acquisition flow not tested" if slug == "sturdiness" else "Not assessed",
-            "test_method": "BDS GameTest: max health at levels 1 and 5; core retained before selection result" if slug == "sturdiness" else "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug == "sturdiness" else "NOT_PORTED",
+            "bedrock_method": (
+                "health_boost effect refreshed from saved level" if slug == "sturdiness" else
+                "Scale root melee damage in the stable entityHurt before-event" if slug == "keen_edge" else
+                "Not assessed"
+            ),
+            "api_constraints": (
+                "Stable effect API; persistence and acquisition flow not tested" if slug == "sturdiness" else
+                "Stable before-event; only root entityAttack is classified; SimulatedPlayer event routing is unverified" if slug == "keen_edge" else
+                "Not assessed"
+            ),
+            "test_method": (
+                "BDS GameTest: max health at levels 1 and 5; core retained before selection result" if slug == "sturdiness" else
+                "Not yet engine-verified; SimulatedPlayer hurt callback did not provide an event payload" if slug == "keen_edge" else
+                "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
+            ),
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug == "sturdiness" else "IMPLEMENTED_UNVERIFIED" if slug == "keen_edge" else "NOT_PORTED",
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}

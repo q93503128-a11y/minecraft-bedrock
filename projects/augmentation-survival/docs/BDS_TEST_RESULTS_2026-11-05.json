@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 7002,
+  "durationMs": 4717,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
