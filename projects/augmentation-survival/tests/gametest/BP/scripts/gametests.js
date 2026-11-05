@@ -2,7 +2,7 @@ import { BlockPermutation, EntityDamageCause, GameMode, ItemStack, Player, world
 import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
-import { applyBumperCropHarvest, bumperCropBonusChance } from "./harvest.js";
+import { applyCropHarvestBonuses, bumperCropBonusChance, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { LEVELS_KEY } from "./progression.js";
 
@@ -17,6 +17,7 @@ const ENABLED_CANDIDATE_IDS = [
   "augmentation_survival:light_landing",
   "augmentation_survival:strong_lungs",
   "augmentation_survival:bumper_crop",
+  "augmentation_survival:seed_saver",
 ];
 
 function ensure(condition, message) {
@@ -59,7 +60,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
-GameTest.registerAsync("AugmentationSurvival", "bumper_crop_matches_maturity_and_all_five_exact_chance_thresholds", async (test) => {
+GameTest.registerAsync("AugmentationSurvival", "crop_bonus_augments_match_maturity_levels_products_and_independent_rolls", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASBumperCrop", GameMode.survival);
   const cropBlock = player.dimension.getBlock({
     x: Math.floor(player.location.x),
@@ -96,9 +97,9 @@ GameTest.registerAsync("AugmentationSurvival", "bumper_crop_matches_maturity_and
     ensure(Math.abs(chance - 0.08 * level) < 1e-12, `Level ${level} chance should be ${0.08 * level}; got ${chance}.`);
     player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:bumper_crop": level }));
     const before = wheatCount();
-    ensure(applyBumperCropHarvest(event, () => chance - 1e-9), `Level ${level} did not grant below its exact chance boundary.`);
+    ensure(applyCropHarvestBonuses(event, () => chance - 1e-9), `Level ${level} did not grant below its exact chance boundary.`);
     ensure(wheatCount() === before + 1, `Level ${level} did not spawn exactly one extra wheat item.`);
-    ensure(!applyBumperCropHarvest(event, () => chance), `Level ${level} granted at its exclusive chance boundary.`);
+    ensure(!applyCropHarvestBonuses(event, () => chance), `Level ${level} granted at its exclusive chance boundary.`);
     ensure(wheatCount() === before + 1, `Level ${level} spawned an item at its exclusive chance boundary.`);
   }
 
@@ -113,9 +114,57 @@ GameTest.registerAsync("AugmentationSurvival", "bumper_crop_matches_maturity_and
       brokenBlockPermutation: BlockPermutation.resolve(blockId, { growth }),
     };
     const before = productCount(product);
-    ensure(applyBumperCropHarvest(cropEvent, () => 0), `${blockId} did not receive its canonical extra product when the roll succeeded.`);
+    ensure(applyCropHarvestBonuses(cropEvent, () => 0), `${blockId} did not receive its canonical extra product when the roll succeeded.`);
     ensure(productCount(product) === before + 1, `${blockId} did not spawn exactly one ${product}.`);
   }
+
+  for (let level = 1; level <= 3; level += 1) {
+    const chance = seedSaverBonusChance(level);
+    ensure(Math.abs(chance - 0.15 * level) < 1e-12, `Seed Saver level ${level} chance should be ${0.15 * level}; got ${chance}.`);
+    player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:seed_saver": level }));
+    const before = productCount("minecraft:wheat_seeds");
+    ensure(applyCropHarvestBonuses(event, () => chance - 1e-9), `Seed Saver level ${level} did not grant below its chance boundary.`);
+    ensure(productCount("minecraft:wheat_seeds") === before + 1, `Seed Saver level ${level} did not add one planting item.`);
+    ensure(!applyCropHarvestBonuses(event, () => chance), `Seed Saver level ${level} granted at its exclusive boundary.`);
+    ensure(productCount("minecraft:wheat_seeds") === before + 1, `Seed Saver level ${level} spawned at its exclusive boundary.`);
+  }
+
+  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:seed_saver": 3 }));
+  for (const [blockId, growth, plantingItem] of [
+    ["minecraft:wheat", 7, "minecraft:wheat_seeds"],
+    ["minecraft:carrots", 7, "minecraft:carrot"],
+    ["minecraft:potatoes", 7, "minecraft:potato"],
+    ["minecraft:beetroot", 3, "minecraft:beetroot_seeds"],
+  ]) {
+    const cropEvent = {
+      ...event,
+      brokenBlockPermutation: BlockPermutation.resolve(blockId, { growth }),
+    };
+    const before = productCount(plantingItem);
+    ensure(applyCropHarvestBonuses(cropEvent, () => 0), `${blockId} did not receive its planting item bonus.`);
+    ensure(productCount(plantingItem) === before + 1, `${blockId} did not spawn exactly one ${plantingItem}.`);
+  }
+
+  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+    "augmentation_survival:bumper_crop": 5,
+    "augmentation_survival:seed_saver": 3,
+  }));
+  const bothBeforeProduct = productCount("minecraft:wheat");
+  const bothBeforeSeed = productCount("minecraft:wheat_seeds");
+  const sequence = [0.39, 0.44];
+  let sequenceIndex = 0;
+  ensure(applyCropHarvestBonuses(event, () => sequence[sequenceIndex++]), "The two successful crop bonuses were not both applied.");
+  ensure(sequenceIndex === 2, "Bumper Crop and Seed Saver did not roll independently in source order.");
+  ensure(productCount("minecraft:wheat") === bothBeforeProduct + 1, "Bumper Crop did not add its product alongside Seed Saver.");
+  ensure(productCount("minecraft:wheat_seeds") === bothBeforeSeed + 1, "Seed Saver did not add its planting item alongside Bumper Crop.");
+
+  const seedOnlyBeforeProduct = productCount("minecraft:wheat");
+  const seedOnlyBeforeSeed = productCount("minecraft:wheat_seeds");
+  const seedOnlyRolls = [0.40, 0.44];
+  sequenceIndex = 0;
+  ensure(applyCropHarvestBonuses(event, () => seedOnlyRolls[sequenceIndex++]), "Seed Saver should proc when Bumper Crop misses.");
+  ensure(productCount("minecraft:wheat") === seedOnlyBeforeProduct, "A missed Bumper Crop roll spawned a crop product.");
+  ensure(productCount("minecraft:wheat_seeds") === seedOnlyBeforeSeed + 1, "Seed Saver failed its independent successful roll.");
 
   player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:bumper_crop": 5 }));
   let rolls = 0;
@@ -123,16 +172,16 @@ GameTest.registerAsync("AugmentationSurvival", "bumper_crop_matches_maturity_and
     ...event,
     brokenBlockPermutation: BlockPermutation.resolve("minecraft:wheat", { growth: 6 }),
   };
-  ensure(!applyBumperCropHarvest(immature, () => { rolls += 1; return 0; }), "An immature wheat crop received a bonus.");
+  ensure(!applyCropHarvestBonuses(immature, () => { rolls += 1; return 0; }), "An immature wheat crop received a bonus.");
   ensure(rolls === 0, "An immature crop consumed a bonus roll.");
   const unsupported = {
     ...event,
     brokenBlockPermutation: BlockPermutation.resolve("minecraft:short_grass"),
   };
-  ensure(!applyBumperCropHarvest(unsupported, () => { rolls += 1; return 0; }), "A non-crop block received a bonus.");
+  ensure(!applyCropHarvestBonuses(unsupported, () => { rolls += 1; return 0; }), "A non-crop block received a bonus.");
   ensure(rolls === 0, "An unsupported block consumed a bonus roll.");
   player.setDynamicProperty(LEVELS_KEY, JSON.stringify({}));
-  ensure(!applyBumperCropHarvest(event, () => { rolls += 1; return 0; }), "An unowned augment granted a crop bonus.");
+  ensure(!applyCropHarvestBonuses(event, () => { rolls += 1; return 0; }), "An unowned augment granted a crop bonus.");
   ensure(rolls === 0, "An unowned augment consumed a bonus roll.");
   test.succeed();
 }).maxTicks(40).structureName(STRUCTURE).tag(TAG);
