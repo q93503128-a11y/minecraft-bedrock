@@ -1,0 +1,9 @@
+{
+  "version": "1.26.62.1",
+  "channel": "stable",
+  "properties": {
+    "difficulty": "normal",
+    "enable-lan-visibility": false,
+    "server-name": "Monster Restaurant Isolated Engine Tests"
+  }
+}

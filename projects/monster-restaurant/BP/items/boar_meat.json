@@ -20,6 +20,10 @@
       "minecraft:food": {
         "nutrition": 2,
         "saturation_modifier": 0.3
+      },
+      "minecraft:use_modifiers": {
+        "use_duration": 1.6,
+        "movement_modifier": 0.35
       }
     }
   }

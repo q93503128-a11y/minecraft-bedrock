@@ -96,7 +96,8 @@ def validate_references():
         fail("Skillet recipe refers to an undefined item")
 
     script = (BP / "scripts" / "main.js").read_text(encoding="utf-8")
-    if f'{NAMESPACE}:skillet_interaction' not in script or f'"{NAMESPACE}:boar_meat"' not in script or f'"{NAMESPACE}:roast_boar"' not in script or f'{NAMESPACE}:cooked_roast_boar' not in script:
+    cooking = (BP / "scripts" / "cooking.js").read_text(encoding="utf-8")
+    if f'{NAMESPACE}:skillet_interaction' not in script or f'{NAMESPACE}:boar_meat' not in cooking or f'{NAMESPACE}:roast_boar' not in cooking or f'{NAMESPACE}:cooked_roast_boar' not in cooking:
         fail("Cooking script identifiers do not match pack content")
     block_components = block["components"]
     if f'{NAMESPACE}:skillet_interaction' not in block_components:
@@ -136,10 +137,11 @@ def validate_pngs():
 
 
 def validate_script():
-    script = BP / "scripts" / "main.js"
-    result = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True)
-    if result.returncode:
-        fail(result.stderr.strip() or "JavaScript syntax check failed")
+    scripts = sorted((BP / "scripts").rglob("*.js"))
+    for script in scripts:
+        result = subprocess.run(["node", "--check", str(script)], capture_output=True, text=True)
+        if result.returncode:
+            fail(result.stderr.strip() or f"JavaScript syntax check failed: {script.relative_to(PROJECT)}")
 
 
 def package():
@@ -168,7 +170,7 @@ def main():
     print(f"Bedrock geometries: {geometry_count}")
     print(f"PNG textures: {len(pngs)}")
     print(f"Package: {package_path.relative_to(PROJECT)} ({package_path.stat().st_size:,} bytes)")
-    print("ENGINE_PASS: NOT_RUN")
+    print("ENGINE_TESTS: separate GameTest/BDS suite; run npm run test:engine")
 
 
 if __name__ == "__main__":

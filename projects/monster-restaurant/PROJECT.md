@@ -2,7 +2,7 @@
 
 - Project slug: `monster-restaurant`
 - Edition: Minecraft Bedrock Edition
-- Status: **M0 SOURCE + STATIC PACKAGE COMPLETE / ENGINE NOT RUN**
+- Status: **M0 SOURCE + STATIC PACKAGE + BDS GAMETEST PASS / WINDOWS CLIENT REVIEW NOT RUN**
 - Canonical design: [GAME_DESIGN.md](GAME_DESIGN.md)
 - External gameplay/UX references: [docs/EXTERNAL_REFERENCES.md](docs/EXTERNAL_REFERENCES.md)
 - Gameplay/content index: [docs/CONTENT_CATALOG.md](docs/CONTENT_CATALOG.md)
@@ -13,14 +13,16 @@
 ## M0 technical baseline
 
 - Namespace: `monster_restaurant`.
-- Installed Minecraft Bedrock: `1.26.6005.0` (Microsoft Store package; identified from Appx metadata on 2026-11-05).
+- Installed Minecraft Bedrock Appx: `1.26.6201.0` (current local package, confirmed from Appx metadata on 2026-11-05; previous M0 notes recorded `1.26.6005.0`).
 - Target engine baseline: Bedrock `26.60` / manifest `min_engine_version` `[1, 26, 0]`.
 - Stable Script API: `@minecraft/server` `2.11.0`; `@minecraft/server-ui` `2.3.0`.
 - Behavior Pack header UUID: `5c9831a9-a01f-4d62-94dc-4678bb512a38`; data module UUID `b9512485-b8ba-4b8b-9d71-f052fca18e4f`; script module UUID `2bca6332-0800-4dcb-a573-cc82bb143a6d`.
 - Resource Pack header UUID: `a39f9b7e-b5d8-48bb-9567-7ac26de9bd8e`; resource module UUID `734ccf31-3122-4cb5-9a0e-e90ca47c1f9e`.
-- Current source: `BP/`, `RP/`, editable Blockbench models in `assets/blockbench/`.
+- Current source: `BP/`, `RP/`, editable Blockbench models in `assets/blockbench/`, separate BDS GameTests in `tests/gametest/`, and pack/test/deployment tools in `tools/`.
 - Repeatable package: `build/MonsterRestaurant-0.1.0.mcaddon`.
-- Static verification: PASS. Minecraft import/gameplay/render verification: NOT_RUN.
+- Static verification: PASS. Six headless GameTests pass on official BDS `1.26.62.1`; Windows client import, scripted UI, persistence after reconnect, and visual review: NOT_RUN.
+- Development pack deployment: `tools/deploy_client_dev_packs.ps1` copies the two production packs into the official GDK development folders. It checks the expected UUIDs before updating and never reads or writes `minecraftWorlds`.
+- Engine test commands and boundaries: [tests/gametest/README.md](tests/gametest/README.md). The test-only pack uses the pre-release `@minecraft/server-gametest` API and Beta APIs experiment; it is excluded from the player `.mcaddon`.
 
 ## Production specification (v0.2 proposal)
 

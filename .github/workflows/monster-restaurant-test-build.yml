@@ -1,0 +1,41 @@
+name: Monster Restaurant Build and Engine Tests
+
+on:
+  push:
+    paths:
+      - 'projects/monster-restaurant/**'
+      - '.github/workflows/monster-restaurant-test-build.yml'
+  pull_request:
+    paths:
+      - 'projects/monster-restaurant/**'
+      - '.github/workflows/monster-restaurant-test-build.yml'
+  workflow_dispatch:
+
+jobs:
+  bedrock-engine:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: projects/monster-restaurant
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: projects/monster-restaurant/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: npm run build:models
+      - run: npm run build:addon
+      - run: npm run test:engine
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monster-restaurant-engine-test-results
+          path: |
+            projects/monster-restaurant/.bds/logs/**
+            projects/monster-restaurant/build/MonsterRestaurant-0.1.0.mcaddon
+          if-no-files-found: ignore
