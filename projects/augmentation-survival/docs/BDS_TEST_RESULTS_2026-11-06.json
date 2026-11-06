@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 27897,
+  "durationMs": 14736,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
@@ -29,6 +29,14 @@
     },
     {
       "id": "AugmentationSurvival:webbed_feet_scales_server_swim_speed_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:catch_breath_waits_then_sets_ground_movement_multiplier",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:catch_breath_stacks_additively_with_webbed_feet_while_swimming",
       "outcome": "pass"
     },
     {

@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -33,11 +33,15 @@ class StaticAddonTests(unittest.TestCase):
         self.assertNotIn("D exact parity", by_id["sturdiness"]["api_constraints"])
         self.assertEqual("B", by_id["bumper_crop"]["compatibility_class"])
         self.assertEqual("B", by_id["seed_saver"]["compatibility_class"])
+        self.assertEqual("B", by_id["catch_breath"]["compatibility_class"])
+        self.assertEqual("B", by_id["quick_feet"]["compatibility_class"])
+        self.assertIn("PlayerStatAugmentService.java", " ".join(by_id["quick_feet"]["java_source_paths"]))
+        self.assertIn("stat_modifier_contract.json", " ".join(by_id["quick_feet"]["java_source_paths"]))
         self.assertEqual("C", by_id["miners_hand"]["compatibility_class"])
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 8, "C": 2, "D": 7, "UNASSESSED": 130},
+            {"A": 2, "B": 10, "C": 2, "D": 7, "UNASSESSED": 128},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -45,7 +49,10 @@ class StaticAddonTests(unittest.TestCase):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         movement = {item["name_ko"]: item for item in data["augments"] if item["name_ko"] in {"빠른 발", "물갈퀴"}}
         self.assertEqual({"빠른 발", "물갈퀴"}, set(movement))
+        self.assertEqual("B", movement["빠른 발"]["compatibility_class"])
         self.assertEqual("NOT_PORTED", movement["빠른 발"]["port_status"])
+        self.assertFalse(movement["빠른 발"]["candidate_enabled"])
+        self.assertIn("per-tick reconciliation", movement["빠른 발"]["api_constraints"])
         self.assertEqual("PARTIAL_BDS_VERIFIED", movement["물갈퀴"]["port_status"])
         self.assertTrue(movement["물갈퀴"]["candidate_enabled"])
         for item in movement.values():
@@ -77,6 +84,28 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("FoodDataAugmentMixin.java", " ".join(recovery["java_source_paths"]))
         self.assertIn("SurvivalAugmentService.java", " ".join(recovery["java_source_paths"]))
         self.assertIn("no native timer", recovery["api_constraints"])
+
+    def test_catch_breath_is_bds_verified_and_offered_in_uncommon_tier(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        catch_breath = next(item for item in data["augments"] if item["id"].endswith(":catch_breath"))
+        self.assertEqual("숨 고르기", catch_breath["name_ko"])
+        self.assertEqual("uncommon", catch_breath["tier"])
+        self.assertEqual(3, catch_breath["max_level"])
+        self.assertEqual("B", catch_breath["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", catch_breath["port_status"])
+        self.assertTrue(catch_breath["candidate_enabled"])
+        self.assertIn("MovementAugmentService.java", " ".join(catch_breath["java_source_paths"]))
+        self.assertIn("AugmentMovementBonusService.java", " ".join(catch_breath["java_source_paths"]))
+        self.assertIn("movement_modifier_contract.json", " ".join(catch_breath["java_source_paths"]))
+        self.assertIn("35 idle ticks", catch_breath["test_method"])
+        self.assertIn("by 70 ticks", catch_breath["test_method"])
+
+    def test_catch_breath_runtime_resets_idle_counter_on_sprint(self):
+        movement = (ROOT / "BP/scripts/movement.js").read_text(encoding="utf-8")
+        self.assertIn("const CATCH_BREATH_IDLE_TICKS = 60", movement)
+        self.assertIn("catchBreathLevel > 0 && !player.isSprinting", movement)
+        self.assertIn("state.nonSprintingTicks = 0", movement)
+        self.assertIn("state.nonSprintingTicks >= CATCH_BREATH_IDLE_TICKS", movement)
 
     def test_cold_adaptation_remains_unoffered_without_freeze_buildup_access(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

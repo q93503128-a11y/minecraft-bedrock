@@ -64,7 +64,9 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
 
   for (const tier of ["uncommon", "rare", "epic", "legendary", "mythic"]) {
     const candidates = listAvailableCandidates(tier, AUGMENTS, {});
-    const expected = tier === "uncommon" ? ["augmentation_survival:extra_piece"] : [];
+    const expected = tier === "uncommon"
+      ? ["augmentation_survival:extra_piece", "augmentation_survival:catch_breath"]
+      : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
@@ -412,6 +414,98 @@ GameTest.registerAsync("AugmentationSurvival", "webbed_feet_scales_server_swim_s
   }
   test.succeed();
 }).maxTicks(60).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "catch_breath_waits_then_sets_ground_movement_multiplier", async (test) => {
+  const players = [
+    { level: 0, name: "ASCatchBreathControl", x: 1 },
+    { level: 1, name: "ASCatchBreathLevel1", x: 3 },
+    { level: 2, name: "ASCatchBreathLevel2", x: 5 },
+    { level: 3, name: "ASCatchBreathLevel3", x: 7 },
+  ].map(entry => ({
+    ...entry,
+    player: test.spawnSimulatedPlayer({ x: entry.x, y: 3, z: 3 }, entry.name, GameMode.survival),
+  }));
+  await test.idle(35);
+  const movement = players.map(entry => ({
+    ...entry,
+    component: entry.player.getComponent("minecraft:movement"),
+  }));
+  ensure(movement.every(entry => entry.component), "Simulated players did not expose general movement components.");
+  for (const entry of movement.slice(1)) {
+    ensure(Math.abs(entry.component.currentValue - entry.component.defaultValue) < 0.000001,
+      `${entry.name}: Catch Breath activated before 60 idle ticks.`);
+  }
+
+  await test.idle(35);
+  const values = movement.map(entry => ({
+    level: entry.level,
+    name: entry.name,
+    current: entry.component.currentValue,
+    defaultValue: entry.component.defaultValue,
+  }));
+  console.warn(`AS_CATCH_BREATH_GROUND_TEST ${JSON.stringify(values)}`);
+  for (const entry of movement.slice(1)) {
+    const expected = entry.component.defaultValue * (1 + 0.10 * entry.level);
+    ensure(Math.abs(entry.component.currentValue - expected) < 0.000001,
+      `${entry.name}: expected movement component ${expected}, got ${entry.component.currentValue}.`);
+    ensure(!entry.player.isSprinting, `${entry.name}: idle movement probe unexpectedly sprinted.`);
+  }
+  ensure(Math.abs(movement[0].component.currentValue - movement[0].component.defaultValue) < 0.000001,
+    "Control player movement changed without Catch Breath.");
+  test.succeed();
+}).maxTicks(120).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "catch_breath_stacks_additively_with_webbed_feet_while_swimming", async (test) => {
+  for (let x = 1; x <= 5; x += 1) {
+    for (let y = 1; y <= 5; y += 1) {
+      for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:water", { x, y, z });
+    }
+  }
+  const players = [
+    { level: 0, webbed: false, name: "ASBreathWaterControl", x: 1 },
+    { level: 1, webbed: false, name: "ASCatchBreathWater", x: 2 },
+    { level: 0, webbed: true, name: "ASWebbedWater", x: 3 },
+    { level: 1, webbed: true, name: "ASCatchBreathWebbedWater", x: 4 },
+  ].map(entry => ({
+    ...entry,
+    player: test.spawnSimulatedPlayer({ x: entry.x, y: 3, z: 2 }, entry.name, GameMode.survival),
+  }));
+  await test.idle(65);
+  const movement = players.map(entry => ({
+    ...entry,
+    general: entry.player.getComponent("minecraft:movement"),
+    underwater: entry.player.getComponent("minecraft:underwater_movement"),
+  }));
+  ensure(movement.every(entry => entry.general && entry.underwater), "Water movement attributes were unavailable.");
+  for (const entry of movement) {
+    ensure(entry.player.isInWater, `${entry.name} did not spawn in the test water.`);
+    entry.player.swim();
+    entry.player.setRotation({ x: 0, y: 0 });
+    entry.player.moveRelative(0, 1, 0.2);
+  }
+  await test.idle(20);
+  const speeds = movement.map(entry => ({
+    level: entry.level,
+    webbed: entry.webbed,
+    name: entry.name,
+    general: { current: entry.general.currentValue, defaultValue: entry.general.defaultValue },
+    underwater: { current: entry.underwater.currentValue, defaultValue: entry.underwater.defaultValue },
+    velocity: entry.player.getVelocity(),
+  }));
+  console.warn(`AS_CATCH_BREATH_WATER_SPEED ${JSON.stringify(speeds)}`);
+  const controlSpeed = Math.hypot(speeds[0].velocity.x, speeds[0].velocity.z);
+  ensure(controlSpeed > 0.001, "Control simulated player did not swim.");
+  for (const entry of speeds.slice(1)) {
+    const speed = Math.hypot(entry.velocity.x, entry.velocity.z);
+    const ratio = speed / controlSpeed;
+    const expected = 1 + 0.10 * (entry.level + (entry.webbed ? 1 : 0));
+    ensure(Math.abs(ratio - expected) < 0.015,
+      `${entry.name}: expected additive swim-speed ratio ${expected}, got ${ratio}.`);
+    ensure(Math.abs(entry.general.current - entry.general.defaultValue) < 0.000001,
+      `${entry.name}: general movement should not multiply the separate underwater modifier.`);
+  }
+  test.succeed();
+}).maxTicks(110).structureName(STRUCTURE).tag(TAG);
 
 // Diagnostic only: observe the stable event/component surface available around
 // a vanilla fishing-rod use. This does not implement or count Fishing Sense.

@@ -18,6 +18,42 @@ Class **D** for the exact interval effect on the currently pinned stable API. Th
 
 References: [EntityHealBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhealbeforeevent?view=minecraft-bedrock-stable), [EntityHealCause](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhealcause?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable), [GameRule](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/gamerule?view=minecraft-bedrock-stable).
 
+## `숨 고르기` (Catch Breath)
+
+### Java contract and movement interactions
+
+The canonical effect gives +10% / +20% / +30% movement speed after the player has not sprinted for 3 seconds. `MovementAugmentService` resets `nonSprintingTicks` to zero while sprinting and increments it to 60 otherwise; its shared `ADD_MULTIPLIED_BASE` conditional movement modifier adds 0.10 per saved level at that threshold. The shared bonus also includes daytime `햇빛 체질`, nighttime `야행성`, in-water `물갈퀴`, and timed `관성 전환`. `AugmentMovementBonusService` exposes this shared modifier to the later `속도 전환` interaction. Bedrock currently ports Catch Breath plus the Webbed Feet water interaction; the other movement bonuses and Speed Conversion remain pending.
+
+### Stable Bedrock route and BDS evidence
+
+Stable `Player.isSprinting` supplies the server-side input state. Stable `EntityMovementComponent` wraps `minecraft:movement`, and its base `EntityAttributeComponent.setCurrentValue` writes the current attribute. A one-time write to this player component reverts by the next tick on BDS, so the production handler counts non-sprinting ticks per online player and reconciles the level-based value once per tick. The counter is runtime-only and clears on sprint and player leave, matching Java's nonpersistent movement timer. The handler keeps general movement at default while the player is in water and sets the separate underwater attribute to the sum of Catch Breath and Webbed Feet bonuses; this avoids multiplying their level bonuses.
+
+BDS 1.26.62.1 ran the production pack. After 35 idle ticks, the level 1–3 movement component values remained at default. By 70 idle ticks, they were exactly 1.10 / 1.20 / 1.30 of the 0.10 default. In water, measured swim-velocity ratios were 1.10 for level 1 Catch Breath alone, 1.10 for level 1 Webbed Feet alone, and 1.20 with both. The general movement value remained at its default in water. A separate ground `SimulatedPlayer.moveRelative` velocity probe returned zero for both control and level 1 in this fixture, so it was removed and is not counted as passing. The stable component value and water movement interaction are verified; direct client ground-speed visibility, mobile/controller behavior, and an actual sprint-reset transition remain untested.
+
+### Classification
+
+Class **B**: the stable attribute setter plus a server-side per-tick state machine reproduce the saved-level effect and the tested additive water interaction. `catch_breath` is `PARTIAL_BDS_VERIFIED` and enabled for uncommon core offers. The remaining Java movement-group interactions must be added to this shared aggregator as their augments are ported.
+
+References: [EntityMovementComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitymovementcomponent?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable), [Player](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable).
+
+## `빠른 발` (Quick Feet)
+
+### Java contract and source mapping
+
+The canonical effect is +3% / +6% / +9% / +12% / +15% movement speed at levels 1–5. Java declares it in `stat_modifier_contract.json` and applies generic stat modifiers through `StatAugmentCatalog` and `PlayerStatAugmentService`; the source files do not contain a literal `quick_feet` ID. The generated roster maps those generic runtime files and the data contract explicitly.
+
+### Stable Bedrock route and evidence
+
+Stable `minecraft:movement` is writable through `EntityAttributeComponent.setCurrentValue`, but a one-time player write was observed returning to the default on the next tick in BDS 1.26.62.1. The production Catch Breath handler now demonstrates that a server tick reconciler can keep this same general movement attribute at an exact level-based multiplier. That establishes a class B implementation route for Quick Feet. Quick Feet itself is still `NOT_PORTED`: there is no level 1–5 Quick Feet production handler or gameplay test, and the general movement writer must compose with Catch Breath and future movement bonuses instead of overwriting them.
+
+The earlier BDS setter exploration and the new Catch Breath movement-component test are not Quick Feet gameplay verification. No Quick Feet candidate is offered. A direct ground `SimulatedPlayer.moveRelative` velocity experiment returned zero for both its control and level 1 and is excluded from passing evidence. Real client movement and mobile/controller behavior have not been tested.
+
+### Classification
+
+Class **B** for the stable API route: a saved-level multiplier can be reconciled through the writable general movement component each server tick. Port status remains `NOT_PORTED` until Quick Feet's five exact levels, shared movement composition, and player-visible movement are tested.
+
+References: [EntityMovementComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitymovementcomponent?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable).
+
 ## `한 조각 더` (Extra Piece)
 
 ### Java contract and interactions

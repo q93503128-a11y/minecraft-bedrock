@@ -96,6 +96,23 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "catch_breath":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/AugmentMovementBonusService.java",
+                "src/main/resources/data/augmentation_survival/augmentation/movement_modifier_contract.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
+        if slug == "quick_feet":
+            # This entry is declared by the generic stat-modifier contract rather than
+            # a Java source literal containing its catalog ID.
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/PlayerStatAugmentService.java",
+                "src/main/resources/data/augmentation_survival/augmentation/stat_modifier_contract.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         if slug == "rapid_strikes":
             for relative in (
                 "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
@@ -150,6 +167,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
                 "B" if slug in {"bumper_crop", "seed_saver", "extra_piece"} else
                 "B" if slug == "hearty_meal" else
+                "B" if slug in {"catch_breath", "quick_feet"} else
                 "C" if slug in {"miners_hand", "logging_knack"} else
                 "D" if slug in {"fishing_sense", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery"} else
                 "UNASSESSED"
@@ -165,6 +183,8 @@ def main(source: Path, target: Path) -> None:
                 "On stable playerBreakBlock after-event, independently spawn a mapped vanilla crop planting item with exact 15% per-level chance; max level 3" if slug == "seed_saver" else
                 "On stable playerBreakBlock after-event, recognize vanilla ore IDs and ore-tagged blocks, recalculate the Java-shaped first ordinary drop from the captured pre-break permutation and tool, and spawn one cloned item at the exact 5% per-level chance; max level 3" if slug == "extra_piece" else
                 "No stable API exposes or changes a player's vanilla natural-regeneration timer. The stable heal event reports the healing event and amount/source; replacing native healing with a per-player scheduler would also need to reproduce vanilla eligibility and hunger/saturation costs" if slug == "recovery" else
+                "Reconcile stable minecraft:movement to defaultValue × (1 + 0.03 × saved level) every server tick; coordinate this writer with other movement augments" if slug == "quick_feet" else
+                "Use the stable minecraft:movement attribute and Player.isSprinting; count 60 consecutive non-sprinting server ticks, then reconcile defaultValue × (1 + 0.10 × saved level) each tick. In water, combine Catch Breath and Webbed Feet into the underwater movement multiplier to preserve Java's shared additive movement bonus" if slug == "catch_breath" else
                 "On stable itemCompleteUse after-event, apply the Java food saturation bonus; read exact custom food properties when exposed and infer vanilla food saturation gain from adjacent server-tick samples" if slug == "hearty_meal" else
                 "No stable API changes a vanilla furnace's per-fuel burn duration. The stable block inventory surface can observe slots, but does not expose the furnace burn timer or the vanilla item's fuel duration" if slug == "fuel_saver" else
                 "No stable Script API component or player attribute setter changes vanilla player attack speed; after-hit damage events cannot change attack cooldown recharge or attack input" if slug == "rapid_strikes" else
@@ -189,6 +209,8 @@ def main(source: Path, target: Path) -> None:
                 "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot planting items only. Java runs this 15% per-level roll independently after Bumper Crop; actual block-break delivery and external/modded crops remain unresolved" if slug == "seed_saver" else
                 "Stable playerBreakBlock exposes the captured block permutation and itemStackBeforeBreak; LootTableManager can recalculate a drop list from that permutation and tool but does not expose the already-spawned vanilla drop list. Vanilla ore IDs and exposed ore tags are covered. External ores, add-on tag parity, real-client behavior and multiplayer remain unverified; Java also applies this roll during derived breaks, so Bedrock derived-break routing must be added with Tunneling" if slug == "extra_piece" else
                 "Class D for the exact natural-regeneration interval effect on stable @minecraft/server 2.11.0: EntityHealBeforeEvent exposes cancel, healing amount, and heal source (SelfHeal identifies hunger-caused healing), but no native timer, interval, or scheduling control. The naturalRegeneration gamerule is world-wide. A per-player replacement would have to recreate Bedrock's natural-heal eligibility and hunger/saturation costs; no equivalent has been validated, so no approximation is shipped" if slug == "recovery" else
+                "Class B: stable EntityMovementComponent is writable through setCurrentValue. The direct setter reverted by the next tick in BDS 1.26.62.1; Catch Breath's production path demonstrates per-tick reconciliation on this same attribute. Quick Feet itself has not been implemented or gameplay-tested at levels 1–5, and must share one writer with other movement modifiers" if slug == "quick_feet" else
+                "Class B: stable EntityMovementComponent is writable through setCurrentValue, and Player.isSprinting is stable. The previous BDS probe showed a one-time movement write reverting by the next tick, so the production handler reconciles it every tick. Bedrock separates underwater movement from general movement; the shared bonus is mapped to the active environment. BDS gameplay verification is required for all levels, the 60-tick threshold, sprint reset, and additive Webbed Feet stacking" if slug == "catch_breath" else
                 "Stable declarations describe itemCompleteUse as chargeable-item completion and vanilla ItemFoodComponent is not exposed for cooked beef. BDS 1.26.62.1 confirms the event fires for cooked beef; vanilla gain is measured as a saturation delta. Verify on each targeted Bedrock/BDS build; other same-tick saturation changes could affect the inferred gain" if slug == "hearty_meal" else
                 "Class D for the exact vanilla-timer effect: stable @minecraft/server 2.11.0 has no fishing-bite event, FishingHook timer property, or timer setter. BDS 1.26.62.1 confirmed casts emit generic itemUse/itemStartUse/itemStopUse and spawn an owned minecraft:fishing_hook with only minecraft:projectile among tested components. The Java FishingHookAugmentMixin separately applies Treasure Fishing on retrieve and Abundance to the final result; these loot interactions remain outside this timing probe. Lure enchantment or custom-rod alternatives change the vanilla item/timing contract and do not reproduce a percentage reduction of each randomized wait" if slug == "fishing_sense" else
                 "Class D for exact oxygen-consumption reduction on the currently pinned stable API: EntityBreathableComponent.airSupply is marked pre-release in the official reference, omitted from stable @minecraft/server 2.11.0 types, and not exposed by the breathable component on BDS 1.26.62.1. totalSupply is read-only; water_breathing would prevent oxygen loss rather than reduce it by Java's 10/20/30% curve" if slug == "long_breath" else
@@ -197,7 +219,7 @@ def main(source: Path, target: Path) -> None:
                 "Class D for Java's per-fuel burn-duration effect on stable @minecraft/server 2.11.0. Stable block components expose inventory and recipe processing but no vanilla furnace burn-time component; ItemStack exposes script components, not minecraft:fuel duration. BDS 1.26.62.1 probe: a lit furnace exposed inventory without a furnace timer, while coal had no minecraft:fuel script component. Static minecraft:fuel JSON belongs to an item definition, not nearby players' saved levels. Polling and injecting bonus fuel would alter per-item rounding, misattribute hopper/manual slot changes or mixed fuel, and cannot snapshot the highest nearby level at the exact burn-start boundary. No exact substitute is shipped" if slug == "fuel_saver" else
                 "Class D for the exact player attack-speed effect on stable @minecraft/server 2.11.0. The stable EntityComponentTypes enum and player component surface have no attack-speed component or generic player attribute-modifier setter. BDS 1.26.62.1 diagnostic checks for minecraft:attack_speed, minecraft:attack and minecraft:attack_cooldown found no player components. The Bedrock minecraft:attack_cooldown entity JSON component controls an entity's target-acquisition cooldown, while minecraft:cooldown is static item JSON; neither changes a player's saved per-level attack-speed attribute. Scaling hit damage would change the effect, and no stable API observes/cancels player attack input early enough to reproduce faster recharge" if slug == "rapid_strikes" else
                 "Class C: stable start/break events can observe block interactions but expose no vanilla break-progress/speed control; reconstructing hold, tool, hardness, and cancellation behavior would differ, especially across touch/controller input" if slug in {"miners_hand", "logging_knack"} else
-                "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed" if slug == "quick_feet" else
+                "Class B route uses a stable writable movement attribute; BDS 1.26.62.1 showed a direct write returning to default on the next tick. The per-tick Catch Breath route demonstrates persistence, but exact Quick Feet levels and coexisting movement modifiers remain unverified" if slug == "quick_feet" else
                 "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified" if slug == "efficient_metabolism" else
                 "Java adds Webbed Feet to a shared conditional movement modifier with Catch Breath, Nocturnal, Sun Affinity, and Momentum Shift; Bedrock currently uses the stable underwater_movement attribute. Standalone parity is verified on BDS 1.26.62.1, but stacking with those not-yet-ported augments and other attribute writers is untested" if slug == "webbed_feet" else
                 "Not assessed"
@@ -213,6 +235,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS GameTest calls the shared crop handler with synthetic events: exact 15/30/45% boundaries, mapped planting items, and independent rolls alongside Bumper Crop; real player block-break delivery remains untested" if slug == "seed_saver" else
                 "BDS GameTest deterministically verifies 5/10/15% roll boundaries and one block/tool-derived drop, including Silk Touch and Fortune; a separate SimulatedPlayer break verifies live playerBreakBlock event delivery" if slug == "extra_piece" else
                 "Static stable @minecraft/server 2.11.0 declaration review and official stable API reference review: heal events expose cause/amount/cancellation but no natural-regeneration timer; no recovery behavior or BDS runtime test implemented" if slug == "recovery" else
+                "BDS GameTest uses the production pack: no bonus after 35 idle ticks, exact 10/20/30% general movement component values by 70 ticks at levels 1–3; separate production-path test measures 1.10/1.10/1.20 swim ratios for Catch Breath, Webbed Feet, and both together. The direct ground-velocity SimulatedPlayer probe yielded no valid control/level-1 ratio and is not counted" if slug == "catch_breath" else
                 "BDS 1.26.62.1 end-to-end GameTest consumes cooked beef through the production handler and checks exact saturation at levels 1–3 plus the food saturation cap" if slug == "hearty_meal" else
                 "BDS 1.26.62.1 diagnostic GameTest consumes coal in a vanilla furnace and observes the lit furnace and inventory slots; it found no furnace burn-duration component and coal exposed no minecraft:fuel script component. Diagnostic only; no Fuel Saver behavior implemented" if slug == "fuel_saver" else
                 "BDS 1.26.62.1 diagnostic GameTest enumerates a simulated player's stable component IDs, checks attack-speed/damage/cooldown component IDs, and inspects the stable EntityComponentTypes enum. Diagnostic only; no Rapid Strikes gameplay implemented" if slug == "rapid_strikes" else
@@ -221,13 +244,13 @@ def main(source: Path, target: Path) -> None:
                 "Stable @minecraft/server type review plus BDS 1.26.62.1 GameTest diagnostic in powder snow: no freeze component, frozen-tick member, or buildup event was available; probe only, no cold effect implemented" if slug == "cold_adaptation" else
                 "Stable @minecraft/server 2.11.0 declaration review: ItemStartUseAfterEvent and ItemCompleteUseAfterEvent expose readonly useDuration; stable Player has no current-use duration setter, item JSON use_modifiers is static, and Player.eatItem is pre-release. Existing BDS cooked-beef completion evidence belongs to Hearty Meal and does not test or implement faster eating" if slug == "fast_eating" else
                 "Static stable API declaration review: start and after-break events expose no break-progress or vanilla mining-speed mutation; alternate custom hold/mining route not implemented" if slug in {"miners_hand", "logging_knack"} else
-                "Exploratory BDS GameTest: immediate exact level 1 multiplier accepted, then default observed on next tick; excluded from passing suite" if slug == "quick_feet" else
+                "BDS exploration: direct setter accepted the requested value, then default was observed on the next tick after a level 5→1 change. Catch Breath production GameTests verify per-tick reconciliation on the same attribute; no Quick Feet level-1–5 gameplay test has run and this is not passing Quick Feet evidence" if slug == "quick_feet" else
                 "BDS GameTest: set exhaustion to 1.25 and read the same value after two ticks; hunger 20 and saturation 5 are unchanged; natural exhaustion deltas are not tested" if slug == "efficient_metabolism" else
                 "Production-handler BDS GameTest: simulated players swim in water at levels 1–3 and match 1.10/1.20/1.30 velocity ratios; out-of-water movement attribute restores to default. Java shared-bonus stacking with other movement augments is pending because those effects are not ported" if slug == "webbed_feet" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath"},
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}

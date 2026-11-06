@@ -71,6 +71,31 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
+    const catchBreathLevels = {
+      ASCatchBreathLevel1: 1,
+      ASCatchBreathLevel2: 2,
+      ASCatchBreathLevel3: 3,
+      ASCatchBreathWater: 1,
+      ASCatchBreathWebbedWater: 1,
+      ASCatchBreathWebbed: 1,
+    };
+    const catchBreathLevel = catchBreathLevels[player.name];
+    if (catchBreathLevel) {
+      const levels = { "augmentation_survival:catch_breath": catchBreathLevel };
+      if (player.name === "ASCatchBreathWebbedWater" || player.name === "ASCatchBreathWebbed") {
+        levels["augmentation_survival:webbed_feet"] = 1;
+      }
+      if (player.name === "ASCatchBreathWebbed") {
+        player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
+        return;
+      }
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
+      return;
+    }
+    if (player.name === "ASWebbedWater") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:webbed_feet": 1 }));
+      return;
+    }
     const toughSkinLevels = {
       ASToughSkinLevel1: 1,
       ASToughSkinLevel2: 2,
