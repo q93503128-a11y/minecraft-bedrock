@@ -5,7 +5,7 @@
 - Commands: `npm run verify` and `npm run test:engine`.
 - Static checks: **11/11 PASS**.
 - Stable production API type-check: **PASS** (`@minecraft/server` 2.11.0).
-- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (42,338 bytes).
+- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (42,335 bytes).
 - BDS: **19 passed / 0 failed**, 18.0 seconds, no script or infrastructure errors; runner exit code **0**. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
 
 The eighteen tests from the preceding run also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
