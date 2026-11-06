@@ -65,6 +65,13 @@ def main(source: Path, target: Path) -> None:
             fishing_mixin = "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/FishingHookAugmentMixin.java"
             if fishing_mixin not in source_paths:
                 source_paths.append(fishing_mixin)
+        if slug == "fast_eating":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ItemStackConsumptionAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/active/AdvancedActiveAugmentService.java",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         interaction_refs = [
             {"line": line_number, "text": line.strip()}
             for line_number, line in enumerate(interaction_lines, start=1)
@@ -94,7 +101,7 @@ def main(source: Path, target: Path) -> None:
             "catalog_discrepancy": "; ".join(source_mismatch),
             "java_source_paths": source_paths,
             "interaction_contract_refs": interaction_refs,
-            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense"} else "NO_DIRECT_MENTION_FOUND",
+            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "fast_eating"} else "NO_DIRECT_MENTION_FOUND",
             "compatibility_class": (
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
@@ -102,7 +109,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug in {"bumper_crop", "seed_saver"} else
                 "B" if slug == "hearty_meal" else
                 "C" if slug in {"miners_hand", "logging_knack"} else
-                "D" if slug in {"fishing_sense", "long_breath", "cold_adaptation"} else
+                "D" if slug in {"fishing_sense", "long_breath", "cold_adaptation", "fast_eating"} else
                 "UNASSESSED"
             ),
             "bedrock_method": (
@@ -118,6 +125,7 @@ def main(source: Path, target: Path) -> None:
                 "No stable API exposes or changes the vanilla FishingHook timeUntilLured timer. Stable entitySpawn and generic item-use events can observe casts, but do not provide the proportional wait-timer adjustment; Java mixes this timing change separately from its Treasure Fishing and final-result Abundance logic" if slug == "fishing_sense" else
                 "No stable API exposes or changes the player's current air supply or oxygen depletion interval; the only documented airSupply setter is pre-release and is absent from stable @minecraft/server 2.11.0 declarations and the tested BDS runtime" if slug == "long_breath" else
                 "No stable API exposes or changes a player's vanilla freeze-buildup counter; freezing is available only as a damage cause" if slug == "cold_adaptation" else
+                "No stable Script API changes a player's active vanilla food-use duration. ItemStartUse/ItemCompleteUse expose read-only durations after use starts/completes; minecraft:use_modifiers is a fixed item-definition value, not per-player saved state" if slug == "fast_eating" else
                 "No stable API changes vanilla block-breaking speed; start/break events expose no progress value" if slug in {"miners_hand", "logging_knack"} else
                 "Attempt player minecraft:movement currentValue multiplier" if slug == "quick_feet" else
                 "Stable player exhaustion component can be read and written; exact per-action reduction route not yet verified" if slug == "efficient_metabolism" else
@@ -137,6 +145,7 @@ def main(source: Path, target: Path) -> None:
                 "Class D for the exact vanilla-timer effect: stable @minecraft/server 2.11.0 has no fishing-bite event, FishingHook timer property, or timer setter. BDS 1.26.62.1 confirmed casts emit generic itemUse/itemStartUse/itemStopUse and spawn an owned minecraft:fishing_hook with only minecraft:projectile among tested components. The Java FishingHookAugmentMixin separately applies Treasure Fishing on retrieve and Abundance to the final result; these loot interactions remain outside this timing probe. Lure enchantment or custom-rod alternatives change the vanilla item/timing contract and do not reproduce a percentage reduction of each randomized wait" if slug == "fishing_sense" else
                 "Class D for exact oxygen-consumption reduction on the currently pinned stable API: EntityBreathableComponent.airSupply is marked pre-release in the official reference, omitted from stable @minecraft/server 2.11.0 types, and not exposed by the breathable component on BDS 1.26.62.1. totalSupply is read-only; water_breathing would prevent oxygen loss rather than reduce it by Java's 10/20/30% curve" if slug == "long_breath" else
                 "Class D for the exact freeze-buildup effect: Java reads and adjusts Player.ticksFrozen; stable @minecraft/server 2.11.0 exposes no frozen-tick getter, setter, component, or buildup event. The stable hurt event exposes freezing damage only, so multiplying damage would replace buildup reduction with a different effect. The BDS 1.26.62.1 player probe found no freeze component or matching player property" if slug == "cold_adaptation" else
+                "Class D for the exact player-specific food-duration effect. Stable @minecraft/server 2.11.0 has no active-item duration setter; itemStartUse/itemCompleteUse carry read-only durations and run after timing starts. minecraft:use_modifiers.use_duration is static JSON, so overriding vanilla food changes all players and cannot follow saved augment levels; custom replacement foods would alter item identity and omit unsupported external foods. Player.eatItem is marked pre-release and does not adjust an in-progress held use" if slug == "fast_eating" else
                 "Class C: stable start/break events can observe block interactions but expose no vanilla break-progress/speed control; reconstructing hold, tool, hardness, and cancellation behavior would differ, especially across touch/controller input" if slug in {"miners_hand", "logging_knack"} else
                 "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed" if slug == "quick_feet" else
                 "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified" if slug == "efficient_metabolism" else
@@ -156,6 +165,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 GameTest diagnostic casts a vanilla fishing rod, observes generic cast events and the owned fishing-hook entity, and queries projectile/fishing-hook/timer components. It found only minecraft:projectile; it does not test or implement bite timing" if slug == "fishing_sense" else
                 "Official stable API declaration review plus BDS 1.26.62.1 GameTest submerged-player probe: minecraft:breathable exists but exposes no airSupply property at runtime; probe only, no oxygen behavior implemented" if slug == "long_breath" else
                 "Stable @minecraft/server type review plus BDS 1.26.62.1 GameTest diagnostic in powder snow: no freeze component, frozen-tick member, or buildup event was available; probe only, no cold effect implemented" if slug == "cold_adaptation" else
+                "Stable @minecraft/server 2.11.0 declaration review: ItemStartUseAfterEvent and ItemCompleteUseAfterEvent expose readonly useDuration; stable Player has no current-use duration setter, item JSON use_modifiers is static, and Player.eatItem is pre-release. Existing BDS cooked-beef completion evidence belongs to Hearty Meal and does not test or implement faster eating" if slug == "fast_eating" else
                 "Static stable API declaration review: start and after-break events expose no break-progress or vanilla mining-speed mutation; alternate custom hold/mining route not implemented" if slug in {"miners_hand", "logging_knack"} else
                 "Exploratory BDS GameTest: immediate exact level 1 multiplier accepted, then default observed on next tick; excluded from passing suite" if slug == "quick_feet" else
                 "BDS GameTest: set exhaustion to 1.25 and read the same value after two ticks; hunger 20 and saturation 5 are unchanged; natural exhaustion deltas are not tested" if slug == "efficient_metabolism" else

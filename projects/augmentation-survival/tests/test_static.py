@@ -37,7 +37,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 7, "C": 2, "D": 3, "UNASSESSED": 135},
+            {"A": 2, "B": 7, "C": 2, "D": 4, "UNASSESSED": 134},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -76,6 +76,19 @@ class StaticAddonTests(unittest.TestCase):
         self.assertFalse(cold_adaptation["candidate_enabled"])
         self.assertIn("SurvivalAugmentService.java", " ".join(cold_adaptation["java_source_paths"]))
         self.assertIn("frozen-tick getter", cold_adaptation["api_constraints"])
+
+    def test_fast_eating_remains_unoffered_without_player_specific_food_duration_control(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        fast_eating = next(item for item in data["augments"] if item["id"].endswith(":fast_eating"))
+        self.assertEqual("D", fast_eating["compatibility_class"])
+        self.assertEqual("NOT_PORTED", fast_eating["port_status"])
+        self.assertFalse(fast_eating["candidate_enabled"])
+        self.assertEqual(5, fast_eating["max_level"])
+        source_paths = " ".join(fast_eating["java_source_paths"])
+        self.assertIn("ConsumptionAugmentService.java", source_paths)
+        self.assertIn("ItemStackConsumptionAugmentMixin.java", source_paths)
+        self.assertIn("AdvancedActiveAugmentService.java", source_paths)
+        self.assertIn("read-only durations", fast_eating["api_constraints"])
 
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

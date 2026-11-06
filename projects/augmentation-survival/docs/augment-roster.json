@@ -1,5 +1,5 @@
 {
-  "source_revision": "7f578f6acbbe6ed5f12e4665fbe28dfde65f294f",
+  "source_revision": "91310be88adb4f112ac50e3e09f4989288af19d6",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -402,14 +402,16 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentTuning.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ItemStackConsumptionAugmentMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/active/AdvancedActiveAugmentService.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "D",
+      "bedrock_method": "No stable Script API changes a player's active vanilla food-use duration. ItemStartUse/ItemCompleteUse expose read-only durations after use starts/completes; minecraft:use_modifiers is a fixed item-definition value, not per-player saved state",
+      "api_constraints": "Class D for the exact player-specific food-duration effect. Stable @minecraft/server 2.11.0 has no active-item duration setter; itemStartUse/itemCompleteUse carry read-only durations and run after timing starts. minecraft:use_modifiers.use_duration is static JSON, so overriding vanilla food changes all players and cannot follow saved augment levels; custom replacement foods would alter item identity and omit unsupported external foods. Player.eatItem is marked pre-release and does not adjust an in-progress held use",
+      "test_method": "Stable @minecraft/server 2.11.0 declaration review: ItemStartUseAfterEvent and ItemCompleteUseAfterEvent expose readonly useDuration; stable Player has no current-use duration setter, item JSON use_modifiers is static, and Player.eatItem is pre-release. Existing BDS cooked-beef completion evidence belongs to Hearty Meal and does not test or implement faster eating",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

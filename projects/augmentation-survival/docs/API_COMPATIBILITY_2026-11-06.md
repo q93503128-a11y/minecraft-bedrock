@@ -33,6 +33,26 @@ Class **B**: the same Java effect is reproduced through stable item-completion p
 
 References: [ItemCompleteUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemcompleteuseafterevent?view=minecraft-bedrock-stable), [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [ItemFoodComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemfoodcomponent?view=minecraft-bedrock-stable), [PlayerInventoryItemChangeAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerinventoryitemchangeafterevent?view=minecraft-bedrock-stable).
 
+## `빨리 먹기` (Fast Eating)
+
+### Java contract and interaction
+
+The canonical roster sets the maximum at level 5 and reduces food-use duration by 5% per level. `ConsumptionAugmentService.modifyUseDuration` applies `ceil(original × max(0.05, 1 − 0.05 × level))`, with a minimum of one tick, only to items with the food component. `ItemStackConsumptionAugmentMixin` applies this rule to the active stack before `AdvancedActiveAugmentService.modifyUseDuration` applies Time Acceleration's 1.40 item-use speed multiplier. The two effects therefore compose sequentially, with Java's ceiling at each stage. `먹으면서 걷기` changes movement slowdown while using consumables; it does not change the consumption duration.
+
+### Stable Bedrock surface and alternatives
+
+The pinned stable module is `@minecraft/server` 2.11.0. `ItemStartUseAfterEvent` and `ItemCompleteUseAfterEvent` expose `useDuration` as read-only event data; they do not provide a way to change the active use duration. The stable `Player` API has no active-stack use-duration setter. The current stable `InputButton` enum exposes Jump and Sneak only, so scripts also cannot reconstruct the held Use action across keyboard, controller, and touch.
+
+The data-driven `minecraft:use_modifiers.use_duration` component assigns a fixed duration in item JSON. It has no player-level condition. Overriding vanilla food timing that way would affect players without the augment and could not reflect saved levels; wrapping foods in custom item IDs would change item identity and would not cover arbitrary external foods. `Player.eatItem` is marked pre-release and directly eating a copied stack would not shorten or cancel the player's current held use. These routes are not shipped.
+
+Existing BDS 1.26.62.1 evidence that cooked beef emits `itemCompleteUse` is from the Hearty Meal test. It establishes an observed completion hook on that build, not control over time-to-consumption. Fast Eating has no BDS gameplay test and remains disabled in the offer pool.
+
+### Classification
+
+Class **D** for the exact player-specific food-duration effect on the pinned stable API. Java changes the active food stack's queried duration per player's saved augment state; Bedrock can observe item-use events but cannot adjust that duration after the use begins. Static item JSON or custom replacement foods do not preserve per-player state and vanilla/modded food behavior. `fast_eating` remains `NOT_PORTED` and is not offered. This classification is from stable API declarations and official item/API contracts, not a Java compilation failure.
+
+References: [ItemStartUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstartuseafterevent?view=minecraft-bedrock-stable), [ItemCompleteUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemcompleteuseafterevent?view=minecraft-bedrock-stable), [minecraft:use_modifiers](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_use_modifiers?view=minecraft-bedrock-stable), [Player.eatItem](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable), [InputButton](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputbutton?view=minecraft-bedrock-stable).
+
 ## `물갈퀴` (Webbed Feet)
 
 ### Java contract
