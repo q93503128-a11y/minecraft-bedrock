@@ -73,6 +73,26 @@ Class **D** for the exact burn-duration effect on the pinned stable API. The fur
 
 References: [Block](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable), [BlockInventoryComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockinventorycomponent?view=minecraft-bedrock-stable), [ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable), [minecraft:fuel](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_fuel?view=minecraft-bedrock-stable), [@minecraft/server module](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/minecraft-server?view=minecraft-bedrock-stable).
 
+## `속공` (Rapid Strikes)
+
+### Java contract and attack-speed interactions
+
+The canonical maximum is level 5 and the roster effect is +4% / +8% / +12% / +16% / +20% general attack speed. Java registers `rapid_strikes` in `stat_modifier_contract.json` as `attack_speed`, `0.04` per level, `ADD_MULTIPLIED_BASE`. `PlayerStatAugmentService` sums every modifier in the same attribute/operation group and applies a transient player attribute modifier on join and respawn. The interaction contract puts `속공`, `연속 처치`, `광폭화`, and `시간 가속` on the same additive attack-speed axis; their bonuses add before applying once. Better Combat is an optional external Java integration using the same axis, not a Bedrock asset or dependency to copy.
+
+### Stable Bedrock surface and alternatives
+
+The project pins stable `@minecraft/server` 2.11.0. Its `EntityComponentTypes` declarations provide particular components such as movement and underwater movement, but no player attack-speed component and no general player attribute modifier API. `EntityHurtBeforeEvent` can modify/cancel a hit after an attack has already connected; the stable `InputButton` enum does not expose a held Attack input to replace the combat timing path.
+
+The official entity `minecraft:attack_cooldown` JSON component is for preventing an entity from acquiring attack targets. The item `minecraft:cooldown` JSON component can define an attack cooldown on an item, but that setting is static item data and would affect every user of that item. Neither route adjusts a saved per-player attack-speed attribute or composes the four Java effects on a shared axis. Changing damage per hit would increase damage rather than attack rate and is not shipped.
+
+An isolated BDS 1.26.62.1 diagnostic GameTest enumerated a simulated player's script components and checked `minecraft:attack_speed`, `minecraft:attack`, `minecraft:attack_cooldown`, `minecraft:attack_damage`, and `minecraft:attack_knockback`. It found no attack component among the player's exposed components or in the stable `EntityComponentTypes` enum. This probe establishes the component surface on that BDS build; it is not a Rapid Strikes gameplay test.
+
+### Classification
+
+Class **D** for the exact player attack-speed effect on the pinned stable API. `rapid_strikes` remains `NOT_PORTED` and disabled as a candidate. Static per-item cooldowns, hit-damage scaling, or reconstructing attacks through item use would replace the canonical effect and player controls. This classification is based on stable type declarations, official component contracts, and the BDS component probe, not on Java compilation failure.
+
+References: [EntityComponentTypes](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitycomponenttypes?view=minecraft-bedrock-stable), [EntityHurtBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable), [InputButton](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputbutton?view=minecraft-bedrock-stable), [minecraft:attack_cooldown](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/entityreference/examples/entitycomponents/minecraftcomponent_attack_cooldown?view=minecraft-bedrock-stable), [minecraft:cooldown](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_cooldown?view=minecraft-bedrock-stable).
+
 ## `물갈퀴` (Webbed Feet)
 
 ### Java contract

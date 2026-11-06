@@ -1,4 +1,4 @@
-import { BlockPermutation, EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
+import { BlockPermutation, EntityComponentTypes, EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
@@ -438,6 +438,44 @@ GameTest.registerAsync("AugmentationSurvival", "freeze_buildup_api_surface_probe
   }));
   test.succeed();
 }).maxTicks(40).structureName(STRUCTURE).tag(TAG);
+
+// Diagnostic only: inspect player attack-speed components and stable component IDs.
+// This does not alter or count as Rapid Strikes gameplay.
+GameTest.registerAsync("AugmentationSurvival", "attack_speed_api_surface_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASAttackSpeedSurfaceProbe", GameMode.survival);
+  await test.idle(2);
+  const componentIds = player.getComponents().map(component => component.typeId).sort();
+  const attackComponentChecks = [
+    "minecraft:attack_speed",
+    "minecraft:attack",
+    "minecraft:attack_cooldown",
+    "minecraft:attack_damage",
+    "minecraft:attack_knockback",
+  ].map(id => {
+    try {
+      const component = player.getComponent(id);
+      return {
+        id,
+        available: Boolean(component),
+        currentValue: component?.currentValue,
+        defaultValue: component?.defaultValue,
+      };
+    } catch (error) {
+      return { id, available: false, error: String(error) };
+    }
+  });
+  const stableAttackTypeIds = Object.entries(EntityComponentTypes)
+    .filter(([name, id]) => /attack/i.test(`${name} ${id}`));
+  const playerProperties = ["attackSpeed", "attack_speed", "attackCooldown", "getAttribute"]
+    .map(name => ({ name, valueType: typeof player[name] }));
+  console.warn("AS_ATTACK_SPEED_SURFACE_PROBE " + JSON.stringify({
+    componentIds,
+    stableAttackTypeIds,
+    attackComponentChecks,
+    playerProperties,
+  }));
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
 
 // Diagnostic only: inspect the vanilla furnace and fuel-item scripting surface.
 // This does not alter or count as Fuel Saver gameplay.

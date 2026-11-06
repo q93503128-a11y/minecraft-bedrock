@@ -463,7 +463,17 @@
       "max_level": 5,
       "canonical_effect_ko": "일반 공격속도 +4% / +8% / +12% / +16% / +20%. Better Combat 호환 시 같은 공격속도 축을 사용한다.",
       "catalog_discrepancy": "",
-      "java_source_paths": [],
+      "java_source_paths": [
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/PlayerStatAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/CombatAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/active/ActiveAbilityService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/active/AdvancedActiveAugmentService.java",
+        "src/main/resources/data/augmentation_survival/augmentation/stat_modifier_contract.json",
+        "src/main/resources/data/augmentation_survival/augmentation/combat_modifier_contract.json",
+        "src/main/resources/data/augmentation_survival/augmentation/expansion_contract.json",
+        "src/main/resources/data/augmentation_survival/augmentation/advanced_active_contract.json"
+      ],
       "interaction_contract_refs": [
         {
           "line": 26,
@@ -471,10 +481,10 @@
         }
       ],
       "interaction_mapping_status": "REVIEW_REQUIRED",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "compatibility_class": "D",
+      "bedrock_method": "No stable Script API component or player attribute setter changes vanilla player attack speed; after-hit damage events cannot change attack cooldown recharge or attack input",
+      "api_constraints": "Class D for the exact player attack-speed effect on stable @minecraft/server 2.11.0. The stable EntityComponentTypes enum and player component surface have no attack-speed component or generic player attribute-modifier setter. BDS 1.26.62.1 diagnostic checks for minecraft:attack_speed, minecraft:attack and minecraft:attack_cooldown found no player components. The Bedrock minecraft:attack_cooldown entity JSON component controls an entity's target-acquisition cooldown, while minecraft:cooldown is static item JSON; neither changes a player's saved per-level attack-speed attribute. Scaling hit damage would change the effect, and no stable API observes/cancels player attack input early enough to reproduce faster recharge",
+      "test_method": "BDS 1.26.62.1 diagnostic GameTest enumerates a simulated player's stable component IDs, checks attack-speed/damage/cooldown component IDs, and inspects the stable EntityComponentTypes enum. Diagnostic only; no Rapid Strikes gameplay implemented",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

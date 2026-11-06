@@ -37,7 +37,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 7, "C": 2, "D": 5, "UNASSESSED": 133},
+            {"A": 2, "B": 7, "C": 2, "D": 6, "UNASSESSED": 132},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -105,6 +105,25 @@ class StaticAddonTests(unittest.TestCase):
         refs = " ".join(ref["text"] for ref in fuel_saver["interaction_contract_refs"])
         self.assertIn("AUGMENTS.md", refs)
         self.assertIn("MULTIPLAYER TESTED: NO", refs)
+
+    def test_rapid_strikes_remains_unoffered_without_player_attack_speed_control(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        rapid_strikes = next(item for item in data["augments"] if item["id"].endswith(":rapid_strikes"))
+        self.assertEqual("D", rapid_strikes["compatibility_class"])
+        self.assertEqual("NOT_PORTED", rapid_strikes["port_status"])
+        self.assertFalse(rapid_strikes["candidate_enabled"])
+        self.assertEqual(5, rapid_strikes["max_level"])
+        source_paths = " ".join(rapid_strikes["java_source_paths"])
+        self.assertIn("PlayerStatAugmentService.java", source_paths)
+        self.assertIn("StatAugmentCatalog.java", source_paths)
+        self.assertIn("stat_modifier_contract.json", source_paths)
+        self.assertIn("combat_modifier_contract.json", source_paths)
+        self.assertIn("advanced_active_contract.json", source_paths)
+        self.assertIn("no attack-speed component", rapid_strikes["api_constraints"])
+        refs = " ".join(ref["text"] for ref in rapid_strikes["interaction_contract_refs"])
+        self.assertIn("속공", refs)
+        self.assertIn("광폭화", refs)
+        self.assertIn("시간 가속", refs)
 
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
