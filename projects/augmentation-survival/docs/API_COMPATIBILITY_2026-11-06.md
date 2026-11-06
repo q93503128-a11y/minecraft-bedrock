@@ -1,5 +1,27 @@
 # API compatibility investigation — 2026-11-06
 
+## `성큼걸음` (Step Up)
+
+### Java contract
+
+Java's `AUGMENTS.md` defines a level-1 passive that walks up one-block steps without jumping. `MovementAugmentService.applyStepHeight` adds the configured `0.40` to the player's `Attributes.STEP_HEIGHT`; the value comes from `movement_modifier_contract.json`. Its GameTest verifies that exact configured addition is applied and removed when the augment is absent. No explicit interaction rule is listed, though the result naturally composes with other movement-speed effects.
+
+### Stable Bedrock surface
+
+The pinned `@minecraft/server` 2.11.0 Player surface exposes `inputInfo`, while `InputInfo.getMovementVector()` is a stable method. The writable `minecraft:movement` component only controls general movement speed; the stable Player surface has no step-height attribute setter or component. Bedrock's `minecraft:variable_max_auto_step` is an entity JSON component, but Microsoft's cooperative add-on guidance says not to override `minecraft:player`.
+
+BDS 1.26.62.1 confirmed `minecraft:step_height` and `minecraft:variable_max_auto_step` are absent from a simulated player's Script API component surface; `minecraft:movement` is present. A GameTest call to `SimulatedPlayer.move(1, 0, 1)` moved the player `0.2` blocks, but `inputInfo.getMovementVector()` remained `{x:0,y:0}` immediately and over subsequent ticks. That test cannot validate the production input route because SimulatedPlayer movement commands do not surface as client input.
+
+### Classification
+
+Class **C**, `NOT_PORTED`, and disabled as an uncommon core candidate. A server-side movement-input and collision correction could attempt to lift the player onto a one-block ledge, but a teleport or impulse would pop the player upward instead of matching Java's native smooth step-height movement. Input direction mapping, collision clearance, ceilings, partial blocks, latency, and actual touch/controller/keyboard behavior remain unverified. No substitute is shipped until those differences are measured in a real client.
+
+### Verification
+
+The isolated BDS suite passed **41/41** tests on 1.26.62.1, including this diagnostic. The Step Up test is API-surface evidence only; it does not test acquisition or an in-game Step Up effect. Actual client movement, mobile/controller input, reconnect behavior, and multiplayer have not been tested.
+
+References: [stable `Player` API](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable), [stable `InputInfo`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputinfo?view=minecraft-bedrock-stable), [entity `variable_max_auto_step` component](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/entityreference/examples/entitycomponents/minecraftcomponent_variable_max_auto_step?view=minecraft-bedrock-stable), [cooperative add-on guidance for `minecraft:player`](https://learn.microsoft.com/en-us/minecraft/creator/documents/practices/guidelinesforbuildingcooperativeaddons?view=minecraft-bedrock-stable#cooperativity).
+
 ## `회복력` (Recovery)
 
 ### Java contract and combined behavior

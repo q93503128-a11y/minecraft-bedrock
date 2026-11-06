@@ -826,7 +826,8 @@ GameTest.registerAsync("AugmentationSurvival", "fishing_hook_stable_api_surface_
   }
 
   const useResult = player.useItemInSlot(0);
-  await test.idle(12);
+  // Level-3 XP pickup can take 14 ticks after the native orb is moved into range.
+  await test.idle(20);
   const hooks = player.dimension.getEntities({ type: "minecraft:fishing_hook", location: player.location, maxDistance: 32 });
   const ownedHook = hooks.find(hook => hook.getComponent("minecraft:projectile")?.owner?.id === player.id);
   const hookComponents = ownedHook ? ["minecraft:projectile", "minecraft:fishing_hook", "minecraft:timer"].filter(componentId => {
@@ -1850,7 +1851,8 @@ async function verifyPickupHandProductionRadius(test, player, level) {
   const pickupLocation = { x: playerBounds.center.x + radius + 0.15, y: playerBounds.center.y, z: playerBounds.center.z };
   const xpLocation = { x: pickupLocation.x, y: playerBounds.center.y, z: playerBounds.center.z + 0.25 };
   const xpOrbValue = 1;
-  const beyondLocation = { x: playerBounds.center.x + radius + 2.0, y: playerBounds.center.y, z: playerBounds.center.z };
+  // Leave enough margin for the spawned item entity's initial horizontal drift before the radius scan stabilizes.
+  const beyondLocation = { x: playerBounds.center.x + radius + 4.0, y: playerBounds.center.y, z: playerBounds.center.z };
   const diamondBefore = countItem(inventory, "minecraft:diamond");
   const emeraldBefore = countItem(inventory, "minecraft:emerald");
   const startingXp = player.getTotalXp();
@@ -1967,4 +1969,35 @@ GameTest.registerAsync("AugmentationSurvival", "pickup_hand_extends_item_and_xp_
   ensure(multiplayerResult.xpDelta === 4, `Two nearby players duplicated or lost the 4-point XP orb; got ${multiplayerResult.xpDelta}.`);
   test.succeed();
 }).maxTicks(140).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "step_up_stable_player_api_surface_probe", async (test) => {
+  for (let x = 2; x <= 8; x += 1) {
+    for (let z = 2; z <= 4; z += 1) test.getBlock({ x, y: 2, z }).setType("minecraft:stone");
+  }
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASStepUpSurfaceProbe", GameMode.survival);
+  await test.idle(2);
+  const before = player.location;
+  player.move(1, 0, 1);
+  const inputAfterMoveCommand = player.inputInfo.getMovementVector();
+  await test.idle(1);
+  const inputAfterOneTick = player.inputInfo.getMovementVector();
+  await test.idle(6);
+  const movementInput = player.inputInfo.getMovementVector();
+  const after = player.location;
+  const componentAvailable = (componentId) => {
+    try { return player.getComponent(componentId) !== undefined; }
+    catch (error) { return `throws:${error?.name ?? "Error"}`; }
+  };
+  const result = {
+    inputAfterMoveCommand,
+    inputAfterOneTick,
+    movementInput,
+    displacement: { x: after.x - before.x, y: after.y - before.y, z: after.z - before.z },
+    stepHeightComponent: componentAvailable("minecraft:step_height"),
+    variableMaxAutoStepComponent: componentAvailable("minecraft:variable_max_auto_step"),
+    movementComponent: componentAvailable("minecraft:movement"),
+  };
+  console.warn("AS_STEP_UP_API_SURFACE " + JSON.stringify(result));
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
 

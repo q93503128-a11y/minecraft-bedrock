@@ -45,9 +45,13 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["underwater_work"]["compatibility_class"])
         self.assertEqual("C", by_id["pickup_hand"]["compatibility_class"])
         self.assertEqual("C", by_id["brace"]["compatibility_class"])
+        self.assertEqual("C", by_id["step_up"]["compatibility_class"])
+        self.assertEqual("NOT_PORTED", by_id["step_up"]["port_status"])
+        self.assertFalse(by_id["step_up"]["candidate_enabled"])
+        self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 8, "D": 10, "UNASSESSED": 116},
+            {"A": 2, "B": 13, "C": 9, "D": 10, "UNASSESSED": 115},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 

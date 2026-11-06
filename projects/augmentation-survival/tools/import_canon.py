@@ -292,7 +292,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug == "dexterity" else
                 "B" if slug == "last_strength" else
                 "B" if slug in {"catch_breath", "quick_feet"} else
-                "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care", "underwater_work", "pickup_hand", "brace"} else
+                "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care", "underwater_work", "pickup_hand", "brace", "step_up"} else
                 "D" if slug in {"fishing_sense", "treasure_fishing", "long_reach", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery", "shield_grip"} else
                 "UNASSESSED"
             ),
@@ -331,6 +331,7 @@ def main(source: Path, target: Path) -> None:
                 "Every server tick, find item entities and XP orbs inside the Java player bounding box inflated by 1.5/3.0/4.5 blocks; teleport items to the nearest eligible player's hitbox center and XP orbs to the upper interior of that hitbox, then let vanilla Bedrock perform inventory/XP handling" if slug == "pickup_hand" else
                 "No production substitute shipped; the stable Script API has no player knockback-resistance setter, and a velocity correction would occur after the first physics impulse and could alter ordinary movement" if slug == "brace" else
                 "No production substitute shipped; stable Player cooldown APIs cannot shorten Bedrock's native shield-disable state" if slug == "shield_grip" else
+                "No production substitute shipped; Player.inputInfo can expose client movement input, but collision-triggered teleport or impulse assistance would not preserve Java's smooth native step-height behavior" if slug == "step_up" else
                 "Not assessed"
             ),
             "api_constraints": (
@@ -369,6 +370,7 @@ def main(source: Path, target: Path) -> None:
                 "Class B route uses a stable writable movement attribute; BDS 1.26.62.1 showed a direct write returning to default on the next tick. The per-tick Catch Breath route demonstrates persistence, but exact Quick Feet levels and coexisting movement modifiers remain unverified" if slug == "quick_feet" else
                 "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified" if slug == "efficient_metabolism" else
                 "Java adds Webbed Feet to a shared conditional movement modifier with Catch Breath, Nocturnal, Sun Affinity, and Momentum Shift; Bedrock currently uses the stable underwater_movement attribute. Standalone parity is verified on BDS 1.26.62.1, but stacking with those not-yet-ported augments and other attribute writers is untested" if slug == "webbed_feet" else
+                "Class C: Java adds 0.40 to STEP_HEIGHT for a one-block no-jump step. Stable Player exposes inputInfo but no writable step-height attribute/component; minecraft:variable_max_auto_step is entity JSON, and Microsoft recommends not overriding minecraft:player. BDS found neither step component on Player. A movement-input/collision teleport or impulse route could approximate the result but would pop instead of stepping smoothly; SimulatedPlayer.move did not populate inputInfo, so that route has not been validated against client input" if slug == "step_up" else
                 "Not assessed"
             ),
             "test_method": (
@@ -406,6 +408,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 production-handler GameTest: vanilla diamond item and XP orb beyond ordinary reach are collected at all three levels; exact XP value, outside-radius control, and one shared diamond / 4-point orb are checked. Test XP awards took 3/5/14 ticks at levels 1/2/3, within a 30-tick timeout" if slug == "pickup_hand" else
                 "BDS 1.26.62.1 diagnostic GameTest enumerates player runtime components and EntityComponentTypes, attempts minecraft:knockback_resistance, and records velocity during the melee hurt callback, next script tick, and four physics ticks. It found no player component; the callback retained baseline velocity and knockback appeared only after one physics tick. Diagnostic only; no Brace effect is implemented" if slug == "brace" else
                 "BDS 1.26.62.1 diagnostic GameTest blocks an axe attack with a sneaking SimulatedPlayer's vanilla offhand shield, observes the native shield cooldown at 98 ticks after two ticks, writes 55 through startItemCooldown and confirms its exposed timer reaches zero, then verifies the shield still takes damage until the native disable interval expires. Replacing the shield with a clone does not bypass that interval. Diagnostic only; no Shield Grip gameplay is implemented" if slug == "shield_grip" else
+                "BDS 1.26.62.1 GameTest diagnostic: Player lacks minecraft:step_height and minecraft:variable_max_auto_step components but has minecraft:movement; SimulatedPlayer.move advances position 0.2 blocks while inputInfo.getMovementVector stays {0,0}. Diagnostic only; no Step Up gameplay or core offer is enabled" if slug == "step_up" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
             "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"} else "NOT_PORTED",
