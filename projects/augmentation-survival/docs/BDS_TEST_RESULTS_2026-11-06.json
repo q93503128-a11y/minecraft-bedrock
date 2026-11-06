@@ -1,8 +1,36 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 18302,
+  "durationMs": 16681,
   "verdicts": [
+    {
+      "id": "AugmentationSurvival:precise_aim_scales_server_projectile_damage_source",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:strong_lungs_reduces_drowning_damage_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:tough_skin_reduces_incoming_damage_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:light_landing_reduces_fall_damage_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_synthesis_is_atomic_and_conserves_items",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:sturdiness_effect_scales_max_health",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_selection_commits_level_and_preserves_core_on_rejection",
+      "outcome": "pass"
+    },
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
       "outcome": "pass"
@@ -32,6 +60,10 @@
       "outcome": "pass"
     },
     {
+      "id": "AugmentationSurvival:freeze_buildup_api_surface_probe",
+      "outcome": "pass"
+    },
+    {
       "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
       "outcome": "pass"
     },
@@ -44,35 +76,7 @@
       "outcome": "pass"
     },
     {
-      "id": "AugmentationSurvival:precise_aim_scales_server_projectile_damage_source",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:strong_lungs_reduces_drowning_damage_by_level",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:tough_skin_reduces_incoming_damage_by_level",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:light_landing_reduces_fall_damage_by_level",
-      "outcome": "pass"
-    },
-    {
       "id": "AugmentationSurvival:defense_reductions_stack_multiplicatively",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:core_synthesis_is_atomic_and_conserves_items",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:sturdiness_effect_scales_max_health",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:core_selection_commits_level_and_preserves_core_on_rejection",
       "outcome": "pass"
     }
   ],

@@ -36,6 +36,10 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["miners_hand"]["compatibility_class"])
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
+        self.assertEqual(
+            {"A": 2, "B": 7, "C": 2, "D": 3, "UNASSESSED": 135},
+            {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
+        )
 
     def test_only_bds_verified_movement_effect_is_offered(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
@@ -63,6 +67,15 @@ class StaticAddonTests(unittest.TestCase):
         self.assertFalse(long_breath["candidate_enabled"])
         self.assertIn("SurvivalAugmentService.java", " ".join(long_breath["java_source_paths"]))
         self.assertIn("pre-release", long_breath["api_constraints"])
+
+    def test_cold_adaptation_remains_unoffered_without_freeze_buildup_access(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        cold_adaptation = next(item for item in data["augments"] if item["id"].endswith(":cold_adaptation"))
+        self.assertEqual("D", cold_adaptation["compatibility_class"])
+        self.assertEqual("NOT_PORTED", cold_adaptation["port_status"])
+        self.assertFalse(cold_adaptation["candidate_enabled"])
+        self.assertIn("SurvivalAugmentService.java", " ".join(cold_adaptation["java_source_paths"]))
+        self.assertIn("frozen-tick getter", cold_adaptation["api_constraints"])
 
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

@@ -411,6 +411,34 @@ GameTest.registerAsync("AugmentationSurvival", "breathable_air_supply_api_surfac
   test.succeed();
 }).maxTicks(40).structureName(STRUCTURE).tag(TAG);
 
+// Diagnostic only: inspect the stable scripting surface while a player is in
+// powder snow. This does not alter or count as Cold Adaptation gameplay.
+GameTest.registerAsync("AugmentationSurvival", "freeze_buildup_api_surface_probe", async (test) => {
+  for (let x = 1; x <= 5; x += 1) {
+    for (let y = 1; y <= 5; y += 1) {
+      for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:powder_snow", { x, y, z });
+    }
+  }
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASFreezeSurfaceProbe", GameMode.survival);
+  await test.idle(3);
+  const componentIds = player.getComponents().map(component => component.typeId).sort();
+  const componentChecks = [
+    "minecraft:freezing",
+    "minecraft:freezing_immune",
+    "minecraft:freezing_vulnerable",
+  ].map(id => ({ id, available: Boolean(player.getComponent(id)) }));
+  const propertyChecks = ["isFreezing", "isFrozen", "ticksFrozen", "getTicksFrozen", "setTicksFrozen"]
+    .map(name => ({ name, valueType: typeof player[name] }));
+  console.warn("AS_FREEZE_SURFACE_PROBE " + JSON.stringify({
+    damageCause: EntityDamageCause.freezing,
+    componentIds,
+    componentChecks,
+    propertyChecks,
+    location: player.location,
+  }));
+  test.succeed();
+}).maxTicks(40).structureName(STRUCTURE).tag(TAG);
+
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);
   const inventory = inventoryOf(player);

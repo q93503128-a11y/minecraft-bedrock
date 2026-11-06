@@ -92,3 +92,21 @@ The stable `@minecraft/server` 2.11.0 declarations expose `minecraft:breathable`
 Class **D** for the exact oxygen-consumption effect on the currently pinned stable API. `long_breath` remains `NOT_PORTED` and disabled as a candidate. This finding is based on the Java modifier contract, the stable declarations, the official page's pre-release warning, and the BDS 1.26.62.1 submerged-player probe; it is not inferred from Java compilation failure.
 
 References: [EntityBreathableComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitybreathablecomponent?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable).
+
+## `추위 적응` (Cold Adaptation)
+
+### Java contract and vanilla interaction
+
+The canonical roster reduces freeze buildup by 15% / 30% / 45% at levels 1–3. Java's tick service observes the player's vanilla `ticksFrozen` counter, accumulates fractional reduction credit for each positive increase, removes whole ticks with `setTicksFrozen`, and clears that credit when vanilla thawing lowers the counter. This preserves vanilla buildup sources, the freeze HUD, and the normal damage threshold while delaying accumulation.
+
+### Stable Bedrock surface and BDS probe
+
+The pinned stable `@minecraft/server` 2.11.0 declarations expose `EntityDamageCause.freezing` and a mutable pre-hurt damage amount, but no player frozen-tick getter/setter, freeze component, or freeze-buildup event. On BDS 1.26.62.1, a simulated-player probe in a powder-snow volume listed the player's available Script API component IDs and checked `minecraft:freezing`, `minecraft:freezing_immune`, and `minecraft:freezing_vulnerable`; none were exposed as player components. The player object also had no `isFreezing`, `isFrozen`, `ticksFrozen`, `getTicksFrozen`, or `setTicksFrozen` member. The test is diagnostic only.
+
+Bedrock 1.26.50 entity JSON defines Powder Snow immunity/vulnerability through boolean entity-definition components, not a per-player buildup-rate API. Scaling `EntityHurtBeforeEvent.damage` for freezing would reduce health loss after buildup reaches the damage phase; it would leave buildup, freeze HUD, damage onset, and thaw timing unchanged. That would change the Java effect, so it is not shipped.
+
+### Classification
+
+Class **D** for the exact vanilla freeze-buildup effect on the pinned stable API. `cold_adaptation` remains `NOT_PORTED` and disabled as a core candidate. This classification is based on the Java tick implementation, stable declarations, official entity JSON component contract, and the BDS player-component probe, not on Java compilation failure.
+
+References: [EntityHurtBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable), [EntityDamageCause](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitydamagecause?view=minecraft-bedrock-stable), [Bedrock 1.26.50 Powder Snow freezing components](https://learn.microsoft.com/en-us/minecraft/creator/documents/update1.26.50?view=minecraft-bedrock-stable#powder-snow-freezing).
