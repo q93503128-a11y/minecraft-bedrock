@@ -47,7 +47,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["brace"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 8, "D": 9, "UNASSESSED": 117},
+            {"A": 2, "B": 13, "C": 8, "D": 10, "UNASSESSED": 116},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -120,6 +120,28 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("stat_modifier_contract.json", " ".join(long_reach["java_source_paths"]))
         self.assertIn("custom", long_reach["api_constraints"])
         self.assertIn("diagnostic GameTest", long_reach["test_method"])
+
+    def test_shield_grip_remains_unoffered_when_item_cooldown_is_not_native_disable_control(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        shield_grip = next(item for item in data["augments"] if item["id"] == "augmentation_survival:shield_grip")
+        self.assertEqual("방패잡이", shield_grip["name_ko"])
+        self.assertEqual("uncommon", shield_grip["tier"])
+        self.assertEqual(3, shield_grip["max_level"])
+        self.assertEqual("방패 무력화 시간 15% / 30% / 45% 감소.", shield_grip["canonical_effect_ko"])
+        self.assertEqual("D", shield_grip["compatibility_class"])
+        self.assertEqual("NOT_PORTED", shield_grip["port_status"])
+        self.assertFalse(shield_grip["candidate_enabled"])
+        self.assertEqual("REVIEWED_NO_DIRECT_RULE", shield_grip["interaction_mapping_status"])
+        self.assertEqual([], shield_grip["interaction_contract_refs"])
+        source_paths = " ".join(shield_grip["java_source_paths"])
+        self.assertIn("UtilityAugmentService.java", source_paths)
+        self.assertIn("UtilityAugmentTuning.java", source_paths)
+        self.assertIn("PlayerShieldGripMixin.java", source_paths)
+        self.assertIn("utility_runtime_contract.json", source_paths)
+        self.assertIn("Stable player APIs expose getItemCooldown/startItemCooldown", shield_grip["api_constraints"])
+        self.assertIn("does not let the shield block early", shield_grip["api_constraints"])
+        self.assertIn("Replacing the offhand shield with a clone", shield_grip["api_constraints"])
+        self.assertIn("Diagnostic only", shield_grip["test_method"])
 
     def test_verified_movement_effects_use_the_shared_offer_filter(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

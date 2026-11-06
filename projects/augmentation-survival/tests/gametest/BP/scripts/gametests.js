@@ -1077,6 +1077,156 @@ GameTest.registerAsync("AugmentationSurvival", "brace_knockback_resistance_api_p
   test.succeed();
 }).maxTicks(30).structureName(STRUCTURE).tag(TAG);
 
+// Diagnostic only: inspect the vanilla shield-disable boundary and the stable
+// Script API surface available to Shield Grip. This does not alter gameplay.
+GameTest.registerAsync("AugmentationSurvival", "shield_grip_shield_disable_api_probe", async (test) => {
+  const attacker = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASShieldGripProbeAttacker", GameMode.survival);
+  const defender = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 3 }, "ASShieldGripProbeDefender", GameMode.survival);
+  test.setBlockType("minecraft:stone", { x: 3, y: 2, z: 3 });
+  test.setBlockType("minecraft:stone", { x: 5, y: 2, z: 3 });
+  await test.idle(2);
+
+  const equippable = defender.getComponent(EntityComponentTypes.Equippable);
+  ensure(equippable, "The simulated defender did not expose the stable equippable component.");
+  const shieldEquipped = equippable.setEquipment("Offhand", new ItemStack("minecraft:shield"));
+  ensure(shieldEquipped, "The simulated defender could not equip a vanilla shield in the offhand.");
+  defender.isSneaking = true;
+  defender.lookAtEntity(attacker);
+  inventoryOf(attacker).setItem(0, new ItemStack("minecraft:iron_axe"));
+  await test.idle(5);
+
+  /** @type {Array<Record<string, unknown>>} */
+  const observations = [];
+  const beforeCallback = (event) => {
+    if (event?.hurtEntity?.id !== defender.id) return;
+    observations.push({
+      event: "entityHurtBefore",
+      cause: event.damageSource.cause,
+      damage: event.damage,
+      canceled: event.cancel,
+    });
+  };
+  const afterCallback = (event) => {
+    if (event?.hurtEntity?.id !== defender.id) return;
+    observations.push({
+      event: "entityHurtAfter",
+      cause: event.damageSource.cause,
+      damage: event.damage,
+    });
+  };
+  world.beforeEvents.entityHurt.subscribe(beforeCallback);
+  world.afterEvents.entityHurt.subscribe(afterCallback);
+  const useCallbacks = [];
+  for (const [name, signal] of [
+    ["itemStartUse", world.afterEvents.itemStartUse],
+    ["itemStopUse", world.afterEvents.itemStopUse],
+    ["itemReleaseUse", world.afterEvents.itemReleaseUse],
+  ]) {
+    if (!signal) continue;
+    const callback = (event) => {
+      if (event.source?.id === defender.id) {
+        observations.push({ event: name, itemTypeId: event.itemStack?.typeId });
+      }
+    };
+    signal.subscribe(callback);
+    useCallbacks.push([signal, callback]);
+  }
+
+  const health = defender.getComponent(EntityComponentTypes.Health);
+  const attacks = [];
+  let disabledCooldown;
+  let shieldSwapAttack;
+  let nativeRecoveryAttack;
+  for (let index = 0; index < 4 && disabledCooldown === undefined; index += 1) {
+    if (index > 0) await test.idle(20);
+    let cooldownBefore;
+    let cooldownAfter;
+    try { cooldownBefore = defender.getItemCooldown("shield"); } catch (error) { cooldownBefore = String(error); }
+    const healthBefore = health?.currentValue;
+    const performed = attacker.attackEntity(defender);
+    await test.idle(2);
+    try { cooldownAfter = defender.getItemCooldown("shield"); } catch (error) { cooldownAfter = String(error); }
+    attacks.push({
+      index,
+      performed,
+      healthBefore,
+      healthAfter: health?.currentValue,
+      shieldCooldownBefore: cooldownBefore,
+      shieldCooldownAfter: cooldownAfter,
+      sneaking: defender.isSneaking,
+      offhand: equippable.getEquipment("Offhand")?.typeId,
+    });
+    if (typeof cooldownAfter === "number" && cooldownAfter > 0) disabledCooldown = cooldownAfter;
+  }
+
+  let cooldownAfterOverride;
+  let cooldownAfterExpiry;
+  if (typeof disabledCooldown === "number") {
+    defender.startItemCooldown("shield", 55);
+    try { cooldownAfterOverride = defender.getItemCooldown("shield"); } catch (error) { cooldownAfterOverride = String(error); }
+    await test.idle(60);
+    try { cooldownAfterExpiry = defender.getItemCooldown("shield"); } catch (error) { cooldownAfterExpiry = String(error); }
+    const replacementShield = equippable.getEquipment("Offhand")?.clone();
+    ensure(replacementShield?.typeId === "minecraft:shield", "The probe shield was unavailable for a replacement check.");
+    ensure(equippable.setEquipment("Offhand", undefined), "The probe shield could not be removed for the replacement check.");
+    ensure(equippable.setEquipment("Offhand", replacementShield), "The cloned probe shield could not be re-equipped.");
+    const hurtCountBeforeShieldSwapAttack = observations.filter(event => event.event === "entityHurtBefore").length;
+    const shieldSwapPerformed = attacker.attackEntity(defender);
+    await test.idle(2);
+    shieldSwapAttack = {
+      performed: shieldSwapPerformed,
+      healthAfter: health?.currentValue,
+      shieldCooldown: defender.getItemCooldown("shield"),
+      hurtEventObserved: observations.filter(event => event.event === "entityHurtBefore").length > hurtCountBeforeShieldSwapAttack,
+      offhand: equippable.getEquipment("Offhand")?.typeId,
+      sneaking: defender.isSneaking,
+    };
+    await test.idle(40);
+    const hurtCountBeforeNativeRecoveryAttack = observations.filter(event => event.event === "entityHurtBefore").length;
+    const recoveryPerformed = attacker.attackEntity(defender);
+    await test.idle(2);
+    nativeRecoveryAttack = {
+      performed: recoveryPerformed,
+      healthAfter: health?.currentValue,
+      shieldCooldown: defender.getItemCooldown("shield"),
+      hurtEventObserved: observations.filter(event => event.event === "entityHurtBefore").length > hurtCountBeforeNativeRecoveryAttack,
+      offhand: equippable.getEquipment("Offhand")?.typeId,
+      sneaking: defender.isSneaking,
+    };
+  }
+  world.beforeEvents.entityHurt.unsubscribe(beforeCallback);
+  world.afterEvents.entityHurt.unsubscribe(afterCallback);
+  for (const [signal, callback] of useCallbacks) signal.unsubscribe(callback);
+
+  const stableShieldTypes = Object.entries(EntityComponentTypes)
+    .filter(([name, typeId]) => /shield|block.?attack/i.test(`${name} ${typeId}`));
+  const result = {
+    attacks,
+    cooldownAfterOverride,
+    cooldownAfterExpiry,
+    shieldSwapAttack,
+    nativeRecoveryAttack,
+    observations,
+    defenderComponents: defender.getComponents().map(component => component.typeId).sort(),
+    stableShieldTypes,
+    supportedInputButtons: Object.values(InputButton).sort(),
+    playerApiSurface: {
+      isSneaking: typeof defender.isSneaking,
+      isBlocking: typeof defender.isBlocking,
+      getItemCooldown: typeof defender.getItemCooldown,
+      startItemCooldown: typeof defender.startItemCooldown,
+    },
+  };
+  console.warn(`AS_SHIELD_GRIP_DISABLE_SURFACE_PROBE ${JSON.stringify(result)}`);
+  ensure(attacks[0]?.performed, "The simulated attacker could not perform its first attack against the shield probe.");
+  ensure(typeof disabledCooldown === "number", "The shield probe did not observe a native shield cooldown.");
+  ensure(typeof cooldownAfterOverride === "number" && cooldownAfterOverride <= 55, "The stable cooldown API did not reduce the shield cooldown to 55 ticks.");
+  ensure(cooldownAfterExpiry === 0, "The shortened shield cooldown did not expire within 60 ticks.");
+  ensure(shieldSwapAttack?.performed, "The shield replacement bypass check could not execute its simulated attack.");
+  ensure(nativeRecoveryAttack?.performed && !nativeRecoveryAttack.hurtEventObserved, "The shield did not block again after the native disable interval elapsed.");
+  test.succeed();
+}).maxTicks(180).structureName(STRUCTURE).tag(TAG);
+
 // Diagnostic only: measure whether Haste can approximate Java's underwater mining multiplier.
 // This does not alter or count as Water Work gameplay.
 GameTest.registerAsync("AugmentationSurvival", "underwater_work_haste_route_probe", async (test) => {

@@ -1,5 +1,5 @@
 {
-  "source_revision": "840684bc7b2ae7401f157c5f0267c1cc2823735b",
+  "source_revision": "681163fa95693bac8a5c4ad6eecace2985267a9b",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -899,14 +899,17 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentTuning.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/PlayerShieldGripMixin.java",
+        "src/main/resources/data/augmentation_survival/augmentation/utility_runtime_contract.json",
+        "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_mapping_status": "REVIEWED_NO_DIRECT_RULE",
+      "compatibility_class": "D",
+      "bedrock_method": "No production substitute shipped; stable Player cooldown APIs cannot shorten Bedrock's native shield-disable state",
+      "api_constraints": "Stable player APIs expose getItemCooldown/startItemCooldown for item categories but not the native shield-disable state. BDS reports a roughly 100-tick shield cooldown after an axe disables a sneaking player's offhand shield; writing 55 ticks changes that category timer to zero but does not let the shield block early. Replacing the offhand shield with a clone also leaves it disabled until the native interval expires. The block does not produce an entityHurt event or a stable shield-block component/event; no exact route is shipped",
+      "test_method": "BDS 1.26.62.1 diagnostic GameTest blocks an axe attack with a sneaking SimulatedPlayer's vanilla offhand shield, observes the native shield cooldown at 98 ticks after two ticks, writes 55 through startItemCooldown and confirms its exposed timer reaches zero, then verifies the shield still takes damage until the native disable interval expires. Replacing the shield with a clone does not bypass that interval. Diagnostic only; no Shield Grip gameplay is implemented",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },
@@ -4230,6 +4233,7 @@
         "src/main/java/dev/moonseungjun/augmentationsurvival/network/FlightTogglePayload.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/state/ShieldThrowEscrowState.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/active/ShieldThrowFlightService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/companion/CompanionAugmentService.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/FlightAugmentService.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/projectile/ProjectileTuning.java"
       ],

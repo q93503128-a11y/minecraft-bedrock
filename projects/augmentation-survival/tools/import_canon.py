@@ -154,6 +154,17 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "shield_grip":
+            # The exact timer adjustment is wired at the vanilla shield boundary.
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentTuning.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/PlayerShieldGripMixin.java",
+                "src/main/resources/data/augmentation_survival/augmentation/utility_runtime_contract.json",
+                "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         if slug == "long_reach":
             # The generic Java attribute reconciler consumes this contract entry;
             # player presentation is data-driven in the uncommon presentation file.
@@ -267,7 +278,7 @@ def main(source: Path, target: Path) -> None:
             "interaction_contract_refs": interaction_refs,
             "interaction_mapping_status": (
                 "REVIEW_REQUIRED" if interaction_refs else
-                "REVIEWED_NO_DIRECT_RULE" if slug == "brace" else
+                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip"} else
                 "REVIEW_REQUIRED" if slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "long_reach", "fast_eating", "fuel_saver", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else
                 "NO_DIRECT_MENTION_FOUND"
             ),
@@ -282,7 +293,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug == "last_strength" else
                 "B" if slug in {"catch_breath", "quick_feet"} else
                 "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care", "underwater_work", "pickup_hand", "brace"} else
-                "D" if slug in {"fishing_sense", "treasure_fishing", "long_reach", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery"} else
+                "D" if slug in {"fishing_sense", "treasure_fishing", "long_reach", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery", "shield_grip"} else
                 "UNASSESSED"
             ),
             "bedrock_method": (
@@ -319,6 +330,7 @@ def main(source: Path, target: Path) -> None:
                 "Candidate only: while the player's head is submerged, apply an integer Haste effect near the Java submerged-mining multiplier; no gameplay route is shipped because stable API has no submerged-mining-speed setter and Haste cannot express the exact fractional curve" if slug == "underwater_work" else
                 "Every server tick, find item entities and XP orbs inside the Java player bounding box inflated by 1.5/3.0/4.5 blocks; teleport items to the nearest eligible player's hitbox center and XP orbs to the upper interior of that hitbox, then let vanilla Bedrock perform inventory/XP handling" if slug == "pickup_hand" else
                 "No production substitute shipped; the stable Script API has no player knockback-resistance setter, and a velocity correction would occur after the first physics impulse and could alter ordinary movement" if slug == "brace" else
+                "No production substitute shipped; stable Player cooldown APIs cannot shorten Bedrock's native shield-disable state" if slug == "shield_grip" else
                 "Not assessed"
             ),
             "api_constraints": (
@@ -335,6 +347,7 @@ def main(source: Path, target: Path) -> None:
                 "Stable block-break events expose no mining-speed/progress setter. Haste is a whole-effect substitute, not Java's submerged_mining_speed modifier: integer amplifiers only approximate the 1.8×/2.6×/3.4× curve, and applying/removing Haste can conflict with potion or other add-on effects. The Java interaction contract has no Underwater Work-specific cross-augment rule; no substitute is shipped" if slug == "underwater_work" else
                 "Stable Script API has no native pickup-radius setter or direct playerTouch equivalent. The route preserves vanilla item inventory checks and XP-orb values by moving entities into the nearest eligible player's hitbox; XP uses the upper interior to give native pickup more time, but BDS simulated orbs took 3/5/14 ticks to award at levels 1/2/3. This introduces a position snap and multi-tick delay, and cross-add-on item ownership/lock behavior cannot be inspected. The Java interaction contract contains no Pickup Hand-specific cross-augment rule" if slug == "pickup_hand" else
                 "Stable entity JSON supports minecraft:knockback_resistance for data-driven entities, but the stable EntityComponentTypes enum and BDS player component list expose no player resistance component or generic player attribute setter. The hurt callback and next script tick retained baseline velocity; the first observed melee impulse arrived after one physics tick. Correcting then is late and could cancel unrelated motion; no substitute is shipped" if slug == "brace" else
+                "Stable player APIs expose getItemCooldown/startItemCooldown for item categories but not the native shield-disable state. BDS reports a roughly 100-tick shield cooldown after an axe disables a sneaking player's offhand shield; writing 55 ticks changes that category timer to zero but does not let the shield block early. Replacing the offhand shield with a clone also leaves it disabled until the native interval expires. The block does not produce an entityHurt event or a stable shield-block component/event; no exact route is shipped" if slug == "shield_grip" else
                 "Class B partial: stable playerBreakBlock exposes the pre-break permutation and tool after native drops have already been calculated, so Bedrock re-rolls the loot table instead of copying the actual first Block.popResource stack. Item eligibility mirrors Java stack-size, durability, name, lore, core, and exclusion-tag checks; isStackable is only a proxy for Java custom-data rejection. The Java leaves/flowers tags are queried through Bedrock hasTag with explicit vanilla fallbacks; external Java mod blocks are not copied. This event route covers direct player block breaks, not derived harvesting. The extra item spawns after the event, so Java's pre-Abundance Dexterity → Abundance ×2 order is not reproduced" if slug == "dexterity" else
                 "Class B partial route: stable entityDie exposes the dead entity and damage source, and LootTableManager can generate loot for that entity. The event does not expose Java's final post-looting stack consumer; Bedrock re-rolls a second table with the killer's current main-hand tool, so the bonus bundle can differ from the original. Vanilla Wither/Ender Dragon and opt-in boss/dominated-companion tags are excluded; Java's dynamic external boss profiles and companion attachment are unavailable" if slug == "loot_scoop" else
                 "Stable EntityHealthComponent exposes currentValue and read-only effectiveMax, and entityHurt before-event permits server-side damage scaling; exact health ratio and the inclusive 30% boundary are BDS-tested. Stable projectile ownership cannot distinguish Java ROOT_PROJECTILE from every add-on-derived projectile; Focused Aim and Clone interactions are not yet ported" if slug == "last_strength" else
@@ -392,6 +405,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: simulated players broke vanilla stone underwater at 30 ticks without Haste and 21/15/12/9/7 ticks with Haste amplifiers 0–4 (1.43×/2×/2.5×/3.33×/4.29× in this run); compares against Java 1.8×/2.6×/3.4×, but does not implement or enable the effect" if slug == "underwater_work" else
                 "BDS 1.26.62.1 production-handler GameTest: vanilla diamond item and XP orb beyond ordinary reach are collected at all three levels; exact XP value, outside-radius control, and one shared diamond / 4-point orb are checked. Test XP awards took 3/5/14 ticks at levels 1/2/3, within a 30-tick timeout" if slug == "pickup_hand" else
                 "BDS 1.26.62.1 diagnostic GameTest enumerates player runtime components and EntityComponentTypes, attempts minecraft:knockback_resistance, and records velocity during the melee hurt callback, next script tick, and four physics ticks. It found no player component; the callback retained baseline velocity and knockback appeared only after one physics tick. Diagnostic only; no Brace effect is implemented" if slug == "brace" else
+                "BDS 1.26.62.1 diagnostic GameTest blocks an axe attack with a sneaking SimulatedPlayer's vanilla offhand shield, observes the native shield cooldown at 98 ticks after two ticks, writes 55 through startItemCooldown and confirms its exposed timer reaches zero, then verifies the shield still takes damage until the native disable interval expires. Replacing the shield with a clone does not bypass that interval. Diagnostic only; no Shield Grip gameplay is implemented" if slug == "shield_grip" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
             "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"} else "NOT_PORTED",

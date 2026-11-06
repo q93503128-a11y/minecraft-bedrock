@@ -456,3 +456,21 @@ The BDS 1.26.62.1 diagnostic uses a sprinting SimulatedPlayer attack and samples
 Class **C**, `NOT_PORTED`, and disabled as a core candidate. A post-physics impulse correction could only be an approximation: it cannot undo the displacement already applied on that tick and may cancel movement caused by input, collision, or another effect. This limitation is an inference from the measured event order and the available velocity/impulse API; no correction prototype or gameplay behavior is claimed.
 
 References: [stable `minecraft:knockback_resistance` entity component](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/entityreference/examples/entitycomponents/minecraftcomponent_knockback_resistance?view=minecraft-bedrock-stable), [stable `EntityComponentTypes`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitycomponenttypes?view=minecraft-bedrock-stable), [stable `Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable), [stable `EntityHurtAfterEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtafterevent?view=minecraft-bedrock-stable).
+
+## `방패잡이` (Shield Grip)
+
+### Java contract
+
+Java's uncommon `shield_grip` is maximum level 3. `utility_runtime_contract.json` stores disable-duration reductions of 15% / 30% / 45%. `UtilityAugmentService.modifyShieldDisableSeconds` leaves non-positive or non-finite durations unchanged; otherwise it multiplies the original disable seconds by `1 - reduction[level]`. `PlayerShieldGripMixin` applies that scaled value at the vanilla `Player.blockUsingItem` → `BlocksAttacks.disable` call. The interaction contract contains no Shield Grip-specific cross-augment rule.
+
+### Stable Bedrock API review and BDS diagnostic
+
+Stable `Player.getItemCooldown(category)` and `Player.startItemCooldown(category, ticks)` expose and set item-category cooldown timers. The stable API does not expose a shield-blocking state or a native shield-disable setter. Its `EntityComponentTypes` enum and the BDS simulated player's runtime components contain no shield component; the only stable input buttons are Jump and Sneak. In the diagnostic run, a sneaking SimulatedPlayer with a vanilla shield in its offhand blocked an axe attack. That blocked hit did not produce `entityHurt`, `itemStartUse`, `itemStopUse`, or `itemReleaseUse` callbacks. The `shield` item cooldown then read 98 two ticks later, consistent with the approximately 100-tick native disable interval.
+
+Calling `startItemCooldown("shield", 55)` changed the reported category timer to 55 and then zero. An axe attack at tick 62 still damaged the player while the shield remained disabled. Removing the offhand shield and equipping a clone did not bypass the native disable state; blocking resumed only after that native interval elapsed. This separates the Script API's item-category cooldown from the vanilla shield-disable state. Stable item cooldown APIs therefore cannot implement the Java modifier. Replacing or hiding the player's shield and later restoring it would also alter inventory/equipment behavior and was not shipped.
+
+### Classification
+
+Class **D**, `NOT_PORTED`, and disabled as an uncommon core candidate. The canonical effect changes the duration of the native shield-disable state. No exact setter or observable blocked-hit boundary is available in the pinned stable API and BDS. Damage cancellation, a custom cooldown, or shield swapping does not reproduce that duration and can change ordinary shield use, so no substitute is shipped.
+
+References: [stable `Player.getItemCooldown` and `startItemCooldown`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable), [stable `minecraft:cooldown` item component](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_cooldown?view=minecraft-bedrock-stable), [stable `EntityHurtBeforeEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable), [stable `InputButton`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputbutton?view=minecraft-bedrock-stable).

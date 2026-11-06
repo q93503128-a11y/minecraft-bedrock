@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 15210,
+  "durationMs": 15699,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -85,6 +85,10 @@
     },
     {
       "id": "AugmentationSurvival:brace_knockback_resistance_api_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:shield_grip_shield_disable_api_probe",
       "outcome": "pass"
     },
     {
