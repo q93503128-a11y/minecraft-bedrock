@@ -131,10 +131,10 @@
       "interaction_mapping_status": "REVIEW_REQUIRED",
       "compatibility_class": "B",
       "bedrock_method": "Reconcile stable minecraft:movement to defaultValue × (1 + 0.03 × saved level) every server tick; coordinate this writer with other movement augments",
-      "api_constraints": "Class B: stable EntityMovementComponent is writable through setCurrentValue. The direct setter reverted by the next tick in BDS 1.26.62.1; Catch Breath's production path demonstrates per-tick reconciliation on this same attribute. Quick Feet itself has not been implemented or gameplay-tested at levels 1–5, and must share one writer with other movement modifiers",
-      "test_method": "BDS exploration: direct setter accepted the requested value, then default was observed on the next tick after a level 5→1 change. Catch Breath production GameTests verify per-tick reconciliation on the same attribute; no Quick Feet level-1–5 gameplay test has run and this is not passing Quick Feet evidence",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "api_constraints": "Class B: stable EntityMovementComponent is writable through setCurrentValue; BDS 1.26.62.1 verifies the shared server reconciler at exact +3% per level for Quick Feet levels 1–5 and additive stacks with Catch Breath, Nocturnal, and Sun Affinity. Stacking with every other movement augment and external attribute writers remains untested",
+      "test_method": "BDS 1.26.62.1 production-handler GameTest verifies exact +3% / +6% / +9% / +12% / +15% general movement-component values at Quick Feet levels 1–5; a Quick Feet-only idle player does not precharge Catch Breath, which activates after 60 newly-owned idle ticks",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:light_landing",
@@ -615,12 +615,12 @@
         }
       ],
       "interaction_mapping_status": "REVIEW_REQUIRED",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "compatibility_class": "C",
+      "bedrock_method": "In the shared per-tick movement reconciler, add 5% per level at night using the Java-matched 13000-tick day boundary; the separate mining-speed bonus is not implemented",
+      "api_constraints": "The stable World.getTimeOfDay route matches Java's overworld-clock day/night boundary; movement is verified, but stable block-break events expose no progress or speed setter, so the mining half remains unimplemented",
+      "test_method": "BDS 1.26.62.1 production-handler GameTest verifies exact +5% / +10% / +15% night movement at levels 1–3 and daytime deactivation; Java's +5% / level mining-speed half is not implemented",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:sun_affinity",
@@ -644,12 +644,12 @@
         }
       ],
       "interaction_mapping_status": "REVIEW_REQUIRED",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "compatibility_class": "C",
+      "bedrock_method": "In the shared per-tick movement reconciler, add 4% per level during daytime; the separate natural-regeneration interval reduction is not implemented",
+      "api_constraints": "The stable World.getTimeOfDay route implements daytime movement; stable heal events expose no vanilla natural-regeneration interval/timer, so the natural-regeneration half remains unimplemented",
+      "test_method": "BDS 1.26.62.1 production-handler GameTest verifies exact +4% / +8% / +12% daytime movement and night deactivation; Java's natural-regeneration interval half is not implemented",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:last_strength",

@@ -21,6 +21,7 @@ const ENABLED_CANDIDATE_IDS = [
   "augmentation_survival:seed_saver",
   "augmentation_survival:hearty_meal",
   "augmentation_survival:webbed_feet",
+  "augmentation_survival:quick_feet",
 ];
 
 function ensure(condition, message) {
@@ -66,7 +67,13 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
   for (const tier of ["uncommon", "rare", "epic", "legendary", "mythic"]) {
     const candidates = listAvailableCandidates(tier, AUGMENTS, {});
     const expected = tier === "uncommon"
-      ? ["augmentation_survival:extra_piece", "augmentation_survival:catch_breath", "augmentation_survival:loot_scoop"]
+      ? [
+        "augmentation_survival:extra_piece",
+        "augmentation_survival:catch_breath",
+        "augmentation_survival:loot_scoop",
+        "augmentation_survival:nocturnal",
+        "augmentation_survival:sun_affinity",
+      ]
       : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
@@ -507,6 +514,109 @@ GameTest.registerAsync("AugmentationSurvival", "catch_breath_stacks_additively_w
   }
   test.succeed();
 }).maxTicks(110).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "quick_feet_scales_server_movement_by_level", async (test) => {
+  const players = Array.from({ length: 5 }, (_, index) => {
+    const level = index + 1;
+    const name = `ASQuickFeetLevel${level}`;
+    return {
+      level,
+      name,
+      player: test.spawnSimulatedPlayer({ x: 1 + index * 2, y: 3, z: 3 }, name, GameMode.survival),
+    };
+  });
+  await test.idle(3);
+  for (const entry of players) {
+    const movement = entry.player.getComponent("minecraft:movement");
+    ensure(movement, `${entry.name}: general movement component was unavailable.`);
+    const expected = movement.defaultValue * (1 + 0.03 * entry.level);
+    ensure(Math.abs(movement.currentValue - expected) < 0.000001,
+      `${entry.name}: expected exact +${entry.level * 3}% movement component ${expected}, got ${movement.currentValue}.`);
+  }
+  const delayedCatchBreath = test.spawnSimulatedPlayer(
+    { x: 9, y: 3, z: 5 }, "ASQuickFeetCatchBreathDelayed", GameMode.survival,
+  );
+  await test.idle(65);
+  let delayedMovement = delayedCatchBreath.getComponent("minecraft:movement");
+  ensure(delayedMovement, "Quick Feet idle-gate movement component was unavailable.");
+  let delayedExpected = delayedMovement.defaultValue * 1.03;
+  ensure(Math.abs(delayedMovement.currentValue - delayedExpected) < 0.000001,
+    `Quick Feet alone must not add a Catch Breath bonus before it is granted; expected ${delayedExpected}, got ${delayedMovement.currentValue}.`);
+  await test.idle(35);
+  delayedMovement = delayedCatchBreath.getComponent("minecraft:movement");
+  ensure(delayedMovement, "Quick Feet idle-gate movement component was unavailable.");
+  delayedExpected = delayedMovement.defaultValue * 1.03;
+  ensure(Math.abs(delayedMovement.currentValue - delayedExpected) < 0.000001,
+    `Catch Breath must remain inactive after 35 ticks from acquisition; expected ${delayedExpected}, got ${delayedMovement.currentValue}.`);
+  await test.idle(30);
+  delayedMovement = delayedCatchBreath.getComponent("minecraft:movement");
+  ensure(delayedMovement, "Quick Feet/Catch Breath movement component was unavailable.");
+  delayedExpected = delayedMovement.defaultValue * (1 + 0.03 + 0.10 * 3);
+  ensure(Math.abs(delayedMovement.currentValue - delayedExpected) < 0.000001,
+    `Catch Breath must activate after 60 ticks while Quick Feet remains additive; expected ${delayedExpected}, got ${delayedMovement.currentValue}.`);
+  test.succeed();
+}).maxTicks(150).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "nocturnal_and_sun_affinity_share_the_day_night_movement_axis", async (test) => {
+  const previousTime = world.getTimeOfDay();
+  try {
+    const nocturnal = [1, 2, 3].map((level, index) => ({
+      level,
+      player: test.spawnSimulatedPlayer({ x: 1 + index * 2, y: 3, z: 2 }, `ASNocturnalLevel${level}`, GameMode.survival),
+    }));
+    const sunAffinity = [1, 2, 3].map((level, index) => ({
+      level,
+      player: test.spawnSimulatedPlayer({ x: 1 + index * 2, y: 3, z: 5 }, `ASSunAffinityLevel${level}`, GameMode.survival),
+    }));
+    const stacked = test.spawnSimulatedPlayer({ x: 8, y: 3, z: 3 }, "ASDayNightMovementStack", GameMode.survival);
+    const movementOf = (player) => {
+      const movement = player.getComponent("minecraft:movement");
+      ensure(movement, `${player.name}: general movement component was unavailable.`);
+      return movement;
+    };
+
+    world.setTimeOfDay(14_000);
+    await test.idle(3);
+    for (const entry of nocturnal) {
+      const movement = movementOf(entry.player);
+      const expected = movement.defaultValue * (1 + 0.05 * entry.level);
+      ensure(Math.abs(movement.currentValue - expected) < 0.000001,
+        `${entry.player.name}: expected night movement ${expected}, got ${movement.currentValue}.`);
+    }
+    for (const entry of sunAffinity) {
+      const movement = movementOf(entry.player);
+      ensure(Math.abs(movement.currentValue - movement.defaultValue) < 0.000001,
+        `${entry.player.name}: Sun Affinity must not increase movement at night.`);
+    }
+    let stackedMovement = movementOf(stacked);
+    let expectedStack = stackedMovement.defaultValue * (1 + 0.03 * 5 + 0.05 * 2);
+    ensure(Math.abs(stackedMovement.currentValue - expectedStack) < 0.000001,
+      `Night stack expected Quick Feet + Nocturnal = ${expectedStack}, got ${stackedMovement.currentValue}.`);
+
+    world.setTimeOfDay(12_000);
+    await test.idle(3);
+    for (const entry of nocturnal) {
+      const movement = movementOf(entry.player);
+      ensure(Math.abs(movement.currentValue - movement.defaultValue) < 0.000001,
+        `${entry.player.name}: Nocturnal must not increase movement during daytime.`);
+    }
+    for (const entry of sunAffinity) {
+      const movement = movementOf(entry.player);
+      const expected = movement.defaultValue * (1 + 0.04 * entry.level);
+      ensure(Math.abs(movement.currentValue - expected) < 0.000001,
+        `${entry.player.name}: expected daytime movement ${expected}, got ${movement.currentValue}.`);
+    }
+    stackedMovement = movementOf(stacked);
+    expectedStack = stackedMovement.defaultValue * (1 + 0.03 * 5 + 0.04 * 3);
+    ensure(Math.abs(stackedMovement.currentValue - expectedStack) < 0.000001,
+      `Day stack expected Quick Feet + Sun Affinity = ${expectedStack}, got ${stackedMovement.currentValue}.`);
+
+    console.warn(`AS_DAY_NIGHT_MOVEMENT_STACK ${JSON.stringify({ timeOfDay: world.getTimeOfDay(), nightMultiplier: 1.25, dayMultiplier: 1.27 })}`);
+  } finally {
+    world.setTimeOfDay(previousTime);
+  }
+  test.succeed();
+}).maxTicks(40).structureName(STRUCTURE).tag(TAG);
 
 // Diagnostic only: observe the stable event/component surface available around
 // a vanilla fishing-rod use. This does not implement or count Fishing Sense.

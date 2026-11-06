@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "quick_feet", "nocturnal", "sun_affinity"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -35,24 +35,28 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("B", by_id["seed_saver"]["compatibility_class"])
         self.assertEqual("B", by_id["catch_breath"]["compatibility_class"])
         self.assertEqual("B", by_id["quick_feet"]["compatibility_class"])
+        self.assertEqual("C", by_id["nocturnal"]["compatibility_class"])
+        self.assertEqual("C", by_id["sun_affinity"]["compatibility_class"])
         self.assertIn("PlayerStatAugmentService.java", " ".join(by_id["quick_feet"]["java_source_paths"]))
         self.assertIn("stat_modifier_contract.json", " ".join(by_id["quick_feet"]["java_source_paths"]))
         self.assertEqual("C", by_id["miners_hand"]["compatibility_class"])
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 11, "C": 2, "D": 7, "UNASSESSED": 127},
+            {"A": 2, "B": 11, "C": 4, "D": 7, "UNASSESSED": 125},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
-    def test_only_bds_verified_movement_effect_is_offered(self):
+    def test_verified_movement_effects_use_the_shared_offer_filter(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         movement = {item["name_ko"]: item for item in data["augments"] if item["name_ko"] in {"빠른 발", "물갈퀴"}}
         self.assertEqual({"빠른 발", "물갈퀴"}, set(movement))
         self.assertEqual("B", movement["빠른 발"]["compatibility_class"])
-        self.assertEqual("NOT_PORTED", movement["빠른 발"]["port_status"])
-        self.assertFalse(movement["빠른 발"]["candidate_enabled"])
-        self.assertIn("per-tick reconciliation", movement["빠른 발"]["api_constraints"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", movement["빠른 발"]["port_status"])
+        self.assertTrue(movement["빠른 발"]["candidate_enabled"])
+        self.assertIn("+3% / +6% / +9% / +12% / +15%", movement["빠른 발"]["test_method"])
+        self.assertIn("shared server reconciler", movement["빠른 발"]["api_constraints"])
+        self.assertIn("does not precharge Catch Breath", movement["빠른 발"]["test_method"])
         self.assertEqual("PARTIAL_BDS_VERIFIED", movement["물갈퀴"]["port_status"])
         self.assertTrue(movement["물갈퀴"]["candidate_enabled"])
         for item in movement.values():
@@ -103,9 +107,23 @@ class StaticAddonTests(unittest.TestCase):
     def test_catch_breath_runtime_resets_idle_counter_on_sprint(self):
         movement = (ROOT / "BP/scripts/movement.js").read_text(encoding="utf-8")
         self.assertIn("const CATCH_BREATH_IDLE_TICKS = 60", movement)
-        self.assertIn("catchBreathLevel > 0 && !player.isSprinting", movement)
+        self.assertIn("if (hasConditionalMovementAugment && !player.isSprinting)", movement)
         self.assertIn("state.nonSprintingTicks = 0", movement)
         self.assertIn("state.nonSprintingTicks >= CATCH_BREATH_IDLE_TICKS", movement)
+        self.assertIn("const QUICK_FEET_PER_LEVEL = 0.03", movement)
+        self.assertIn("const NOCTURNAL_MOVEMENT_PER_LEVEL = 0.05", movement)
+        self.assertIn("const SUN_AFFINITY_MOVEMENT_PER_LEVEL = 0.04", movement)
+
+    def test_day_cycle_movement_preserves_nocturnal_and_sun_affinity_contracts(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        by_id = {item["id"].split(":", 1)[1]: item for item in data["augments"]}
+        for slug in ("nocturnal", "sun_affinity"):
+            self.assertEqual("PARTIAL_BDS_VERIFIED", by_id[slug]["port_status"])
+            self.assertTrue(by_id[slug]["candidate_enabled"])
+            self.assertIn("natural-regeneration" if slug == "sun_affinity" else "mining half", by_id[slug]["api_constraints"])
+        movement = (ROOT / "BP/scripts/movement.js").read_text(encoding="utf-8")
+        self.assertIn("world.getTimeOfDay()", movement)
+        self.assertIn("const DAYTIME_END_TICK = 13_000", movement)
 
     def test_cold_adaptation_remains_unoffered_without_freeze_buildup_access(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

@@ -22,11 +22,11 @@ References: [EntityHealBeforeEvent](https://learn.microsoft.com/en-us/minecraft/
 
 ### Java contract and movement interactions
 
-The canonical effect gives +10% / +20% / +30% movement speed after the player has not sprinted for 3 seconds. `MovementAugmentService` resets `nonSprintingTicks` to zero while sprinting and increments it to 60 otherwise; its shared `ADD_MULTIPLIED_BASE` conditional movement modifier adds 0.10 per saved level at that threshold. The shared bonus also includes daytime `햇빛 체질`, nighttime `야행성`, in-water `물갈퀴`, and timed `관성 전환`. `AugmentMovementBonusService` exposes this shared modifier to the later `속도 전환` interaction. Bedrock currently ports Catch Breath plus the Webbed Feet water interaction; the other movement bonuses and Speed Conversion remain pending.
+The canonical effect gives +10% / +20% / +30% movement speed after the player has not sprinted for 3 seconds. `MovementAugmentService` resets `nonSprintingTicks` to zero while sprinting and increments it to 60 otherwise; its shared `ADD_MULTIPLIED_BASE` conditional movement modifier adds 0.10 per saved level at that threshold. The Java shared bonus also includes daytime `햇빛 체질`, nighttime `야행성`, in-water `물갈퀴`, and timed `관성 전환`; `빠른 발` is a separate generic movement stat modifier. `AugmentMovementBonusService` exposes the shared modifier to the later `속도 전환` interaction. Bedrock now routes Catch Breath, Quick Feet, Nocturnal, Sun Affinity, and Webbed Feet through one per-tick movement reconciler. Momentum Shift and Speed Conversion remain pending.
 
 ### Stable Bedrock route and BDS evidence
 
-Stable `Player.isSprinting` supplies the server-side input state. Stable `EntityMovementComponent` wraps `minecraft:movement`, and its base `EntityAttributeComponent.setCurrentValue` writes the current attribute. A one-time write to this player component reverts by the next tick on BDS, so the production handler counts non-sprinting ticks per online player and reconciles the level-based value once per tick. The counter is runtime-only and clears on sprint and player leave, matching Java's nonpersistent movement timer. The handler keeps general movement at default while the player is in water and sets the separate underwater attribute to the sum of Catch Breath and Webbed Feet bonuses; this avoids multiplying their level bonuses.
+Stable `Player.isSprinting` supplies the server-side input state. Stable `EntityMovementComponent` wraps `minecraft:movement`, and its base `EntityAttributeComponent.setCurrentValue` writes the current attribute. A one-time write to this player component reverts by the next tick on BDS, so the production handler counts non-sprinting ticks per online player and reconciles the level-based value once per tick. The counter is runtime-only and clears on sprint and player leave, matching Java's nonpersistent movement timer. While the player is in water, the handler holds the general component at default and maps the combined movement bonus to the separate underwater attribute. Catch Breath and Webbed Feet level-1 swim stacking remains separately verified. Quick Feet plus the active Nocturnal or Sun Affinity bonus is verified at the component level; Quick Feet's behavior with every other movement augment remains untested.
 
 BDS 1.26.62.1 ran the production pack. After 35 idle ticks, the level 1–3 movement component values remained at default. By 70 idle ticks, they were exactly 1.10 / 1.20 / 1.30 of the 0.10 default. In water, measured swim-velocity ratios were 1.10 for level 1 Catch Breath alone, 1.10 for level 1 Webbed Feet alone, and 1.20 with both. The general movement value remained at its default in water. A separate ground `SimulatedPlayer.moveRelative` velocity probe returned zero for both control and level 1 in this fixture, so it was removed and is not counted as passing. The stable component value and water movement interaction are verified; direct client ground-speed visibility, mobile/controller behavior, and an actual sprint-reset transition remain untested.
 
@@ -44,15 +44,51 @@ The canonical effect is +3% / +6% / +9% / +12% / +15% movement speed at levels 1
 
 ### Stable Bedrock route and evidence
 
-Stable `minecraft:movement` is writable through `EntityAttributeComponent.setCurrentValue`, but a one-time player write was observed returning to the default on the next tick in BDS 1.26.62.1. The production Catch Breath handler now demonstrates that a server tick reconciler can keep this same general movement attribute at an exact level-based multiplier. That establishes a class B implementation route for Quick Feet. Quick Feet itself is still `NOT_PORTED`: there is no level 1–5 Quick Feet production handler or gameplay test, and the general movement writer must compose with Catch Breath and future movement bonuses instead of overwriting them.
+Stable `minecraft:movement` is writable through `EntityAttributeComponent.setCurrentValue`, but a one-time player write was observed returning to the default on the next tick in BDS 1.26.62.1. The shared production reconciler now applies the saved Quick Feet level each tick and composes it additively with the active day/night bonus and Catch Breath. In water, its shared bonus is mapped onto Bedrock's separate underwater-movement component because the general movement component is held at default there.
 
-The earlier BDS setter exploration and the new Catch Breath movement-component test are not Quick Feet gameplay verification. No Quick Feet candidate is offered. A direct ground `SimulatedPlayer.moveRelative` velocity experiment returned zero for both its control and level 1 and is excluded from passing evidence. Real client movement and mobile/controller behavior have not been tested.
+The new production-handler GameTests read the movement component at all five levels and verify the Quick Feet + Nocturnal and Quick Feet + Sun Affinity stacks at night and day. They also leave a Quick Feet-only player idle before granting Catch Breath, confirm Catch Breath is still inactive after 35 newly-owned idle ticks, and verify its exact additive bonus after 60 ticks. This prevents Quick Feet alone from precharging the Catch Breath timer, matching Java runtime creation. These tests establish exact component multipliers, not actual ground walking velocity. A direct ground `SimulatedPlayer.moveRelative` experiment returned zero for both its control and level 1 and is excluded from passing evidence. Quick Feet remains partial and candidate-enabled; real client movement, mobile/controller feel, reconnect persistence, and stacking with all other movement augments have not been tested.
 
 ### Classification
 
-Class **B** for the stable API route: a saved-level multiplier can be reconciled through the writable general movement component each server tick. Port status remains `NOT_PORTED` until Quick Feet's five exact levels, shared movement composition, and player-visible movement are tested.
+Class **B** for the stable API route. The five exact component multipliers and day/night stacking pass BDS GameTests. `quick_feet` is `PARTIAL_BDS_VERIFIED` and enabled for common core offers; player-visible walking behavior and full movement-group interaction testing remain open.
 
 References: [EntityMovementComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitymovementcomponent?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable).
+
+## `야행성` (Nocturnal)
+
+### Java contract and interaction
+
+At levels 1–3, Java grants +5% movement speed and +5% mining speed per level at night. `MovementAugmentService.applyConditionalMovement` adds the movement portion to the shared conditional modifier only when the normalized Overworld clock is at or past tick 13,000; `ClientMiningAugmentMixin` separately adds the mining-speed portion while not daytime. During daytime, the movement bonus is inactive and the night mining bonus is inactive.
+
+### Stable Bedrock route and BDS evidence
+
+Stable `World.getTimeOfDay()` supplies world time; normalizing it modulo 24,000 and testing `< 13,000` mirrors Java's day boundary. The production movement reconciler checks this each server tick. Its BDS GameTest verifies exact +5% / +10% / +15% movement-component values at night, zero Nocturnal bonus during daytime, and additive stacking with Quick Feet at levels 1–5. These are server component measurements, not client walking-speed measurements.
+
+Stable player block-break events report the block and tool but expose no vanilla mining-progress or break-speed setter. A custom hold-to-break loop would need to preserve touch and controller input and is not implemented. The mining half therefore remains unported.
+
+### Classification
+
+Class **C**, partial. Stable time and movement APIs reproduce the nighttime movement half exactly, but the separate mining-speed effect has no reviewed stable mutation route. `nocturnal` is `PARTIAL_BDS_VERIFIED` and enabled for uncommon core offers; it is not a complete port.
+
+References: [World](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/world?view=minecraft-bedrock-stable), [EntityMovementComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitymovementcomponent?view=minecraft-bedrock-stable), [PlayerBreakBlockBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockbeforeevent?view=minecraft-bedrock-stable), [PlayerBreakBlockAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockafterevent?view=minecraft-bedrock-stable).
+
+## `햇빛 체질` (Sun Affinity)
+
+### Java contract and interaction
+
+At levels 1–3, Java grants +4% movement speed and reduces the natural-regeneration interval by 5% / 10% / 15% per level during daytime. `MovementAugmentService` applies the movement portion to the shared conditional modifier before normalized Overworld time tick 13,000. `SurvivalAugmentService.consumeExtraNaturalRegenTimerTicks`, called before vanilla advances the regeneration timer, adds fractional timer credit for this reduction only while the player meets Java's food and health eligibility rules. At night, both Sun Affinity portions are inactive.
+
+### Stable Bedrock route and BDS evidence
+
+The production movement reconciler uses normalized `World.getTimeOfDay()` and Java's `< 13,000` day boundary. Its BDS GameTest verifies exact +4% / +8% / +12% daytime movement-component values, zero Sun Affinity bonus at night, and additive stacking with Quick Feet at levels 1–5. These are server component measurements, not client walking-speed measurements.
+
+Stable heal events expose healing source and amount, but no native natural-regeneration interval or pending timer that a script can adjust. Replacing vanilla healing with a per-player scheduler would need to reproduce native hunger, saturation, gamerule, and health eligibility; no equivalent has been validated, so no substitute is shipped. Recovery has the same underlying timer limitation and its own separate Java reduction.
+
+### Classification
+
+Class **C**, partial. Stable time and movement APIs reproduce the daytime movement half exactly; the natural-regeneration interval half remains unimplemented because the pinned stable API exposes no native timer control. `sun_affinity` is `PARTIAL_BDS_VERIFIED` and enabled for uncommon core offers; it is not a complete port.
+
+References: [World](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/world?view=minecraft-bedrock-stable), [EntityMovementComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitymovementcomponent?view=minecraft-bedrock-stable), [EntityHealBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhealbeforeevent?view=minecraft-bedrock-stable), [EntityHealCause](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhealcause?view=minecraft-bedrock-stable).
 
 ## `한 조각 더` (Extra Piece)
 

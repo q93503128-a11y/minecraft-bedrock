@@ -96,6 +96,58 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:webbed_feet": 1 }));
       return;
     }
+    const quickFeetLevels = {
+      ASQuickFeetLevel1: 1,
+      ASQuickFeetLevel2: 2,
+      ASQuickFeetLevel3: 3,
+      ASQuickFeetLevel4: 4,
+      ASQuickFeetLevel5: 5,
+    };
+    const quickFeetLevel = quickFeetLevels[player.name];
+    if (quickFeetLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:quick_feet": quickFeetLevel }));
+      return;
+    }
+    if (player.name === "ASQuickFeetCatchBreathDelayed") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:quick_feet": 1 }));
+      system.runTimeout(() => {
+        try {
+          player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+            "augmentation_survival:quick_feet": 1,
+            "augmentation_survival:catch_breath": 3,
+          }));
+        } catch { /* The simulated player may leave before the delayed test mutation. */ }
+      }, 65);
+      return;
+    }
+    const nocturnalLevels = {
+      ASNocturnalLevel1: 1,
+      ASNocturnalLevel2: 2,
+      ASNocturnalLevel3: 3,
+    };
+    const nocturnalLevel = nocturnalLevels[player.name];
+    if (nocturnalLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:nocturnal": nocturnalLevel }));
+      return;
+    }
+    const sunAffinityLevels = {
+      ASSunAffinityLevel1: 1,
+      ASSunAffinityLevel2: 2,
+      ASSunAffinityLevel3: 3,
+    };
+    const sunAffinityLevel = sunAffinityLevels[player.name];
+    if (sunAffinityLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:sun_affinity": sunAffinityLevel }));
+      return;
+    }
+    if (player.name === "ASDayNightMovementStack") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:quick_feet": 5,
+        "augmentation_survival:nocturnal": 2,
+        "augmentation_survival:sun_affinity": 3,
+      }));
+      return;
+    }
     const toughSkinLevels = {
       ASToughSkinLevel1: 1,
       ASToughSkinLevel2: 2,

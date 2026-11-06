@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 14639,
+  "durationMs": 14652,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
@@ -37,6 +37,14 @@
     },
     {
       "id": "AugmentationSurvival:catch_breath_stacks_additively_with_webbed_feet_while_swimming",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:quick_feet_scales_server_movement_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:nocturnal_and_sun_affinity_share_the_day_night_movement_axis",
       "outcome": "pass"
     },
     {
