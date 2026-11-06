@@ -67,6 +67,18 @@ def main(source: Path, target: Path) -> None:
         name, max_level, effect = roster_tables[table_tier][index]
         slug = entry["id"]
         source_paths = source_hits[slug]
+        if slug == "treasure_fishing":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/FishingHookAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentTuning.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/TreasureFishingService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/AbundanceService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/core/FishingCoreRewardService.java",
+                "src/main/resources/data/augmentation_survival/augmentation/consumption_fishing_contract.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         if slug == "fishing_sense":
             fishing_mixin = "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/FishingHookAugmentMixin.java"
             if fishing_mixin not in source_paths:
@@ -149,6 +161,20 @@ def main(source: Path, target: Path) -> None:
             for line_number, line in enumerate(interaction_lines, start=1)
             if slug in line or name in line or entry["canonical_name_ko"] in line
         ]
+        if slug == "treasure_fishing":
+            interaction_refs.extend(
+                {"line": line_number, "text": line.strip()}
+                for line_number, line in enumerate(interaction_lines, start=1)
+                if line.strip().startswith("드롭 순서:")
+                or line.strip().startswith("- `풍요`는 최종 일반 스택")
+                or line.strip().startswith("- 코어/고유 보스 보상")
+            )
+            core_design = (project / "CORE_ACQUISITION_DESIGN_2026-10-24.md").read_text(encoding="utf-8").splitlines()
+            interaction_refs.extend(
+                {"line": line_number, "text": f"CORE_ACQUISITION_DESIGN_2026-10-24.md: {line.strip()}"}
+                for line_number, line in enumerate(core_design, start=1)
+                if "보물 범주 낚시" in line or "보물 낚시`처럼 보물 판정" in line or "코어 자체는 `풍요`" in line
+            )
         if slug == "fuel_saver":
             for line_number, line in enumerate(canon.splitlines(), start=1):
                 if any(term in line for term in ("공유 기계/오라 효과", "호퍼 등 자동화", "연료가 실제 소모되는 순간", "MULTIPLAYER TESTED: NO")):
@@ -191,7 +217,7 @@ def main(source: Path, target: Path) -> None:
             "catalog_discrepancy": "; ".join(source_mismatch),
             "java_source_paths": source_paths,
             "interaction_contract_refs": interaction_refs,
-            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "fast_eating", "fuel_saver", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else "NO_DIRECT_MENTION_FOUND",
+            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "fast_eating", "fuel_saver", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else "NO_DIRECT_MENTION_FOUND",
             "compatibility_class": (
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
@@ -203,7 +229,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug == "last_strength" else
                 "B" if slug in {"catch_breath", "quick_feet"} else
                 "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care"} else
-                "D" if slug in {"fishing_sense", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery"} else
+                "D" if slug in {"fishing_sense", "treasure_fishing", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery"} else
                 "UNASSESSED"
             ),
             "bedrock_method": (
@@ -228,6 +254,7 @@ def main(source: Path, target: Path) -> None:
                 "On stable itemCompleteUse after-event, apply the Java food saturation bonus; read exact custom food properties when exposed and infer vanilla food saturation gain from adjacent server-tick samples" if slug == "hearty_meal" else
                 "No stable API changes a vanilla furnace's per-fuel burn duration. The stable block inventory surface can observe slots, but does not expose the furnace burn timer or the vanilla item's fuel duration" if slug == "fuel_saver" else
                 "No stable Script API component or player attribute setter changes vanilla player attack speed; after-hit damage events cannot change attack cooldown recharge or attack input" if slug == "rapid_strikes" else
+                "No direct stable event exposes a fishing retrieval together with its selected vanilla category, LootParams, open-water state, or final result list. Correlating hook IDs with later inventory/entity changes could infer some cases, but cannot guarantee exact server-authoritative replacement or preserve player/rod luck, core-roll and Abundance ordering" if slug == "treasure_fishing" else
                 "No stable API exposes or changes the vanilla FishingHook timeUntilLured timer. Stable entitySpawn and generic item-use events can observe casts, but do not provide the proportional wait-timer adjustment; Java mixes this timing change separately from its Treasure Fishing and final-result Abundance logic" if slug == "fishing_sense" else
                 "No stable API exposes or changes the player's current air supply or oxygen depletion interval; the only documented airSupply setter is pre-release and is absent from stable @minecraft/server 2.11.0 declarations and the tested BDS runtime" if slug == "long_breath" else
                 "No stable API exposes or changes a player's vanilla freeze-buildup counter; freezing is available only as a damage cause" if slug == "cold_adaptation" else
@@ -263,6 +290,7 @@ def main(source: Path, target: Path) -> None:
                 "Class D for the exact player-specific food-duration effect. Stable @minecraft/server 2.11.0 has no active-item duration setter; itemStartUse/itemCompleteUse carry read-only durations and run after timing starts. minecraft:use_modifiers.use_duration is static JSON, so overriding vanilla food changes all players and cannot follow saved augment levels; custom replacement foods would alter item identity and omit unsupported external foods. Player.eatItem is marked pre-release and does not adjust an in-progress held use" if slug == "fast_eating" else
                 "Class D for Java's per-fuel burn-duration effect on stable @minecraft/server 2.11.0. Stable block components expose inventory and recipe processing but no vanilla furnace burn-time component; ItemStack exposes script components, not minecraft:fuel duration. BDS 1.26.62.1 probe: a lit furnace exposed inventory without a furnace timer, while coal had no minecraft:fuel script component. Static minecraft:fuel JSON belongs to an item definition, not nearby players' saved levels. Polling and injecting bonus fuel would alter per-item rounding, misattribute hopper/manual slot changes or mixed fuel, and cannot snapshot the highest nearby level at the exact burn-start boundary. No exact substitute is shipped" if slug == "fuel_saver" else
                 "Class D for the exact player attack-speed effect on stable @minecraft/server 2.11.0. The stable EntityComponentTypes enum and player component surface have no attack-speed component or generic player attribute-modifier setter. BDS 1.26.62.1 diagnostic checks for minecraft:attack_speed, minecraft:attack and minecraft:attack_cooldown found no player components. The Bedrock minecraft:attack_cooldown entity JSON component controls an entity's target-acquisition cooldown, while minecraft:cooldown is static item JSON; neither changes a player's saved per-level attack-speed attribute. Scaling hit damage would change the effect, and no stable API observes/cancels player attack input early enough to reproduce faster recharge" if slug == "rapid_strikes" else
+                "Class D for the exact treasure-category probability change on stable @minecraft/server 2.11.0. Rod-use events report item use, entity removal reports only removedEntityId/typeId, and playerInventoryItemChange is after the slot has changed; no shared event transaction exposes the fishing result/category. LootTableManager.generateLootFromTable accepts only a table and optional tool, not Java's LootParams (open-water state plus rod/player luck), and cannot return/replace the hook's original resolved list. Hook/inventory correlation could infer some simple catches but has no shared catch ID and cannot guarantee atomic exact replacement; a vanilla-table override or custom rod replaces vanilla behavior. These alternatives risk changed catches, duplicated rewards, and broken 12% core / Abundance ordering; no approximation is shipped" if slug == "treasure_fishing" else
                 "Class C: stable start/break events can observe block interactions but expose no vanilla break-progress/speed control; reconstructing hold, tool, hardness, and cancellation behavior would differ, especially across touch/controller input" if slug in {"miners_hand", "logging_knack"} else
                 "Class B route uses a stable writable movement attribute; BDS 1.26.62.1 showed a direct write returning to default on the next tick. The per-tick Catch Breath route demonstrates persistence, but exact Quick Feet levels and coexisting movement modifiers remain unverified" if slug == "quick_feet" else
                 "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified" if slug == "efficient_metabolism" else
@@ -290,6 +318,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 end-to-end GameTest consumes cooked beef through the production handler and checks exact saturation at levels 1–3 plus the food saturation cap" if slug == "hearty_meal" else
                 "BDS 1.26.62.1 diagnostic GameTest consumes coal in a vanilla furnace and observes the lit furnace and inventory slots; it found no furnace burn-duration component and coal exposed no minecraft:fuel script component. Diagnostic only; no Fuel Saver behavior implemented" if slug == "fuel_saver" else
                 "BDS 1.26.62.1 diagnostic GameTest enumerates a simulated player's stable component IDs, checks attack-speed/damage/cooldown component IDs, and inspects the stable EntityComponentTypes enum. Diagnostic only; no Rapid Strikes gameplay implemented" if slug == "rapid_strikes" else
+                "Static stable API 2.11.0 review of WorldAfterEvents, EntityRemoveAfterEvent, PlayerInventoryItemChangeAfterEvent and LootTableManager; existing BDS fishing-hook probe confirms cast events and an owned projectile hook only. No catch/category/loot-context runtime event is available; no Treasure Fishing behavior is implemented or counted" if slug == "treasure_fishing" else
                 "BDS 1.26.62.1 GameTest diagnostic casts a vanilla fishing rod, observes generic cast events and the owned fishing-hook entity, and queries projectile/fishing-hook/timer components. It found only minecraft:projectile; it does not test or implement bite timing" if slug == "fishing_sense" else
                 "Official stable API declaration review plus BDS 1.26.62.1 GameTest submerged-player probe: minecraft:breathable exists but exposes no airSupply property at runtime; probe only, no oxygen behavior implemented" if slug == "long_breath" else
                 "Stable @minecraft/server type review plus BDS 1.26.62.1 GameTest diagnostic in powder snow: no freeze component, frozen-tick member, or buildup event was available; probe only, no cold effect implemented" if slug == "cold_adaptation" else

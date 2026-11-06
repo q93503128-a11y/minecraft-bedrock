@@ -243,6 +243,28 @@ Class **D** for the exact vanilla wait-time effect on the currently pinned stabl
 
 References: [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [EntitySpawnAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityspawnafterevent?view=minecraft-bedrock-stable), [ItemUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemuseafterevent?view=minecraft-bedrock-stable), [ItemStartUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstartuseafterevent?view=minecraft-bedrock-stable), [vanilla fishing-hook entity snippet](https://learn.microsoft.com/en-us/minecraft/creator/reference/source/vanillabehaviorpack_snippets/entities/fishing_hook?view=minecraft-bedrock-stable).
 
+## `보물 낚시` (Treasure Fishing)
+
+### Java contract and interactions
+
+The canonical effect adds +2 / +4 / +6 percentage points to the vanilla treasure-category probability at levels 1–3. `TreasureFishingService` preserves the open-water requirement and calculates vanilla category weights from `lootLuck = hook luck + player luck`: junk `max(floor(10 - 2L), 0)`, treasure `max(floor(5 + 2L), 0)`, and fish `max(floor(85 - L), 0)`. It computes `base = treasure / total`, `desired = min(1, base + bonus)`, then uses a pre-roll of `(desired - base) / (1 - base)` so a forced treasure replaces the ordinary root-table result and the total treasure probability is exactly `base + bonus`.
+
+On retrieval, `FishingHookAugmentMixin` generates `minecraft:gameplay/fishing/treasure` with the same Java `LootParams`, then applies `풍요` to eligible final ordinary stacks. The Java core reward service adds a separate 12% core roll to this treasure table, weighted common 70%, uncommon 25%, rare 5%; cores are excluded from `풍요`. These three behaviors share the catch-result boundary and must retain this order and context.
+
+### Stable Bedrock surface and alternative routes
+
+The pinned stable module is `@minecraft/server` 2.11.0 on BDS 1.26.62.1. The stable `WorldAfterEvents` list has generic item-use, entity spawn/removal, and inventory-change events, but no fishing-retrieval event or final fishing-result/category event. The existing BDS fishing probe observes rod-use events and an owned `minecraft:fishing_hook` with a projectile component; it does not observe a caught item or category.
+
+There is no direct one-call catch transaction in the stable events. `ItemUseAfterEvent` carries the used stack and player; `EntityRemoveAfterEvent` carries only the removed entity ID and type ID; `PlayerInventoryItemChangeAfterEvent` fires after a slot has changed and provides that slot's before/after stacks. Inference: a script could correlate tracked hook IDs with a later inventory delta or nearby item, and might recognize some simple vanilla catches. Those separate events provide no shared catch/result transaction ID, so this would be a heuristic under same-tick pickups, concurrent hooks/players, full inventories, and unrelated item changes; it cannot guarantee one-time replacement of the already-applied vanilla result. `LootTableManager.generateLootFromTable(table, tool)` cannot accept Java's full `LootParams`, including open-water state and the combined rod/player luck, and it does not expose or replace the hook's resolved result list.
+
+The alternatives were checked against the contract. Replacing the default rod or vanilla fishing table would take over cast/reel behavior or replace a non-composable loot table; post-hoc item replacement would risk altered catches, duplicate rewards, and wrong core/`풍요` ordering. None is shipped. The 12% fishing-core reward is likewise not injected into the Bedrock treasure table; its other acquisition routes remain separate.
+
+### Classification
+
+Class **D** for the exact treasure-category probability effect on the currently pinned stable API. A custom correlator could infer some catches, but the stable surface does not provide a reliable, attributable result transaction that preserves the original luck/open-water context and permits server-authoritative replacement. `treasure_fishing` remains `NOT_PORTED` and disabled as an uncommon-core candidate. This classification follows the Java algorithm, stable event and loot-table signatures, and the BDS cast probe; it is not based on Java compilation failure. No external Java-mod content is copied.
+
+References: [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [ItemUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemuseafterevent?view=minecraft-bedrock-stable), [EntityRemoveAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityremoveafterevent?view=minecraft-bedrock-stable), [PlayerInventoryItemChangeAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerinventoryitemchangeafterevent?view=minecraft-bedrock-stable), [LootTableManager](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/loottablemanager?view=minecraft-bedrock-stable).
+
 ## `숨 오래 참기` (Long Breath)
 
 ### Java contract

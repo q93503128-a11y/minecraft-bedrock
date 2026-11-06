@@ -754,14 +754,42 @@
         "src/main/java/dev/moonseungjun/augmentationsurvival/core/FishingCoreRewardService.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentService.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentTuning.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/TreasureFishingService.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/TreasureFishingService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/FishingHookAugmentMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/AbundanceService.java",
+        "src/main/resources/data/augmentation_survival/augmentation/consumption_fishing_contract.json"
       ],
-      "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_contract_refs": [
+        {
+          "line": 300,
+          "text": "드롭 순서:"
+        },
+        {
+          "line": 303,
+          "text": "- `풍요`는 최종 일반 스택 수량에 적용한다."
+        },
+        {
+          "line": 304,
+          "text": "- 코어/고유 보스 보상/진행 아이템/고유 NBT 장비/비스택 장비 제외."
+        },
+        {
+          "line": 249,
+          "text": "CORE_ACQUISITION_DESIGN_2026-10-24.md: 보물 범주 낚시에 성공했을 때 기존 보상과 별개로 추가 core roll **12%**."
+        },
+        {
+          "line": 257,
+          "text": "CORE_ACQUISITION_DESIGN_2026-10-24.md: `보물 낚시`처럼 보물 판정을 높이는 증강은 자연스럽게 이 루트를 강화한다."
+        },
+        {
+          "line": 259,
+          "text": "CORE_ACQUISITION_DESIGN_2026-10-24.md: 코어 자체는 `풍요`로 두 배가 되지 않는다."
+        }
+      ],
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "D",
+      "bedrock_method": "No direct stable event exposes a fishing retrieval together with its selected vanilla category, LootParams, open-water state, or final result list. Correlating hook IDs with later inventory/entity changes could infer some cases, but cannot guarantee exact server-authoritative replacement or preserve player/rod luck, core-roll and Abundance ordering",
+      "api_constraints": "Class D for the exact treasure-category probability change on stable @minecraft/server 2.11.0. Rod-use events report item use, entity removal reports only removedEntityId/typeId, and playerInventoryItemChange is after the slot has changed; no shared event transaction exposes the fishing result/category. LootTableManager.generateLootFromTable accepts only a table and optional tool, not Java's LootParams (open-water state plus rod/player luck), and cannot return/replace the hook's original resolved list. Hook/inventory correlation could infer some simple catches but has no shared catch ID and cannot guarantee atomic exact replacement; a vanilla-table override or custom rod replaces vanilla behavior. These alternatives risk changed catches, duplicated rewards, and broken 12% core / Abundance ordering; no approximation is shipped",
+      "test_method": "Static stable API 2.11.0 review of WorldAfterEvents, EntityRemoveAfterEvent, PlayerInventoryItemChangeAfterEvent and LootTableManager; existing BDS fishing-hook probe confirms cast events and an owned projectile hook only. No catch/category/loot-context runtime event is available; no Treasure Fishing behavior is implemented or counted",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

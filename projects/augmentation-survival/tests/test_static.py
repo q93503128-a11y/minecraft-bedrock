@@ -44,7 +44,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 5, "D": 7, "UNASSESSED": 122},
+            {"A": 2, "B": 13, "C": 5, "D": 8, "UNASSESSED": 121},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -70,6 +70,22 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("NOT_PORTED", fishing_sense["port_status"])
         self.assertFalse(fishing_sense["candidate_enabled"])
         self.assertIn("FishingHookAugmentMixin.java", " ".join(fishing_sense["java_source_paths"]))
+
+    def test_treasure_fishing_preserves_canon_and_stays_unoffered_without_result_hook(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        treasure_fishing = next(item for item in data["augments"] if item["id"].endswith(":treasure_fishing"))
+        self.assertEqual("보물 낚시", treasure_fishing["name_ko"])
+        self.assertEqual("uncommon", treasure_fishing["tier"])
+        self.assertEqual(3, treasure_fishing["max_level"])
+        self.assertEqual("낚시 보물 판정 확률 +2%p / +4%p / +6%p.", treasure_fishing["canonical_effect_ko"])
+        self.assertEqual("D", treasure_fishing["compatibility_class"])
+        self.assertEqual("NOT_PORTED", treasure_fishing["port_status"])
+        self.assertFalse(treasure_fishing["candidate_enabled"])
+        sources = " ".join(treasure_fishing["java_source_paths"])
+        self.assertIn("TreasureFishingService.java", sources)
+        self.assertIn("FishingHookAugmentMixin.java", sources)
+        self.assertIn("FishingCoreRewardService.java", sources)
+        self.assertIn("PlayerInventoryItemChangeAfterEvent", treasure_fishing["test_method"])
 
     def test_long_breath_remains_unoffered_without_stable_air_supply_access(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
