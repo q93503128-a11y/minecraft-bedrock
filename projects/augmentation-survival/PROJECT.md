@@ -2,7 +2,7 @@
 
 ## Source of truth
 
-This is a Bedrock port of `projects/augmentation-survival/` in `q93503128-a11y/minecraft-java-mod-builds`. It does not invent an additional growth track. The Java repository is read-only. Canon priority is preserved: `AUGMENTS.md` → `AUGMENT_PROPOSAL_HISTORY.md` → `GAME_DESIGN.md` → `PROJECT.md` → `MODPACK_BASELINE.md` → implementation. The original canon files copied to `docs/java-canon/` are byte-for-byte snapshots from Java revision `5962141975b1fea600b0bdb2ae9b697dc7de9cb5`; the project subtree was rechecked against current `origin/main` revision `8fead5ce84cfb266b39819b6222f116d0238d0a1` and is unchanged since Java snapshot revision `5962141975b1fea600b0bdb2ae9b697dc7de9cb5`.
+This is a Bedrock port of `projects/augmentation-survival/` in `q93503128-a11y/minecraft-java-mod-builds`. It does not invent an additional growth track. The Java repository is read-only. Canon priority is preserved: `AUGMENTS.md` → `AUGMENT_PROPOSAL_HISTORY.md` → `GAME_DESIGN.md` → `PROJECT.md` → `MODPACK_BASELINE.md` → implementation. The original canon files copied to `docs/java-canon/` are byte-for-byte snapshots from Java revision `5962141975b1fea600b0bdb2ae9b697dc7de9cb5`; the project subtree was rechecked against current `origin/main` revision `28ff49129fef8de2efa161b1b344bdfb04e53f1c` and is unchanged since that Java snapshot.
 
 See [STATUS.md](STATUS.md), the generated [149-entry port matrix](docs/PORT_MATRIX.csv), and [implementation decisions](docs/PORT_DECISIONS.md).
 

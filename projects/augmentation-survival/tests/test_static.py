@@ -37,7 +37,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 8, "C": 2, "D": 6, "UNASSESSED": 131},
+            {"A": 2, "B": 8, "C": 2, "D": 7, "UNASSESSED": 130},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -67,6 +67,16 @@ class StaticAddonTests(unittest.TestCase):
         self.assertFalse(long_breath["candidate_enabled"])
         self.assertIn("SurvivalAugmentService.java", " ".join(long_breath["java_source_paths"]))
         self.assertIn("pre-release", long_breath["api_constraints"])
+
+    def test_recovery_remains_unoffered_without_native_regen_timer_control(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        recovery = next(item for item in data["augments"] if item["id"].endswith(":recovery"))
+        self.assertEqual("D", recovery["compatibility_class"])
+        self.assertEqual("NOT_PORTED", recovery["port_status"])
+        self.assertFalse(recovery["candidate_enabled"])
+        self.assertIn("FoodDataAugmentMixin.java", " ".join(recovery["java_source_paths"]))
+        self.assertIn("SurvivalAugmentService.java", " ".join(recovery["java_source_paths"]))
+        self.assertIn("no native timer", recovery["api_constraints"])
 
     def test_cold_adaptation_remains_unoffered_without_freeze_buildup_access(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

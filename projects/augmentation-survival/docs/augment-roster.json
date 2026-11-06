@@ -1,5 +1,5 @@
 {
-  "source_revision": "8fead5ce84cfb266b39819b6222f116d0238d0a1",
+  "source_revision": "28ff49129fef8de2efa161b1b344bdfb04e53f1c",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -521,14 +521,16 @@
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/active/AuthorityTheftService.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalTuning.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/FoodDataAugmentMixin.java",
+        "src/main/resources/data/augmentation_survival/augmentation/survival_modifier_contract.json"
       ],
       "interaction_contract_refs": [],
       "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "compatibility_class": "D",
+      "bedrock_method": "No stable API exposes or changes a player's vanilla natural-regeneration timer. The stable heal event reports the healing event and amount/source; replacing native healing with a per-player scheduler would also need to reproduce vanilla eligibility and hunger/saturation costs",
+      "api_constraints": "Class D for the exact natural-regeneration interval effect on stable @minecraft/server 2.11.0: EntityHealBeforeEvent exposes cancel, healing amount, and heal source (SelfHeal identifies hunger-caused healing), but no native timer, interval, or scheduling control. The naturalRegeneration gamerule is world-wide. A per-player replacement would have to recreate Bedrock's natural-heal eligibility and hunger/saturation costs; no equivalent has been validated, so no approximation is shipped",
+      "test_method": "Static stable @minecraft/server 2.11.0 declaration review and official stable API reference review: heal events expose cause/amount/cancellation but no natural-regeneration timer; no recovery behavior or BDS runtime test implemented",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

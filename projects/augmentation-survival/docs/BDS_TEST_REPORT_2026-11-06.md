@@ -3,10 +3,10 @@
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Harness: `@bedrock-core/bds-runner` 0.2.1; isolated BP/RP/GameTest packs; GameTest experiment active only in the disposable test world.
 - Commands: `npm run verify` and `npm run test:engine`.
-- Static checks: **14/14 PASS**.
+- Static checks: **15/15 PASS**.
 - Stable production API type-check: **PASS** (`@minecraft/server` 2.11.0).
-- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (44,536 bytes).
-- BDS: **23 passed / 0 failed**, 19.4 seconds, no script or infrastructure errors; runner exit code **0**. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
+- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (44,861 bytes).
+- BDS: **23 passed / 0 failed**, 27.9 seconds, no script or infrastructure errors; runner exit code **0**. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
 
 All 21 previously registered tests also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
 
@@ -28,4 +28,4 @@ This regression run did not test or implement `빨리 먹기` or `속공`; the o
 
 The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed and its 15-test run passed. The latest 23-test run also passed Extra Piece coverage and the water-movement coverage, the fishing, breathable-component, freeze-buildup, attack-speed, and furnace-fuel API-surface probes. Earlier failed attempts are not counted as passing results.
 
-Client import and visual UI review, mobile/controller navigation, reconnect persistence, real multiplayer, Extra Piece proc distribution during ordinary survival mining, live crop harvesting, natural melee/fall/drowning, and real player projectile collision remain untested. See `STATUS.md` for the exact continuation point.
+This BDS regression run did not exercise Recovery; the augment remains `NOT_PORTED`. Client import and visual UI review, mobile/controller navigation, reconnect persistence, real multiplayer, Extra Piece proc distribution during ordinary survival mining, live crop harvesting, natural melee/fall/drowning, and real player projectile collision remain untested. See `STATUS.md` for the exact continuation point.

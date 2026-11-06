@@ -1,5 +1,23 @@
 # API compatibility investigation — 2026-11-06
 
+## `회복력` (Recovery)
+
+### Java contract and combined behavior
+
+`AUGMENTS.md` specifies a natural-regeneration interval reduction of 10% / 20% / 30% at levels 1–3. The implementation is in `SurvivalAugmentService.consumeExtraNaturalRegenTimerTicks`, called by `FoodDataAugmentMixin` immediately before vanilla advances its natural-regeneration timer. It only accumulates credit while food is at least 18 and health is below maximum. Each eligible tick adds `1 / (1 - reduction) - 1` extra timer ticks, carrying fractional credit forward; it clears that credit when the player is ineligible. It changes when vanilla healing ticks occur, not the amount healed. `햇빛 체질` adds a further 5% / 10% / 15% interval reduction during daytime through the same timer path. The reductions combine additively and are capped by the Java service at 90%.
+
+### Stable Bedrock API surface
+
+The pinned stable API is `@minecraft/server` 2.11.0. `EntityHealBeforeEvent` exposes the entity, upcoming healing amount and source, and allows the script to cancel the heal or change its amount. `EntityHealCause.SelfHeal` identifies healing caused when hunger is full. The stable health, hunger, and saturation components expose attribute values, but none exposes or mutates the engine's pending natural-regeneration timer. The `naturalRegeneration` game rule controls natural healing at world scope, so it cannot disable native healing for one augmented player while retaining it for others.
+
+Changing the `SelfHeal` amount would preserve the vanilla event cadence and change the amount per event, so it would not preserve the Java interval effect. Canceling native healing and scheduling replacement heals per player would also take over Bedrock's native eligibility and hunger/saturation costs. That route has not been shown to preserve those rules across full health, hunger changes, disabled natural regeneration, and multiplayer. No approximation is shipped.
+
+### Classification and test state
+
+Class **D** for the exact interval effect on the currently pinned stable API. This is based on the native timer being absent from the stable declaration surface, not on Java compilation. `recovery` remains `NOT_PORTED` and disabled as a core candidate. The roster records the `FoodDataAugmentMixin`, `SurvivalAugmentService`, `SurvivalTuning`, and `survival_modifier_contract.json` sources. No Recovery-specific BDS or client gameplay test was run, so none is reported as passing. When implemented, the Bedrock mapping must cover the daytime additive interaction with `햇빛 체질` and preserve the two saved levels independently.
+
+References: [EntityHealBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhealbeforeevent?view=minecraft-bedrock-stable), [EntityHealCause](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhealcause?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable), [GameRule](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/gamerule?view=minecraft-bedrock-stable).
+
 ## `한 조각 더` (Extra Piece)
 
 ### Java contract and interactions
