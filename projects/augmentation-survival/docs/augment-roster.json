@@ -1,5 +1,5 @@
 {
-  "source_revision": "7d89f2a494d568c4f5bc246275d62d5324e00205",
+  "source_revision": "840684bc7b2ae7401f157c5f0267c1cc2823735b",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -859,9 +859,9 @@
       "interaction_contract_refs": [],
       "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
       "compatibility_class": "C",
-      "bedrock_method": "Every server tick, find item entities and XP orbs inside the Java player bounding box inflated by 1.5/3.0/4.5 blocks and teleport them into the nearest eligible player's hitbox; vanilla Bedrock pickup then performs inventory/XP handling",
-      "api_constraints": "Stable Script API has no native pickup-radius setter or direct playerTouch equivalent. The route preserves vanilla item inventory checks and XP-orb values by moving entities into the nearest eligible player's hitbox; this introduces a brief position snap and one-tick pickup delay, and cross-add-on item ownership/lock behavior cannot be inspected. The Java interaction contract contains no Pickup Hand-specific cross-augment rule",
-      "test_method": "BDS 1.26.62.1 production-handler GameTest: vanilla diamond item and XP orb beyond ordinary reach are collected at all three levels; exact XP value and an outside-radius control are checked, then two nearby level-3 simulated players share one diamond and a 4-point orb without duplicate awards",
+      "bedrock_method": "Every server tick, find item entities and XP orbs inside the Java player bounding box inflated by 1.5/3.0/4.5 blocks; teleport items to the nearest eligible player's hitbox center and XP orbs to the upper interior of that hitbox, then let vanilla Bedrock perform inventory/XP handling",
+      "api_constraints": "Stable Script API has no native pickup-radius setter or direct playerTouch equivalent. The route preserves vanilla item inventory checks and XP-orb values by moving entities into the nearest eligible player's hitbox; XP uses the upper interior to give native pickup more time, but BDS simulated orbs took 3/5/14 ticks to award at levels 1/2/3. This introduces a position snap and multi-tick delay, and cross-add-on item ownership/lock behavior cannot be inspected. The Java interaction contract contains no Pickup Hand-specific cross-augment rule",
+      "test_method": "BDS 1.26.62.1 production-handler GameTest: vanilla diamond item and XP orb beyond ordinary reach are collected at all three levels; exact XP value, outside-radius control, and one shared diamond / 4-point orb are checked. Test XP awards took 3/5/14 ticks at levels 1/2/3, within a 30-tick timeout",
       "port_status": "PARTIAL_BDS_VERIFIED",
       "candidate_enabled": true
     },
@@ -873,22 +873,19 @@
       "max_level": 5,
       "canonical_effect_ko": "넉백 저항 +10% / +20% / +30% / +40% / +50%.",
       "catalog_discrepancy": "",
-      "java_source_paths": [],
-      "interaction_contract_refs": [
-        {
-          "line": 231,
-          "text": "1. `한 번 버티기`"
-        },
-        {
-          "line": 237,
-          "text": "`한 번 버티기`가 발동하면 체력 1로 생존하고 이후 60 ticks(3초) 동안 일반 피해에 완전 무적이며, 재사용 대기시간은 3600 ticks(180초)다."
-        }
+      "java_source_paths": [
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/PlayerStatAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/AugmentPresentationCatalog.java",
+        "src/main/resources/data/augmentation_survival/augmentation/stat_modifier_contract.json",
+        "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json"
       ],
-      "interaction_mapping_status": "REVIEW_REQUIRED",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_contract_refs": [],
+      "interaction_mapping_status": "REVIEWED_NO_DIRECT_RULE",
+      "compatibility_class": "C",
+      "bedrock_method": "No production substitute shipped; the stable Script API has no player knockback-resistance setter, and a velocity correction would occur after the first physics impulse and could alter ordinary movement",
+      "api_constraints": "Stable entity JSON supports minecraft:knockback_resistance for data-driven entities, but the stable EntityComponentTypes enum and BDS player component list expose no player resistance component or generic player attribute setter. The hurt callback and next script tick retained baseline velocity; the first observed melee impulse arrived after one physics tick. Correcting then is late and could cancel unrelated motion; no substitute is shipped",
+      "test_method": "BDS 1.26.62.1 diagnostic GameTest enumerates player runtime components and EntityComponentTypes, attempts minecraft:knockback_resistance, and records velocity during the melee hurt callback, next script tick, and four physics ticks. It found no player component; the callback retained baseline velocity and knockback appeared only after one physics tick. Diagnostic only; no Brace effect is implemented",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },
@@ -1268,6 +1265,7 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/client/StorageInputClient.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceCardPresentationMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceUiRescueMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentOfferBreathingRoomMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/storage/StorageAugmentService.java"
@@ -3065,7 +3063,6 @@
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/RetraceOfferRetirementMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/RetraceRetirementUiMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/RetraceRuntimeRetirementMixin.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/client/screen/AugmentDeviceScreen.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/ReactiveCombatAugmentService.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/ReactiveCombatTuning.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/presentation/PassivePresentationService.java"
@@ -3323,6 +3320,7 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/client/StorageInputClient.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceCardPresentationMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceUiRescueMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentOfferBreathingRoomMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/storage/StorageAugmentService.java"
@@ -3981,6 +3979,7 @@
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/AugmentIconCatalog.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/client/SpatialLinkInputClient.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceCardPresentationMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceUiRescueMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentOfferBreathingRoomMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/client/screen/SpatialLinkScreen.java",
@@ -4194,6 +4193,7 @@
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/AugmentIconCatalog.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/client/AuthorityTheftInputClient.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceCardPresentationMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceUiRescueMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentOfferBreathingRoomMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/network/AuthorityTheftNetworking.java",

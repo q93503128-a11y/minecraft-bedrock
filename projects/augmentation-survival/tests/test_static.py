@@ -44,9 +44,10 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertEqual("C", by_id["underwater_work"]["compatibility_class"])
         self.assertEqual("C", by_id["pickup_hand"]["compatibility_class"])
+        self.assertEqual("C", by_id["brace"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 7, "D": 9, "UNASSESSED": 118},
+            {"A": 2, "B": 13, "C": 8, "D": 9, "UNASSESSED": 117},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -79,8 +80,32 @@ class StaticAddonTests(unittest.TestCase):
         self.assertTrue(pickup_hand["candidate_enabled"])
         self.assertIn("UtilityAugmentService.java", " ".join(pickup_hand["java_source_paths"]))
         self.assertIn("utility_runtime_contract.json", " ".join(pickup_hand["java_source_paths"]))
-        self.assertIn("one-tick pickup delay", pickup_hand["api_constraints"])
+        self.assertIn("upper interior", pickup_hand["api_constraints"])
+        self.assertIn("multi-tick delay", pickup_hand["api_constraints"])
         self.assertIn("all three levels", pickup_hand["test_method"])
+
+    def test_brace_is_distinct_from_last_stand_and_not_offered_without_player_attribute_api(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        brace = next(item for item in data["augments"] if item["id"] == "augmentation_survival:brace")
+        self.assertEqual("버티기", brace["name_ko"])
+        self.assertEqual("uncommon", brace["tier"])
+        self.assertEqual(5, brace["max_level"])
+        self.assertEqual("넉백 저항 +10% / +20% / +30% / +40% / +50%.", brace["canonical_effect_ko"])
+        self.assertEqual("C", brace["compatibility_class"])
+        self.assertEqual("NOT_PORTED", brace["port_status"])
+        self.assertFalse(brace["candidate_enabled"])
+        self.assertEqual("REVIEWED_NO_DIRECT_RULE", brace["interaction_mapping_status"])
+        self.assertEqual([], brace["interaction_contract_refs"])
+        source_paths = " ".join(brace["java_source_paths"])
+        self.assertIn("StatAugmentCatalog.java", source_paths)
+        self.assertIn("PlayerStatAugmentService.java", source_paths)
+        self.assertIn("stat_modifier_contract.json", source_paths)
+        self.assertIn("presentations/uncommon.json", source_paths)
+        self.assertIn("Stable entity JSON", brace["api_constraints"])
+        self.assertIn("one physics tick", brace["api_constraints"])
+        self.assertIn("Diagnostic only", brace["test_method"])
+        self.assertIn("no player component", brace["test_method"])
+        self.assertIn("after one physics tick", brace["test_method"])
 
     def test_long_reach_remains_unoffered_without_player_interaction_range_control(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

@@ -994,6 +994,89 @@ GameTest.registerAsync("AugmentationSurvival", "long_reach_api_surface_probe", a
   test.succeed();
 }).maxTicks(30).structureName(STRUCTURE).tag(TAG);
 
+// Diagnostic only: inspect the stable player knockback surface and event timing.
+// This does not alter or count as Brace gameplay.
+GameTest.registerAsync("AugmentationSurvival", "brace_knockback_resistance_api_probe", async (test) => {
+  const attacker = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASBraceProbeAttacker", GameMode.survival);
+  const target = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 3 }, "ASBraceProbeTarget", GameMode.survival);
+  await test.idle(2);
+  attacker.isSprinting = true;
+  const startingMotion = { location: target.location, velocity: target.getVelocity() };
+
+  /** @type {Array<Record<string, unknown>>} */
+  const eventSnapshots = [];
+  const beforeCallback = (event) => {
+    if (event?.hurtEntity?.id !== target.id) return;
+    eventSnapshots.push({
+      stage: "before",
+      cause: event.damageSource.cause,
+      damage: event.damage,
+      velocity: target.getVelocity(),
+    });
+  };
+  const afterCallback = (event) => {
+    if (event?.hurtEntity?.id !== target.id) return;
+    eventSnapshots.push({
+      stage: "after-callback",
+      cause: event.damageSource.cause,
+      damage: event.damage,
+      velocity: target.getVelocity(),
+    });
+    system.run(() => {
+      try {
+        eventSnapshots.push({ stage: "next-script-tick", velocity: target.getVelocity() });
+      } catch (error) {
+        eventSnapshots.push({ stage: "next-script-tick", error: String(error) });
+      }
+    });
+  };
+  world.beforeEvents.entityHurt.subscribe(beforeCallback);
+  world.afterEvents.entityHurt.subscribe(afterCallback);
+  const attackPerformed = attacker.attackEntity(target);
+  /** @type {Array<Record<string, unknown>>} */
+  const tickMotion = [];
+  for (let tick = 1; tick <= 4; tick += 1) {
+    await test.idle(1);
+    tickMotion.push({ tick, location: target.location, velocity: target.getVelocity() });
+  }
+  world.beforeEvents.entityHurt.unsubscribe(beforeCallback);
+  world.afterEvents.entityHurt.unsubscribe(afterCallback);
+
+  const componentIds = target.getComponents().map(component => component.typeId).sort();
+  const resistanceChecks = ["minecraft:knockback_resistance", "knockback_resistance"].map(id => {
+    try {
+      const component = target.getComponent(id);
+      return {
+        id,
+        available: Boolean(component),
+        keys: component ? Object.keys(component) : [],
+        value: component?.value,
+        currentValue: component?.currentValue,
+        defaultValue: component?.defaultValue,
+      };
+    } catch (error) {
+      return { id, available: false, error: String(error) };
+    }
+  });
+  const stableResistanceTypes = Object.entries(EntityComponentTypes)
+    .filter(([name, id]) => /knockback/i.test(`${name} ${id}`));
+  const result = {
+    attackPerformed,
+    componentIds,
+    resistanceChecks,
+    stableResistanceTypes,
+    eventSnapshots,
+    startingMotion,
+    tickMotion,
+    finalVelocity: target.getVelocity(),
+  };
+  console.warn("AS_BRACE_KNOCKBACK_SURFACE_PROBE " + JSON.stringify(result));
+  ensure(attackPerformed, "The simulated attacker could not perform an attack against the probe target.");
+  ensure(eventSnapshots.some(event => event.stage === "before"), "The melee probe did not produce a before-hurt event.");
+  ensure(eventSnapshots.some(event => event.stage === "after-callback"), "The melee probe did not produce an after-hurt event.");
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
+
 // Diagnostic only: measure whether Haste can approximate Java's underwater mining multiplier.
 // This does not alter or count as Water Work gameplay.
 GameTest.registerAsync("AugmentationSurvival", "underwater_work_haste_route_probe", async (test) => {
@@ -1608,51 +1691,106 @@ async function verifyPickupHandProductionRadius(test, player, level) {
   const inventory = inventoryOf(player);
   const radius = pickupHandRadius(level);
   ensure(player.hasTag(`as_pickup_hand_level_${level}`), `Production pack did not seed Pickup Hand level ${level}.`);
+  player.stopMoving();
+  player.clearVelocity();
+  await test.idle(1);
+  player.clearVelocity();
+  const startingLocation = player.location;
   const playerBounds = player.getAABB();
   const pickupLocation = { x: playerBounds.center.x + radius + 0.15, y: playerBounds.center.y, z: playerBounds.center.z };
   const xpLocation = { x: pickupLocation.x, y: playerBounds.center.y, z: playerBounds.center.z + 0.25 };
+  const xpOrbValue = 1;
   const beyondLocation = { x: playerBounds.center.x + radius + 2.0, y: playerBounds.center.y, z: playerBounds.center.z };
   const diamondBefore = countItem(inventory, "minecraft:diamond");
   const emeraldBefore = countItem(inventory, "minecraft:emerald");
   const startingXp = player.getTotalXp();
+  const worldXpBefore = new Map(world.getPlayers().map(candidate => [candidate.id, candidate.getTotalXp()]));
+  const worldEmeraldBefore = new Map(world.getPlayers().map(candidate => [
+    candidate.id,
+    countItem(inventoryOf(candidate), "minecraft:emerald"),
+  ]));
   player.dimension.spawnItem(new ItemStack("minecraft:diamond", 1), pickupLocation);
-  player.dimension.spawnXp(xpLocation, level);
+  player.dimension.spawnXp(xpLocation, xpOrbValue);
   const farItem = player.dimension.spawnItem(new ItemStack("minecraft:emerald", 1), beyondLocation);
-  await test.idle(12);
+  const xpTrace = [];
+  for (let tick = 0; tick < 30; tick += 1) {
+    await test.idle(1);
+    player.clearVelocity();
+    xpTrace.push({
+      tick: tick + 1,
+      playerXp: player.getTotalXp(),
+      orbsNearPlayer: player.dimension.getEntities({
+        type: "minecraft:xp_orb",
+        location: player.location,
+        maxDistance: 12,
+      }).map(orb => ({ id: orb.id, location: orb.location, velocity: orb.getVelocity() })),
+    });
+  }
 
   const result = {
     level,
     radius,
+    xpOrbValue,
+    startingLocation,
     location: player.location,
     diamondCount: countItem(inventory, "minecraft:diamond") - diamondBefore,
     emeraldCount: countItem(inventory, "minecraft:emerald") - emeraldBefore,
     xpAwarded: player.getTotalXp() - startingXp,
+    worldXpAwarded: world.getPlayers().reduce((total, candidate) => {
+      const before = worldXpBefore.get(candidate.id);
+      return total + (before === undefined ? 0 : candidate.getTotalXp() - before);
+    }, 0),
+    worldEmeraldAwarded: world.getPlayers().reduce((total, candidate) => {
+      const before = worldEmeraldBefore.get(candidate.id);
+      return total + (before === undefined ? 0 : countItem(inventoryOf(candidate), "minecraft:emerald") - before);
+    }, 0),
+    nearbyPlayers: world.getPlayers().map(candidate => {
+      const location = candidate.location;
+      const dx = location.x - playerBounds.center.x;
+      const dy = location.y - playerBounds.center.y;
+      const dz = location.z - playerBounds.center.z;
+      return { name: candidate.name, distance: Math.sqrt(dx * dx + dy * dy + dz * dz) };
+    }).filter(candidate => candidate.distance <= radius + 8),
     beyondRadiusItemRemains: farItem.isValid,
+    farItemLocation: farItem.isValid ? farItem.location : undefined,
+    distanceToFarItem: Math.hypot(
+      beyondLocation.x - startingLocation.x,
+      beyondLocation.y - startingLocation.y,
+      beyondLocation.z - startingLocation.z,
+    ),
+    xpTrace,
     nearbyXpOrbCount: player.dimension.getEntities({
       type: "minecraft:xp_orb",
       location: xpLocation,
       maxDistance: 1,
     }).length,
   };
-  console.warn("AS_PICKUP_HAND_PRODUCTION_RESULT " + JSON.stringify(result));
+  const loggedResult = result.worldXpAwarded === xpOrbValue ? { ...result, xpTrace: undefined } : result;
+  console.warn("AS_PICKUP_HAND_PRODUCTION_RESULT " + JSON.stringify(loggedResult));
   ensure(result.diamondCount === 1, `Level ${level} did not use vanilla pickup for the item beyond ordinary reach.`);
-  ensure(result.xpAwarded === level, `Level ${level} did not preserve the XP orb value; got ${result.xpAwarded}.`);
+  ensure(result.worldXpAwarded === xpOrbValue, `Level ${level} did not award exactly the XP orb value across nearby players; got ${result.worldXpAwarded}.`);
   ensure(result.emeraldCount === 0 && result.beyondRadiusItemRemains,
     `Level ${level} picked up an item outside its ${radius}-block radius.`);
   farItem.remove();
 }
 
 GameTest.registerAsync("AugmentationSurvival", "pickup_hand_extends_item_and_xp_radius_at_all_levels", async (test) => {
-  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASPickupHandProduction", GameMode.survival);
-  await test.idle(3);
   for (const level of [1, 2, 3]) {
-    if (level > 1) player.addTag(`as_pickup_hand_set_level_${level}`);
+    const player = test.spawnSimulatedPlayer(
+      { x: 4, y: 3, z: 3 },
+      `ASPickupHandLevel${level}`,
+      GameMode.survival,
+    );
     await test.idle(2);
     await verifyPickupHandProductionRadius(test, player, level);
+    player.disconnect();
+    await test.idle(1);
   }
 
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASPickupHandProduction", GameMode.survival);
   const competitor = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 3 }, "ASPickupHandCompeting", GameMode.survival);
   await test.idle(3);
+  ensure(player.hasTag("as_pickup_hand_level_3"), "Production pack did not seed the shared-pickup player's Pickup Hand level.");
   ensure(competitor.hasTag("as_pickup_hand_level_3"), "Production pack did not seed the competing player's Pickup Hand level.");
   const playerInventory = inventoryOf(player);
   const competitorInventory = inventoryOf(competitor);
@@ -1678,5 +1816,5 @@ GameTest.registerAsync("AugmentationSurvival", "pickup_hand_extends_item_and_xp_
   ensure(multiplayerResult.diamondDelta === 1, "Two nearby players duplicated or lost a shared item pickup.");
   ensure(multiplayerResult.xpDelta === 4, `Two nearby players duplicated or lost the 4-point XP orb; got ${multiplayerResult.xpDelta}.`);
   test.succeed();
-}).maxTicks(100).structureName(STRUCTURE).tag(TAG);
+}).maxTicks(140).structureName(STRUCTURE).tag(TAG);
 

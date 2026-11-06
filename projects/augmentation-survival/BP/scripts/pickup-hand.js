@@ -61,7 +61,14 @@ function reconcilePickupHand() {
       const distanceSquared = dx * dx + dy * dy + dz * dz;
       const current = targets.get(entity.id);
       if (!current || distanceSquared < current.distanceSquared) {
-        targets.set(entity.id, { entity, destination: playerBounds.center, distanceSquared });
+        const destination = isXpOrb
+          ? {
+            x: playerBounds.center.x,
+            y: playerBounds.center.y + playerBounds.extent.y - entityBounds.extent.y * 0.5,
+            z: playerBounds.center.z,
+          }
+          : playerBounds.center;
+        targets.set(entity.id, { entity, destination, distanceSquared });
       }
     }
   }
