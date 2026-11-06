@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -44,7 +44,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 12, "C": 5, "D": 7, "UNASSESSED": 123},
+            {"A": 2, "B": 13, "C": 5, "D": 7, "UNASSESSED": 122},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -196,6 +196,34 @@ class StaticAddonTests(unittest.TestCase):
         script = (ROOT / "BP/scripts/harvest.js").read_text(encoding="utf-8")
         self.assertIn('getLootTableManager().generateLootFromBlockPermutation', script)
         self.assertIn('applyExtraPieceBonus(event)', script)
+
+    def test_dexterity_preserves_the_java_whitelist_chance_and_drop_eligibility(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        dexterity = next(item for item in data["augments"] if item["id"].endswith(":dexterity"))
+        self.assertEqual("손재주", dexterity["name_ko"])
+        self.assertEqual("uncommon", dexterity["tier"])
+        self.assertEqual(3, dexterity["max_level"])
+        self.assertIn("10% / 20% / 30%", dexterity["canonical_effect_ko"])
+        self.assertEqual("B", dexterity["compatibility_class"])
+        self.assertEqual("REVIEW_REQUIRED", dexterity["interaction_mapping_status"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", dexterity["port_status"])
+        self.assertTrue(dexterity["candidate_enabled"])
+        source_paths = " ".join(dexterity["java_source_paths"])
+        self.assertIn("DexterityService.java", source_paths)
+        self.assertIn("dexterity_gathering.json", source_paths)
+        self.assertIn("AbundanceService.java", source_paths)
+        self.assertIn("BlockAbundanceMixin.java", source_paths)
+        refs = " ".join(ref["text"] for ref in dexterity["interaction_contract_refs"])
+        self.assertIn("호환 추가/복제 증강", refs)
+        self.assertIn("풍요", refs)
+        self.assertIn("자동 채굴/수확", refs)
+        self.assertIn("re-rolls the loot table", dexterity["api_constraints"])
+        self.assertIn("Abundance ×2 order is not reproduced", dexterity["api_constraints"])
+        self.assertIn("first eligible", dexterity["test_method"])
+        script = (ROOT / "BP/scripts/harvest.js").read_text(encoding="utf-8")
+        self.assertIn("applyDexterityGatheringBonus(event)", script)
+        self.assertIn('hasTag("leaves")', script)
+        self.assertIn("isEligibleDexterityDrop", script)
 
     def test_loot_scoop_is_only_offered_as_a_partial_reroll_mapping(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

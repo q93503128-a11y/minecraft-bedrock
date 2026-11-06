@@ -713,16 +713,34 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/FinalAugmentTuning.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/DexterityService.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/DexterityService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/AbundanceService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/BlockAbundanceMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ServerPlayerGameModeEnchantmentResonanceMixin.java",
+        "src/main/resources/data/augmentation_survival/tags/block/dexterity_gathering.json",
+        "src/main/resources/data/augmentation_survival/tags/item/abundance_excluded.json"
       ],
-      "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_contract_refs": [
+        {
+          "line": 301,
+          "text": "`기본 바닐라/모드 드롭 → Fortune/Looting → 호환 추가/복제 증강 → 최종 eligible stack → 풍요 ×2`"
+        },
+        {
+          "line": 303,
+          "text": "- `풍요`는 최종 일반 스택 수량에 적용한다."
+        },
+        {
+          "line": 305,
+          "text": "- 자동 채굴/수확된 블록은 호환 가능한 드롭/Fortune/내구도 규칙을 이어받는다."
+        }
+      ],
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "B",
+      "bedrock_method": "On stable playerBreakBlock after-event, accept the Java gathering whitelist and roll exact 10% / 20% / 30% chance; re-run the captured block permutation's loot with the captured tool and spawn one copy of the first Java-eligible ordinary stack; max level 3",
+      "api_constraints": "Class B partial: stable playerBreakBlock exposes the pre-break permutation and tool after native drops have already been calculated, so Bedrock re-rolls the loot table instead of copying the actual first Block.popResource stack. Item eligibility mirrors Java stack-size, durability, name, lore, core, and exclusion-tag checks; isStackable is only a proxy for Java custom-data rejection. The Java leaves/flowers tags are queried through Bedrock hasTag with explicit vanilla fallbacks; external Java mod blocks are not copied. This event route covers direct player block breaks, not derived harvesting. The extra item spawns after the event, so Java's pre-Abundance Dexterity → Abundance ×2 order is not reproduced",
+      "test_method": "BDS 1.26.62.1 GameTests verify exact 10/20/30% chance boundaries, level cap, vanilla leaf/flower and explicit whitelist matching, first eligible dandelion duplication, and rejection of unlisted blocks, damageable/custom-named/lore-bearing items, cores, and unowned levels. A production-handler SimulatedPlayer performs 50 level-3 dandelion breaks and checks for at least one additional item beyond native yields; this only samples the live effect path and does not establish probability distribution or actual-drop equivalence. Derived breaks, reconnect, client and multiplayer remain untested",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:treasure_fishing",

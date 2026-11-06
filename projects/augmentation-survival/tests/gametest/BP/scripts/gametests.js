@@ -2,7 +2,7 @@ import { BlockPermutation, EnchantmentTypes, EntityComponentTypes, EntityDamageC
 import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
-import { applyCropHarvestBonuses, applyExtraPieceBonus, bumperCropBonusChance, extraPieceBonusChance, seedSaverBonusChance } from "./harvest.js";
+import { applyCropHarvestBonuses, applyDexterityGatheringBonus, applyExtraPieceBonus, bumperCropBonusChance, dexterityBonusChance, extraPieceBonusChance, isDexterityGatheringBlock, isEligibleDexterityDrop, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { LEVELS_KEY } from "./progression.js";
 import { toolCareChance, toolCareRollSucceeds, tryPreventBlockToolDamage } from "./tool-care.js";
@@ -55,10 +55,14 @@ function countDroppedItem(dimension, location, typeId) {
   }, 0);
 }
 
-world.afterEvents.playerBreakBlock.subscribe(({ player }) => {
+world.afterEvents.playerBreakBlock.subscribe(event => {
+  const { player } = event;
   try {
     if (player.name === "ASExtraPieceBreak") player.addTag("as_test_extra_piece_break_event");
     if (player.name === "ASToolCareLive") player.addTag("as_test_tool_care_break_event");
+    if (player.name === "ASDexterityBreak" && event.brokenBlockPermutation.type.id === "minecraft:dandelion") {
+      player.addTag("as_test_dexterity_break_event");
+    }
   } catch { /* A stale simulated-player event must not escape the test observer. */ }
 });
 
@@ -165,6 +169,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:last_strength",
         "augmentation_survival:nocturnal",
         "augmentation_survival:sun_affinity",
+        "augmentation_survival:dexterity",
       ]
       : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
@@ -378,6 +383,79 @@ GameTest.registerAsync("AugmentationSurvival", "extra_piece_receives_live_player
   ensure(brokenBlock && brokenBlock.typeId !== "minecraft:iron_ore", "Simulated player did not finish breaking the iron ore block.");
   test.succeed();
 }).maxTicks(80).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "dexterity_matches_java_chances_whitelist_and_drop_eligibility", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASDexterityDeterministic", GameMode.survival);
+  const block = player.dimension.getBlock({ x: 4, y: 5, z: 3 });
+  ensure(block, "The Dexterity loot spawn location was not loaded.");
+  const flower = BlockPermutation.resolve("minecraft:dandelion");
+  const event = {
+    brokenBlockPermutation: flower,
+    itemStackBeforeBreak: new ItemStack("minecraft:shears"),
+    block,
+    dimension: player.dimension,
+    player,
+  };
+
+  ensure(dexterityBonusChance(-1) === 0 && dexterityBonusChance(0) === 0, "Dexterity must be inactive below level 1.");
+  ensure(Math.abs(dexterityBonusChance(6) - 0.30) < 1e-12, "Dexterity must cap at 30% after its three levels.");
+  ensure(isDexterityGatheringBlock(flower), "The Java flower whitelist did not map to the vanilla dandelion.");
+  ensure(isDexterityGatheringBlock(BlockPermutation.resolve("minecraft:oak_leaves")), "The Java leaves whitelist did not map to vanilla oak leaves.");
+  ensure(isDexterityGatheringBlock(BlockPermutation.resolve("minecraft:bamboo")), "The explicit Java gathering whitelist did not map to bamboo.");
+  ensure(!isDexterityGatheringBlock(BlockPermutation.resolve("minecraft:stone")), "An unlisted block was accepted by the gathering whitelist.");
+  for (let level = 1; level <= 3; level += 1) {
+    const chance = level * 0.10;
+    ensure(Math.abs(dexterityBonusChance(level) - chance) < 1e-12, `Level ${level} chance should be ${chance}.`);
+
+    player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:dexterity": level }));
+    const before = countDroppedItem(player.dimension, block.location, "minecraft:dandelion");
+    ensure(applyDexterityGatheringBonus(event, () => chance - 1e-9), `Level ${level} did not award below its exact chance boundary.`);
+    ensure(countDroppedItem(player.dimension, block.location, "minecraft:dandelion") === before + 1, `Level ${level} did not add exactly one eligible flower drop.`);
+    ensure(!applyDexterityGatheringBonus(event, () => chance), `Level ${level} awarded at its exclusive chance boundary.`);
+    ensure(countDroppedItem(player.dimension, block.location, "minecraft:dandelion") === before + 1, `Level ${level} added an item at its exclusive boundary.`);
+  }
+
+  ensure(isEligibleDexterityDrop(new ItemStack("minecraft:dandelion")), "An ordinary stackable flower should be eligible.");
+  ensure(!isEligibleDexterityDrop(undefined), "An absent stack must not be eligible.");
+  ensure(!isEligibleDexterityDrop(new ItemStack("minecraft:diamond_sword")), "A damageable, non-stackable item must not be eligible.");
+  const named = new ItemStack("minecraft:dandelion");
+  named.nameTag = "Named flower";
+  ensure(!isEligibleDexterityDrop(named), "A custom-named item must not be eligible.");
+  const authoredLore = new ItemStack("minecraft:dandelion");
+  authoredLore.setLore(["Authored lore"]);
+  ensure(!isEligibleDexterityDrop(authoredLore), "An item with authored lore must not be eligible.");
+  ensure(!isEligibleDexterityDrop(new ItemStack(CORE)), "An augment core must not be eligible.");
+
+  let rolls = 0;
+  const notWhitelisted = { ...event, brokenBlockPermutation: BlockPermutation.resolve("minecraft:stone") };
+  ensure(!applyDexterityGatheringBonus(notWhitelisted, () => { rolls += 1; return 0; }), "A non-whitelisted block received a Dexterity bonus.");
+  ensure(rolls === 0, "A non-whitelisted block consumed a Dexterity roll.");
+  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({}));
+  ensure(!applyDexterityGatheringBonus(event, () => { rolls += 1; return 0; }), "An unowned Dexterity augment granted a bonus.");
+  ensure(rolls === 0, "An unowned Dexterity augment consumed a roll.");
+  test.succeed();
+}).maxTicks(60).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "dexterity_receives_live_player_block_break_event", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASDexterityBreak", GameMode.survival);
+  const inventory = inventoryOf(player);
+  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:dexterity": 3 }));
+  const target = { x: 5, y: 3, z: 3 };
+  const worldTarget = test.worldBlockLocation(target);
+  const attempts = 50;
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    const block = player.dimension.getBlock(worldTarget);
+    ensure(block, "The live Dexterity block location was not loaded.");
+    block.setType("minecraft:dandelion");
+    ensure(player.breakBlock(target), `Simulated player could not break dandelion ${attempt + 1}.`);
+    await test.idle(1);
+  }
+  ensure(player.hasTag("as_test_dexterity_break_event"), "The live playerBreakBlock after-event did not reach the Dexterity observer.");
+  const ordinaryAndBonusDrops = countItem(inventory, "minecraft:dandelion")
+    + countDroppedItem(player.dimension, worldTarget, "minecraft:dandelion");
+  ensure(ordinaryAndBonusDrops > attempts, "The production Dexterity handler did not add a bonus during 50 level-3 player flower breaks.");
+  test.succeed();
+}).maxTicks(120).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "exhaustion_component_write_probe", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASExhaustionProbe", GameMode.survival);

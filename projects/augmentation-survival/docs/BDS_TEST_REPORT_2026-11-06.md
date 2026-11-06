@@ -3,17 +3,19 @@
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Harness: `@bedrock-core/bds-runner` 0.2.1; isolated BP/RP/GameTest packs; GameTest experiment active only in the disposable test world.
 - Commands: `npm run verify` and `npm run test:engine`.
-- Static checks: **21/21 PASS**.
+- Static checks: **22/22 PASS**.
 - Stable production API type-check: **PASS** (`@minecraft/server` 2.11.0).
-- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (50,856 bytes).
-- BDS: **33 passed / 0 failed**, 15.2 seconds, no script or infrastructure errors; runner exited cleanly. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
+- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (52,485 bytes).
+- BDS: **35 passed / 0 failed**, 16.8 seconds, no script or infrastructure errors; runner exited cleanly. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
 
-All 31 previously registered tests also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
+All 33 previously registered tests also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
 
 | GameTest | Result | What it establishes |
 | --- | --- | --- |
 | `tool_care_matches_java_chance_and_restores_only_the_spent_durability` | PASS (deterministic helper coverage) | Checks Java's exact 5% / 10% / 15% / 20% / 25% thresholds and the five-level cap. The production helper restores a successful durability roll, leaves the failed-roll item in place, returns a nearly broken tool, and does not overwrite an occupied captured slot. |
-| `tool_care_uses_production_block_break_events` | PASS (partial port) | A level-5 simulated player breaks 40 vanilla stone blocks through the production before/after handlers. In this recorded run, 6 durability events were restored and 34 were spent; the test asserts at least one saved event and valid 0-or-1 durability transitions, not the 25% probability distribution. |
+| `tool_care_uses_production_block_break_events` | PASS (partial port) | A level-5 simulated player breaks 40 vanilla stone blocks through the production before/after handlers. In this recorded run, 9 durability events were restored and 31 were spent; the test asserts at least one saved event and valid 0-or-1 durability transitions, not the 25% probability distribution. |
+| `dexterity_matches_java_chances_whitelist_and_drop_eligibility` | PASS (partial port) | Verifies exact 10% / 20% / 30% exclusive chance boundaries and the three-level cap; maps vanilla dandelion, oak leaves, and bamboo; checks non-whitelisted stone; and confirms one eligible dandelion is copied. Damageable, custom-named, lore-bearing, core, absent, and unowned items are rejected. |
+| `dexterity_receives_live_player_block_break_event` | PASS (partial port) | A level-3 simulated player breaks 50 vanilla dandelions through the production handler. The test observes the live break event and requires more than the 50 native dandelions, confirming at least one bonus in this run. It does not measure the 30% probability distribution. |
 | `last_strength_scales_server_root_melee_damage_at_and_below_threshold` | PASS (partial port) | The production `entityHurt` handler scales synthetic player `entityAttack` damage by +10% / +20% / +30% at levels 1–3 when current health is at or below 30% of `effectiveMax`. Exactly 30% and 29% activate; 31% does not. The test also verifies additive stacking with level-5 Keen Edge. |
 | `last_strength_scales_server_root_projectile_damage_and_stacks_with_precise_aim` | PASS (partial port) | The production handler scales synthetic projectile-attributed damage for owned arrows by +10% / +20% / +30% at levels 1–3 at or below the threshold, deactivates above it, and adds level-3 Last Strength to level-5 Precise Aim. `applyDamage` infers projectile cause from the projectile payload. This does not test physical arrow flight/collision or distinguish root from add-on-derived projectiles. |
 | `extra_piece_matches_ore_loot_chances_and_tool_enchants` | PASS (partial port) | BDS GameTest calls the production harvest helper with deterministic rolls and the stable loot manager. It verifies 5% / 10% / 15% level boundaries, exactly one item, Silk Touch returning the ore block, Fortune returning one ordinary product, non-ore rejection without a roll, and rejection of a wooden pickaxe for diamond ore. |
@@ -36,6 +38,6 @@ The test-only production wrapper seeds the saved augment level in the production
 
 This regression run did not test or implement `빨리 먹기` or `속공`; the observed cooked-beef completion event is not a duration-control hook, and the attack-speed probe is diagnostic only. Fast Eating and Rapid Strikes remain D/NOT_PORTED and are not core candidates.
 
-The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed. This 33-test run also passed Extra Piece, water-movement, Catch Breath, Quick Feet, day/night movement, and Loot Scoop coverage, plus the fishing, breathable-component, freeze-buildup, attack-speed, and furnace-fuel API-surface probes. Earlier failed attempts are not counted as passing results.
+The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed. This 35-test run also passed Extra Piece, water-movement, Catch Breath, Quick Feet, day/night movement, and Loot Scoop coverage, plus the fishing, breathable-component, freeze-buildup, attack-speed, and furnace-fuel API-surface probes. Earlier failed attempts are not counted as passing results.
 
 This BDS regression run did not exercise Recovery; the augment remains `NOT_PORTED`. Client import and visual UI review, mobile/controller navigation, reconnect persistence, real multiplayer, Catch Breath sprint-reset transition, ground walking speed, Extra Piece proc distribution during ordinary survival mining, live crop harvesting, natural melee/fall/drowning, and real player projectile collision remain untested. See `STATUS.md` for the exact continuation point.

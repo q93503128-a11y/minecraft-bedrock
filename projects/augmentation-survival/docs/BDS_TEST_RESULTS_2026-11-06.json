@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 15163,
+  "durationMs": 16768,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -25,6 +25,14 @@
     },
     {
       "id": "AugmentationSurvival:extra_piece_receives_live_player_block_break_event",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:dexterity_matches_java_chances_whitelist_and_drop_eligibility",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:dexterity_receives_live_player_block_break_event",
       "outcome": "pass"
     },
     {

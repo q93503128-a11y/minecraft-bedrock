@@ -10,6 +10,10 @@ const SEED_SAVER_CHANCE_PER_LEVEL = 0.15;
 const EXTRA_PIECE = "augmentation_survival:extra_piece";
 const EXTRA_PIECE_MAX_LEVEL = 3;
 const EXTRA_PIECE_CHANCE_PER_LEVEL = 0.05;
+const DEXTERITY = "augmentation_survival:dexterity";
+const DEXTERITY_MAX_LEVEL = 3;
+const DEXTERITY_CHANCE_PER_LEVEL = 0.10;
+const ABUNDANCE_EXCLUDED_TAG = "augmentation_survival:abundance_excluded";
 const CORE_ITEM_IDS = new Set([
   "augmentation_survival:common_augment_core",
   "augmentation_survival:uncommon_augment_core",
@@ -32,6 +36,28 @@ const VANILLA_ORES = new Set([
   "minecraft:redstone_ore", "minecraft:deepslate_redstone_ore",
   "minecraft:nether_quartz_ore", "minecraft:nether_gold_ore",
   "minecraft:ancient_debris",
+]);
+
+// Java's block tags are queried natively there. Bedrock exposes engine tags
+// through BlockPermutation.hasTag, with explicit vanilla fallbacks to cover
+// stable builds whose tag names differ or are not surfaced to scripts.
+const VANILLA_DEXTERITY_BLOCKS = new Set([
+  "minecraft:bamboo", "minecraft:sugar_cane", "minecraft:cactus",
+  "minecraft:brown_mushroom", "minecraft:red_mushroom", "minecraft:vine",
+  "minecraft:glow_lichen", "minecraft:kelp", "minecraft:kelp_plant",
+  "minecraft:seagrass", "minecraft:tall_seagrass", "minecraft:sweet_berry_bush",
+  "minecraft:cocoa",
+  "minecraft:oak_leaves", "minecraft:spruce_leaves", "minecraft:birch_leaves",
+  "minecraft:jungle_leaves", "minecraft:acacia_leaves", "minecraft:dark_oak_leaves",
+  "minecraft:mangrove_leaves", "minecraft:cherry_leaves", "minecraft:azalea_leaves",
+  "minecraft:flowering_azalea_leaves", "minecraft:pale_oak_leaves",
+  "minecraft:dandelion", "minecraft:poppy", "minecraft:blue_orchid", "minecraft:allium",
+  "minecraft:azure_bluet", "minecraft:red_tulip", "minecraft:orange_tulip",
+  "minecraft:white_tulip", "minecraft:pink_tulip", "minecraft:oxeye_daisy",
+  "minecraft:cornflower", "minecraft:lily_of_the_valley", "minecraft:sunflower",
+  "minecraft:lilac", "minecraft:rose_bush", "minecraft:peony", "minecraft:torchflower",
+  "minecraft:pink_petals", "minecraft:wildflowers", "minecraft:closed_eyeblossom",
+  "minecraft:open_eyeblossom",
 ]);
 
 // These vanilla crops have a stable Bedrock growth state, ordinary product,
@@ -59,6 +85,12 @@ export function seedSaverBonusChance(level) {
 export function extraPieceBonusChance(level) {
   if (!Number.isInteger(level) || level <= 0) return 0;
   return Math.min(level, EXTRA_PIECE_MAX_LEVEL) * EXTRA_PIECE_CHANCE_PER_LEVEL;
+}
+
+/** @param {number} level */
+export function dexterityBonusChance(level) {
+  if (!Number.isInteger(level) || level <= 0) return 0;
+  return Math.min(level, DEXTERITY_MAX_LEVEL) * DEXTERITY_CHANCE_PER_LEVEL;
 }
 
 /** @param {number} chance @param {() => number} random */
@@ -143,7 +175,62 @@ export function applyExtraPieceBonus(event, random = Math.random) {
   return true;
 }
 
+/** @param {import("@minecraft/server").BlockPermutation} permutation */
+export function isDexterityGatheringBlock(permutation) {
+  if (VANILLA_DEXTERITY_BLOCKS.has(permutation.type.id)) return true;
+  try {
+    return permutation.hasTag("leaves")
+      || permutation.hasTag("flowers")
+      || permutation.hasTag("flower");
+  } catch {
+    return false;
+  }
+}
+
+/** @param {import("@minecraft/server").ItemStack | undefined} stack */
+export function isEligibleDexterityDrop(stack) {
+  if (!stack || !stack.typeId || stack.maxAmount <= 1 || CORE_ITEM_IDS.has(stack.typeId)) return false;
+  try {
+    if (!stack.isStackable || stack.hasComponent("minecraft:durability")) return false;
+    if (stack.nameTag || stack.getLore().length > 0) return false;
+    if (stack.hasTag(ABUNDANCE_EXCLUDED_TAG)) return false;
+  } catch {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Java rolls once for a whitelisted player break and copies one eligible stack
+ * that actually reaches Block.popResource. Stable Bedrock only exposes the
+ * pre-break block/tool in its after-event, so this partial route re-runs that
+ * block's loot table and copies the first eligible generated stack.
+ * @param {import("@minecraft/server").PlayerBreakBlockAfterEvent} event
+ * @param {() => number} [random]
+ * @returns {boolean} whether one item was spawned
+ */
+export function applyDexterityGatheringBonus(event, random = Math.random) {
+  if (!isDexterityGatheringBlock(event.brokenBlockPermutation)) return false;
+
+  const level = getStoredAugmentLevel(event.player, DEXTERITY, DEXTERITY_MAX_LEVEL);
+  const chance = dexterityBonusChance(level);
+  if (chance <= 0 || !passesChance(chance, random)) return false;
+
+  const drops = world.getLootTableManager().generateLootFromBlockPermutation(
+    event.brokenBlockPermutation,
+    event.itemStackBeforeBreak,
+  );
+  const primary = drops?.find(isEligibleDexterityDrop);
+  if (!primary) return false;
+
+  const one = primary.clone();
+  one.amount = 1;
+  event.dimension.spawnItem(one, event.block.location);
+  return true;
+}
+
 world.afterEvents.playerBreakBlock.subscribe(event => {
   applyCropHarvestBonuses(event);
   applyExtraPieceBonus(event);
+  applyDexterityGatheringBonus(event);
 });
