@@ -46,6 +46,19 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
+    const heartyMealLevels = {
+      ASHeartyLevel1: 1,
+      ASHeartyLevel2: 2,
+      ASHeartyLevel3: 3,
+      ASHeartyCap: 3,
+    };
+    const heartyMealLevel = heartyMealLevels[player.name];
+    if (heartyMealLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:hearty_meal": heartyMealLevel,
+      }));
+      return;
+    }
     const toughSkinLevels = {
       ASToughSkinLevel1: 1,
       ASToughSkinLevel2: 2,

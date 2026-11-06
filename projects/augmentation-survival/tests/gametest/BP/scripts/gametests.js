@@ -18,6 +18,7 @@ const ENABLED_CANDIDATE_IDS = [
   "augmentation_survival:strong_lungs",
   "augmentation_survival:bumper_crop",
   "augmentation_survival:seed_saver",
+  "augmentation_survival:hearty_meal",
 ];
 
 function ensure(condition, message) {
@@ -218,6 +219,43 @@ GameTest.registerAsync("AugmentationSurvival", "exhaustion_component_write_probe
   ensure(afterIdle.hunger === initial.hunger && afterIdle.saturation === initial.saturation, "Changing exhaustion immediately changed hunger or saturation.");
   test.succeed();
 }).maxTicks(40).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "hearty_meal_matches_java_levels_and_food_cap", async (test) => {
+  const cases = [
+    { level: 1, name: "ASHeartyLevel1", position: { x: 2, y: 3, z: 3 }, expected: 13.824, expectedHunger: 18 },
+    { level: 2, name: "ASHeartyLevel2", position: { x: 4, y: 3, z: 3 }, expected: 14.848, expectedHunger: 18 },
+    { level: 3, name: "ASHeartyLevel3", position: { x: 6, y: 3, z: 3 }, expected: 15.872, expectedHunger: 18 },
+    { level: 3, name: "ASHeartyCap", position: { x: 4, y: 3, z: 6 }, expected: 20, expectedHunger: 20, capped: true },
+  ];
+  const players = cases.map(entry => {
+    const player = test.spawnSimulatedPlayer(entry.position, entry.name, GameMode.survival);
+    const inventory = inventoryOf(player);
+    const hunger = player.getComponent("minecraft:player.hunger");
+    const saturation = player.getComponent("minecraft:player.saturation");
+    ensure(hunger && saturation, `${entry.name}: hunger components were unavailable.`);
+    inventory.setItem(0, new ItemStack("minecraft:cooked_beef", 2));
+    hunger.setCurrentValue(entry.capped ? 12 : 10);
+    saturation.setCurrentValue(entry.capped ? 10 : 0);
+    return { ...entry, player, inventory, hunger, saturation };
+  });
+
+  // Let the production food handler record a clean pre-consumption sample.
+  await test.idle(3);
+  const usesStarted = players.map(entry => entry.player.useItemInSlot(0));
+  await test.idle(42);
+  ensure(usesStarted.every(Boolean), "At least one simulated player did not start eating cooked beef.");
+
+  for (const entry of players) {
+    const difference = Math.abs(entry.saturation.currentValue - entry.expected);
+    ensure(difference < 0.04,
+      `${entry.name}: expected saturation ${entry.expected}, got ${entry.saturation.currentValue}.`);
+    ensure(entry.hunger.currentValue === entry.expectedHunger,
+      `${entry.name}: expected hunger ${entry.expectedHunger}, got ${entry.hunger.currentValue}.`);
+    const remaining = entry.inventory.getItem(0)?.amount ?? 0;
+    ensure(remaining === 1, `${entry.name}: expected one cooked beef consumed, found ${remaining}.`);
+  }
+  test.succeed();
+}).maxTicks(90).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);

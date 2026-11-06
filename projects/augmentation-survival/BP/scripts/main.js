@@ -7,6 +7,7 @@ import { synthesizeCore } from "./cores.js";
 import { listAvailableCandidates } from "./offers.js";
 import "./combat.js";
 import "./harvest.js";
+import "./food.js";
 
 const NS = "augmentation_survival";
 /** @typedef {{id:string, name_ko:string, tier:string, tier_ko:string, max_level:number, canonical_effect_ko:string, candidate_enabled:boolean}} Augment */

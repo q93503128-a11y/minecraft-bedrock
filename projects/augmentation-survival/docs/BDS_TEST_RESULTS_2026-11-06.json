@@ -1,0 +1,70 @@
+{
+  "tag": "augmentation_survival",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 8219,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:crop_bonus_augments_match_maturity_levels_products_and_independent_rolls",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:exhaustion_component_write_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:hearty_meal_matches_java_levels_and_food_cap",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:damage_event_exposes_simulated_player_damage",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:keen_edge_scales_server_root_melee_damage",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:precise_aim_scales_server_projectile_damage_source",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:strong_lungs_reduces_drowning_damage_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:tough_skin_reduces_incoming_damage_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:light_landing_reduces_fall_damage_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:defense_reductions_stack_multiplicatively",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_synthesis_is_atomic_and_conserves_items",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:sturdiness_effect_scales_max_health",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_selection_commits_level_and_preserves_core_on_rejection",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}
