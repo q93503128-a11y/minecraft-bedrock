@@ -370,6 +370,47 @@ GameTest.registerAsync("AugmentationSurvival", "fishing_hook_stable_api_surface_
   test.succeed();
 }).maxTicks(60).structureName(STRUCTURE).tag(TAG);
 
+// Diagnostic only: the official stable declarations do not expose the
+// pre-release breathable.airSupply property. Check whether the installed BDS
+// runtime nevertheless exposes it on a submerged player; this is not shipped.
+GameTest.registerAsync("AugmentationSurvival", "breathable_air_supply_api_surface_probe", async (test) => {
+  for (let x = 1; x <= 5; x += 1) {
+    for (let y = 1; y <= 5; y += 1) {
+      for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:water", { x, y, z });
+    }
+  }
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASBreathableSurfaceProbe", GameMode.survival);
+  await test.idle(3);
+  const component = player.getComponent("minecraft:breathable");
+  const initial = component && "airSupply" in component ? component.airSupply : undefined;
+  let setValue;
+  let afterSet;
+  let afterTicks;
+  let error;
+  if (component && typeof initial === "number") {
+    try {
+      setValue = Math.max(component.suffocateTime, initial - 40);
+      component.airSupply = setValue;
+      afterSet = component.airSupply;
+      await test.idle(4);
+      afterTicks = component.airSupply;
+    } catch (caught) {
+      error = String(caught);
+    }
+  }
+  console.warn(`AS_BREATHABLE_SURFACE_PROBE ${JSON.stringify({
+    submerged: player.isInWater,
+    componentAvailable: Boolean(component),
+    airSupplyExposed: Boolean(component && "airSupply" in component),
+    initial,
+    setValue,
+    afterSet,
+    afterTicks,
+    error,
+  })}`);
+  test.succeed();
+}).maxTicks(40).structureName(STRUCTURE).tag(TAG);
+
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);
   const inventory = inventoryOf(player);

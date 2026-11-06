@@ -1,8 +1,52 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 23163,
+  "durationMs": 18302,
   "verdicts": [
+    {
+      "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:crop_bonus_augments_match_maturity_levels_products_and_independent_rolls",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:exhaustion_component_write_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:hearty_meal_matches_java_levels_and_food_cap",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:webbed_feet_scales_server_swim_speed_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:fishing_hook_stable_api_surface_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:breathable_air_supply_api_surface_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:damage_event_exposes_simulated_player_damage",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:keen_edge_scales_server_root_melee_damage",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:precise_aim_scales_server_projectile_damage_source",
+      "outcome": "pass"
+    },
     {
       "id": "AugmentationSurvival:strong_lungs_reduces_drowning_damage_by_level",
       "outcome": "pass"
@@ -29,46 +73,6 @@
     },
     {
       "id": "AugmentationSurvival:core_selection_commits_level_and_preserves_core_on_rejection",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:crop_bonus_augments_match_maturity_levels_products_and_independent_rolls",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:exhaustion_component_write_probe",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:hearty_meal_matches_java_levels_and_food_cap",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:webbed_feet_scales_server_swim_speed_by_level",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:fishing_hook_stable_api_surface_probe",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:core_item_use_keeps_core_until_choice",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:damage_event_exposes_simulated_player_damage",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:keen_edge_scales_server_root_melee_damage",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:precise_aim_scales_server_projectile_damage_source",
       "outcome": "pass"
     }
   ],

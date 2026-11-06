@@ -74,3 +74,21 @@ The obvious enchantment workaround would change the player's fishing-rod state a
 Class **D** for the exact vanilla wait-time effect on the currently pinned stable API: there is no exposed timer value to read or change and no fishing-bite event on which to apply an equivalent progress adjustment. `fishing_sense` remains `NOT_PORTED` and disabled as a core candidate. This is based on the stable declarations, official event surface, the vanilla entity snippet, the BDS cast probe, and the source behavior above; it is not inferred from Java compilation failure.
 
 References: [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [EntitySpawnAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityspawnafterevent?view=minecraft-bedrock-stable), [ItemUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemuseafterevent?view=minecraft-bedrock-stable), [ItemStartUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstartuseafterevent?view=minecraft-bedrock-stable), [vanilla fishing-hook entity snippet](https://learn.microsoft.com/en-us/minecraft/creator/reference/source/vanillabehaviorpack_snippets/entities/fishing_hook?view=minecraft-bedrock-stable).
+
+## `숨 오래 참기` (Long Breath)
+
+### Java contract
+
+The canonical roster reduces underwater oxygen consumption by 10% / 20% / 30% at levels 1–3. Java stores the equivalent oxygen attribute bonuses `0.1111111111`, `0.25`, and `0.4285714286` in `survival_modifier_contract.json`; `SurvivalAugmentService` applies that value as an additive `OXYGEN_BONUS` attribute modifier. These values lengthen the breath duration by the requested ratio.
+
+### Stable Bedrock surface and BDS probe
+
+The stable `@minecraft/server` 2.11.0 declarations expose `minecraft:breathable` with read-only `totalSupply`, but do not declare a mutable current-air property or an oxygen-bonus attribute. Microsoft's `EntityBreathableComponent` page includes `airSupply` but explicitly marks that property pre-release. On BDS 1.26.62.1, an underwater simulated-player probe found the breathable component but `"airSupply" in component` was false. This probe is diagnostic only and did not change breath behavior.
+
+`water_breathing` would prevent oxygen depletion instead of reducing it by the Java percentage, and a read-only total breath duration cannot implement a per-player saved level. A polling substitute requires writing current air state, which is not available on this pinned stable API/runtime. No experimental API is used in the shipped add-on.
+
+### Classification
+
+Class **D** for the exact oxygen-consumption effect on the currently pinned stable API. `long_breath` remains `NOT_PORTED` and disabled as a candidate. This finding is based on the Java modifier contract, the stable declarations, the official page's pre-release warning, and the BDS 1.26.62.1 submerged-player probe; it is not inferred from Java compilation failure.
+
+References: [EntityBreathableComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitybreathablecomponent?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable).

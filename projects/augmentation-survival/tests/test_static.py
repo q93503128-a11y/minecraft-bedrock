@@ -55,6 +55,15 @@ class StaticAddonTests(unittest.TestCase):
         self.assertFalse(fishing_sense["candidate_enabled"])
         self.assertIn("FishingHookAugmentMixin.java", " ".join(fishing_sense["java_source_paths"]))
 
+    def test_long_breath_remains_unoffered_without_stable_air_supply_access(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        long_breath = next(item for item in data["augments"] if item["id"].endswith(":long_breath"))
+        self.assertEqual("D", long_breath["compatibility_class"])
+        self.assertEqual("NOT_PORTED", long_breath["port_status"])
+        self.assertFalse(long_breath["candidate_enabled"])
+        self.assertIn("SurvivalAugmentService.java", " ".join(long_breath["java_source_paths"]))
+        self.assertIn("pre-release", long_breath["api_constraints"])
+
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         self.assertEqual(3, sum(bool(item["catalog_discrepancy"]) for item in data["augments"]))

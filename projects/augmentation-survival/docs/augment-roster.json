@@ -1,5 +1,5 @@
 {
-  "source_revision": "5962141975b1fea600b0bdb2ae9b697dc7de9cb5",
+  "source_revision": "7f578f6acbbe6ed5f12e4665fbe28dfde65f294f",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -343,10 +343,10 @@
       ],
       "interaction_contract_refs": [],
       "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "compatibility_class": "D",
+      "bedrock_method": "No stable API exposes or changes the player's current air supply or oxygen depletion interval; the only documented airSupply setter is pre-release and is absent from stable @minecraft/server 2.11.0 declarations and the tested BDS runtime",
+      "api_constraints": "Class D for exact oxygen-consumption reduction on the currently pinned stable API: EntityBreathableComponent.airSupply is marked pre-release in the official reference, omitted from stable @minecraft/server 2.11.0 types, and not exposed by the breathable component on BDS 1.26.62.1. totalSupply is read-only; water_breathing would prevent oxygen loss rather than reduce it by Java's 10/20/30% curve",
+      "test_method": "Official stable API declaration review plus BDS 1.26.62.1 GameTest submerged-player probe: minecraft:breathable exists but exposes no airSupply property at runtime; probe only, no oxygen behavior implemented",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },
