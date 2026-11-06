@@ -53,6 +53,26 @@ Class **D** for the exact player-specific food-duration effect on the pinned sta
 
 References: [ItemStartUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstartuseafterevent?view=minecraft-bedrock-stable), [ItemCompleteUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemcompleteuseafterevent?view=minecraft-bedrock-stable), [minecraft:use_modifiers](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_use_modifiers?view=minecraft-bedrock-stable), [Player.eatItem](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable), [InputButton](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputbutton?view=minecraft-bedrock-stable).
 
+## `연료 절약` (Fuel Saver)
+
+### Java contract and machine interaction
+
+The canonical maximum is level 3. `UtilityAugmentTuning` supplies +10% / +20% / +30%; `UtilityAugmentService.modifyFuelBurnDuration` applies `Math.round(originalDuration × (1 + bonus))` to positive burn durations. `AbstractFurnaceUtilityMixin` changes the return of the shared `AbstractFurnaceBlockEntity.getBurnDuration` method on the server, so the hook covers furnaces, smokers, and blast furnaces. At each fuel-consumption/burn-start call, Java checks alive non-spectator players within Euclidean radius 8 of the machine block center and snapshots the highest bounded saved level for that one fuel. The result does not depend on who inserted the fuel; the multiplayer contract says this rule is not yet Java-multiplayer-tested.
+
+### Stable Bedrock surface and alternatives
+
+The production project pins stable `@minecraft/server` 2.11.0. Its `Block` and `BlockInventoryComponent` API can expose a block's inventory, and the stable `ItemStack` API can return registered script components. There is no stable vanilla furnace burn-duration component, fuel-consumption event, current burn-time getter/setter, or `minecraft:fuel` Script API component. The official `minecraft:fuel` contract sets a static duration in an item definition, so it cannot read nearby players' saved levels or vary per consumed item.
+
+An isolated official BDS 1.26.62.1 diagnostic GameTest set up raw iron and one coal, waited 220 ticks, and observed `minecraft:lit_furnace`, an inventory component with three slots, an emptied input/fuel slot, and one iron ingot in output. The lit furnace exposed only `instrument_sound`, `inventory`, `movable`, and `precipitation_interactions` among its script components. The coal stack exposed only `block_actor_dynamic_properties`; `getComponent("minecraft:fuel")` returned no component. This was an API-surface probe, not Fuel Saver gameplay.
+
+Polling the inventory and crediting extra fuel could approximate aggregate fuel consumption for selected vanilla items. It cannot preserve Java's per-item rounded burn duration, exact burn-start level snapshot, mixed or external fuel durations, and inventory changes caused by hoppers or players without maintaining a second fuel accounting system. Static item JSON or replacing vanilla fuels with custom items would also change the item contract and would not cover arbitrary external fuels. Those alternatives are not shipped because they change behavior and ownership in ways the Java implementation does not.
+
+### Classification
+
+Class **D** for the exact burn-duration effect on the pinned stable API. The furnace inventory is observable and mutable, but the value Java modifies is not exposed. `fuel_saver` remains `NOT_PORTED` and disabled as a candidate. This is based on stable declarations, official item/component contracts, the BDS runtime probe, and the alternatives above; it is not inferred from Java compilation failure.
+
+References: [Block](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable), [BlockInventoryComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockinventorycomponent?view=minecraft-bedrock-stable), [ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable), [minecraft:fuel](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_fuel?view=minecraft-bedrock-stable), [@minecraft/server module](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/minecraft-server?view=minecraft-bedrock-stable).
+
 ## `물갈퀴` (Webbed Feet)
 
 ### Java contract

@@ -1,5 +1,5 @@
 {
-  "source_revision": "a1df10daa14af5a6b72f6a399f49f335c0cb3a76",
+  "source_revision": "1f990bdcbcd8d1a1c8141d26f661485ec16a1fd3",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -425,14 +425,33 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentTuning.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AbstractFurnaceUtilityMixin.java",
+        "src/main/resources/data/augmentation_survival/augmentation/utility_runtime_contract.json"
       ],
-      "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_contract_refs": [
+        {
+          "line": 80,
+          "text": "AUGMENTS.md: - 공유 기계/오라 효과가 겹칠 때 기본값은 가장 높은 유효 레벨 하나다."
+        },
+        {
+          "line": 81,
+          "text": "AUGMENTS.md: - 호퍼 등 자동화는 특정 플레이어 직접 행동으로 간주하지 않는다."
+        },
+        {
+          "line": 82,
+          "text": "AUGMENTS.md: - `연료 절약`: 연료가 실제 소모되는 순간 반경 8블록 내 최고 레벨 보유자를 찾아 해당 연료 1개의 연소 보너스를 스냅샷한다."
+        },
+        {
+          "line": 83,
+          "text": "AUGMENTS.md: - `MULTIPLAYER TESTED: NO`."
+        }
+      ],
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "D",
+      "bedrock_method": "No stable API changes a vanilla furnace's per-fuel burn duration. The stable block inventory surface can observe slots, but does not expose the furnace burn timer or the vanilla item's fuel duration",
+      "api_constraints": "Class D for Java's per-fuel burn-duration effect on stable @minecraft/server 2.11.0. Stable block components expose inventory and recipe processing but no vanilla furnace burn-time component; ItemStack exposes script components, not minecraft:fuel duration. BDS 1.26.62.1 probe: a lit furnace exposed inventory without a furnace timer, while coal had no minecraft:fuel script component. Static minecraft:fuel JSON belongs to an item definition, not nearby players' saved levels. Polling and injecting bonus fuel would alter per-item rounding, misattribute hopper/manual slot changes or mixed fuel, and cannot snapshot the highest nearby level at the exact burn-start boundary. No exact substitute is shipped",
+      "test_method": "BDS 1.26.62.1 diagnostic GameTest consumes coal in a vanilla furnace and observes the lit furnace and inventory slots; it found no furnace burn-duration component and coal exposed no minecraft:fuel script component. Diagnostic only; no Fuel Saver behavior implemented",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

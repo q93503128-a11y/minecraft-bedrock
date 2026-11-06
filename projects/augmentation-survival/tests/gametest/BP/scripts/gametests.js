@@ -439,6 +439,79 @@ GameTest.registerAsync("AugmentationSurvival", "freeze_buildup_api_surface_probe
   test.succeed();
 }).maxTicks(40).structureName(STRUCTURE).tag(TAG);
 
+// Diagnostic only: inspect the vanilla furnace and fuel-item scripting surface.
+// This does not alter or count as Fuel Saver gameplay.
+GameTest.registerAsync("AugmentationSurvival", "furnace_fuel_api_surface_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASFurnaceSurfaceProbe", GameMode.survival);
+  const location = { x: 5, y: 2, z: 5 };
+  test.setBlockType("minecraft:furnace", location);
+  await test.idle(2);
+
+  const origin = {
+    x: Math.floor(player.location.x) - 4,
+    y: Math.round(player.location.y - 3),
+    z: Math.floor(player.location.z) - 3,
+  };
+  const worldLocation = {
+    x: origin.x + location.x,
+    y: origin.y + location.y,
+    z: origin.z + location.z,
+  };
+  const furnace = player.dimension.getBlock(worldLocation);
+  ensure(furnace?.typeId === "minecraft:furnace",
+    `Expected a furnace at ${JSON.stringify(worldLocation)}, found ${furnace?.typeId ?? "unloaded"}.`);
+  const blockComponents = furnace.getComponents().map(component => component.typeId).sort();
+  let inventory;
+  let inventoryError;
+  try {
+    inventory = furnace.getComponent("minecraft:inventory")?.container;
+  } catch (error) {
+    inventoryError = String(error);
+  }
+
+  const coal = new ItemStack("minecraft:coal", 1);
+  const coalComponentIds = coal.getComponents().map(component => component.typeId).sort();
+  let fuelComponent;
+  let fuelComponentError;
+  try {
+    fuelComponent = coal.getComponent("minecraft:fuel");
+  } catch (error) {
+    fuelComponentError = String(error);
+  }
+  const fuelComponentProperties = fuelComponent
+    ? Object.fromEntries(["duration", "burnDuration", "burnTime"].map(key => [key, fuelComponent[key]]))
+    : undefined;
+
+  let beforeSlots;
+  let afterSlots;
+  if (inventory && inventory.size >= 3) {
+    inventory.setItem(0, new ItemStack("minecraft:raw_iron", 1));
+    inventory.setItem(1, coal);
+    beforeSlots = [0, 1, 2].map(slot => inventory.getItem(slot)?.typeId ?? null);
+    await test.idle(220);
+    afterSlots = [0, 1, 2].map(slot => {
+      const stack = inventory.getItem(slot);
+      return stack ? { typeId: stack.typeId, amount: stack.amount } : null;
+    });
+  }
+
+  const observations = {
+    blockTypeId: furnace.typeId,
+    blockComponents,
+    inventoryAvailable: Boolean(inventory),
+    inventorySize: inventory?.size,
+    inventoryError,
+    beforeSlots,
+    afterSlots,
+    coalComponentIds,
+    fuelComponentAvailable: Boolean(fuelComponent),
+    fuelComponentProperties,
+    fuelComponentError,
+  };
+  console.warn(`AS_FURNACE_FUEL_SURFACE_PROBE ${JSON.stringify(observations)}`);
+  test.succeed();
+}).maxTicks(260).structureName(STRUCTURE).tag(TAG);
+
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);
   const inventory = inventoryOf(player);

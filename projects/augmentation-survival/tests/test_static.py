@@ -37,7 +37,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 7, "C": 2, "D": 4, "UNASSESSED": 134},
+            {"A": 2, "B": 7, "C": 2, "D": 5, "UNASSESSED": 133},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -89,6 +89,22 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("ItemStackConsumptionAugmentMixin.java", source_paths)
         self.assertIn("AdvancedActiveAugmentService.java", source_paths)
         self.assertIn("read-only durations", fast_eating["api_constraints"])
+
+    def test_fuel_saver_remains_unoffered_without_furnace_burn_duration_control(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        fuel_saver = next(item for item in data["augments"] if item["id"].endswith(":fuel_saver"))
+        self.assertEqual("D", fuel_saver["compatibility_class"])
+        self.assertEqual("NOT_PORTED", fuel_saver["port_status"])
+        self.assertFalse(fuel_saver["candidate_enabled"])
+        self.assertEqual(3, fuel_saver["max_level"])
+        source_paths = " ".join(fuel_saver["java_source_paths"])
+        self.assertIn("UtilityAugmentService.java", source_paths)
+        self.assertIn("AbstractFurnaceUtilityMixin.java", source_paths)
+        self.assertIn("utility_runtime_contract.json", source_paths)
+        self.assertIn("no vanilla furnace burn-time component", fuel_saver["api_constraints"])
+        refs = " ".join(ref["text"] for ref in fuel_saver["interaction_contract_refs"])
+        self.assertIn("AUGMENTS.md", refs)
+        self.assertIn("MULTIPLAYER TESTED: NO", refs)
 
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

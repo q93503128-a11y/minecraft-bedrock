@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 18008,
+  "durationMs": 18559,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
@@ -33,6 +33,10 @@
     },
     {
       "id": "AugmentationSurvival:freeze_buildup_api_surface_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:furnace_fuel_api_surface_probe",
       "outcome": "pass"
     },
     {

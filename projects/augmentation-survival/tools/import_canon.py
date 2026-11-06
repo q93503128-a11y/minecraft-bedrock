@@ -72,11 +72,22 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "fuel_saver":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AbstractFurnaceUtilityMixin.java",
+                "src/main/resources/data/augmentation_survival/augmentation/utility_runtime_contract.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         interaction_refs = [
             {"line": line_number, "text": line.strip()}
             for line_number, line in enumerate(interaction_lines, start=1)
             if slug in line or name in line or entry["canonical_name_ko"] in line
         ]
+        if slug == "fuel_saver":
+            for line_number, line in enumerate(canon.splitlines(), start=1):
+                if any(term in line for term in ("공유 기계/오라 효과", "호퍼 등 자동화", "연료가 실제 소모되는 순간", "MULTIPLAYER TESTED: NO")):
+                    interaction_refs.append({"line": line_number, "text": f"AUGMENTS.md: {line.strip()}"})
         if slug == "precise_aim":
             interaction_refs.extend(
                 {"line": line_number, "text": line.strip()}
@@ -101,7 +112,7 @@ def main(source: Path, target: Path) -> None:
             "catalog_discrepancy": "; ".join(source_mismatch),
             "java_source_paths": source_paths,
             "interaction_contract_refs": interaction_refs,
-            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "fast_eating"} else "NO_DIRECT_MENTION_FOUND",
+            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "fast_eating", "fuel_saver"} else "NO_DIRECT_MENTION_FOUND",
             "compatibility_class": (
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
@@ -109,7 +120,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug in {"bumper_crop", "seed_saver"} else
                 "B" if slug == "hearty_meal" else
                 "C" if slug in {"miners_hand", "logging_knack"} else
-                "D" if slug in {"fishing_sense", "long_breath", "cold_adaptation", "fast_eating"} else
+                "D" if slug in {"fishing_sense", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver"} else
                 "UNASSESSED"
             ),
             "bedrock_method": (
@@ -122,6 +133,7 @@ def main(source: Path, target: Path) -> None:
                 "On stable playerBreakBlock after-event, inspect the saved mature vanilla crop permutation and independently spawn its ordinary product with exact 8% per-level chance; max level 5" if slug == "bumper_crop" else
                 "On stable playerBreakBlock after-event, independently spawn a mapped vanilla crop planting item with exact 15% per-level chance; max level 3" if slug == "seed_saver" else
                 "On stable itemCompleteUse after-event, apply the Java food saturation bonus; read exact custom food properties when exposed and infer vanilla food saturation gain from adjacent server-tick samples" if slug == "hearty_meal" else
+                "No stable API changes a vanilla furnace's per-fuel burn duration. The stable block inventory surface can observe slots, but does not expose the furnace burn timer or the vanilla item's fuel duration" if slug == "fuel_saver" else
                 "No stable API exposes or changes the vanilla FishingHook timeUntilLured timer. Stable entitySpawn and generic item-use events can observe casts, but do not provide the proportional wait-timer adjustment; Java mixes this timing change separately from its Treasure Fishing and final-result Abundance logic" if slug == "fishing_sense" else
                 "No stable API exposes or changes the player's current air supply or oxygen depletion interval; the only documented airSupply setter is pre-release and is absent from stable @minecraft/server 2.11.0 declarations and the tested BDS runtime" if slug == "long_breath" else
                 "No stable API exposes or changes a player's vanilla freeze-buildup counter; freezing is available only as a damage cause" if slug == "cold_adaptation" else
@@ -146,6 +158,7 @@ def main(source: Path, target: Path) -> None:
                 "Class D for exact oxygen-consumption reduction on the currently pinned stable API: EntityBreathableComponent.airSupply is marked pre-release in the official reference, omitted from stable @minecraft/server 2.11.0 types, and not exposed by the breathable component on BDS 1.26.62.1. totalSupply is read-only; water_breathing would prevent oxygen loss rather than reduce it by Java's 10/20/30% curve" if slug == "long_breath" else
                 "Class D for the exact freeze-buildup effect: Java reads and adjusts Player.ticksFrozen; stable @minecraft/server 2.11.0 exposes no frozen-tick getter, setter, component, or buildup event. The stable hurt event exposes freezing damage only, so multiplying damage would replace buildup reduction with a different effect. The BDS 1.26.62.1 player probe found no freeze component or matching player property" if slug == "cold_adaptation" else
                 "Class D for the exact player-specific food-duration effect. Stable @minecraft/server 2.11.0 has no active-item duration setter; itemStartUse/itemCompleteUse carry read-only durations and run after timing starts. minecraft:use_modifiers.use_duration is static JSON, so overriding vanilla food changes all players and cannot follow saved augment levels; custom replacement foods would alter item identity and omit unsupported external foods. Player.eatItem is marked pre-release and does not adjust an in-progress held use" if slug == "fast_eating" else
+                "Class D for Java's per-fuel burn-duration effect on stable @minecraft/server 2.11.0. Stable block components expose inventory and recipe processing but no vanilla furnace burn-time component; ItemStack exposes script components, not minecraft:fuel duration. BDS 1.26.62.1 probe: a lit furnace exposed inventory without a furnace timer, while coal had no minecraft:fuel script component. Static minecraft:fuel JSON belongs to an item definition, not nearby players' saved levels. Polling and injecting bonus fuel would alter per-item rounding, misattribute hopper/manual slot changes or mixed fuel, and cannot snapshot the highest nearby level at the exact burn-start boundary. No exact substitute is shipped" if slug == "fuel_saver" else
                 "Class C: stable start/break events can observe block interactions but expose no vanilla break-progress/speed control; reconstructing hold, tool, hardness, and cancellation behavior would differ, especially across touch/controller input" if slug in {"miners_hand", "logging_knack"} else
                 "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed" if slug == "quick_feet" else
                 "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified" if slug == "efficient_metabolism" else
@@ -162,6 +175,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS GameTest calls the shared handler with synthetic break-event payloads: mature wheat at each exact level threshold, immature and unsupported blocks, and one ordinary product for each mapped vanilla crop; real block-break event delivery remains untested" if slug == "bumper_crop" else
                 "BDS GameTest calls the shared crop handler with synthetic events: exact 15/30/45% boundaries, mapped planting items, and independent rolls alongside Bumper Crop; real player block-break delivery remains untested" if slug == "seed_saver" else
                 "BDS 1.26.62.1 end-to-end GameTest consumes cooked beef through the production handler and checks exact saturation at levels 1–3 plus the food saturation cap" if slug == "hearty_meal" else
+                "BDS 1.26.62.1 diagnostic GameTest consumes coal in a vanilla furnace and observes the lit furnace and inventory slots; it found no furnace burn-duration component and coal exposed no minecraft:fuel script component. Diagnostic only; no Fuel Saver behavior implemented" if slug == "fuel_saver" else
                 "BDS 1.26.62.1 GameTest diagnostic casts a vanilla fishing rod, observes generic cast events and the owned fishing-hook entity, and queries projectile/fishing-hook/timer components. It found only minecraft:projectile; it does not test or implement bite timing" if slug == "fishing_sense" else
                 "Official stable API declaration review plus BDS 1.26.62.1 GameTest submerged-player probe: minecraft:breathable exists but exposes no airSupply property at runtime; probe only, no oxygen behavior implemented" if slug == "long_breath" else
                 "Stable @minecraft/server type review plus BDS 1.26.62.1 GameTest diagnostic in powder snow: no freeze component, frozen-tick member, or buildup event was available; probe only, no cold effect implemented" if slug == "cold_adaptation" else

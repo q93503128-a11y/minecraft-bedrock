@@ -3,12 +3,12 @@
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Harness: `@bedrock-core/bds-runner` 0.2.1; isolated BP/RP/GameTest packs; GameTest experiment active only in the disposable test world.
 - Commands: `npm run verify` and `npm run test:engine`.
-- Static checks: **11/11 PASS**.
+- Static checks: **12/12 PASS**.
 - Stable production API type-check: **PASS** (`@minecraft/server` 2.11.0).
-- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (42,335 bytes).
-- BDS: **19 passed / 0 failed**, 18.0 seconds, no script or infrastructure errors; runner exit code **0**. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
+- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (42,989 bytes).
+- BDS: **20 passed / 0 failed**, 18.6 seconds, no script or infrastructure errors; runner exit code **0**. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
 
-The eighteen tests from the preceding run also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
+All 19 tests from the preceding run also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
 
 | GameTest | Result | What it establishes |
 | --- | --- | --- |
@@ -17,11 +17,12 @@ The eighteen tests from the preceding run also passed in this regression run. Th
 | `fishing_hook_stable_api_surface_probe` | PASS (diagnostic only) | BDS 1.26.62.1 SimulatedPlayer cast a vanilla fishing rod (`useResult=true`); the probe observed `entitySpawn`, `itemUse`, `itemStartUse`, and `itemStopUse` for the cast and found one owned `minecraft:fishing_hook`. Of the tested component IDs, only `minecraft:projectile` was present; `minecraft:fishing_hook` and `minecraft:timer` were absent. This probe does not wait for a natural bite or test Fishing Sense gameplay. |
 | `breathable_air_supply_api_surface_probe` | PASS (diagnostic only) | An underwater simulated player had `minecraft:breathable`, but `"airSupply" in component` was false on BDS 1.26.62.1. This is a capability probe, not a Long Breath gameplay test. |
 | `freeze_buildup_api_surface_probe` | PASS (diagnostic only) | The simulated player exposed no freeze-related Script API component or frozen-tick property; the `freezing` damage cause exists. This does not test or implement Cold Adaptation gameplay. |
+| `furnace_fuel_api_surface_probe` | PASS (diagnostic only) | On a vanilla furnace, one coal was consumed and one raw iron became an iron ingot after 220 ticks. The lit furnace exposed `instrument_sound`, `inventory`, `movable`, and `precipitation_interactions`; its 3-slot inventory was accessible. Coal's Script API components contained only `block_actor_dynamic_properties`, and `getComponent("minecraft:fuel")` returned undefined. This proves an observation surface on BDS 1.26.62.1; it does not test or implement Fuel Saver. |
 
 The test-only production wrapper seeds the saved augment level in the production BP's dynamic-property namespace; the production handler owns the effect. An exploratory probe established that BDS 1.26.62.1 emits `itemCompleteUse` for cooked beef after the vanilla food update, although stable API documentation describes this event for chargeable items. Vanilla cooked beef did not expose `minecraft:food`, so the production handler inferred the gain from adjacent server-tick saturation samples. This test does not establish event behavior for all food items or engine builds, nor exclude unrelated same-tick saturation changes.
 
 This regression run did not test or implement `빨리 먹기`; the observed cooked-beef completion event is not a duration-control hook. Fast Eating remains D/NOT_PORTED and is not a core candidate.
 
-The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed and its 15-test run passed. The latest 19-test run also passed the water-movement coverage, the fishing API-surface probe, the breathable-component probe, and the freeze-buildup API probe. Earlier failed attempts are not counted as passing results.
+The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed and its 15-test run passed. The latest 20-test run also passed the water-movement coverage, the fishing, breathable-component, freeze-buildup, and furnace-fuel API-surface probes. Earlier failed attempts are not counted as passing results.
 
 Client import and visual UI review, mobile/controller navigation, reconnect persistence, real multiplayer, real block-break delivery, natural melee/fall/drowning, and real player projectile collision remain untested. See `STATUS.md` for the exact continuation point.
