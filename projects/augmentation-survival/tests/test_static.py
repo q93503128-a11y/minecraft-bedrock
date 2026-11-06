@@ -44,9 +44,23 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 5, "D": 8, "UNASSESSED": 121},
+            {"A": 2, "B": 13, "C": 5, "D": 9, "UNASSESSED": 120},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
+
+    def test_long_reach_remains_unoffered_without_player_interaction_range_control(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        long_reach = next(item for item in data["augments"] if item["id"].endswith(":long_reach"))
+        self.assertEqual("긴 팔", long_reach["name_ko"])
+        self.assertEqual("uncommon", long_reach["tier"])
+        self.assertEqual(3, long_reach["max_level"])
+        self.assertEqual("블록 설치·상호작용 거리 +0.5 / +1.0 / +1.5블록. 전투 사거리 제외.", long_reach["canonical_effect_ko"])
+        self.assertEqual("D", long_reach["compatibility_class"])
+        self.assertEqual("NOT_PORTED", long_reach["port_status"])
+        self.assertFalse(long_reach["candidate_enabled"])
+        self.assertIn("stat_modifier_contract.json", " ".join(long_reach["java_source_paths"]))
+        self.assertIn("custom", long_reach["api_constraints"])
+        self.assertIn("diagnostic GameTest", long_reach["test_method"])
 
     def test_verified_movement_effects_use_the_shared_offer_filter(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

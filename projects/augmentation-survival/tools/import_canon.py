@@ -142,6 +142,18 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "long_reach":
+            # The generic Java attribute reconciler consumes this contract entry;
+            # player presentation is data-driven in the uncommon presentation file.
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/PlayerStatAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/AugmentPresentationCatalog.java",
+                "src/main/resources/data/augmentation_survival/augmentation/stat_modifier_contract.json",
+                "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         if slug == "rapid_strikes":
             for relative in (
                 "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
@@ -217,7 +229,7 @@ def main(source: Path, target: Path) -> None:
             "catalog_discrepancy": "; ".join(source_mismatch),
             "java_source_paths": source_paths,
             "interaction_contract_refs": interaction_refs,
-            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "fast_eating", "fuel_saver", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else "NO_DIRECT_MENTION_FOUND",
+            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "long_reach", "fast_eating", "fuel_saver", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else "NO_DIRECT_MENTION_FOUND",
             "compatibility_class": (
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
@@ -229,7 +241,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug == "last_strength" else
                 "B" if slug in {"catch_breath", "quick_feet"} else
                 "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care"} else
-                "D" if slug in {"fishing_sense", "treasure_fishing", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery"} else
+                "D" if slug in {"fishing_sense", "treasure_fishing", "long_reach", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery"} else
                 "UNASSESSED"
             ),
             "bedrock_method": (
@@ -250,6 +262,7 @@ def main(source: Path, target: Path) -> None:
                 "In the shared per-tick movement reconciler, add 4% per level during daytime; the separate natural-regeneration interval reduction is not implemented" if slug == "sun_affinity" else
                 "No stable API exposes or changes a player's vanilla natural-regeneration timer. The stable heal event reports the healing event and amount/source; replacing native healing with a per-player scheduler would also need to reproduce vanilla eligibility and hunger/saturation costs" if slug == "recovery" else
                 "Reconcile stable minecraft:movement to defaultValue × (1 + 0.03 × saved level) every server tick; coordinate this writer with other movement augments" if slug == "quick_feet" else
+                "No exact stable route: Bedrock's native player block_interaction_range has no stable Script API getter/setter; raycast queries do not extend vanilla placement or block-use range" if slug == "long_reach" else
                 "Use the stable minecraft:movement attribute and Player.isSprinting; count 60 consecutive non-sprinting server ticks, then reconcile defaultValue × (1 + 0.10 × saved level) each tick. In water, combine Catch Breath and Webbed Feet into the underwater movement multiplier to preserve Java's shared additive movement bonus" if slug == "catch_breath" else
                 "On stable itemCompleteUse after-event, apply the Java food saturation bonus; read exact custom food properties when exposed and infer vanilla food saturation gain from adjacent server-tick samples" if slug == "hearty_meal" else
                 "No stable API changes a vanilla furnace's per-fuel burn duration. The stable block inventory surface can observe slots, but does not expose the furnace burn timer or the vanilla item's fuel duration" if slug == "fuel_saver" else
@@ -282,6 +295,7 @@ def main(source: Path, target: Path) -> None:
                 "The stable World.getTimeOfDay route implements daytime movement; stable heal events expose no vanilla natural-regeneration interval/timer, so the natural-regeneration half remains unimplemented" if slug == "sun_affinity" else
                 "Class D for the exact natural-regeneration interval effect on stable @minecraft/server 2.11.0: EntityHealBeforeEvent exposes cancel, healing amount, and heal source (SelfHeal identifies hunger-caused healing), but no native timer, interval, or scheduling control. The naturalRegeneration gamerule is world-wide. A per-player replacement would have to recreate Bedrock's natural-heal eligibility and hunger/saturation costs; no equivalent has been validated, so no approximation is shipped" if slug == "recovery" else
                 "Class B: stable EntityMovementComponent is writable through setCurrentValue; BDS 1.26.62.1 verifies the shared server reconciler at exact +3% per level for Quick Feet levels 1–5 and additive stacks with Catch Breath, Nocturnal, and Sun Affinity. Stacking with every other movement augment and external attribute writers remains untested" if slug == "quick_feet" else
+                "Class D: stable @minecraft/server 2.11.0 has no player block-interaction-range attribute or generic attribute modifier API. getBlockFromViewDirection and BlockRaycastOptions.maxDistance configure script ray queries, not the range enforced for native block placement/use; stable InputButton exposes only Jump and Sneak. A custom item/UI interaction route would replace vanilla block/item semantics and would not preserve touch/controller placement behavior" if slug == "long_reach" else
                 "Class B: stable EntityMovementComponent is writable through setCurrentValue, and Player.isSprinting is stable. The previous BDS probe showed a one-time movement write reverting by the next tick, so the production handler reconciles it every tick. Bedrock separates underwater movement from general movement; the shared bonus is mapped to the active environment. BDS gameplay verification is required for all levels, the 60-tick threshold, sprint reset, and additive Webbed Feet stacking" if slug == "catch_breath" else
                 "Stable declarations describe itemCompleteUse as chargeable-item completion and vanilla ItemFoodComponent is not exposed for cooked beef. BDS 1.26.62.1 confirms the event fires for cooked beef; vanilla gain is measured as a saturation delta. Verify on each targeted Bedrock/BDS build; other same-tick saturation changes could affect the inferred gain" if slug == "hearty_meal" else
                 "Class D for the exact vanilla-timer effect: stable @minecraft/server 2.11.0 has no fishing-bite event, FishingHook timer property, or timer setter. BDS 1.26.62.1 confirmed casts emit generic itemUse/itemStartUse/itemStopUse and spawn an owned minecraft:fishing_hook with only minecraft:projectile among tested components. The Java FishingHookAugmentMixin separately applies Treasure Fishing on retrieve and Abundance to the final result; these loot interactions remain outside this timing probe. Lure enchantment or custom-rod alternatives change the vanilla item/timing contract and do not reproduce a percentage reduction of each randomized wait" if slug == "fishing_sense" else
@@ -318,6 +332,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 end-to-end GameTest consumes cooked beef through the production handler and checks exact saturation at levels 1–3 plus the food saturation cap" if slug == "hearty_meal" else
                 "BDS 1.26.62.1 diagnostic GameTest consumes coal in a vanilla furnace and observes the lit furnace and inventory slots; it found no furnace burn-duration component and coal exposed no minecraft:fuel script component. Diagnostic only; no Fuel Saver behavior implemented" if slug == "fuel_saver" else
                 "BDS 1.26.62.1 diagnostic GameTest enumerates a simulated player's stable component IDs, checks attack-speed/damage/cooldown component IDs, and inspects the stable EntityComponentTypes enum. Diagnostic only; no Rapid Strikes gameplay implemented" if slug == "rapid_strikes" else
+                "BDS 1.26.62.1 diagnostic GameTest enumerates simulated-player components and stable range-like component IDs, checks candidate range properties and generic attribute methods, and records InputButton values. It found no player range API and only Jump/Sneak inputs; diagnostic only, no Long Reach gameplay implemented" if slug == "long_reach" else
                 "Static stable API 2.11.0 review of WorldAfterEvents, EntityRemoveAfterEvent, PlayerInventoryItemChangeAfterEvent and LootTableManager; existing BDS fishing-hook probe confirms cast events and an owned projectile hook only. No catch/category/loot-context runtime event is available; no Treasure Fishing behavior is implemented or counted" if slug == "treasure_fishing" else
                 "BDS 1.26.62.1 GameTest diagnostic casts a vanilla fishing rod, observes generic cast events and the owned fishing-hook entity, and queries projectile/fishing-hook/timer components. It found only minecraft:projectile; it does not test or implement bite timing" if slug == "fishing_sense" else
                 "Official stable API declaration review plus BDS 1.26.62.1 GameTest submerged-player probe: minecraft:breathable exists but exposes no airSupply property at runtime; probe only, no oxygen behavior implemented" if slug == "long_breath" else

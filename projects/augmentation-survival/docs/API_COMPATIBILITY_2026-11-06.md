@@ -265,6 +265,26 @@ Class **D** for the exact treasure-category probability effect on the currently 
 
 References: [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [ItemUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemuseafterevent?view=minecraft-bedrock-stable), [EntityRemoveAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityremoveafterevent?view=minecraft-bedrock-stable), [PlayerInventoryItemChangeAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerinventoryitemchangeafterevent?view=minecraft-bedrock-stable), [LootTableManager](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/loottablemanager?view=minecraft-bedrock-stable).
 
+## `긴 팔` (Long Reach)
+
+### Java contract, implementation and interactions
+
+The canonical effect is block placement and interaction range +0.5 / +1.0 / +1.5 blocks at levels 1–3; entity-combat reach is explicitly excluded. Java declares `long_reach` in `stat_modifier_contract.json` as `block_interaction_range`, `amount_per_level: 0.5`, and `add_value`. `StatAugmentCatalog` maps that identifier to Minecraft's `Attributes.BLOCK_INTERACTION_RANGE`. `PlayerStatAugmentService` clamps saved levels to the catalog maximum, sums values by attribute/operation, applies a transient modifier, and reconciles it on join and respawn. The uncommon presentation marks it passive and repeats the level curve. The 2026-10-24 interaction contract contains no Long Reach-specific cross-augment rule; no other entry in the stat contract shares `block_interaction_range`.
+
+### Stable Bedrock surface and alternatives
+
+This project pins stable `@minecraft/server` 2.11.0 / `@minecraft/server-ui` 2.3.0 and BDS 1.26.62.1. The stable attribute component base exposes current/default values and a setter only for specific components returned by an entity; it does not expose a generic player-attribute lookup or modifier API. The pinned `EntityComponentTypes` declaration has no player block-interaction-range component. The diagnostic BDS test enumerates a SimulatedPlayer's components, checks range-like component IDs/properties and generic attribute methods, and records the input enum. It found no range API and only `Jump` / `Sneak` input buttons.
+
+`Entity.getBlockFromViewDirection` and dimension raycasts answer script queries. A longer query ray does not change the engine's native range validation for arbitrary block placement or block use. The official raycast reference describes a query distance and flags `maxDistance` as pre-release; it is not treated as a stable reach setter. The official Bedrock command list also has no `/attribute` command. Stable input exposes no generic Use/Place button that could initiate replacement interactions at longer reach. A custom menu, item, or block proxy would not make native chests, doors, crafting stations, and arbitrary held-item placement behave normally at the extended range; it would also replace placement-face/orientation and touch/controller action semantics. Those alternatives do not preserve the Java effect.
+
+No external Java-mod entity, structure, or asset is involved. No approximation is shipped, and Long Reach remains disabled as a core candidate.
+
+### Classification
+
+Class **D** for the exact per-player native block placement/interaction range modifier on the pinned stable API. `long_reach` remains `NOT_PORTED`; the BDS result is an API-surface diagnostic, not a gameplay test. This conclusion is based on the Java attribute contract, the pinned stable declarations, official API/command references, and the BDS 1.26.62.1 probe, not on Java compilation failure. Mobile and controller inputs receive the same consideration: the available stable button enum has no generic interaction button, and a raycast/UI replacement would not preserve the platform's native use/place behavior.
+
+References: [EntityComponentTypes](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitycomponenttypes?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable), [Entity.getBlockFromViewDirection](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable), [BlockRaycastOptions](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockraycastoptions?view=minecraft-bedrock-stable), [InputButton](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputbutton?view=minecraft-bedrock-stable), [Bedrock command list](https://learn.microsoft.com/en-us/minecraft/creator/commands/commands?view=minecraft-bedrock-stable).
+
 ## `숨 오래 참기` (Long Breath)
 
 ### Java contract

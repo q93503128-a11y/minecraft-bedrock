@@ -1,56 +1,8 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 16084,
+  "durationMs": 16550,
   "verdicts": [
-    {
-      "id": "AugmentationSurvival:damage_event_exposes_simulated_player_damage",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:stable_mob_death_and_loot_event_probe",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:loot_scoop_matches_chance_levels_and_duplicates_a_player_kill_bundle",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:keen_edge_scales_server_root_melee_damage",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:last_strength_scales_server_root_melee_damage_at_and_below_threshold",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:last_strength_scales_server_root_projectile_damage_and_stacks_with_precise_aim",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:strong_lungs_reduces_drowning_damage_by_level",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:tough_skin_reduces_incoming_damage_by_level",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:defense_reductions_stack_multiplicatively",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:core_synthesis_is_atomic_and_conserves_items",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:sturdiness_effect_scales_max_health",
-      "outcome": "pass"
-    },
-    {
-      "id": "AugmentationSurvival:core_selection_commits_level_and_preserves_core_on_rejection",
-      "outcome": "pass"
-    },
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
       "outcome": "pass"
@@ -128,6 +80,10 @@
       "outcome": "pass"
     },
     {
+      "id": "AugmentationSurvival:long_reach_api_surface_probe",
+      "outcome": "pass"
+    },
+    {
       "id": "AugmentationSurvival:furnace_fuel_api_surface_probe",
       "outcome": "pass"
     },
@@ -136,11 +92,59 @@
       "outcome": "pass"
     },
     {
+      "id": "AugmentationSurvival:damage_event_exposes_simulated_player_damage",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:stable_mob_death_and_loot_event_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:loot_scoop_matches_chance_levels_and_duplicates_a_player_kill_bundle",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:keen_edge_scales_server_root_melee_damage",
+      "outcome": "pass"
+    },
+    {
       "id": "AugmentationSurvival:precise_aim_scales_server_projectile_damage_source",
       "outcome": "pass"
     },
     {
+      "id": "AugmentationSurvival:last_strength_scales_server_root_melee_damage_at_and_below_threshold",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:last_strength_scales_server_root_projectile_damage_and_stacks_with_precise_aim",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:strong_lungs_reduces_drowning_damage_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:tough_skin_reduces_incoming_damage_by_level",
+      "outcome": "pass"
+    },
+    {
       "id": "AugmentationSurvival:light_landing_reduces_fall_damage_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:defense_reductions_stack_multiplicatively",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_synthesis_is_atomic_and_conserves_items",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:sturdiness_effect_scales_max_health",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:core_selection_commits_level_and_preserves_core_on_rejection",
       "outcome": "pass"
     }
   ],

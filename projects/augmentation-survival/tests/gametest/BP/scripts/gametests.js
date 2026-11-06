@@ -1,4 +1,4 @@
-import { BlockPermutation, EnchantmentTypes, EntityComponentTypes, EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
+import { BlockPermutation, EnchantmentTypes, EntityComponentTypes, EntityDamageCause, GameMode, InputButton, ItemStack, Player, world } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
@@ -938,6 +938,57 @@ GameTest.registerAsync("AugmentationSurvival", "attack_speed_api_surface_probe",
     attackComponentChecks,
     playerProperties,
   }));
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
+
+// Diagnostic only: inspect stable player range attributes and supported input buttons.
+// This does not alter or count as Long Reach gameplay.
+GameTest.registerAsync("AugmentationSurvival", "long_reach_api_surface_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASLongReachSurfaceProbe", GameMode.survival);
+  await test.idle(2);
+  const componentIds = player.getComponents().map(component => component.typeId).sort();
+  const rangeComponentChecks = [
+    "minecraft:block_interaction_range",
+    "minecraft:entity_interaction_range",
+    "minecraft:interaction_range",
+  ].map(id => {
+    try {
+      const component = player.getComponent(id);
+      return { id, available: Boolean(component), currentValue: component?.currentValue };
+    } catch (error) {
+      return { id, available: false, error: String(error) };
+    }
+  });
+  const stableRangeTypeIds = Object.entries(EntityComponentTypes)
+    .filter(([name, id]) => /interaction.?range|block.?reach|reach/i.test(`${name} ${id}`));
+  const rangeProperties = [
+    "blockInteractionRange",
+    "block_interaction_range",
+    "interactionRange",
+    "getAttribute",
+    "getAttributeValue",
+  ].map(name => ({ name, valueType: typeof player[name] }));
+  const supportedInputButtons = Object.values(InputButton).sort();
+  const raycastMethods = {
+    playerViewRay: typeof player.getBlockFromViewDirection,
+    dimensionRay: typeof player.dimension.getBlockFromRay,
+  };
+  console.warn("AS_LONG_REACH_SURFACE_PROBE " + JSON.stringify({
+    componentIds,
+    rangeComponentChecks,
+    stableRangeTypeIds,
+    rangeProperties,
+    supportedInputButtons,
+    inputInfo: {
+      valueType: typeof player.inputInfo,
+      getButtonState: typeof player.inputInfo?.getButtonState,
+    },
+    raycastMethods,
+  }));
+  ensure(supportedInputButtons.join(",") === "Jump,Sneak", "Stable input button surface changed; re-assess Long Reach.");
+  ensure(stableRangeTypeIds.length === 0, "A stable range component appeared; re-assess Long Reach.");
+  ensure(rangeComponentChecks.every(check => !check.available), "A player range component appeared; re-assess Long Reach.");
+  ensure(rangeProperties.every(property => property.valueType === "undefined"), "A player range attribute API appeared; re-assess Long Reach.");
   test.succeed();
 }).maxTicks(30).structureName(STRUCTURE).tag(TAG);
 
