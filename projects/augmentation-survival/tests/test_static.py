@@ -47,6 +47,14 @@ class StaticAddonTests(unittest.TestCase):
         for item in movement.values():
             self.assertIn("BDS 1.26.62.1", item["api_constraints"])
 
+    def test_fishing_sense_remains_unoffered_without_a_hook_timer_api(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        fishing_sense = next(item for item in data["augments"] if item["id"].endswith(":fishing_sense"))
+        self.assertEqual("D", fishing_sense["compatibility_class"])
+        self.assertEqual("NOT_PORTED", fishing_sense["port_status"])
+        self.assertFalse(fishing_sense["candidate_enabled"])
+        self.assertIn("FishingHookAugmentMixin.java", " ".join(fishing_sense["java_source_paths"]))
+
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         self.assertEqual(3, sum(bool(item["catalog_discrepancy"]) for item in data["augments"]))

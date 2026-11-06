@@ -324,6 +324,52 @@ GameTest.registerAsync("AugmentationSurvival", "webbed_feet_scales_server_swim_s
   test.succeed();
 }).maxTicks(60).structureName(STRUCTURE).tag(TAG);
 
+// Diagnostic only: observe the stable event/component surface available around
+// a vanilla fishing-rod use. This does not implement or count Fishing Sense.
+GameTest.registerAsync("AugmentationSurvival", "fishing_hook_stable_api_surface_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 4 }, "ASFishingSurfaceProbe", GameMode.survival);
+  const inventory = player.getComponent("minecraft:inventory")?.container;
+  ensure(inventory, "Fishing surface probe player inventory was unavailable.");
+  inventory.setItem(0, new ItemStack("minecraft:fishing_rod"));
+  player.selectedSlotIndex = 0;
+  player.setRotation({ x: 20, y: 0 });
+
+  const observations = [];
+  world.afterEvents.entitySpawn.subscribe(({ entity }) => {
+    if (entity.typeId !== "minecraft:fishing_hook") return;
+    const projectile = entity.getComponent("minecraft:projectile");
+    const componentIds = ["minecraft:projectile", "minecraft:fishing_hook", "minecraft:timer"];
+    observations.push({
+      event: "entitySpawn",
+      componentIds: componentIds.filter(componentId => {
+        try { return entity.getComponent(componentId) !== undefined; } catch { return false; }
+      }),
+      hasProjectileOwner: projectile?.owner?.id === player.id,
+    });
+  });
+  for (const [name, signal] of [
+    ["itemUse", world.afterEvents.itemUse],
+    ["itemStartUse", world.afterEvents.itemStartUse],
+    ["itemStopUse", world.afterEvents.itemStopUse],
+  ]) {
+    signal.subscribe(event => {
+      if (event.source?.id === player.id && event.itemStack?.typeId === "minecraft:fishing_rod") {
+        observations.push({ event: name, itemId: event.itemStack.typeId });
+      }
+    });
+  }
+
+  const useResult = player.useItemInSlot(0);
+  await test.idle(12);
+  const hooks = player.dimension.getEntities({ type: "minecraft:fishing_hook", location: player.location, maxDistance: 32 });
+  const ownedHook = hooks.find(hook => hook.getComponent("minecraft:projectile")?.owner?.id === player.id);
+  const hookComponents = ownedHook ? ["minecraft:projectile", "minecraft:fishing_hook", "minecraft:timer"].filter(componentId => {
+    try { return ownedHook.getComponent(componentId) !== undefined; } catch { return false; }
+  }) : [];
+  console.warn(`AS_FISHING_SURFACE_PROBE ${JSON.stringify({ useResult, observations, nearbyHookCount: hooks.length, ownedHook: Boolean(ownedHook), hookComponents })}`);
+  test.succeed();
+}).maxTicks(60).structureName(STRUCTURE).tag(TAG);
+
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);
   const inventory = inventoryOf(player);

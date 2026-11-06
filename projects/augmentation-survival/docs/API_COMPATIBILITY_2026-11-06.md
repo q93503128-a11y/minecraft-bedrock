@@ -54,3 +54,23 @@ Official BDS 1.26.62.1 passed `webbed_feet_scales_server_swim_speed_by_level`. I
 Class **A** for the standalone vanilla movement effect: the stable native water-movement attribute reproduced all three Java multipliers and the water-state boundary in BDS. Port status remains `PARTIAL_BDS_VERIFIED` because real-client presentation, Java's shared movement-bonus stacking with other movement augments, and interactions with other attribute writers have not been checked. `webbed_feet` is enabled as a common-core candidate based on the tested standalone route.
 
 References: [Entity](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable), [EntityUnderwaterMovementComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityunderwatermovementcomponent?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable).
+
+## `낚시 감각` (Fishing Sense)
+
+### Java contract and interaction
+
+Java reduces the vanilla fishing hook's waiting timer by 10% / 20% / 30% at levels 1–3. `FishingHookAugmentMixin` captures the timer progress each tick and adds fractional progress `vanillaProgress × reduction / (1 - reduction)`, which produces the requested percentage reduction without replacing the hook or fishing loot. The same mixin separately handles `보물 낚시` when the hook is retrieved and then applies `풍요` to eligible final fishing drops. Fishing Sense changes the wait phase only; it must not change treasure odds, item tables, or final-stack duplication.
+
+### Stable Bedrock surface and runtime probe
+
+The pinned production module is stable `@minecraft/server` 2.11.0. Its `WorldAfterEvents` surface includes general entity spawn/removal, entity-hit, and item-use signals, but no fishing-bite signal. The generic entity/projectile API does not expose a vanilla fishing hook's `timeUntilLured` or a setter for that value. The official vanilla `minecraft:fishing_hook` snippet shows a generic projectile and loot table, not a Script API timer component.
+
+A BDS 1.26.62.1 GameTest diagnostic cast a vanilla rod with a simulated player. It observed one owned `minecraft:fishing_hook` and the generic `entitySpawn`, `itemUse`, `itemStartUse`, and `itemStopUse` events on cast. Queries for `minecraft:projectile`, `minecraft:fishing_hook`, and `minecraft:timer` found only `minecraft:projectile`. The diagnostic did not wait for a natural bite; it is evidence about the cast-time surface, not a gameplay test.
+
+The obvious enchantment workaround would change the player's fishing-rod state and use a separate vanilla timing mechanic rather than the Java percentage formula. Replacing vanilla fishing with a custom rod would also require recreating cast/reel behavior, vanilla loot selection, open-water rules, treasure rolls, and eligible final-drop handling. That would materially replace vanilla fishing rather than port Fishing Sense. Neither alternative is shipped.
+
+### Classification
+
+Class **D** for the exact vanilla wait-time effect on the currently pinned stable API: there is no exposed timer value to read or change and no fishing-bite event on which to apply an equivalent progress adjustment. `fishing_sense` remains `NOT_PORTED` and disabled as a core candidate. This is based on the stable declarations, official event surface, the vanilla entity snippet, the BDS cast probe, and the source behavior above; it is not inferred from Java compilation failure.
+
+References: [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [EntitySpawnAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityspawnafterevent?view=minecraft-bedrock-stable), [ItemUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemuseafterevent?view=minecraft-bedrock-stable), [ItemStartUseAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstartuseafterevent?view=minecraft-bedrock-stable), [vanilla fishing-hook entity snippet](https://learn.microsoft.com/en-us/minecraft/creator/reference/source/vanillabehaviorpack_snippets/entities/fishing_hook?view=minecraft-bedrock-stable).
