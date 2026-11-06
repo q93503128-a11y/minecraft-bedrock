@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -43,9 +43,10 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["miners_hand"]["compatibility_class"])
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertEqual("C", by_id["underwater_work"]["compatibility_class"])
+        self.assertEqual("C", by_id["pickup_hand"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 6, "D": 9, "UNASSESSED": 119},
+            {"A": 2, "B": 13, "C": 7, "D": 9, "UNASSESSED": 118},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -65,6 +66,21 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("Haste amplifiers 0–4", underwater_work["test_method"])
         self.assertIn("Java 1.8×/2.6×/3.4×", underwater_work["test_method"])
         self.assertIn("whole-effect substitute", underwater_work["api_constraints"])
+
+    def test_pickup_hand_is_bds_verified_and_offered_as_a_partial_radius_route(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        pickup_hand = next(item for item in data["augments"] if item["id"].endswith(":pickup_hand"))
+        self.assertEqual("줍는 손", pickup_hand["name_ko"])
+        self.assertEqual("uncommon", pickup_hand["tier"])
+        self.assertEqual(3, pickup_hand["max_level"])
+        self.assertEqual("아이템/경험치 구슬 획득 반경 +1.5 / +3.0 / +4.5블록.", pickup_hand["canonical_effect_ko"])
+        self.assertEqual("C", pickup_hand["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", pickup_hand["port_status"])
+        self.assertTrue(pickup_hand["candidate_enabled"])
+        self.assertIn("UtilityAugmentService.java", " ".join(pickup_hand["java_source_paths"]))
+        self.assertIn("utility_runtime_contract.json", " ".join(pickup_hand["java_source_paths"]))
+        self.assertIn("one-tick pickup delay", pickup_hand["api_constraints"])
+        self.assertIn("all three levels", pickup_hand["test_method"])
 
     def test_long_reach_remains_unoffered_without_player_interaction_range_control(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

@@ -164,6 +164,16 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "pickup_hand":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentTuning.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/AugmentPresentationCatalog.java",
+                "src/main/resources/data/augmentation_survival/augmentation/utility_runtime_contract.json",
+                "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         if slug == "rapid_strikes":
             for relative in (
                 "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
@@ -250,7 +260,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug == "dexterity" else
                 "B" if slug == "last_strength" else
                 "B" if slug in {"catch_breath", "quick_feet"} else
-                "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care", "underwater_work"} else
+                "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care", "underwater_work", "pickup_hand"} else
                 "D" if slug in {"fishing_sense", "treasure_fishing", "long_reach", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery"} else
                 "UNASSESSED"
             ),
@@ -286,6 +296,7 @@ def main(source: Path, target: Path) -> None:
                 "Stable player exhaustion component can be read and written; exact per-action reduction route not yet verified" if slug == "efficient_metabolism" else
                 "While player.isInWater, set the stable minecraft:underwater_movement attribute to defaultValue × (1 + 0.10 × saved level); restore defaultValue out of water" if slug == "webbed_feet" else
                 "Candidate only: while the player's head is submerged, apply an integer Haste effect near the Java submerged-mining multiplier; no gameplay route is shipped because stable API has no submerged-mining-speed setter and Haste cannot express the exact fractional curve" if slug == "underwater_work" else
+                "Every server tick, find item entities and XP orbs inside the Java player bounding box inflated by 1.5/3.0/4.5 blocks and teleport them into the nearest eligible player's hitbox; vanilla Bedrock pickup then performs inventory/XP handling" if slug == "pickup_hand" else
                 "Not assessed"
             ),
             "api_constraints": (
@@ -300,6 +311,7 @@ def main(source: Path, target: Path) -> None:
                 "Stable playerBreakBlock exposes the captured block permutation and itemStackBeforeBreak; LootTableManager can recalculate a drop list from that permutation and tool but does not expose the already-spawned vanilla drop list. Vanilla ore IDs and exposed ore tags are covered. External ores, add-on tag parity, real-client behavior and multiplayer remain unverified; Java also applies this roll during derived breaks, so Bedrock derived-break routing must be added with Tunneling" if slug == "extra_piece" else
                 "Stable Script API has no global pre-durability event for vanilla tools. This route only restores durability lost on player block-break events; melee/use durability and automatically derived mining/harvest breaks are not covered. The stable item component surface does not expose Java's DataComponents.TOOL marker for exact item classification; reconnect, client play and multiplayer remain unverified" if slug == "tool_care" else
                 "Stable block-break events expose no mining-speed/progress setter. Haste is a whole-effect substitute, not Java's submerged_mining_speed modifier: integer amplifiers only approximate the 1.8×/2.6×/3.4× curve, and applying/removing Haste can conflict with potion or other add-on effects. The Java interaction contract has no Underwater Work-specific cross-augment rule; no substitute is shipped" if slug == "underwater_work" else
+                "Stable Script API has no native pickup-radius setter or direct playerTouch equivalent. The route preserves vanilla item inventory checks and XP-orb values by moving entities into the nearest eligible player's hitbox; this introduces a brief position snap and one-tick pickup delay, and cross-add-on item ownership/lock behavior cannot be inspected. The Java interaction contract contains no Pickup Hand-specific cross-augment rule" if slug == "pickup_hand" else
                 "Class B partial: stable playerBreakBlock exposes the pre-break permutation and tool after native drops have already been calculated, so Bedrock re-rolls the loot table instead of copying the actual first Block.popResource stack. Item eligibility mirrors Java stack-size, durability, name, lore, core, and exclusion-tag checks; isStackable is only a proxy for Java custom-data rejection. The Java leaves/flowers tags are queried through Bedrock hasTag with explicit vanilla fallbacks; external Java mod blocks are not copied. This event route covers direct player block breaks, not derived harvesting. The extra item spawns after the event, so Java's pre-Abundance Dexterity → Abundance ×2 order is not reproduced" if slug == "dexterity" else
                 "Class B partial route: stable entityDie exposes the dead entity and damage source, and LootTableManager can generate loot for that entity. The event does not expose Java's final post-looting stack consumer; Bedrock re-rolls a second table with the killer's current main-hand tool, so the bonus bundle can differ from the original. Vanilla Wither/Ender Dragon and opt-in boss/dominated-companion tags are excluded; Java's dynamic external boss profiles and companion attachment are unavailable" if slug == "loot_scoop" else
                 "Stable EntityHealthComponent exposes currentValue and read-only effectiveMax, and entityHurt before-event permits server-side damage scaling; exact health ratio and the inclusive 30% boundary are BDS-tested. Stable projectile ownership cannot distinguish Java ROOT_PROJECTILE from every add-on-derived projectile; Focused Aim and Clone interactions are not yet ported" if slug == "last_strength" else
@@ -355,10 +367,11 @@ def main(source: Path, target: Path) -> None:
                 "BDS GameTest: set exhaustion to 1.25 and read the same value after two ticks; hunger 20 and saturation 5 are unchanged; natural exhaustion deltas are not tested" if slug == "efficient_metabolism" else
                 "Production-handler BDS GameTest: simulated players swim in water at levels 1–3 and match 1.10/1.20/1.30 velocity ratios; out-of-water movement attribute restores to default. Java shared-bonus stacking with other movement augments is pending because those effects are not ported" if slug == "webbed_feet" else
                 "BDS 1.26.62.1 diagnostic only: simulated players broke vanilla stone underwater at 30 ticks without Haste and 21/15/12/9/7 ticks with Haste amplifiers 0–4 (1.43×/2×/2.5×/3.33×/4.29× in this run); compares against Java 1.8×/2.6×/3.4×, but does not implement or enable the effect" if slug == "underwater_work" else
+                  "BDS 1.26.62.1 production-handler GameTest: vanilla diamond item and XP orb beyond ordinary reach are collected at all three levels; exact XP value and an outside-radius control are checked, then two nearby level-3 simulated players share one diamond and a 4-point orb without duplicate awards" if slug == "pickup_hand" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"},
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}

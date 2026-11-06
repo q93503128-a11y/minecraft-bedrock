@@ -14,6 +14,20 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       player.addTag("as_tool_care_seeded");
       return;
     }
+    if (player.name === "ASPickupHandProduction") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:pickup_hand": 1,
+      }));
+      player.addTag("as_pickup_hand_level_1");
+      return;
+    }
+    if (player.name === "ASPickupHandCompeting") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:pickup_hand": 3,
+      }));
+      player.addTag("as_pickup_hand_level_3");
+      return;
+    }
     if (player.name === "ASKeenEdge") {
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
         "augmentation_survival:keen_edge": 5,
@@ -249,3 +263,20 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
     }, 1);
   } catch { /* Simulated players may despawn before their spawn callback is processed. */ }
 });
+
+system.runInterval(() => {
+  for (const player of world.getPlayers()) {
+    if (player.name !== "ASPickupHandProduction") continue;
+    for (const level of [1, 2, 3]) {
+      const requestTag = `as_pickup_hand_set_level_${level}`;
+      if (!player.hasTag(requestTag)) continue;
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:pickup_hand": level,
+      }));
+      player.removeTag(requestTag);
+      for (const otherLevel of [1, 2, 3]) player.removeTag(`as_pickup_hand_level_${otherLevel}`);
+      player.addTag(`as_pickup_hand_level_${level}`);
+      break;
+    }
+  }
+}, 1);

@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 15227,
+  "durationMs": 15144,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -149,6 +149,10 @@
     },
     {
       "id": "AugmentationSurvival:core_selection_commits_level_and_preserves_core_on_rejection",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:pickup_hand_extends_item_and_xp_radius_at_all_levels",
       "outcome": "pass"
     }
   ],

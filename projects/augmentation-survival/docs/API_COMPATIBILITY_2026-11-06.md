@@ -418,3 +418,21 @@ No external Java-mod entity, structure, or asset is involved. No Underwater Work
 Class **C**, `NOT_PORTED`. A conditional Haste substitute could approximate underwater mining speed, but cannot retain the exact Java fractional curve and safely preserve independently owned Haste effects. The roster, Java contract mapping, and BDS diagnostic are recorded; no augment level is consumed and no gameplay effect is claimed.
 
 References: [Java 1.21 `PLAYER.SUBMERGED_MINING_SPEED` attribute](https://feedback.minecraft.net/hc/en-us/articles/27547857163917-Minecraft-Java-Edition-1-21-Tricky-Trials), [stable `PlayerBreakBlockBeforeEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockbeforeevent?view=minecraft-bedrock-stable), [stable `Entity.addEffect`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable), [stable `EntityEffectOptions`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityeffectoptions?view=minecraft-bedrock-stable).
+
+## `줍는 손` (Pickup Hand)
+
+### Java contract
+
+The canonical levels extend the pickup search radius by **1.5 / 3.0 / 4.5 blocks**. The Java utility service scans each live, non-spectator player every server tick for item entities and experience orbs in the player's bounding box inflated by that level's radius, then invokes the entities' native `playerTouch` methods. No Pickup Hand-specific cross-augment rule appears in the interaction contract.
+
+### Stable Bedrock route and BDS evidence
+
+Stable Script API exposes entity queries, entity bounding boxes, item entities through `EntityItemComponent`, and `Entity.teleport`. The production handler queries the player's expanded bounds, filters to vanilla `minecraft:item` entities and `minecraft:xp_orb`, and moves each eligible entity into the nearest augmented player's hitbox once per tick. Bedrock's native pickup path then applies inventory acceptance and awards the orb's original XP value; the add-on does not remove or recreate item entities, clone stacks, or calculate XP. No custom control is needed, so this passive effect is available to touch and controller players as well as PC.
+
+BDS 1.26.62.1 production-handler tests place a diamond and XP orb beyond ordinary reach but within each of the three exact augment radii. At every level the diamond is picked up, the XP value is preserved, and an emerald outside the radius remains on the ground. A second test phase gives two nearby simulated players level 3 and places one shared diamond plus a 4-point XP orb between them; the total award is exactly one diamond and 4 XP. These simulated players verify the shared-entity guard in the handler, not an online network session.
+
+### Classification and remaining differences
+
+Class **C**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon candidate. Bedrock has no stable pickup-radius setter or direct equivalent of Java's `playerTouch`; the implemented route teleports the entity into a player's hitbox, causing a visible one-tick snap/delay in edge cases. The stable surface does not expose cross-add-on item ownership/lock state, and real-client behavior, reconnection, and online multiplayer remain unverified. No external Java-mod entity or asset is used.
+
+References: [stable `EntityItemComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityitemcomponent?view=minecraft-bedrock-stable), [stable `Entity` queries, bounding box and teleport](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable), [stable `Dimension.getEntities`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable).

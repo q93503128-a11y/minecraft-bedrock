@@ -4,6 +4,7 @@ import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
 import { applyCropHarvestBonuses, applyDexterityGatheringBonus, applyExtraPieceBonus, bumperCropBonusChance, dexterityBonusChance, extraPieceBonusChance, isDexterityGatheringBlock, isEligibleDexterityDrop, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
+import { pickupHandRadius } from "./pickup-hand.js";
 import { LEVELS_KEY } from "./progression.js";
 import { toolCareChance, toolCareRollSucceeds, tryPreventBlockToolDamage } from "./tool-care.js";
 import { isAugmentCore, lootScoopChance, lootScoopRollSucceeds, processLootScoopDeath } from "./loot-scoop.js";
@@ -170,6 +171,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:nocturnal",
         "augmentation_survival:sun_affinity",
         "augmentation_survival:dexterity",
+        "augmentation_survival:pickup_hand",
       ]
       : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
@@ -1601,4 +1603,80 @@ GameTest.registerAsync("AugmentationSurvival", "core_selection_commits_level_and
   ensure(health.effectiveMax === baseMax + 4, `Production pack did not restore the committed level 1 into Sturdiness; expected +4 HP, got ${health.effectiveMax - baseMax}.`);
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+async function verifyPickupHandProductionRadius(test, player, level) {
+  const inventory = inventoryOf(player);
+  const radius = pickupHandRadius(level);
+  ensure(player.hasTag(`as_pickup_hand_level_${level}`), `Production pack did not seed Pickup Hand level ${level}.`);
+  const playerBounds = player.getAABB();
+  const pickupLocation = { x: playerBounds.center.x + radius + 0.15, y: playerBounds.center.y, z: playerBounds.center.z };
+  const xpLocation = { x: pickupLocation.x, y: playerBounds.center.y, z: playerBounds.center.z + 0.25 };
+  const beyondLocation = { x: playerBounds.center.x + radius + 2.0, y: playerBounds.center.y, z: playerBounds.center.z };
+  const diamondBefore = countItem(inventory, "minecraft:diamond");
+  const emeraldBefore = countItem(inventory, "minecraft:emerald");
+  const startingXp = player.getTotalXp();
+  player.dimension.spawnItem(new ItemStack("minecraft:diamond", 1), pickupLocation);
+  player.dimension.spawnXp(xpLocation, level);
+  const farItem = player.dimension.spawnItem(new ItemStack("minecraft:emerald", 1), beyondLocation);
+  await test.idle(12);
+
+  const result = {
+    level,
+    radius,
+    location: player.location,
+    diamondCount: countItem(inventory, "minecraft:diamond") - diamondBefore,
+    emeraldCount: countItem(inventory, "minecraft:emerald") - emeraldBefore,
+    xpAwarded: player.getTotalXp() - startingXp,
+    beyondRadiusItemRemains: farItem.isValid,
+    nearbyXpOrbCount: player.dimension.getEntities({
+      type: "minecraft:xp_orb",
+      location: xpLocation,
+      maxDistance: 1,
+    }).length,
+  };
+  console.warn("AS_PICKUP_HAND_PRODUCTION_RESULT " + JSON.stringify(result));
+  ensure(result.diamondCount === 1, `Level ${level} did not use vanilla pickup for the item beyond ordinary reach.`);
+  ensure(result.xpAwarded === level, `Level ${level} did not preserve the XP orb value; got ${result.xpAwarded}.`);
+  ensure(result.emeraldCount === 0 && result.beyondRadiusItemRemains,
+    `Level ${level} picked up an item outside its ${radius}-block radius.`);
+  farItem.remove();
+}
+
+GameTest.registerAsync("AugmentationSurvival", "pickup_hand_extends_item_and_xp_radius_at_all_levels", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASPickupHandProduction", GameMode.survival);
+  await test.idle(3);
+  for (const level of [1, 2, 3]) {
+    if (level > 1) player.addTag(`as_pickup_hand_set_level_${level}`);
+    await test.idle(2);
+    await verifyPickupHandProductionRadius(test, player, level);
+  }
+
+  const competitor = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 3 }, "ASPickupHandCompeting", GameMode.survival);
+  await test.idle(3);
+  ensure(competitor.hasTag("as_pickup_hand_level_3"), "Production pack did not seed the competing player's Pickup Hand level.");
+  const playerInventory = inventoryOf(player);
+  const competitorInventory = inventoryOf(competitor);
+  const playerCenter = player.getAABB().center;
+  const competitorCenter = competitor.getAABB().center;
+  const sharedLocation = {
+    x: (playerCenter.x + competitorCenter.x) / 2,
+    y: (playerCenter.y + competitorCenter.y) / 2,
+    z: (playerCenter.z + competitorCenter.z) / 2,
+  };
+  const diamondsBefore = countItem(playerInventory, "minecraft:diamond")
+    + countItem(competitorInventory, "minecraft:diamond");
+  const xpBefore = player.getTotalXp() + competitor.getTotalXp();
+  player.dimension.spawnItem(new ItemStack("minecraft:diamond", 1), sharedLocation);
+  player.dimension.spawnXp(sharedLocation, 4);
+  await test.idle(12);
+  const multiplayerResult = {
+    diamondDelta: countItem(playerInventory, "minecraft:diamond")
+      + countItem(competitorInventory, "minecraft:diamond") - diamondsBefore,
+    xpDelta: player.getTotalXp() + competitor.getTotalXp() - xpBefore,
+  };
+  console.warn("AS_PICKUP_HAND_MULTIPLAYER_RESULT " + JSON.stringify(multiplayerResult));
+  ensure(multiplayerResult.diamondDelta === 1, "Two nearby players duplicated or lost a shared item pickup.");
+  ensure(multiplayerResult.xpDelta === 4, `Two nearby players duplicated or lost the 4-point XP orb; got ${multiplayerResult.xpDelta}.`);
+  test.succeed();
+}).maxTicks(100).structureName(STRUCTURE).tag(TAG);
 
