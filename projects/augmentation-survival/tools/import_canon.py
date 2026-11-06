@@ -79,6 +79,10 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "extra_piece":
+            relative = "src/main/resources/data/augmentation_survival/augmentation/resource_harvest_contract.json"
+            if relative not in source_paths:
+                source_paths.append(relative)
         if slug == "rapid_strikes":
             for relative in (
                 "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
@@ -126,12 +130,12 @@ def main(source: Path, target: Path) -> None:
             "catalog_discrepancy": "; ".join(source_mismatch),
             "java_source_paths": source_paths,
             "interaction_contract_refs": interaction_refs,
-            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "fast_eating", "fuel_saver"} else "NO_DIRECT_MENTION_FOUND",
+            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug in {"webbed_feet", "fishing_sense", "fast_eating", "fuel_saver", "extra_piece"} else "NO_DIRECT_MENTION_FOUND",
             "compatibility_class": (
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
-                "B" if slug in {"bumper_crop", "seed_saver"} else
+                "B" if slug in {"bumper_crop", "seed_saver", "extra_piece"} else
                 "B" if slug == "hearty_meal" else
                 "C" if slug in {"miners_hand", "logging_knack"} else
                 "D" if slug in {"fishing_sense", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes"} else
@@ -146,6 +150,7 @@ def main(source: Path, target: Path) -> None:
                 "Scale player drowning damage in the stable entityHurt before-event by 15% per level; max level 3" if slug == "strong_lungs" else
                 "On stable playerBreakBlock after-event, inspect the saved mature vanilla crop permutation and independently spawn its ordinary product with exact 8% per-level chance; max level 5" if slug == "bumper_crop" else
                 "On stable playerBreakBlock after-event, independently spawn a mapped vanilla crop planting item with exact 15% per-level chance; max level 3" if slug == "seed_saver" else
+                "On stable playerBreakBlock after-event, recognize vanilla ore IDs and ore-tagged blocks, recalculate the Java-shaped first ordinary drop from the captured pre-break permutation and tool, and spawn one cloned item at the exact 5% per-level chance; max level 3" if slug == "extra_piece" else
                 "On stable itemCompleteUse after-event, apply the Java food saturation bonus; read exact custom food properties when exposed and infer vanilla food saturation gain from adjacent server-tick samples" if slug == "hearty_meal" else
                 "No stable API changes a vanilla furnace's per-fuel burn duration. The stable block inventory surface can observe slots, but does not expose the furnace burn timer or the vanilla item's fuel duration" if slug == "fuel_saver" else
                 "No stable Script API component or player attribute setter changes vanilla player attack speed; after-hit damage events cannot change attack cooldown recharge or attack input" if slug == "rapid_strikes" else
@@ -168,6 +173,7 @@ def main(source: Path, target: Path) -> None:
                 "Stable before-event BDS verified; Bedrock applies the reduction before its remaining mitigation while Java applies it post-mitigation; armor/effect stacking parity is not yet verified" if slug == "strong_lungs" else
                 "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot only. Stable after-event provides the pre-break permutation and player, but not the calculated ordinary drop list; Java modded crops and tool-specific crop drops are unresolved" if slug == "bumper_crop" else
                 "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot planting items only. Java runs this 15% per-level roll independently after Bumper Crop; actual block-break delivery and external/modded crops remain unresolved" if slug == "seed_saver" else
+                "Stable playerBreakBlock exposes the captured block permutation and itemStackBeforeBreak; LootTableManager can recalculate a drop list from that permutation and tool but does not expose the already-spawned vanilla drop list. Vanilla ore IDs and exposed ore tags are covered. External ores, add-on tag parity, real-client behavior and multiplayer remain unverified; Java also applies this roll during derived breaks, so Bedrock derived-break routing must be added with Tunneling" if slug == "extra_piece" else
                 "Stable declarations describe itemCompleteUse as chargeable-item completion and vanilla ItemFoodComponent is not exposed for cooked beef. BDS 1.26.62.1 confirms the event fires for cooked beef; vanilla gain is measured as a saturation delta. Verify on each targeted Bedrock/BDS build; other same-tick saturation changes could affect the inferred gain" if slug == "hearty_meal" else
                 "Class D for the exact vanilla-timer effect: stable @minecraft/server 2.11.0 has no fishing-bite event, FishingHook timer property, or timer setter. BDS 1.26.62.1 confirmed casts emit generic itemUse/itemStartUse/itemStopUse and spawn an owned minecraft:fishing_hook with only minecraft:projectile among tested components. The Java FishingHookAugmentMixin separately applies Treasure Fishing on retrieve and Abundance to the final result; these loot interactions remain outside this timing probe. Lure enchantment or custom-rod alternatives change the vanilla item/timing contract and do not reproduce a percentage reduction of each randomized wait" if slug == "fishing_sense" else
                 "Class D for exact oxygen-consumption reduction on the currently pinned stable API: EntityBreathableComponent.airSupply is marked pre-release in the official reference, omitted from stable @minecraft/server 2.11.0 types, and not exposed by the breathable component on BDS 1.26.62.1. totalSupply is read-only; water_breathing would prevent oxygen loss rather than reduce it by Java's 10/20/30% curve" if slug == "long_breath" else
@@ -190,6 +196,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS GameTest: production before-event handler reduces 10 simulated-player drowning damage to 8.5/7/5.5 at levels 1/2/3; test-only production-pack entry seeds the pack-scoped property" if slug == "strong_lungs" else
                 "BDS GameTest calls the shared handler with synthetic break-event payloads: mature wheat at each exact level threshold, immature and unsupported blocks, and one ordinary product for each mapped vanilla crop; real block-break event delivery remains untested" if slug == "bumper_crop" else
                 "BDS GameTest calls the shared crop handler with synthetic events: exact 15/30/45% boundaries, mapped planting items, and independent rolls alongside Bumper Crop; real player block-break delivery remains untested" if slug == "seed_saver" else
+                "BDS GameTest deterministically verifies 5/10/15% roll boundaries and one block/tool-derived drop, including Silk Touch and Fortune; a separate SimulatedPlayer break verifies live playerBreakBlock event delivery" if slug == "extra_piece" else
                 "BDS 1.26.62.1 end-to-end GameTest consumes cooked beef through the production handler and checks exact saturation at levels 1–3 plus the food saturation cap" if slug == "hearty_meal" else
                 "BDS 1.26.62.1 diagnostic GameTest consumes coal in a vanilla furnace and observes the lit furnace and inventory slots; it found no furnace burn-duration component and coal exposed no minecraft:fuel script component. Diagnostic only; no Fuel Saver behavior implemented" if slug == "fuel_saver" else
                 "BDS 1.26.62.1 diagnostic GameTest enumerates a simulated player's stable component IDs, checks attack-speed/damage/cooldown component IDs, and inspects the stable EntityComponentTypes enum. Diagnostic only; no Rapid Strikes gameplay implemented" if slug == "rapid_strikes" else
@@ -203,8 +210,8 @@ def main(source: Path, target: Path) -> None:
                 "Production-handler BDS GameTest: simulated players swim in water at levels 1–3 and match 1.10/1.20/1.30 velocity ratios; out-of-water movement attribute restores to default. Java shared-bonus stacking with other movement augments is pending because those effects are not ported" if slug == "webbed_feet" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "hearty_meal", "webbed_feet"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "hearty_meal", "webbed_feet"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet"},
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}

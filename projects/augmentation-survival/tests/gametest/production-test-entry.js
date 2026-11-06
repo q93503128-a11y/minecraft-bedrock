@@ -113,6 +113,10 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
+    if (player.name === "ASExtraPieceBreak") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:extra_piece": 3 }));
+      return;
+    }
     if (player.name !== "ASCoreCommitProduction") return;
 
     const coreId = "augmentation_survival:common_augment_core";

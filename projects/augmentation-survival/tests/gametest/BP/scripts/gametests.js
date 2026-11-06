@@ -1,8 +1,8 @@
-import { BlockPermutation, EntityComponentTypes, EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
+import { BlockPermutation, EnchantmentTypes, EntityComponentTypes, EntityDamageCause, GameMode, ItemStack, Player, world } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
-import { applyCropHarvestBonuses, bumperCropBonusChance, seedSaverBonusChance } from "./harvest.js";
+import { applyCropHarvestBonuses, applyExtraPieceBonus, bumperCropBonusChance, extraPieceBonusChance, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { LEVELS_KEY } from "./progression.js";
 
@@ -41,6 +41,21 @@ function countItem(inventory, typeId) {
   return count;
 }
 
+function countDroppedItem(dimension, location, typeId) {
+  return dimension.getEntities({
+    type: "minecraft:item",
+    location,
+    maxDistance: 4,
+  }).reduce((count, entity) => {
+    const stack = entity.getComponent("minecraft:item")?.itemStack;
+    return count + (stack?.typeId === typeId ? stack.amount : 0);
+  }, 0);
+}
+
+world.afterEvents.playerBreakBlock.subscribe(({ player }) => {
+  if (player.name === "ASExtraPieceBreak") player.addTag("as_test_extra_piece_break_event");
+});
+
 GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_effects_and_preserves_locked_tiers", async (test) => {
   const common = listAvailableCandidates("common", AUGMENTS, {});
   ensure(common.length === ENABLED_CANDIDATE_IDS.length, `Expected ${ENABLED_CANDIDATE_IDS.length} enabled common candidates; got ${common.length}.`);
@@ -48,7 +63,10 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
   ensure(!common.some(augment => augment.id === "augmentation_survival:sturdiness"), "The known +4 vs +2 max-health mismatch was exposed as a core candidate.");
 
   for (const tier of ["uncommon", "rare", "epic", "legendary", "mythic"]) {
-    ensure(listAvailableCandidates(tier, AUGMENTS, {}).length === 0, `${tier} exposed unported candidates.`);
+    const candidates = listAvailableCandidates(tier, AUGMENTS, {});
+    const expected = tier === "uncommon" ? ["augmentation_survival:extra_piece"] : [];
+    ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
+    ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
   const maxedLevels = Object.fromEntries(common.map(augment => [augment.id, augment.max_level]));
   ensure(listAvailableCandidates("common", AUGMENTS, maxedLevels).length === 0, "Maxed BDS-verified candidates remained eligible.");
@@ -187,6 +205,77 @@ GameTest.registerAsync("AugmentationSurvival", "crop_bonus_augments_match_maturi
   ensure(rolls === 0, "An unowned augment consumed a bonus roll.");
   test.succeed();
 }).maxTicks(40).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "extra_piece_matches_ore_loot_chances_and_tool_enchants", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASExtraPieceLoot", GameMode.survival);
+  const block = player.dimension.getBlock({ x: 4, y: 5, z: 3 });
+  ensure(block, "The ore loot spawn location was not loaded.");
+  const ore = BlockPermutation.resolve("minecraft:diamond_ore");
+  const plainPickaxe = new ItemStack("minecraft:iron_pickaxe");
+  const event = {
+    brokenBlockPermutation: ore,
+    itemStackBeforeBreak: plainPickaxe,
+    block,
+    dimension: player.dimension,
+    player,
+  };
+
+  for (let level = 1; level <= 3; level += 1) {
+    const chance = extraPieceBonusChance(level);
+    ensure(Math.abs(chance - 0.05 * level) < 1e-12, `Level ${level} chance should be ${0.05 * level}; got ${chance}.`);
+    player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:extra_piece": level }));
+    const before = countDroppedItem(player.dimension, block.location, "minecraft:diamond");
+    ensure(applyExtraPieceBonus(event, () => chance - 1e-9), `Level ${level} did not award below its exact chance boundary.`);
+    ensure(countDroppedItem(player.dimension, block.location, "minecraft:diamond") === before + 1, `Level ${level} did not add exactly one diamond.`);
+    ensure(!applyExtraPieceBonus(event, () => chance), `Level ${level} awarded at its exclusive chance boundary.`);
+    ensure(countDroppedItem(player.dimension, block.location, "minecraft:diamond") === before + 1, `Level ${level} added an item at its exclusive boundary.`);
+  }
+
+  const silkTouch = new ItemStack("minecraft:diamond_pickaxe");
+  const silkType = EnchantmentTypes.get("silk_touch");
+  ensure(silkType, "The stable Silk Touch enchantment type was unavailable.");
+  silkTouch.getComponent("minecraft:enchantable")?.addEnchantment({ type: silkType, level: 1 });
+  const silkEvent = { ...event, itemStackBeforeBreak: silkTouch };
+  player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:extra_piece": 3 }));
+  const beforeOreBlock = countDroppedItem(player.dimension, block.location, "minecraft:diamond_ore");
+  ensure(applyExtraPieceBonus(silkEvent, () => 0), "Silk Touch did not produce an eligible extra ore drop.");
+  ensure(countDroppedItem(player.dimension, block.location, "minecraft:diamond_ore") === beforeOreBlock + 1, "Silk Touch bonus did not preserve the ore block item.");
+
+  const fortune = new ItemStack("minecraft:diamond_pickaxe");
+  const fortuneType = EnchantmentTypes.get("fortune");
+  ensure(fortuneType, "The stable Fortune enchantment type was unavailable.");
+  fortune.getComponent("minecraft:enchantable")?.addEnchantment({ type: fortuneType, level: 3 });
+  const fortuneEvent = { ...event, itemStackBeforeBreak: fortune };
+  const beforeFortune = countDroppedItem(player.dimension, block.location, "minecraft:diamond");
+  ensure(applyExtraPieceBonus(fortuneEvent, () => 0), "Fortune did not produce an eligible extra ore drop.");
+  ensure(countDroppedItem(player.dimension, block.location, "minecraft:diamond") === beforeFortune + 1, "Fortune bonus did not add exactly one ordinary drop.");
+
+  let rolls = 0;
+  const nonOre = { ...event, brokenBlockPermutation: BlockPermutation.resolve("minecraft:stone") };
+  ensure(!applyExtraPieceBonus(nonOre, () => { rolls += 1; return 0; }), "A non-ore block received an extra drop.");
+  ensure(rolls === 0, "A non-ore block consumed an Extra Piece roll.");
+  const unmineable = { ...event, itemStackBeforeBreak: new ItemStack("minecraft:wooden_pickaxe") };
+  ensure(!applyExtraPieceBonus(unmineable, () => 0), "An under-tier pickaxe received an extra diamond drop.");
+  test.succeed();
+}).maxTicks(80).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "extra_piece_receives_live_player_block_break_event", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASExtraPieceBreak", GameMode.survival);
+  const inventory = inventoryOf(player);
+  inventory.setItem(0, new ItemStack("minecraft:iron_pickaxe"));
+  player.addEffect("haste", 100, { amplifier: 15, showParticles: false });
+  const target = { x: 5, y: 3, z: 3 };
+  const worldTarget = test.worldBlockLocation(target);
+  const block = player.dimension.getBlock(worldTarget);
+  ensure(block, "The live ore block location was not loaded.");
+  block.setType("minecraft:iron_ore");
+  ensure(player.breakBlock(target), "Simulated player could not start breaking the iron ore.");
+  await test.idle(60);
+  ensure(player.hasTag("as_test_extra_piece_break_event"), "The live playerBreakBlock after-event did not reach the GameTest observer.");
+  const brokenBlock = test.getBlock(target);
+  ensure(brokenBlock && brokenBlock.typeId !== "minecraft:iron_ore", "Simulated player did not finish breaking the iron ore block.");
+  test.succeed();
+}).maxTicks(80).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "exhaustion_component_write_probe", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASExhaustionProbe", GameMode.survival);

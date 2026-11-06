@@ -1,5 +1,5 @@
 {
-  "source_revision": "1f990bdcbcd8d1a1c8141d26f661485ec16a1fd3",
+  "source_revision": "8fead5ce84cfb266b39819b6222f116d0238d0a1",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -498,16 +498,17 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestTuning.java",
+        "src/main/resources/data/augmentation_survival/augmentation/resource_harvest_contract.json"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "B",
+      "bedrock_method": "On stable playerBreakBlock after-event, recognize vanilla ore IDs and ore-tagged blocks, recalculate the Java-shaped first ordinary drop from the captured pre-break permutation and tool, and spawn one cloned item at the exact 5% per-level chance; max level 3",
+      "api_constraints": "Stable playerBreakBlock exposes the captured block permutation and itemStackBeforeBreak; LootTableManager can recalculate a drop list from that permutation and tool but does not expose the already-spawned vanilla drop list. Vanilla ore IDs and exposed ore tags are covered. External ores, add-on tag parity, real-client behavior and multiplayer remain unverified; Java also applies this roll during derived breaks, so Bedrock derived-break routing must be added with Tunneling",
+      "test_method": "BDS GameTest deterministically verifies 5/10/15% roll boundaries and one block/tool-derived drop, including Silk Touch and Fortune; a separate SimulatedPlayer break verifies live playerBreakBlock event delivery",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:recovery",

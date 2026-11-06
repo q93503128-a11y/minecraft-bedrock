@@ -3,15 +3,17 @@
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Harness: `@bedrock-core/bds-runner` 0.2.1; isolated BP/RP/GameTest packs; GameTest experiment active only in the disposable test world.
 - Commands: `npm run verify` and `npm run test:engine`.
-- Static checks: **13/13 PASS**.
+- Static checks: **14/14 PASS**.
 - Stable production API type-check: **PASS** (`@minecraft/server` 2.11.0).
-- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (43,389 bytes).
-- BDS: **21 passed / 0 failed**, 18.5 seconds, no script or infrastructure errors; runner exit code **0**. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
+- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (44,536 bytes).
+- BDS: **23 passed / 0 failed**, 19.4 seconds, no script or infrastructure errors; runner exit code **0**. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
 
-All 20 tests from the preceding run also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
+All 21 previously registered tests also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
 
 | GameTest | Result | What it establishes |
 | --- | --- | --- |
+| `extra_piece_matches_ore_loot_chances_and_tool_enchants` | PASS (partial port) | BDS GameTest calls the production harvest helper with deterministic rolls and the stable loot manager. It verifies 5% / 10% / 15% level boundaries, exactly one item, Silk Touch returning the ore block, Fortune returning one ordinary product, non-ore rejection without a roll, and rejection of a wooden pickaxe for diamond ore. |
+| `extra_piece_receives_live_player_block_break_event` | PASS (event delivery) | A survival SimulatedPlayer breaks iron ore with a pickaxe; the stable `playerBreakBlock` after-event reaches a test observer. The test does not assert the random Extra Piece proc or visible dropped item during this live break. |
 | `hearty_meal_matches_java_levels_and_food_cap` | PASS (partial port) | Four simulated players consume cooked beef through the production BP handler. Starting at hunger 10/saturation 0, levels 1–3 finish at saturation 13.824 / 14.848 / 15.872. A level-3 player starting at hunger 12/saturation 10 reaches the saturation cap of 20. Each player consumes one item from a two-beef stack. The expected values are Java's 8/16/24% of cooked beef's 12.8 vanilla saturation gain. |
 | `webbed_feet_scales_server_swim_speed_by_level` | PASS (partial port) | Four simulated players (control and levels 1–3) swim in a filled pool through the production BP handler. Their measured forward-velocity ratios match 1.10 / 1.20 / 1.30 within 0.015, and the component reads 0.022 / 0.024 / 0.026 from the 0.020 default. After teleporting out of water, all three levels restore the default component value. |
 | `fishing_hook_stable_api_surface_probe` | PASS (diagnostic only) | BDS 1.26.62.1 SimulatedPlayer cast a vanilla fishing rod (`useResult=true`); the probe observed `entitySpawn`, `itemUse`, `itemStartUse`, and `itemStopUse` for the cast and found one owned `minecraft:fishing_hook`. Of the tested component IDs, only `minecraft:projectile` was present; `minecraft:fishing_hook` and `minecraft:timer` were absent. This probe does not wait for a natural bite or test Fishing Sense gameplay. |
@@ -24,6 +26,6 @@ The test-only production wrapper seeds the saved augment level in the production
 
 This regression run did not test or implement `빨리 먹기` or `속공`; the observed cooked-beef completion event is not a duration-control hook, and the attack-speed probe is diagnostic only. Fast Eating and Rapid Strikes remain D/NOT_PORTED and are not core candidates.
 
-The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed and its 15-test run passed. The latest 21-test run also passed the water-movement coverage, the fishing, breathable-component, freeze-buildup, attack-speed, and furnace-fuel API-surface probes. Earlier failed attempts are not counted as passing results.
+The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed and its 15-test run passed. The latest 23-test run also passed Extra Piece coverage and the water-movement coverage, the fishing, breathable-component, freeze-buildup, attack-speed, and furnace-fuel API-surface probes. Earlier failed attempts are not counted as passing results.
 
-Client import and visual UI review, mobile/controller navigation, reconnect persistence, real multiplayer, real block-break delivery, natural melee/fall/drowning, and real player projectile collision remain untested. See `STATUS.md` for the exact continuation point.
+Client import and visual UI review, mobile/controller navigation, reconnect persistence, real multiplayer, Extra Piece proc distribution during ordinary survival mining, live crop harvesting, natural melee/fall/drowning, and real player projectile collision remain untested. See `STATUS.md` for the exact continuation point.

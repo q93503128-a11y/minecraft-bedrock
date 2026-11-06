@@ -1,5 +1,23 @@
 # API compatibility investigation — 2026-11-06
 
+## `한 조각 더` (Extra Piece)
+
+### Java contract and interactions
+
+The canonical effect adds one item to a mined ore's drops at 5% / 10% / 15% for levels 1–3. `ResourceHarvestService.afterBlockBreak` checks the Java conventional `ORES` block tag, rolls `ResourceHarvestTuning.extra_piece.bonus_chance_per_level` (0.05), recalculates drops with the captured block state and tool, skips augment cores, and clones one item from the first ordinary drop. This preserves the item's identity under tool-specific loot such as Silk Touch and Fortune. The Java hook also applies this roll to ore breaks made by its derived-break flow before returning to the derived-break caller; Bedrock must route future `굴파기` derived breaks through the shared harvest handler to preserve that interaction.
+
+### Stable Bedrock route and BDS evidence
+
+Stable `PlayerBreakBlockAfterEvent` exposes `brokenBlockPermutation` from before the break and `itemStackBeforeBreak`; stable `World.getLootTableManager().generateLootFromBlockPermutation` recalculates drops for the supplied permutation and tool. The handler recognizes vanilla ore IDs plus exposed `ore` / `ores` tags, reads the saved player level server-side, applies the exact 5/10/15% roll, excludes all six augment-core items, clones one item from the first ordinary generated drop, and spawns it at the broken block position. It does not replace the native break/drop transaction.
+
+BDS 1.26.62.1 deterministically verified each exact chance boundary, one-item output, the Silk Touch ore-block result, Fortune's ordinary drop, non-ore rejection without a roll, and rejection when the held pickaxe cannot mine diamond ore. A separate live SimulatedPlayer break confirmed the stable `playerBreakBlock` event is delivered. That live event test did not assert its random proc or the output of an ordinary survival-mining session. Vanilla ore families are covered by explicit IDs even if the engine's built-in tag exposure differs; external/add-on ore tag parity, arbitrary loot-table side effects, live client output, multiplayer and derived mining are still open. No external Java-mod ores or assets were copied.
+
+### Classification
+
+Class **B** for the vanilla ore effect: the stable after-event and loot manager provide an equivalent server-side route through Bedrock's API shape. The feature is `PARTIAL_BDS_VERIFIED`, not complete, because real-client proc visibility, ordinary survival proc distribution, multiplayer and future derived-break interaction remain unverified. It is enabled as the first uncommon core candidate because its deterministic effect path and live break-event delivery passed on the pinned BDS build.
+
+References: [PlayerBreakBlockAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockafterevent?view=minecraft-bedrock-stable), [LootTableManager](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/loottablemanager?view=minecraft-bedrock-stable), [World](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/world?view=minecraft-bedrock-stable), [BlockPermutation](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockpermutation?view=minecraft-bedrock-stable).
+
 ## `든든한 한 끼` (Hearty Meal)
 
 ### Java contract
