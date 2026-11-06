@@ -90,9 +90,9 @@ def main(source: Path, target: Path) -> None:
             "catalog_discrepancy": "; ".join(source_mismatch),
             "java_source_paths": source_paths,
             "interaction_contract_refs": interaction_refs,
-            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs else "NO_DIRECT_MENTION_FOUND",
+            "interaction_mapping_status": "REVIEW_REQUIRED" if interaction_refs or slug == "webbed_feet" else "NO_DIRECT_MENTION_FOUND",
             "compatibility_class": (
-                "A" if slug == "keen_edge" else
+                "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
                 "B" if slug in {"bumper_crop", "seed_saver"} else
@@ -113,7 +113,7 @@ def main(source: Path, target: Path) -> None:
                 "No stable API changes vanilla block-breaking speed; start/break events expose no progress value" if slug in {"miners_hand", "logging_knack"} else
                 "Attempt player minecraft:movement currentValue multiplier" if slug == "quick_feet" else
                 "Stable player exhaustion component can be read and written; exact per-action reduction route not yet verified" if slug == "efficient_metabolism" else
-                "Attempt player minecraft:underwater_movement currentValue multiplier" if slug == "webbed_feet" else
+                "While player.isInWater, set the stable minecraft:underwater_movement attribute to defaultValue × (1 + 0.10 × saved level); restore defaultValue out of water" if slug == "webbed_feet" else
                 "Not assessed"
             ),
             "api_constraints": (
@@ -129,7 +129,7 @@ def main(source: Path, target: Path) -> None:
                 "Class C: stable start/break events can observe block interactions but expose no vanilla break-progress/speed control; reconstructing hold, tool, hardness, and cancellation behavior would differ, especially across touch/controller input" if slug in {"miners_hand", "logging_knack"} else
                 "BDS 1.26.62.1: after level 5→1, movement currentValue returned to default on the next tick; persistent alternative not assessed" if slug == "quick_feet" else
                 "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified" if slug == "efficient_metabolism" else
-                "BDS 1.26.62.1: level 3 value persisted for one idle tick; lower-level persistence not reached; alternative not assessed" if slug == "webbed_feet" else
+                "Java adds Webbed Feet to a shared conditional movement modifier with Catch Breath, Nocturnal, Sun Affinity, and Momentum Shift; Bedrock currently uses the stable underwater_movement attribute. Standalone parity is verified on BDS 1.26.62.1, but stacking with those not-yet-ported augments and other attribute writers is untested" if slug == "webbed_feet" else
                 "Not assessed"
             ),
             "test_method": (
@@ -145,11 +145,11 @@ def main(source: Path, target: Path) -> None:
                 "Static stable API declaration review: start and after-break events expose no break-progress or vanilla mining-speed mutation; alternate custom hold/mining route not implemented" if slug in {"miners_hand", "logging_knack"} else
                 "Exploratory BDS GameTest: immediate exact level 1 multiplier accepted, then default observed on next tick; excluded from passing suite" if slug == "quick_feet" else
                 "BDS GameTest: set exhaustion to 1.25 and read the same value after two ticks; hunger 20 and saturation 5 are unchanged; natural exhaustion deltas are not tested" if slug == "efficient_metabolism" else
-                "Exploratory BDS GameTest: exact level 3 multiplier verified after one tick; lower-level follow-up assertion not reached; excluded from passing suite" if slug == "webbed_feet" else
+                "Production-handler BDS GameTest: simulated players swim in water at levels 1–3 and match 1.10/1.20/1.30 velocity ratios; out-of-water movement attribute restores to default. Java shared-bonus stacking with other movement augments is pending because those effects are not ported" if slug == "webbed_feet" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "hearty_meal"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "hearty_meal"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "hearty_meal", "webbed_feet"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "hearty_meal", "webbed_feet"},
         })
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}

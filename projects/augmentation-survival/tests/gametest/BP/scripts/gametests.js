@@ -19,6 +19,7 @@ const ENABLED_CANDIDATE_IDS = [
   "augmentation_survival:bumper_crop",
   "augmentation_survival:seed_saver",
   "augmentation_survival:hearty_meal",
+  "augmentation_survival:webbed_feet",
 ];
 
 function ensure(condition, message) {
@@ -256,6 +257,72 @@ GameTest.registerAsync("AugmentationSurvival", "hearty_meal_matches_java_levels_
   }
   test.succeed();
 }).maxTicks(90).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "webbed_feet_scales_server_swim_speed_by_level", async (test) => {
+  for (let x = 1; x <= 5; x += 1) {
+    for (let y = 1; y <= 5; y += 1) {
+      for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:water", { x, y, z });
+    }
+  }
+  const players = [
+    { level: 0, name: "ASWebbedFeetControl", x: 1 },
+    { level: 1, name: "ASWebbedFeetLevel1", x: 2 },
+    { level: 2, name: "ASWebbedFeetLevel2", x: 3 },
+    { level: 3, name: "ASWebbedFeetLevel3", x: 4 },
+  ].map(entry => ({
+    ...entry,
+    player: test.spawnSimulatedPlayer({ x: entry.x, y: 3, z: 2 }, entry.name, GameMode.survival),
+  }));
+  await test.idle(3);
+  const movement = players.map(entry => ({
+    ...entry,
+    component: entry.player.getComponent("minecraft:underwater_movement"),
+    start: entry.player.location,
+  }));
+  ensure(movement.every(entry => entry.component), "Simulated players did not expose underwater movement components.");
+  for (const entry of movement) {
+    entry.player.swim();
+    entry.player.moveRelative(0, 1, 0.2);
+  }
+  await test.idle(20);
+  const result = movement.map(entry => {
+    entry.player.stopMoving();
+    const end = entry.player.location;
+    const delta = { x: end.x - entry.start.x, y: end.y - entry.start.y, z: end.z - entry.start.z };
+    return {
+      level: entry.level,
+      name: entry.name,
+      inWater: entry.player.isInWater,
+      swimming: entry.player.isSwimming,
+      delta,
+      horizontalDistance: Math.hypot(delta.x, delta.z),
+      velocity: entry.player.getVelocity(),
+      underwaterMovement: { current: entry.component.currentValue, defaultValue: entry.component.defaultValue },
+    };
+  });
+  console.warn(`AS_WEBBED_FEET_RUNTIME_TEST ${JSON.stringify(result)}`);
+  ensure(result.every(entry => entry.inWater && entry.swimming), "Simulated players did not remain swimming in the test water.");
+  const controlSpeed = result[0].velocity.z;
+  for (const entry of result.slice(1)) {
+    const expectedMultiplier = 1 + entry.level * 0.10;
+    const measuredMultiplier = entry.velocity.z / controlSpeed;
+    ensure(Math.abs(measuredMultiplier - expectedMultiplier) < 0.015,
+      `${entry.name}: expected swim-speed multiplier ${expectedMultiplier}, got ${measuredMultiplier}.`);
+    ensure(Math.abs(entry.underwaterMovement.current - entry.underwaterMovement.defaultValue * expectedMultiplier) < 0.00001,
+      `${entry.name}: the production handler did not preserve its underwater movement multiplier.`);
+  }
+
+  for (const entry of movement) {
+    entry.player.teleport({ x: entry.start.x, y: entry.start.y + 6, z: entry.start.z });
+  }
+  await test.idle(3);
+  for (const entry of movement.slice(1)) {
+    const current = entry.component.currentValue;
+    ensure(Math.abs(current - entry.component.defaultValue) < 0.00001,
+      `${entry.name}: expected the default movement value out of water, got ${current}.`);
+  }
+  test.succeed();
+}).maxTicks(60).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);

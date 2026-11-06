@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "든든한 한 끼"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "hearty_meal"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "든든한 한 끼", "물갈퀴"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "hearty_meal", "webbed_feet"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -24,6 +24,7 @@ class StaticAddonTests(unittest.TestCase):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         by_id = {item["id"].split(":", 1)[1]: item for item in data["augments"]}
         self.assertEqual("A", by_id["keen_edge"]["compatibility_class"])
+        self.assertEqual("A", by_id["webbed_feet"]["compatibility_class"])
         self.assertEqual("B", by_id["precise_aim"]["compatibility_class"])
         self.assertEqual("B", by_id["strong_lungs"]["compatibility_class"])
         self.assertEqual("B", by_id["tough_skin"]["compatibility_class"])
@@ -36,12 +37,14 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
 
-    def test_movement_attribute_experiments_are_not_counted_as_ports(self):
+    def test_only_bds_verified_movement_effect_is_offered(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
         movement = {item["name_ko"]: item for item in data["augments"] if item["name_ko"] in {"빠른 발", "물갈퀴"}}
         self.assertEqual({"빠른 발", "물갈퀴"}, set(movement))
+        self.assertEqual("NOT_PORTED", movement["빠른 발"]["port_status"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", movement["물갈퀴"]["port_status"])
+        self.assertTrue(movement["물갈퀴"]["candidate_enabled"])
         for item in movement.values():
-            self.assertEqual("NOT_PORTED", item["port_status"])
             self.assertIn("BDS 1.26.62.1", item["api_constraints"])
 
     def test_canonical_source_discrepancies_are_visible(self):

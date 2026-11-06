@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 8219,
+  "durationMs": 20906,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
@@ -17,6 +17,10 @@
     },
     {
       "id": "AugmentationSurvival:hearty_meal_matches_java_levels_and_food_cap",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:webbed_feet_scales_server_swim_speed_by_level",
       "outcome": "pass"
     },
     {

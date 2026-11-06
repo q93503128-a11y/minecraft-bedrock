@@ -299,13 +299,13 @@
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalTuning.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Attempt player minecraft:underwater_movement currentValue multiplier",
-      "api_constraints": "BDS 1.26.62.1: level 3 value persisted for one idle tick; lower-level persistence not reached; alternative not assessed",
-      "test_method": "Exploratory BDS GameTest: exact level 3 multiplier verified after one tick; lower-level follow-up assertion not reached; excluded from passing suite",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "A",
+      "bedrock_method": "While player.isInWater, set the stable minecraft:underwater_movement attribute to defaultValue × (1 + 0.10 × saved level); restore defaultValue out of water",
+      "api_constraints": "Java adds Webbed Feet to a shared conditional movement modifier with Catch Breath, Nocturnal, Sun Affinity, and Momentum Shift; Bedrock currently uses the stable underwater_movement attribute. Standalone parity is verified on BDS 1.26.62.1, but stacking with those not-yet-ported augments and other attribute writers is untested",
+      "test_method": "Production-handler BDS GameTest: simulated players swim in water at levels 1–3 and match 1.10/1.20/1.30 velocity ratios; out-of-water movement attribute restores to default. Java shared-bonus stacking with other movement augments is pending because those effects are not ported",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:fishing_sense",

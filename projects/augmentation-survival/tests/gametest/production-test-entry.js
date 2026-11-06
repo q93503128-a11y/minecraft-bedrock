@@ -59,6 +59,18 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
+    const webbedFeetLevels = {
+      ASWebbedFeetLevel1: 1,
+      ASWebbedFeetLevel2: 2,
+      ASWebbedFeetLevel3: 3,
+    };
+    const webbedFeetLevel = webbedFeetLevels[player.name];
+    if (webbedFeetLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:webbed_feet": webbedFeetLevel,
+      }));
+      return;
+    }
     const toughSkinLevels = {
       ASToughSkinLevel1: 1,
       ASToughSkinLevel2: 2,
