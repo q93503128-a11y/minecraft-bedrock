@@ -242,3 +242,25 @@ Bedrock 1.26.50 entity JSON defines Powder Snow immunity/vulnerability through b
 Class **D** for the exact vanilla freeze-buildup effect on the pinned stable API. `cold_adaptation` remains `NOT_PORTED` and disabled as a core candidate. This classification is based on the Java tick implementation, stable declarations, official entity JSON component contract, and the BDS player-component probe, not on Java compilation failure.
 
 References: [EntityHurtBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable), [EntityDamageCause](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitydamagecause?view=minecraft-bedrock-stable), [Bedrock 1.26.50 Powder Snow freezing components](https://learn.microsoft.com/en-us/minecraft/creator/documents/update1.26.50?view=minecraft-bedrock-stable#powder-snow-freezing).
+
+## `전리품 챙기기` (Loot Scoop)
+
+### Java contract and interaction order
+
+`LootScoopService.wrapDeathLoot` applies one random roll to a directly player-killed living mob: 5% / 10% / 15% at levels 1–3. On success, it copies every non-core `ItemStack` from the final entity-loot-table consumer. It excludes player deaths, dominated companions, and entities matched by Java's boss compatibility profiles. The mixin wraps Abundance downstream of Loot Scoop. Consequently, when both augments are present and the Loot Scoop roll succeeds, eligible stackable ordinary loot can be passed through Abundance twice (four total copies); otherwise Abundance duplicates the original once. The two systems also exclude all six augment-core items.
+
+### Stable Bedrock route and BDS evidence
+
+Stable `world.afterEvents.entityDie` provides the dead entity and its `EntityDamageSource`; the stable `LootTableManager.generateLootFromEntity` can generate a table result for that entity. In the BDS 1.26.62.1 cow probe, `entityDie` retained a valid dead entity, identified the player killer, and allowed loot generation inside the callback. The probe did not observe `entityItemDrop` for that death, and neither event exposes Java's final drop-stack consumer.
+
+The production handler reads the bounded saved level, resolves a direct player attacker or a player owner on the damaging projectile, and makes one 5% per-level roll. On success it generates the victim's table with the killer's current main-hand item and spawns every non-core stack at the death location. Vanilla Wither and Ender Dragon are excluded; cooperating packs can mark other bosses and dominated companions with `augmentation_survival:boss` and `augmentation_survival:dominated_companion` entity tags. The effect runs entirely server-side and cannot duplicate augment cores.
+
+This is a partial mapping: it generates a new table result rather than cloning the original result. Random amounts, table conditions, killer/tool context, or custom entity loot can therefore differ from Java's exact copied bundle. Looting variants and projectile-attributed kills have not yet been validated on BDS. The future Abundance port must wrap this final ordinary-drop route after Loot Scoop, apply Java's stack-eligibility policy, and preserve the four-copy interaction on a successful Loot Scoop roll.
+
+The BDS GameTest verifies exact exclusive 5% / 10% / 15% roll boundaries, level capping, all six core exclusions, and a guaranteed level-3 cow bonus bundle processed from a real player-attributed `entityDie` event. It does not prove equality with the original loot output, probability distribution over many natural kills, boss-tag behavior, or multiplayer behavior.
+
+### Classification
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled for uncommon core offers. It reproduces the chance, player-kill scope, server-side reward, and core exclusion using a stable route, while the independently generated bundle remains an explicit parity limitation. It is not counted as a complete Java port.
+
+References: [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [EntityDieAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitydieafterevent?view=minecraft-bedrock-stable), [LootTableManager](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/loottablemanager?view=minecraft-bedrock-stable).

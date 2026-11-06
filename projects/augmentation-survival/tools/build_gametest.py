@@ -34,6 +34,7 @@ def main() -> None:
     shutil.copy2(PROJECT / "BP/scripts/offers.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/offers.js")
     shutil.copy2(PROJECT / "BP/scripts/augment-data.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/augment-data.js")
     shutil.copy2(PROJECT / "BP/scripts/harvest.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/harvest.js")
+    shutil.copy2(PROJECT / "BP/scripts/loot-scoop.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/loot-scoop.js")
     shutil.copy2(PROJECT / "BP/scripts/progression.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/progression.js")
 
     manifests = [json.loads(path.read_text(encoding="utf-8")) for path in OUTPUT.glob("*/manifest.json")]

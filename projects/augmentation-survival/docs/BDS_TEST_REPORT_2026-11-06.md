@@ -3,12 +3,12 @@
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Harness: `@bedrock-core/bds-runner` 0.2.1; isolated BP/RP/GameTest packs; GameTest experiment active only in the disposable test world.
 - Commands: `npm run verify` and `npm run test:engine`.
-- Static checks: **17/17 PASS**.
+- Static checks: **18/18 PASS**.
 - Stable production API type-check: **PASS** (`@minecraft/server` 2.11.0).
-- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (45,898 bytes).
-- BDS: **25 passed / 0 failed**, 14.7 seconds, no script or infrastructure errors; runner exited cleanly. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
+- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (47,700 bytes).
+- BDS: **27 passed / 0 failed**, 14.6 seconds, no script or infrastructure errors; runner exited cleanly. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
 
-All 23 previously registered tests also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
+All 25 previously registered tests also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
 
 | GameTest | Result | What it establishes |
 | --- | --- | --- |
@@ -23,11 +23,13 @@ All 23 previously registered tests also passed in this regression run. Their cov
 | `freeze_buildup_api_surface_probe` | PASS (diagnostic only) | The simulated player exposed no freeze-related Script API component or frozen-tick property; the `freezing` damage cause exists. This does not test or implement Cold Adaptation gameplay. |
 | `attack_speed_api_surface_probe` | PASS (diagnostic only) | The simulated player exposed no attack-speed, attack, attack-cooldown, attack-damage, or attack-knockback Script API component. `EntityComponentTypes` returned no attack-related component identifiers, and the player object had no attack-speed/attack-cooldown property or generic `getAttribute` method. This confirms the tested surface on BDS 1.26.62.1; it does not test or implement Rapid Strikes. |
 | `furnace_fuel_api_surface_probe` | PASS (diagnostic only) | On a vanilla furnace, one coal was consumed and one raw iron became an iron ingot after 220 ticks. The lit furnace exposed `instrument_sound`, `inventory`, `movable`, and `precipitation_interactions`; its 3-slot inventory was accessible. Coal's Script API components contained only `block_actor_dynamic_properties`, and `getComponent("minecraft:fuel")` returned undefined. This proves an observation surface on BDS 1.26.62.1; it does not test or implement Fuel Saver. |
+| `stable_mob_death_and_loot_event_probe` | PASS (diagnostic only) | A SimulatedPlayer killed a cow with `applyDamage`; BDS fired `entityDie` with the dead entity still valid and the player in `damageSource.damagingEntity`. `LootTableManager.generateLootFromEntity` returned cow loot from inside that event. The probe did not observe `entityItemDrop` for this death and does not establish that a generated bundle matches the original. |
+| `loot_scoop_matches_chance_levels_and_duplicates_a_player_kill_bundle` | PASS (partial port) | The GameTest checked exact exclusive chance boundaries at levels 1–3 (5% / 10% / 15%), the level-3 cap, zero/negative levels, and exclusion of all six core types. A guaranteed level-3 roll processed the real cow `entityDie` event and spawned a second generated loot bundle. This verifies the production helper's server-side item spawning, but uses a separately generated loot-table result; original stack equality, looting variants, boss tagging, and multiplayer were not tested. |
 
 The test-only production wrapper seeds the saved augment level in the production BP's dynamic-property namespace; the production handler owns the effect. An exploratory probe established that BDS 1.26.62.1 emits `itemCompleteUse` for cooked beef after the vanilla food update, although stable API documentation describes this event for chargeable items. Vanilla cooked beef did not expose `minecraft:food`, so the production handler inferred the gain from adjacent server-tick saturation samples. This test does not establish event behavior for all food items or engine builds, nor exclude unrelated same-tick saturation changes.
 
 This regression run did not test or implement `빨리 먹기` or `속공`; the observed cooked-beef completion event is not a duration-control hook, and the attack-speed probe is diagnostic only. Fast Eating and Rapid Strikes remain D/NOT_PORTED and are not core candidates.
 
-The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed. The latest 25-test run also passed Extra Piece, water-movement, and Catch Breath coverage, plus the fishing, breathable-component, freeze-buildup, attack-speed, and furnace-fuel API-surface probes. Earlier failed attempts are not counted as passing results.
+The earlier cooked-beef test initially expected hunger 20 after eating steak from hunger 10. The correct vanilla result is 18; the assertion was fixed. The latest 27-test run also passed Extra Piece, water-movement, Catch Breath, and Loot Scoop coverage, plus the fishing, breathable-component, freeze-buildup, attack-speed, and furnace-fuel API-surface probes. Earlier failed attempts are not counted as passing results.
 
 This BDS regression run did not exercise Recovery; the augment remains `NOT_PORTED`. Client import and visual UI review, mobile/controller navigation, reconnect persistence, real multiplayer, Catch Breath sprint-reset transition, ground walking speed, Extra Piece proc distribution during ordinary survival mining, live crop harvesting, natural melee/fall/drowning, and real player projectile collision remain untested. See `STATUS.md` for the exact continuation point.

@@ -5,6 +5,7 @@ import { synthesizeCore } from "./cores.js";
 import { applyCropHarvestBonuses, applyExtraPieceBonus, bumperCropBonusChance, extraPieceBonusChance, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { LEVELS_KEY } from "./progression.js";
+import { isAugmentCore, lootScoopChance, lootScoopRollSucceeds, processLootScoopDeath } from "./loot-scoop.js";
 
 const TAG = "augmentation_survival";
 const STRUCTURE = "gametests:glass_cells";
@@ -65,7 +66,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
   for (const tier of ["uncommon", "rare", "epic", "legendary", "mythic"]) {
     const candidates = listAvailableCandidates(tier, AUGMENTS, {});
     const expected = tier === "uncommon"
-      ? ["augmentation_survival:extra_piece", "augmentation_survival:catch_breath"]
+      ? ["augmentation_survival:extra_piece", "augmentation_survival:catch_breath", "augmentation_survival:loot_scoop"]
       : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
@@ -773,6 +774,107 @@ GameTest.registerAsync("AugmentationSurvival", "damage_event_exposes_simulated_p
   ensure(afterDamage?.hurtEntityId === player.id, `After-event payload missing for simulated player; captured ${JSON.stringify(afterDamage)}.`);
   ensure(beforeDamage.cause === EntityDamageCause.magic && afterDamage.cause === EntityDamageCause.magic, "Damage event cause did not match the applied magic damage.");
   ensure(Math.abs(health.defaultValue - health.currentValue - 10) < 1e-6, `Unarmored magic damage expected 10 health loss; got ${health.defaultValue - health.currentValue}.`);
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "stable_mob_death_and_loot_event_probe", async (test) => {
+  const attacker = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASLootEventProbe", GameMode.survival);
+  const victim = attacker.dimension.spawnEntity("minecraft:cow", { x: 5, y: 3, z: 3 });
+  console.warn(`AS_LOOT_EVENT_TARGET ${JSON.stringify({ id: victim.id, typeId: victim.typeId, isValid: victim.isValid })}`);
+  ensure(victim.isValid, "The cow was invalid immediately after being spawned for the loot-event probe.");
+
+  /** @type {Array<Record<string, unknown>>} */
+  const events = [];
+  const onDie = (event) => {
+    if (event?.deadEntity?.id !== victim.id) return;
+    let generated;
+    let generationError;
+    try {
+      generated = world.getLootTableManager().generateLootFromEntity(event.deadEntity)?.map(stack => ({
+        typeId: stack.typeId,
+        amount: stack.amount,
+      }));
+    } catch (error) {
+      generationError = String(error);
+    }
+    events.push({
+      type: "entityDie",
+      entityId: event.deadEntity.id,
+      entityType: event.deadEntity.typeId,
+      entityValid: event.deadEntity.isValid,
+      damagingEntityId: event.damageSource.damagingEntity?.id,
+      damagingEntityType: event.damageSource.damagingEntity?.typeId,
+      cause: event.damageSource.cause,
+      generated,
+      generationError,
+    });
+  };
+  const onItemDrop = (event) => {
+    if (event?.entity?.id !== victim.id) return;
+    events.push({
+      type: "entityItemDrop",
+      entityId: event.entity.id,
+      items: event.items.map(item => {
+        const stack = item.getComponent("minecraft:item")?.itemStack;
+        return { id: item.id, typeId: stack?.typeId, amount: stack?.amount };
+      }),
+    });
+  };
+  world.afterEvents.entityDie.subscribe(onDie);
+  world.afterEvents.entityItemDrop.subscribe(onItemDrop);
+  const applied = victim.applyDamage(100, {
+    cause: EntityDamageCause.entityAttack,
+    damagingEntity: attacker,
+  });
+  await test.idle(2);
+  world.afterEvents.entityDie.unsubscribe(onDie);
+  world.afterEvents.entityItemDrop.unsubscribe(onItemDrop);
+  console.warn(`AS_LOOT_EVENT_SURFACE ${JSON.stringify({ applied, events })}`);
+  ensure(applied, "The simulated attacker could not kill the vanilla cow in the loot-event probe.");
+  ensure(events.some(event => event.type === "entityDie"), `Stable entityDie did not report the victim death: ${JSON.stringify(events)}.`);
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "loot_scoop_matches_chance_levels_and_duplicates_a_player_kill_bundle", async (test) => {
+  for (let level = 1; level <= 3; level += 1) {
+    const chance = lootScoopChance(level);
+    ensure(Math.abs(chance - level * 0.05) < 1e-12, `Loot Scoop level ${level} chance should be ${level * 0.05}; got ${chance}.`);
+    ensure(lootScoopRollSucceeds(level, chance - 1e-9), `Loot Scoop level ${level} did not pass just below its chance boundary.`);
+    ensure(!lootScoopRollSucceeds(level, chance), `Loot Scoop level ${level} passed its exclusive chance boundary.`);
+  }
+  ensure(Math.abs(lootScoopChance(4) - 0.15) < 1e-12, "Loot Scoop level must be capped at its Java maximum level 3.");
+  ensure(lootScoopChance(0) === 0 && lootScoopChance(-1) === 0, "A missing or negative level must not roll for bonus loot.");
+  for (const tier of ["common", "uncommon", "rare", "epic", "legendary", "mythic"]) {
+    ensure(isAugmentCore(`augmentation_survival:${tier}_augment_core`), `${tier} core was not excluded from loot copying.`);
+  }
+  ensure(!isAugmentCore("minecraft:beef"), "Ordinary vanilla mob loot was incorrectly excluded as a core.");
+
+  const attacker = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASLootScoopLevel3", GameMode.survival);
+  attacker.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:loot_scoop": 3 }));
+  const victim = attacker.dimension.spawnEntity("minecraft:cow", { x: 5, y: 3, z: 3 });
+  ensure(victim.isValid, "The cow was invalid immediately after being spawned for Loot Scoop.");
+  const lootLocation = { ...victim.location };
+  /** @type {ReturnType<typeof processLootScoopDeath>|undefined} */
+  let result;
+  const callback = (event) => {
+    if (event?.deadEntity?.id !== victim.id) return;
+    ensure(event.damageSource.damagingEntity?.id === attacker.id, "The death event did not preserve direct player attribution.");
+    result = processLootScoopDeath(event, () => 0);
+  };
+  world.afterEvents.entityDie.subscribe(callback);
+  const applied = victim.applyDamage(100, {
+    cause: EntityDamageCause.entityAttack,
+    damagingEntity: attacker,
+  });
+  await test.idle(2);
+  world.afterEvents.entityDie.unsubscribe(callback);
+  ensure(applied, "The simulated player could not kill the cow for Loot Scoop.");
+  ensure(result?.status === "duplicated", `Loot Scoop did not generate a bonus bundle on a guaranteed level-3 roll: ${JSON.stringify(result)}.`);
+  ensure(result.spawnedStacks?.length > 0, "The regenerated cow loot bundle was empty.");
+  for (const stack of result.spawnedStacks ?? []) {
+    ensure(!isAugmentCore(stack.typeId), `Loot Scoop copied a core: ${stack.typeId}.`);
+    ensure(countDroppedItem(attacker.dimension, lootLocation, stack.typeId) >= stack.amount, `The bonus ${stack.typeId} stack was not present in the world after entityDie.`);
+  }
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 

@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 14736,
+  "durationMs": 14639,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
@@ -65,6 +65,14 @@
     },
     {
       "id": "AugmentationSurvival:damage_event_exposes_simulated_player_damage",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:stable_mob_death_and_loot_event_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:loot_scoop_matches_chance_levels_and_duplicates_a_player_kill_bundle",
       "outcome": "pass"
     },
     {

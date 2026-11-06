@@ -9,6 +9,7 @@ import "./combat.js";
 import "./harvest.js";
 import "./food.js";
 import "./movement.js";
+import { registerLootScoopHandler } from "./loot-scoop.js";
 
 const NS = "augmentation_survival";
 /** @typedef {{id:string, name_ko:string, tier:string, tier_ko:string, max_level:number, canonical_effect_ko:string, candidate_enabled:boolean}} Augment */
@@ -283,3 +284,4 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => system.runTimeout(() => 
   try { applySturdiness(player); } catch { /* The player can leave before this deferred callback runs. */ }
 }, 1));
 system.runInterval(applyImplementedPassives, 200);
+registerLootScoopHandler();

@@ -580,13 +580,13 @@
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestTuning.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "B",
+      "bedrock_method": "On stable entityDie, roll once at 5% per saved level for player-attributed non-player mob kills, regenerate the victim's loot table with the killer's held tool, and spawn the generated bonus bundle while excluding all six augment-core IDs",
+      "api_constraints": "Class B partial route: stable entityDie exposes the dead entity and damage source, and LootTableManager can generate loot for that entity. The event does not expose Java's final post-looting stack consumer; Bedrock re-rolls a second table with the killer's current main-hand tool, so the bonus bundle can differ from the original. Vanilla Wither/Ender Dragon and opt-in boss/dominated-companion tags are excluded; Java's dynamic external boss profiles and companion attachment are unavailable",
+      "test_method": "BDS 1.26.62.1 GameTest: exact 5/10/15% exclusive roll boundaries, all six augment-core exclusions, and a guaranteed level-3 bonus generated during a real player-attributed cow entityDie event; vanilla random original-vs-reroll bundle equality, looting variants, boss profiles and multiplayer are untested",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:nocturnal",

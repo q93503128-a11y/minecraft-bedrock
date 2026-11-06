@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -41,7 +41,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 10, "C": 2, "D": 7, "UNASSESSED": 128},
+            {"A": 2, "B": 11, "C": 2, "D": 7, "UNASSESSED": 127},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -177,6 +177,21 @@ class StaticAddonTests(unittest.TestCase):
         script = (ROOT / "BP/scripts/harvest.js").read_text(encoding="utf-8")
         self.assertIn('getLootTableManager().generateLootFromBlockPermutation', script)
         self.assertIn('applyExtraPieceBonus(event)', script)
+
+    def test_loot_scoop_is_only_offered_as_a_partial_reroll_mapping(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        loot_scoop = next(item for item in data["augments"] if item["id"].endswith(":loot_scoop"))
+        self.assertEqual("uncommon", loot_scoop["tier"])
+        self.assertEqual(3, loot_scoop["max_level"])
+        self.assertEqual("B", loot_scoop["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", loot_scoop["port_status"])
+        self.assertTrue(loot_scoop["candidate_enabled"])
+        self.assertIn("re-rolls a second table", loot_scoop["api_constraints"])
+        abundance = next(item for item in data["augments"] if item["id"].endswith(":abundance"))
+        self.assertIn("LivingEntityLootScoopMixin.java", " ".join(abundance["java_source_paths"]))
+        script = (ROOT / "BP/scripts/loot-scoop.js").read_text(encoding="utf-8")
+        self.assertIn("generateLootFromEntity(victim, tool)", script)
+        self.assertIn("world.afterEvents.entityDie.subscribe", script)
 
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
