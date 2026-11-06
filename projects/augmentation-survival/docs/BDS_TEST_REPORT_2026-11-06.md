@@ -3,15 +3,17 @@
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Harness: `@bedrock-core/bds-runner` 0.2.1; isolated BP/RP/GameTest packs; GameTest experiment active only in the disposable test world.
 - Commands: `npm run verify` and `npm run test:engine`.
-- Static checks: **19/19 PASS**.
+- Static checks: **20/20 PASS**.
 - Stable production API type-check: **PASS** (`@minecraft/server` 2.11.0).
-- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (48,216 bytes).
-- BDS: **29 passed / 0 failed**, 14.7 seconds, no script or infrastructure errors; runner exited cleanly. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
+- Add-on package: **PASS**, `build/AugmentationSurvival-0.1.0.mcaddon` (48,835 bytes).
+- BDS: **31 passed / 0 failed**, 16.7 seconds, no script or infrastructure errors; runner exited cleanly. Machine-readable output is `BDS_TEST_RESULTS_2026-11-06.json`.
 
-All 25 previously registered tests also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
+All 29 previously registered tests also passed in this regression run. Their coverage and limits are detailed in [the 2026-11-05 report](BDS_TEST_REPORT_2026-11-05.md), the Hearty Meal and Water Movement results below, and the diagnostic probes:
 
 | GameTest | Result | What it establishes |
 | --- | --- | --- |
+| `last_strength_scales_server_root_melee_damage_at_and_below_threshold` | PASS (partial port) | The production `entityHurt` handler scales synthetic player `entityAttack` damage by +10% / +20% / +30% at levels 1–3 when current health is at or below 30% of `effectiveMax`. Exactly 30% and 29% activate; 31% does not. The test also verifies additive stacking with level-5 Keen Edge. |
+| `last_strength_scales_server_root_projectile_damage_and_stacks_with_precise_aim` | PASS (partial port) | The production handler scales synthetic projectile-attributed damage for owned arrows by +10% / +20% / +30% at levels 1–3 at or below the threshold, deactivates above it, and adds level-3 Last Strength to level-5 Precise Aim. `applyDamage` infers projectile cause from the projectile payload. This does not test physical arrow flight/collision or distinguish root from add-on-derived projectiles. |
 | `extra_piece_matches_ore_loot_chances_and_tool_enchants` | PASS (partial port) | BDS GameTest calls the production harvest helper with deterministic rolls and the stable loot manager. It verifies 5% / 10% / 15% level boundaries, exactly one item, Silk Touch returning the ore block, Fortune returning one ordinary product, non-ore rejection without a roll, and rejection of a wooden pickaxe for diamond ore. |
 | `extra_piece_receives_live_player_block_break_event` | PASS (event delivery) | A survival SimulatedPlayer breaks iron ore with a pickaxe; the stable `playerBreakBlock` after-event reaches a test observer. The test does not assert the random Extra Piece proc or visible dropped item during this live break. |
 | `hearty_meal_matches_java_levels_and_food_cap` | PASS (partial port) | Four simulated players consume cooked beef through the production BP handler. Starting at hunger 10/saturation 0, levels 1–3 finish at saturation 13.824 / 14.848 / 15.872. A level-3 player starting at hunger 12/saturation 10 reaches the saturation cap of 20. Each player consumes one item from a two-beef stack. The expected values are Java's 8/16/24% of cooked beef's 12.8 vanilla saturation gain. |

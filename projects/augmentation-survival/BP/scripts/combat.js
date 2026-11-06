@@ -3,6 +3,10 @@ import { getStoredAugmentLevel } from "./progression.js";
 
 const KEEN_EDGE = "augmentation_survival:keen_edge";
 const PRECISE_AIM = "augmentation_survival:precise_aim";
+const LAST_STRENGTH = "augmentation_survival:last_strength";
+const LAST_STRENGTH_MAX_LEVEL = 3;
+const LAST_STRENGTH_THRESHOLD = 0.30;
+const LAST_STRENGTH_DAMAGE_PER_LEVEL = 0.10;
 const TOUGH_SKIN = "augmentation_survival:tough_skin";
 const TOUGH_SKIN_MAX_LEVEL = 5;
 const TOUGH_SKIN_REDUCTION_PER_LEVEL = 0.02;
@@ -24,23 +28,41 @@ export function applyRootDamageModifier(event) {
 
   const { cause, damagingEntity, damagingProjectile } = event.damageSource;
   let attacker;
-  let augmentId;
+  let rootDamageBonus = 0;
   if (cause === EntityDamageCause.entityAttack && damagingEntity instanceof Player) {
     attacker = damagingEntity;
-    augmentId = KEEN_EDGE;
+    rootDamageBonus = 0.04 * getStoredAugmentLevel(attacker, KEEN_EDGE, 5);
   } else if (cause === EntityDamageCause.projectile && damagingProjectile) {
     const owner = damagingProjectile.getComponent("minecraft:projectile")?.owner;
     if (owner instanceof Player) {
       attacker = owner;
-      augmentId = PRECISE_AIM;
+      rootDamageBonus = 0.04 * getStoredAugmentLevel(attacker, PRECISE_AIM, 5);
     }
   }
-  if (!attacker || !augmentId) return;
+  if (!attacker) return;
 
-  const level = getStoredAugmentLevel(attacker, augmentId, 5);
-  if (level === 0) return;
-  const scaled = event.damage * (1 + 0.04 * level);
+  rootDamageBonus += getLastStrengthDamageBonus(attacker);
+  if (rootDamageBonus === 0) return;
+  const scaled = event.damage * (1 + rootDamageBonus);
   if (Number.isFinite(scaled) && scaled > 0 && scaled <= event.damage * MAX_DAMAGE_SCALE) event.damage = scaled;
+}
+
+/** @param {Player} attacker */
+function getLastStrengthDamageBonus(attacker) {
+  const level = getStoredAugmentLevel(attacker, LAST_STRENGTH, LAST_STRENGTH_MAX_LEVEL);
+  if (level === 0) return 0;
+
+  try {
+    const health = attacker.getComponent("minecraft:health");
+    const currentHealth = health?.currentValue;
+    const maximumHealth = health?.effectiveMax;
+    if (typeof currentHealth !== "number" || typeof maximumHealth !== "number"
+      || !Number.isFinite(currentHealth) || !Number.isFinite(maximumHealth) || maximumHealth <= 0) return 0;
+    if (currentHealth / maximumHealth > LAST_STRENGTH_THRESHOLD) return 0;
+    return LAST_STRENGTH_DAMAGE_PER_LEVEL * level;
+  } catch {
+    return 0;
+  }
 }
 
 /**

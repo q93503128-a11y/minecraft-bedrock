@@ -300,3 +300,23 @@ The BDS GameTest verifies exact exclusive 5% / 10% / 15% roll boundaries, level 
 Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled for uncommon core offers. It reproduces the chance, player-kill scope, server-side reward, and core exclusion using a stable route, while the independently generated bundle remains an explicit parity limitation. It is not counted as a complete Java port.
 
 References: [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [EntityDieAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitydieafterevent?view=minecraft-bedrock-stable), [LootTableManager](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/loottablemanager?view=minecraft-bedrock-stable).
+
+## `마지막 힘` (Last Strength)
+
+### Java contract and damage interactions
+
+The canonical contract sets the maximum at level 3 and adds 10% outgoing damage per level at or below 30% health. `CombatAugmentService.modifyOutgoingDamage` checks the server player's health ratio for root melee and root projectile damage; it adds Last Strength to the same outgoing bonus as Keen Edge for `ROOT_MELEE` and Precise Aim for `ROOT_PROJECTILE`, then passes the result to the combat expansion service. `FocusedAimAugmentService` applies the same threshold bonus to Focused Aim projectile damage. `CloneCombatSnapshot.meleeDamage` includes Last Strength when it creates the clone's melee snapshot, based on the owner's health at that time. These code paths mean that a full port must preserve the Keen Edge/Precise Aim additive stack and later add the Focused Aim and Clone routes.
+
+### Stable Bedrock route and BDS evidence
+
+Stable `EntityHealthComponent` inherits read-only `currentValue` and `effectiveMax`; `EntityHurtBeforeEvent.damage` is writable. The production handler identifies a player root melee source from `EntityDamageCause.entityAttack` and `damageSource.damagingEntity`, or a player-owned projectile from the projectile component's owner. It then checks `currentValue / effectiveMax <= 0.30` and adds `0.10 × saved level`, capped at level 3, to the current outgoing bonus. The health value uses the effective maximum so other max-health modifiers affect the threshold consistently within Bedrock. No health or damage decision is made by the client.
+
+On official BDS 1.26.62.1, production-handler GameTests verified levels 1–3 for synthetic root melee and projectile-attributed damage, exact inclusion at 30%, activation at 29%, and no Last Strength bonus at 31%. They also verified additive damage with level-5 Keen Edge and level-5 Precise Aim. The projectile test uses an owned arrow in a synthetic `applyDamage` event; physical arrow flight and collision were not tested.
+
+Bedrock's stable projectile owner attribution cannot establish Java's full `ROOT_PROJECTILE` provenance for every add-on-derived player projectile. Last Strength may therefore apply to a player-owned derived projectile whose source Java would classify outside `ROOT_PROJECTILE`. Focused Aim and Clone are not yet implemented in Bedrock, so those interactions are absent. Reconnect persistence, multiplayer races, delayed-damage behavior, armor/effect mitigation order, and real-client melee/projectile events remain unverified.
+
+### Classification
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as the sixth uncommon candidate. The stable event and health component reproduce the standalone damage curve, while projectile provenance and the Java Focused Aim/Clone paths are outstanding. It is not counted as a complete Java port.
+
+References: [EntityHealthComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhealthcomponent?view=minecraft-bedrock-stable), [EntityAttributeComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityattributecomponent?view=minecraft-bedrock-stable), [EntityHurtBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable), [EntityDamageSource](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitydamagesource?view=minecraft-bedrock-stable).

@@ -71,6 +71,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:extra_piece",
         "augmentation_survival:catch_breath",
         "augmentation_survival:loot_scoop",
+        "augmentation_survival:last_strength",
         "augmentation_survival:nocturnal",
         "augmentation_survival:sun_affinity",
       ]
@@ -1085,6 +1086,83 @@ GameTest.registerAsync("AugmentationSurvival", "precise_aim_scales_server_projec
   ensure(Math.abs(ownerlessHit.damage - 1) < 1e-5, `An ownerless projectile should retain 1 damage; got ${ownerlessHit.damage}.`);
   test.succeed();
 }).maxTicks(100).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "last_strength_scales_server_root_melee_damage_at_and_below_threshold", async (test) => {
+  const cases = [
+    { level: 1, name: "ASLastStrengthLevel1", healthRatio: 0.30, expected: 11 },
+    { level: 2, name: "ASLastStrengthLevel2", healthRatio: 0.30, expected: 12 },
+    { level: 3, name: "ASLastStrengthLevel3", healthRatio: 0.30, expected: 13 },
+    { level: 3, name: "ASLastStrengthAboveThreshold", healthRatio: 0.31, expected: 10 },
+    { level: 3, name: "ASLastStrengthBelowThreshold", healthRatio: 0.29, expected: 13 },
+    { level: 3, name: "ASLastStrengthKeenStack", healthRatio: 0.30, expected: 15 },
+  ];
+  const players = cases.map((entry, index) => ({
+    ...entry,
+    attacker: test.spawnSimulatedPlayer({ x: 2, y: 3, z: 2 + index }, entry.name, GameMode.survival),
+    target: test.spawnSimulatedPlayer({ x: 6, y: 3, z: 2 + index }, `ASLastMeleeTarget${index}`, GameMode.survival),
+  }));
+  await test.idle(2);
+
+  for (const entry of players) {
+    const health = entry.attacker.getComponent("minecraft:health");
+    const targetHealth = entry.target.getComponent("minecraft:health");
+    ensure(health && targetHealth, `Health component unavailable for ${entry.name}.`);
+    const set = health.setCurrentValue(health.effectiveMax * entry.healthRatio);
+    ensure(set, `BDS could not set ${entry.name} health for the threshold case.`);
+    const ratio = health.currentValue / health.effectiveMax;
+    ensure(Math.abs(ratio - entry.healthRatio) < 1e-6, `${entry.name} health ratio expected ${entry.healthRatio}; got ${ratio}.`);
+    const before = targetHealth.currentValue;
+    const applied = entry.target.applyDamage(10, {
+      cause: EntityDamageCause.entityAttack,
+      damagingEntity: entry.attacker,
+    });
+    await test.idle(1);
+    const damageTaken = before - targetHealth.currentValue;
+    ensure(applied, `BDS rejected root melee damage for ${entry.name}.`);
+    ensure(Math.abs(damageTaken - entry.expected) < 1e-5,
+      `${entry.name} expected ${entry.expected} damage at health ratio ${ratio}; got ${damageTaken}.`);
+  }
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "last_strength_scales_server_root_projectile_damage_and_stacks_with_precise_aim", async (test) => {
+  const cases = [
+    { level: 1, name: "ASLastStrengthProjectileLevel1", healthRatio: 0.30, expected: 11 },
+    { level: 2, name: "ASLastStrengthProjectileLevel2", healthRatio: 0.30, expected: 12 },
+    { level: 3, name: "ASLastStrengthProjectileLevel3", healthRatio: 0.30, expected: 13 },
+    { level: 3, name: "ASLastStrengthProjectileAboveThreshold", healthRatio: 0.31, expected: 10 },
+    { level: 3, name: "ASPreciseLastStrengthStack", healthRatio: 0.30, expected: 15 },
+  ];
+  const players = cases.map((entry, index) => ({
+    ...entry,
+    attacker: test.spawnSimulatedPlayer({ x: 2, y: 3, z: 2 + index }, entry.name, GameMode.survival),
+    target: test.spawnSimulatedPlayer({ x: 6, y: 3, z: 2 + index }, `ASLastProjectileTarget${index}`, GameMode.survival),
+  }));
+  await test.idle(2);
+
+  for (const entry of players) {
+    const health = entry.attacker.getComponent("minecraft:health");
+    const targetHealth = entry.target.getComponent("minecraft:health");
+    ensure(health && targetHealth, `Health component unavailable for ${entry.name}.`);
+    ensure(health.setCurrentValue(health.effectiveMax * entry.healthRatio), `BDS could not set ${entry.name} health for the projectile threshold case.`);
+    const arrow = entry.attacker.dimension.spawnEntity("minecraft:arrow", { x: 2, y: 4, z: 2 });
+    const projectile = arrow.getComponent("minecraft:projectile");
+    ensure(projectile, `Spawned arrow had no projectile component for ${entry.name}.`);
+    projectile.owner = entry.attacker;
+    ensure(projectile.owner?.id === entry.attacker.id, `Arrow owner was not retained for ${entry.name}.`);
+    const before = targetHealth.currentValue;
+    const applied = entry.target.applyDamage(10, {
+      damagingEntity: entry.attacker,
+      damagingProjectile: arrow,
+    });
+    await test.idle(1);
+    const damageTaken = before - targetHealth.currentValue;
+    ensure(applied, `BDS rejected root projectile damage for ${entry.name}.`);
+    ensure(Math.abs(damageTaken - entry.expected) < 1e-5,
+      `${entry.name} expected ${entry.expected} projectile damage; got ${damageTaken}.`);
+  }
+  test.succeed();
+}).maxTicks(40).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "strong_lungs_reduces_drowning_damage_by_level", async (test) => {
   const cases = [

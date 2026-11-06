@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "quick_feet", "nocturnal", "sun_affinity"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -35,6 +35,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("B", by_id["seed_saver"]["compatibility_class"])
         self.assertEqual("B", by_id["catch_breath"]["compatibility_class"])
         self.assertEqual("B", by_id["quick_feet"]["compatibility_class"])
+        self.assertEqual("B", by_id["last_strength"]["compatibility_class"])
         self.assertEqual("C", by_id["nocturnal"]["compatibility_class"])
         self.assertEqual("C", by_id["sun_affinity"]["compatibility_class"])
         self.assertIn("PlayerStatAugmentService.java", " ".join(by_id["quick_feet"]["java_source_paths"]))
@@ -43,7 +44,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 11, "C": 4, "D": 7, "UNASSESSED": 125},
+            {"A": 2, "B": 12, "C": 4, "D": 7, "UNASSESSED": 124},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -210,6 +211,27 @@ class StaticAddonTests(unittest.TestCase):
         script = (ROOT / "BP/scripts/loot-scoop.js").read_text(encoding="utf-8")
         self.assertIn("generateLootFromEntity(victim, tool)", script)
         self.assertIn("world.afterEvents.entityDie.subscribe", script)
+
+    def test_last_strength_uses_the_canonical_health_threshold_and_damage_curve(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        last_strength = next(item for item in data["augments"] if item["id"].endswith(":last_strength"))
+        self.assertEqual("마지막 힘", last_strength["name_ko"])
+        self.assertEqual("uncommon", last_strength["tier"])
+        self.assertEqual(3, last_strength["max_level"])
+        self.assertEqual("체력 30% 이하에서 공격 피해 +10% / +20% / +30%.", last_strength["canonical_effect_ko"])
+        self.assertEqual("B", last_strength["compatibility_class"])
+        self.assertEqual("REVIEW_REQUIRED", last_strength["interaction_mapping_status"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", last_strength["port_status"])
+        self.assertTrue(last_strength["candidate_enabled"])
+        source_paths = " ".join(last_strength["java_source_paths"])
+        self.assertIn("CombatAugmentService.java", source_paths)
+        self.assertIn("FocusedAimAugmentService.java", source_paths)
+        self.assertIn("CloneCombatSnapshot.java", source_paths)
+        self.assertIn("effectiveMax", last_strength["api_constraints"])
+        self.assertIn("30% is inclusive", last_strength["test_method"])
+        combat = (ROOT / "BP/scripts/combat.js").read_text(encoding="utf-8")
+        self.assertIn("LAST_STRENGTH_THRESHOLD = 0.30", combat)
+        self.assertIn("LAST_STRENGTH_DAMAGE_PER_LEVEL = 0.10", combat)
 
     def test_canonical_source_discrepancies_are_visible(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

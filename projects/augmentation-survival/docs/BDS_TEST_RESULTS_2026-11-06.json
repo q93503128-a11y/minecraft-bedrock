@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 14652,
+  "durationMs": 16693,
   "verdicts": [
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
@@ -89,6 +89,14 @@
     },
     {
       "id": "AugmentationSurvival:precise_aim_scales_server_projectile_damage_source",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:last_strength_scales_server_root_melee_damage_at_and_below_threshold",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:last_strength_scales_server_root_projectile_damage_and_stacks_with_precise_aim",
       "outcome": "pass"
     },
     {

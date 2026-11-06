@@ -27,6 +27,27 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }));
       return;
     }
+    const lastStrengthLevels = {
+      ASLastStrengthLevel1: 1,
+      ASLastStrengthLevel2: 2,
+      ASLastStrengthLevel3: 3,
+      ASLastStrengthAboveThreshold: 3,
+      ASLastStrengthBelowThreshold: 3,
+      ASLastStrengthProjectileAboveThreshold: 3,
+      ASLastStrengthKeenStack: 3,
+      ASPreciseLastStrengthStack: 3,
+      ASLastStrengthProjectileLevel1: 1,
+      ASLastStrengthProjectileLevel2: 2,
+      ASLastStrengthProjectileLevel3: 3,
+    };
+    const lastStrengthLevel = lastStrengthLevels[player.name];
+    if (lastStrengthLevel) {
+      const levels = { "augmentation_survival:last_strength": lastStrengthLevel };
+      if (player.name === "ASLastStrengthKeenStack") levels["augmentation_survival:keen_edge"] = 5;
+      if (player.name === "ASPreciseLastStrengthStack") levels["augmentation_survival:precise_aim"] = 5;
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
+      return;
+    }
     if (player.name === "ASSturdinessLevel1" || player.name === "ASSturdinessLevel5") {
       const level = player.name === "ASSturdinessLevel1" ? 1 : 5;
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
