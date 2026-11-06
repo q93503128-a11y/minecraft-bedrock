@@ -1,8 +1,16 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 16693,
+  "durationMs": 15163,
   "verdicts": [
+    {
+      "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:tool_care_uses_production_block_break_events",
+      "outcome": "pass"
+    },
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
       "outcome": "pass"

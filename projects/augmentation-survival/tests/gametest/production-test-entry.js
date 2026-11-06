@@ -7,6 +7,13 @@ import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progre
 // production pack's namespace here instead of from the separate GameTest pack.
 world.afterEvents.playerSpawn.subscribe(({ player }) => {
   try {
+    if (player.name === "ASToolCareLive") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:tool_care": 5,
+      }));
+      player.addTag("as_tool_care_seeded");
+      return;
+    }
     if (player.name === "ASKeenEdge") {
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
         "augmentation_survival:keen_edge": 5,

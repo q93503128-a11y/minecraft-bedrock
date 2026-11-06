@@ -685,16 +685,23 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalTuning.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ItemStackDurabilityAugmentMixin.java",
+        "src/main/resources/data/augmentation_survival/augmentation/survival_modifier_contract.json"
       ],
-      "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_contract_refs": [
+        {
+          "line": 305,
+          "text": "- 자동 채굴/수확된 블록은 호환 가능한 드롭/Fortune/내구도 규칙을 이어받는다."
+        }
+      ],
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "C",
+      "bedrock_method": "Capture a player's selected slot before a stable block-break event; after a successful break, compare the before/after durability snapshots and restore the pre-break value on a 5% per-level Tool Care roll, returning a tool only if that same slot is empty; max level 5",
+      "api_constraints": "Stable Script API has no global pre-durability event for vanilla tools. This route only restores durability lost on player block-break events; melee/use durability and automatically derived mining/harvest breaks are not covered. The stable item component surface does not expose Java's DataComponents.TOOL marker for exact item classification; reconnect, client play and multiplayer remain unverified",
+      "test_method": "BDS 1.26.62.1 GameTests verify exact 5/10/15/20/25% chance boundaries and level cap, successful restoration, occupied-slot safety, and near-break tool return. A production-handler SimulatedPlayer mines vanilla stone 40 times at level 5 and observes repeated durability restoration through real before/after events; this does not verify the probability distribution",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:dexterity",

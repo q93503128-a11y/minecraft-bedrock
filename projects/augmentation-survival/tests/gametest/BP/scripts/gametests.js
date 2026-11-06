@@ -5,6 +5,7 @@ import { synthesizeCore } from "./cores.js";
 import { applyCropHarvestBonuses, applyExtraPieceBonus, bumperCropBonusChance, extraPieceBonusChance, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { LEVELS_KEY } from "./progression.js";
+import { toolCareChance, toolCareRollSucceeds, tryPreventBlockToolDamage } from "./tool-care.js";
 import { isAugmentCore, lootScoopChance, lootScoopRollSucceeds, processLootScoopDeath } from "./loot-scoop.js";
 
 const TAG = "augmentation_survival";
@@ -55,8 +56,97 @@ function countDroppedItem(dimension, location, typeId) {
 }
 
 world.afterEvents.playerBreakBlock.subscribe(({ player }) => {
-  if (player.name === "ASExtraPieceBreak") player.addTag("as_test_extra_piece_break_event");
+  try {
+    if (player.name === "ASExtraPieceBreak") player.addTag("as_test_extra_piece_break_event");
+    if (player.name === "ASToolCareLive") player.addTag("as_test_tool_care_break_event");
+  } catch { /* A stale simulated-player event must not escape the test observer. */ }
 });
+
+GameTest.registerAsync("AugmentationSurvival", "tool_care_matches_java_chance_and_restores_only_the_spent_durability", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASToolCareDeterministic", GameMode.survival);
+  const inventory = inventoryOf(player);
+
+  ensure(toolCareChance(-1) === 0 && toolCareChance(0) === 0, "Tool Care must be inactive below level 1.");
+  for (let level = 1; level <= 5; level += 1) {
+    const chance = level * 0.05;
+    ensure(toolCareChance(level) === chance, `Level ${level} chance should be ${chance}.`);
+    ensure(toolCareRollSucceeds(level, chance - 1e-9), `Level ${level} must succeed below its exclusive chance boundary.`);
+    ensure(!toolCareRollSucceeds(level, chance), `Level ${level} must fail at its exclusive chance boundary.`);
+  }
+  ensure(toolCareChance(6) === 0.25, "Tool Care must cap at its five-level maximum.");
+
+  const before = new ItemStack("minecraft:iron_pickaxe");
+  const beforeDurability = before.getComponent("minecraft:durability");
+  ensure(beforeDurability, "Iron pickaxe durability component was unavailable.");
+  beforeDurability.damage = 2;
+  const after = before.clone();
+  const afterDurability = after.getComponent("minecraft:durability");
+  ensure(afterDurability, "The post-break durability component was unavailable.");
+  afterDurability.damage = 3;
+  inventory.setItem(0, after.clone());
+
+  const event = { player, itemStackBeforeBreak: before, itemStackAfterBreak: after };
+  ensure(tryPreventBlockToolDamage(event, 0, 5, () => 0), "A successful level-5 roll did not prevent the observed durability loss.");
+  ensure(inventory.getItem(0)?.typeId === before.typeId, "Tool Care lost the live item while restoring its durability.");
+  ensure(inventory.getItem(0)?.hasComponent("minecraft:durability"), "Tool Care restored an item without its durability component.");
+
+  inventory.setItem(0, after.clone());
+  ensure(!tryPreventBlockToolDamage(event, 0, 5, () => 0.25), "The exact level-5 boundary incorrectly saved durability.");
+  ensure(inventory.getItem(0)?.typeId === after.typeId, "A failed Tool Care roll removed the damaged item.");
+
+  const breaking = new ItemStack("minecraft:iron_pickaxe");
+  const breakingDurability = breaking.getComponent("minecraft:durability");
+  ensure(breakingDurability, "Breaking pickaxe durability component was unavailable.");
+  breakingDurability.damage = breakingDurability.maxDurability - 1;
+  inventory.setItem(0, undefined);
+  ensure(tryPreventBlockToolDamage({ player, itemStackBeforeBreak: breaking }, 0, 5, () => 0), "A successful last-point roll did not restore the broken tool.");
+  const restored = inventory.getItem(0);
+  ensure(restored?.typeId === breaking.typeId, "The broken tool was not returned to its captured slot.");
+  ensure(restored.hasComponent("minecraft:durability"), "The restored tool lost its durability component.");
+
+  inventory.setItem(0, new ItemStack("minecraft:dirt"));
+  ensure(!tryPreventBlockToolDamage({ player, itemStackBeforeBreak: breaking }, 0, 5, () => 0), "Tool Care overwrote an occupied hotbar slot.");
+  ensure(inventory.getItem(0)?.typeId === "minecraft:dirt", "Tool Care changed an occupied hotbar slot.");
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "tool_care_uses_production_block_break_events", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASToolCareLive", GameMode.survival);
+  const inventory = inventoryOf(player);
+  inventory.setItem(0, new ItemStack("minecraft:iron_pickaxe"));
+  player.addEffect("haste", 100, { amplifier: 15, showParticles: false });
+  await test.idle(2);
+  ensure(player.hasTag("as_tool_care_seeded"), "The production test profile did not seed level-5 Tool Care.");
+
+  const target = { x: 5, y: 3, z: 3 };
+  const worldTarget = test.worldBlockLocation(target);
+  let savedDurability = 0;
+  let spentDurability = 0;
+  for (let attempt = 0; attempt < 40; attempt += 1) {
+    const toolBefore = inventory.getItem(0);
+    const beforeDamage = toolBefore?.getComponent("minecraft:durability")?.damage;
+    ensure(typeof beforeDamage === "number", "The live test pickaxe left the captured hotbar slot.");
+    const block = player.dimension.getBlock(worldTarget);
+    ensure(block, "The live Tool Care block location was not loaded.");
+    block.setType("minecraft:stone");
+    ensure(player.breakBlock(target), `Simulated player could not start Tool Care break ${attempt + 1}.`);
+    await test.idle(2);
+    const brokenBlock = test.getBlock(target);
+    ensure(brokenBlock && brokenBlock.typeId !== "minecraft:stone", `Simulated player did not finish Tool Care break ${attempt + 1}.`);
+    const toolAfter = inventory.getItem(0);
+    const afterDamage = toolAfter?.getComponent("minecraft:durability")?.damage;
+    ensure(toolAfter?.typeId === "minecraft:iron_pickaxe", "The production handler lost the live pickaxe.");
+    ensure(afterDamage === beforeDamage || afterDamage === beforeDamage + 1,
+      `Tool Care produced an unexpected live durability transition ${beforeDamage} -> ${afterDamage}.`);
+    if (afterDamage === beforeDamage) savedDurability += 1;
+    else spentDurability += 1;
+  }
+
+  ensure(player.hasTag("as_test_tool_care_break_event"), "The live playerBreakBlock after-event did not reach the observer.");
+  ensure(savedDurability > 0, `The production Tool Care handler never restored durability across 40 level-5 trials (${spentDurability} losses).`);
+  console.warn(`AS_TOOL_CARE_LIVE ${JSON.stringify({ savedDurability, spentDurability })}`);
+  test.succeed();
+}).maxTicks(180).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_effects_and_preserves_locked_tiers", async (test) => {
   const common = listAvailableCandidates("common", AUGMENTS, {});
@@ -71,6 +161,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:extra_piece",
         "augmentation_survival:catch_breath",
         "augmentation_survival:loot_scoop",
+        "augmentation_survival:tool_care",
         "augmentation_survival:last_strength",
         "augmentation_survival:nocturnal",
         "augmentation_survival:sun_affinity",

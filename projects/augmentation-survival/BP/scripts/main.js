@@ -7,6 +7,7 @@ import { synthesizeCore } from "./cores.js";
 import { listAvailableCandidates } from "./offers.js";
 import "./combat.js";
 import "./harvest.js";
+import "./tool-care.js";
 import "./food.js";
 import "./movement.js";
 import { registerLootScoopHandler } from "./loot-scoop.js";
