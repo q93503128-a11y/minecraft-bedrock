@@ -1,4 +1,4 @@
-import { BlockPermutation, EnchantmentTypes, EntityComponentTypes, EntityDamageCause, GameMode, InputButton, ItemStack, Player, world } from "@minecraft/server";
+import { BlockPermutation, EnchantmentTypes, EntityComponentTypes, EntityDamageCause, GameMode, InputButton, ItemStack, Player, system, world } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
@@ -991,6 +991,67 @@ GameTest.registerAsync("AugmentationSurvival", "long_reach_api_surface_probe", a
   ensure(rangeProperties.every(property => property.valueType === "undefined"), "A player range attribute API appeared; re-assess Long Reach.");
   test.succeed();
 }).maxTicks(30).structureName(STRUCTURE).tag(TAG);
+
+// Diagnostic only: measure whether Haste can approximate Java's underwater mining multiplier.
+// This does not alter or count as Water Work gameplay.
+GameTest.registerAsync("AugmentationSurvival", "underwater_work_haste_route_probe", async (test) => {
+  const cases = [
+    { hasteAmplifier: undefined, name: "ASUnderwaterWorkControl", x: 1, targetMultiplier: 1 },
+    { hasteAmplifier: 0, name: "ASUnderwaterWorkHasteI", x: 3, targetMultiplier: 1.8 },
+    { hasteAmplifier: 1, name: "ASUnderwaterWorkHasteII", x: 5 },
+    { hasteAmplifier: 2, name: "ASUnderwaterWorkHasteIII", x: 7, targetMultiplier: 2.6 },
+    { hasteAmplifier: 3, name: "ASUnderwaterWorkHasteIV", x: 9, targetMultiplier: 3.4 },
+    { hasteAmplifier: 4, name: "ASUnderwaterWorkHasteV", x: 11 },
+  ];
+  for (let x = 1; x <= 12; x += 1) {
+    for (let y = 3; y <= 5; y += 1) {
+      for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:water", { x, y, z });
+    }
+  }
+  for (let x = 1; x <= 13; x += 1) {
+    for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  const players = cases.map(entry => {
+    const player = test.spawnSimulatedPlayer({ x: entry.x, y: 3, z: 2 }, entry.name, GameMode.survival);
+    inventoryOf(player).setItem(0, new ItemStack("minecraft:diamond_pickaxe"));
+    if (entry.hasteAmplifier !== undefined) {
+      player.addEffect("haste", 400, { amplifier: entry.hasteAmplifier, showParticles: false });
+    }
+    const target = { x: entry.x + 1, y: 3, z: 2 };
+    test.setBlockType("minecraft:stone", target);
+    return { ...entry, player, target };
+  });
+  await test.idle(3);
+
+  for (const entry of players) {
+    ensure(entry.player.isInWater, `${entry.name}: simulated player did not enter water.`);
+    const head = entry.player.getHeadLocation();
+    const headBlock = entry.player.dimension.getBlock({ x: Math.floor(head.x), y: Math.floor(head.y), z: Math.floor(head.z) });
+    ensure(headBlock?.typeId === "minecraft:water", `${entry.name}: head was not submerged in vanilla water.`);
+    ensure(entry.player.breakBlock(entry.target), `${entry.name}: SimulatedPlayer could not start breaking stone.`);
+    entry.startedAt = system.currentTick;
+  }
+
+  for (let tick = 0; tick < 80 && players.some(entry => entry.breakTicks === undefined); tick += 1) {
+    await test.idle(1);
+    for (const entry of players) {
+      if (entry.breakTicks !== undefined) continue;
+      const block = test.getBlock(entry.target);
+      if (block && block.typeId !== "minecraft:stone") entry.breakTicks = system.currentTick - entry.startedAt;
+    }
+  }
+  const result = players.map(entry => ({
+    name: entry.name,
+    hasteAmplifier: entry.hasteAmplifier,
+    underwater: entry.player.isInWater,
+    breakTicks: entry.breakTicks,
+    multiplierVsControl: players[0].breakTicks / entry.breakTicks,
+    canonicalComparisonTarget: entry.targetMultiplier,
+  }));
+  console.warn("AS_UNDERWATER_WORK_HASTE_ROUTE_PROBE " + JSON.stringify(result));
+  ensure(result.every(entry => Number.isFinite(entry.breakTicks)), "A simulated player did not finish breaking stone within 80 ticks.");
+  test.succeed();
+}).maxTicks(110).structureName(STRUCTURE).tag(TAG);
 
 // Diagnostic only: inspect the vanilla furnace and fuel-item scripting surface.
 // This does not alter or count as Fuel Saver gameplay.

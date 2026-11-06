@@ -398,3 +398,23 @@ BDS 1.26.62.1 deterministic GameTests verify the three exact chance boundaries, 
 Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon candidate. The stable event arrives after native drops have been calculated and does not expose the actual `Block.popResource` stacks. Re-running the loot table can produce a different random result or omit context-dependent native output. The current event path handles direct player breaks; Java-derived mining and harvesting are not routed. The extra item is also spawned after the event, so its Java ordering before `풍요 ×2` is not reproduced. External Java mod blocks and assets are not copied; add-on blocks may use exposed Bedrock tags when they match the shared names.
 
 References: [WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable), [PlayerBreakBlockAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockafterevent?view=minecraft-bedrock-stable), [BlockPermutation](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockpermutation?view=minecraft-bedrock-stable), [LootTableManager](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/loottablemanager?view=minecraft-bedrock-stable), [ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable).
+
+## `물속 작업` (Underwater Work)
+
+### Java contract
+
+`AUGMENTS.md` defines a 20% / 40% / 60% reduction to the underwater mining penalty at levels 1–3. Java stores `underwater_work` as `submerged_mining_speed`, `amount_per_level: 0.16`, `operation: add_value`, and applies it through the generic player stat-modifier service. Java documents the submerged-mining attribute's default as 0.2; adding 0.16 per level gives factors 0.36 / 0.52 / 0.68, or 1.8× / 2.6× / 3.4× relative to the default underwater factor. The 2026-10-24 interaction contract contains no direct Underwater Work interaction entry; no other registered augment in the shared stat modifier contract uses this attribute.
+
+### Stable Bedrock route and BDS diagnostic
+
+The pinned stable Script API exposes no player mining-speed attribute setter. The stable before-break event can cancel a completed block-break action and exposes the player and held item; it does not expose or set vanilla mining progress. A potential substitute is to apply Haste while the player's head is submerged. Stable `Entity.addEffect` supports applying effects, but Haste uses integer amplifier steps and affects mining generally; replacing or removing it can conflict with a player's potion or another add-on's Haste. No substitute is shipped.
+
+The BDS 1.26.62.1 diagnostic used six SimulatedPlayers with unenchanted diamond pickaxes, each fully submerged in vanilla water, to break vanilla stone. The control took 30 ticks. Haste amplifiers 0–4 took 21 / 15 / 12 / 9 / 7 ticks, measuring 1.43× / 2× / 2.5× / 3.33× / 4.29× versus the control in that run. Haste II / III / IV are the nearest integer steps for Java's three targets, but still differ; tick quantization and effect coexistence make this a route investigation, not a gameplay parity test. The measurement does not test reconnect, potion restoration, real-client mining, Aqua Affinity, multiplayer, or interaction with other augments.
+
+No external Java-mod entity, structure, or asset is involved. No Underwater Work effect is enabled as a core candidate.
+
+### Classification
+
+Class **C**, `NOT_PORTED`. A conditional Haste substitute could approximate underwater mining speed, but cannot retain the exact Java fractional curve and safely preserve independently owned Haste effects. The roster, Java contract mapping, and BDS diagnostic are recorded; no augment level is consumed and no gameplay effect is claimed.
+
+References: [Java 1.21 `PLAYER.SUBMERGED_MINING_SPEED` attribute](https://feedback.minecraft.net/hc/en-us/articles/27547857163917-Minecraft-Java-Edition-1-21-Tricky-Trials), [stable `PlayerBreakBlockBeforeEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockbeforeevent?view=minecraft-bedrock-stable), [stable `Entity.addEffect`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable), [stable `EntityEffectOptions`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityeffectoptions?view=minecraft-bedrock-stable).

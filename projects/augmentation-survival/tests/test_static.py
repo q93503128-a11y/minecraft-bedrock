@@ -42,11 +42,29 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("stat_modifier_contract.json", " ".join(by_id["quick_feet"]["java_source_paths"]))
         self.assertEqual("C", by_id["miners_hand"]["compatibility_class"])
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
+        self.assertEqual("C", by_id["underwater_work"]["compatibility_class"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 5, "D": 9, "UNASSESSED": 120},
+            {"A": 2, "B": 13, "C": 6, "D": 9, "UNASSESSED": 119},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
+
+    def test_underwater_work_is_assessed_but_not_shipped(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        underwater_work = next(item for item in data["augments"] if item["id"].endswith(":underwater_work"))
+        self.assertEqual("물속 작업", underwater_work["name_ko"])
+        self.assertEqual("uncommon", underwater_work["tier"])
+        self.assertEqual(3, underwater_work["max_level"])
+        self.assertEqual("수중 채굴 페널티 20% / 40% / 60% 감소.", underwater_work["canonical_effect_ko"])
+        self.assertEqual("C", underwater_work["compatibility_class"])
+        self.assertEqual("NOT_PORTED", underwater_work["port_status"])
+        self.assertFalse(underwater_work["candidate_enabled"])
+        self.assertIn("PlayerStatAugmentService.java", " ".join(underwater_work["java_source_paths"]))
+        self.assertIn("stat_modifier_contract.json", " ".join(underwater_work["java_source_paths"]))
+        self.assertIn("diagnostic only", underwater_work["test_method"])
+        self.assertIn("Haste amplifiers 0–4", underwater_work["test_method"])
+        self.assertIn("Java 1.8×/2.6×/3.4×", underwater_work["test_method"])
+        self.assertIn("whole-effect substitute", underwater_work["api_constraints"])
 
     def test_long_reach_remains_unoffered_without_player_interaction_range_control(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
