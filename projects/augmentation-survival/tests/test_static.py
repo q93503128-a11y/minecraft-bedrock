@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미", "상자 찾기", "위험 감지", "화살 아끼기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense", "chest_finder", "danger_sense", "arrow_saver"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미", "상자 찾기", "위험 감지", "화살 아끼기", "다시 심기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense", "chest_finder", "danger_sense", "arrow_saver", "replant"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -125,7 +125,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 21, "C": 15, "D": 11, "UNASSESSED": 100},
+            {"A": 2, "B": 22, "C": 15, "D": 11, "UNASSESSED": 99},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -237,6 +237,32 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("world.afterEvents.playerInventoryItemChange.subscribe", handler)
         self.assertIn("action.tick !== system.currentTick", handler)
         self.assertIn("beforeItemStack.clone()", handler)
+
+    def test_replant_uses_the_java_cropblock_rule_and_seed_transaction(self):
+        roster = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        replant = next(item for item in roster["augments"] if item["id"] == "augmentation_survival:replant")
+        self.assertEqual("다시 심기", replant["name_ko"])
+        self.assertEqual("rare", replant["tier"])
+        self.assertEqual(1, replant["max_level"])
+        self.assertEqual("성숙 작물 수확 후 획득한 재배 재료 1개를 소비해 즉시 재파종.", replant["canonical_effect_ko"])
+        self.assertEqual("B", replant["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", replant["port_status"])
+        self.assertTrue(replant["candidate_enabled"])
+        self.assertEqual("REVIEW_REQUIRED", replant["interaction_mapping_status"])
+        self.assertIn("replantConsumesSeedAfterImmediatePickupWindow", replant["test_method"])
+        self.assertIn("RareTierPlaytestRegressionGameTests.java", " ".join(replant["java_source_paths"]))
+
+        handler = (ROOT / "BP/scripts/replant.js").read_text(encoding="utf-8")
+        crop_catalog = (ROOT / "BP/scripts/crop-catalog.js").read_text(encoding="utf-8")
+        main = (ROOT / "BP/scripts/main.js").read_text(encoding="utf-8")
+        self.assertIn("REPLANT_DELAY_TICKS = 1", handler)
+        self.assertIn("PICKUP_RADIUS = 1.5", handler)
+        self.assertIn("consumeNearbyPlantingItem", handler)
+        self.assertIn("consumeOwnerInventoryItem", handler)
+        self.assertIn("if (!block?.isAir) return", handler)
+        self.assertIn('"minecraft:torchflower_crop"', crop_catalog)
+        self.assertNotIn('"minecraft:pitcher_crop"', crop_catalog)
+        self.assertIn('import "./replant.js";', main)
 
     def test_momentum_shift_matches_the_java_landing_contract_and_partial_bedrock_route(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

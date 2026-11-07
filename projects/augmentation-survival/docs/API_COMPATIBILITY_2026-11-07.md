@@ -1,6 +1,6 @@
 # API compatibility investigation — 2026-11-07
 
-Java source revision: `023e0ca8169da0669faa04a249eedae7169f4f51`
+Java source revision: `5269a32109255b2d583081e775619087bed0507c`
 Bedrock target observed: Minecraft Bedrock/BDS 1.26.62.1; stable Script API `@minecraft/server` 2.11.0.
 
 ## `발 안 묶이기` (Terrain Resistance)
@@ -392,3 +392,29 @@ Run npm run test:arrow-saver-production for the isolated production-handler test
 - [Stable WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable)
 - [Stable PlayerInventoryItemChangeAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerinventoryitemchangeafterevent?view=minecraft-bedrock-stable)
 - [Stable ItemStack.clone](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable)
+
+## Replant (`다시 심기`)
+
+### Java contract
+
+The rare augment has maximum level 1. Java's `ResourceHarvestService` checks the captured mature block with `instanceof CropBlock`, applies crop bonuses first, and schedules replanting for one server tick later. It identifies the planting item by finding a registered `BlockItem` whose placed block is that crop. The delayed operation proceeds only if the crop cell is still air and one matching item can be consumed: first from a ground `ItemEntity` inside the crop block AABB expanded by 1.5 blocks, then from the tracked breaker inventory. It restores the same crop at age 0. The `ResourceHarvestAuditFixMixin` supplies the owner-inventory fallback after the short ground-pickup window. Java's regression tests cover the inventory fallback and the interaction with derived Sweeping Harvest crops.
+
+### Stable Bedrock route
+
+The production BP listens to `world.afterEvents.playerBreakBlock`, checks the captured mature permutation, captures its dimension/position/owner, and schedules one tick. It only writes an age-0 crop permutation into an air cell. It checks matching ground items first and then scans the still-online breaker's inventory, consuming exactly one item. Dynamic-property augment levels remain server-owned and persistent; the one-tick pending operation is transient and naturally clears if the server stops.
+
+The mapped Java `CropBlock` equivalents are wheat, carrots, potatoes, beetroot, and Torchflower Crop. The Java item registry maps Torchflower Seeds to Torchflower Crop, so it is included. Pitcher Crop, Nether Wart, cocoa, sweet berry bushes, stems, and unrecognized add-on crops are excluded because they do not meet the Java `CropBlock` plus matching `BlockItem` rule in the pinned source. No external Java crop content is copied.
+
+Stable `minecraft:item` exposes `itemStack` as a read-only snapshot, not a setter for the world's entity stack. For a one-item entity the handler removes that entity. For larger stacks it clones the item data, decrements the clone by one, spawns the remainder at the same location, restores velocity when available, and removes the old entity in the same synchronous callback. The count path avoids intentionally duplicating items, but replacement resets hidden entity metadata such as pickup age. If the replacement cannot be made safely, the original stack stays and the owner's inventory fallback is tried. Stable block-break events do not expose the vanilla drop list, so Replant uses nearby items rather than Java's direct drop list.
+
+### Classification and BDS evidence
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, rare candidate enabled. The latest isolated production-handler test passed **1/1** in **9,297 ms** on official BDS 1.26.62.1, with zero regressions, script errors, or infrastructure errors. It uses live `SimulatedPlayer` breaks and verifies: Seed Saver ground-drop priority; exactly one owner-inventory fallback consumption when ground seeds are removed; Torchflower replanting; a two-item dropped seed stack becoming one; Bumper Crop product availability; and blocked-cell, immature-crop, no-seed, and non-`CropBlock` controls. The Java `RareTierPlaytestRegressionGameTests` coverage of derived Sweeping Harvest is recorded, but Bedrock has not routed its not-yet-ported derived-harvest path through Replant.
+
+The handler is dimension/position keyed and token guarded for simultaneous break callbacks. BDS tests did not cover online multiplayer, reconnect, server restart, player death/respawn during the one-tick window, other add-ons changing the cell, external crops, or client UI. Replant is passive after a crop break and adds no new input, so mobile/controller interaction is unchanged; visual client verification remains unrun.
+
+### References
+
+- [Stable PlayerBreakBlockAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockafterevent?view=minecraft-bedrock-stable)
+- [Stable BlockPermutation](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockpermutation?view=minecraft-bedrock-stable)
+- [Stable ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable)

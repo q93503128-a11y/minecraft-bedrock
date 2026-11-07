@@ -1,12 +1,13 @@
 # BDS test report — 2026-11-07
 
 - Server: official Bedrock Dedicated Server 1.26.62.1 (build 53244553), pinned by bds-runner.json; stable Script API declarations are @minecraft/server 2.11.0 and @minecraft/server-ui 2.3.0.
-- npm run verify: PASS — 35 static tests, stable API type-check, and an 83,321-byte .mcaddon. The outer archive and both embedded .mcpack archives passed ZIP integrity checks; the BP archive contains arrow-saver.js and arrow-saver-rules.js, and main.js imports the handler.
-- Standard npm run test:engine: 57 passed / 1 failed of 58 in 36,620 ms. The sole failure is AugmentationSurvival:rider_speed_level_1_applies_and_restores: its test horse did not expose minecraft:rideable. The test emitted one uncaught script error, so the standard suite exits nonzero and is not a clean pass. Pickup Hand's simulated two-player XP test passed in this run.
+- npm run verify: PASS — 36 static tests, stable API type-check, and an 86,860-byte .mcaddon. The outer archive and both embedded .mcpack archives passed ZIP integrity checks; the BP build includes replant.js and crop-catalog.js.
+- Latest standard npm run test:engine: **59/59 passed** in **38,873 ms**. The machine-readable report contains zero regressions, script errors, or infrastructure errors. This supersedes the earlier historical 57/58 run, where the Rider fixture lacked minecraft:rideable.
+- Replant isolated production GameTest: **1/1 passed** in **9,297 ms** on official BDS 1.26.62.1, with zero regressions, script errors, or infrastructure errors. It covers actual SimulatedPlayer block breaks, mature crop replant, ground-drop priority, one-seed inventory fallback, Torchflower, stack decrement, Seed Saver/Bumper Crop ordering, and blocked/immature/missing-seed/non-CropBlock controls. It does not verify online multiplayer, reconnect, restart, client UI, or Java's derived Sweeping Harvest route.
 - Arrow Saver isolated production GameTest: 1/1 passed in 15,948 ms. The same test passed inside the standard suite.
 - Arrow Saver event-boundary probe: 1/1 passed in 11,705 ms on BDS 1.26.62.1.
 - Existing targeted results: Ore Sense 1/1 in 5,526 ms, Chest Finder 1/1 in 4,545 ms, Danger Sense 1/1 in 6,000 ms; earlier reports remain historical and are described below.
-- Machine-readable results: BDS_TEST_RESULTS_2026-11-07.json, ARROW_SAVER_PRODUCTION_TEST_2026-11-07.json, ARROW_SAVER_SHOT_BOUNDARY_PROBE_2026-11-07.json, ORE_SENSE_PRODUCTION_TEST_2026-11-07.json, CHEST_FINDER_PRODUCTION_TEST_2026-11-07.json, and DANGER_SENSE_PRODUCTION_TEST_2026-11-07.json.
+- Machine-readable results: BDS_TEST_RESULTS_2026-11-07.json, REPLANT_PRODUCTION_TEST_2026-11-07.json, ARROW_SAVER_PRODUCTION_TEST_2026-11-07.json, ARROW_SAVER_SHOT_BOUNDARY_PROBE_2026-11-07.json, ORE_SENSE_PRODUCTION_TEST_2026-11-07.json, CHEST_FINDER_PRODUCTION_TEST_2026-11-07.json, and DANGER_SENSE_PRODUCTION_TEST_2026-11-07.json.
 
 At a prior 43-test checkpoint, all 43 registered tests passed; their coverage and limits remain recorded below. They retain the coverage and limits recorded in the [2026-11-06 report](BDS_TEST_REPORT_2026-11-06.md). The `terrain_resistance_vanilla_surface_probe` remains diagnostic only:
 

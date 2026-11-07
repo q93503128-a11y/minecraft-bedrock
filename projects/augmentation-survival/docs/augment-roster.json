@@ -1,5 +1,5 @@
 {
-  "source_revision": "023e0ca8169da0669faa04a249eedae7169f4f51",
+  "source_revision": "5269a32109255b2d583081e775619087bed0507c",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -773,15 +773,15 @@
           "text": "- 코어/고유 보스 보상/진행 아이템/고유 NBT 장비/비스택 장비 제외."
         },
         {
-          "line": 249,
+          "line": 251,
           "text": "CORE_ACQUISITION_DESIGN_2026-10-24.md: 보물 범주 낚시에 성공했을 때 기존 보상과 별개로 추가 core roll **12%**."
         },
         {
-          "line": 257,
+          "line": 259,
           "text": "CORE_ACQUISITION_DESIGN_2026-10-24.md: `보물 낚시`처럼 보물 판정을 높이는 증강은 자연스럽게 이 루트를 강화한다."
         },
         {
-          "line": 259,
+          "line": 261,
           "text": "CORE_ACQUISITION_DESIGN_2026-10-24.md: 코어 자체는 `풍요`로 두 배가 되지 않는다."
         }
       ],
@@ -1293,16 +1293,19 @@
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ResourceHarvestAuditFixMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ReplantFallbackService.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestTuning.java",
+        "src/main/resources/data/augmentation_survival/augmentation/resource_harvest_contract.json",
+        "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/AugmentationSurvivalGameTests.java",
+        "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/RareTierPlaytestRegressionGameTests.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "B",
+      "bedrock_method": "On stable playerBreakBlock after-event, recognize mature Java CropBlock-equivalent vanilla crops, wait one tick, and replant at age 0 only when one matching item can be consumed from the Java-shaped 1.5-block expanded crop AABB or the breaker inventory; max level 1",
+      "api_constraints": "Stable playerBreakBlock after-events expose the pre-break permutation, player, dimension, and block position. Bedrock covers wheat, carrots, potatoes, beetroot, and Torchflower Crop; the latter is a Java CropBlock with a matching vanilla BlockItem. Pitcher Crop, Nether Wart, cocoa, berry bushes, and external crops are excluded because the pinned Java implementation is not CropBlock-based or has no matching BlockItem. Vanilla drop lists remain inaccessible, so the API route queries nearby item entities then falls back to the recorded breaker inventory",
+      "test_method": "Official BDS 1.26.62.1 production-handler GameTest performs live SimulatedPlayer crop breaks and verifies one-tick mature wheat replanting from guaranteed Seed Saver drops, the owner-inventory fallback consuming exactly one seed, Torchflower Crop replanting, a two-seed ground stack remaining at one, Bumper Crop product use, and blocked/immature/missing-seed/non-CropBlock controls. Java's `replantConsumesSeedAfterImmediatePickupWindow` covers owner fallback; `RareTierPlaytestRegressionGameTests` covers derived Sweeping Harvest interaction. Client UI, reconnect/restart, multiplayer, and derived-break Bedrock routing remain unverified",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:pockets",

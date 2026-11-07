@@ -1,5 +1,6 @@
 import { ItemStack, world } from "@minecraft/server";
 import { getStoredAugmentLevel } from "./progression.js";
+import { REPLANT_CROPS } from "./crop-catalog.js";
 
 const BUMPER_CROP = "augmentation_survival:bumper_crop";
 const BUMPER_CROP_MAX_LEVEL = 5;
@@ -60,14 +61,24 @@ const VANILLA_DEXTERITY_BLOCKS = new Set([
   "minecraft:open_eyeblossom",
 ]);
 
-// These vanilla crops have a stable Bedrock growth state, ordinary product,
-// and planting item. Unknown or external crop drops are left untouched.
-const VANILLA_CROPS = new Map([
-  ["minecraft:wheat", { maxAge: 7, product: "minecraft:wheat", plantingItem: "minecraft:wheat_seeds" }],
-  ["minecraft:carrots", { maxAge: 7, product: "minecraft:carrot", plantingItem: "minecraft:carrot" }],
-  ["minecraft:potatoes", { maxAge: 7, product: "minecraft:potato", plantingItem: "minecraft:potato" }],
-  ["minecraft:beetroot", { maxAge: 3, product: "minecraft:beetroot", plantingItem: "minecraft:beetroot_seeds" }],
-]);
+// Bonus drops have been verified for these four ordinary crops. Torchflower
+// participates in Replant, but its non-food CropBlock drop needs separate
+// bonus-yield parity evidence before joining this established map.
+const VANILLA_CROPS = new Map([...REPLANT_CROPS]
+  .filter(([, crop]) => crop.harvestBonuses)
+  .map(([blockId, crop]) => [blockId, {
+    maxAge: crop.maxAge,
+    product: crop.product,
+    plantingItem: crop.plantingItem,
+  }]));
+
+/** @type {(player: import("@minecraft/server").Player) => number} */
+let cropHarvestRandomProvider = () => Math.random();
+
+/** Test-pack seam; normal play always keeps the Math.random provider. @param {(player: import("@minecraft/server").Player) => number} provider */
+export function setCropHarvestRandomProvider(provider) {
+  cropHarvestRandomProvider = typeof provider === "function" ? provider : () => Math.random();
+}
 
 /** @param {number} level */
 export function bumperCropBonusChance(level) {
@@ -230,7 +241,7 @@ export function applyDexterityGatheringBonus(event, random = Math.random) {
 }
 
 world.afterEvents.playerBreakBlock.subscribe(event => {
-  applyCropHarvestBonuses(event);
+  applyCropHarvestBonuses(event, () => cropHarvestRandomProvider(event.player));
   applyExtraPieceBonus(event);
   applyDexterityGatheringBonus(event);
 });

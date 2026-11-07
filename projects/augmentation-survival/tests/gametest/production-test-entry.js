@@ -2,6 +2,7 @@ import "./main.js";
 import { ItemStack, system, world } from "@minecraft/server";
 import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progression.js";
 import { setArrowSaverRandomProvider } from "./arrow-saver.js";
+import { setCropHarvestRandomProvider } from "./harvest.js";
 
 setArrowSaverRandomProvider(player => {
   const prefix = "as_arrow_saver_test_roll:";
@@ -11,6 +12,28 @@ setArrowSaverRandomProvider(player => {
   const roll = Number(tag.slice(prefix.length));
   return Number.isFinite(roll) ? roll : Math.random();
 });
+
+setCropHarvestRandomProvider(player => {
+  if (!player.hasTag("as_force_crop_harvest_proc")) return Math.random();
+  player.addTag("as_crop_bonus_roll_observed");
+  return 0;
+});
+
+const REPLANT_TEST_LEVELS = {
+  as_replant_test_seed_saver: { "augmentation_survival:replant": 1, "augmentation_survival:seed_saver": 3 },
+  as_replant_test_only: { "augmentation_survival:replant": 1 },
+  as_replant_test_bumper: { "augmentation_survival:replant": 1, "augmentation_survival:bumper_crop": 5 },
+};
+system.runInterval(() => {
+  for (const player of world.getPlayers()) {
+    const tag = player.getTags().find(value => Object.hasOwn(REPLANT_TEST_LEVELS, value));
+    if (!tag) continue;
+    try {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify(REPLANT_TEST_LEVELS[tag]));
+      player.removeTag(tag);
+    } catch { /* The production-only test property may be unavailable during disconnect. */ }
+  }
+}, 1);
 
 // This entry is installed only in the generated BDS test copy of the
 // production behavior pack. Dynamic properties are pack-scoped, so seed the

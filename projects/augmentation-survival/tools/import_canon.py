@@ -125,6 +125,18 @@ def main(source: Path, target: Path) -> None:
             relative = "src/main/resources/data/augmentation_survival/augmentation/resource_harvest_contract.json"
             if relative not in source_paths:
                 source_paths.append(relative)
+        if slug == "replant":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ResourceHarvestAuditFixMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ReplantFallbackService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ResourceHarvestTuning.java",
+                "src/main/resources/data/augmentation_survival/augmentation/resource_harvest_contract.json",
+                "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/AugmentationSurvivalGameTests.java",
+                "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/RareTierPlaytestRegressionGameTests.java",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         if slug == "tool_care":
             for relative in (
                 "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ItemStackDurabilityAugmentMixin.java",
@@ -363,7 +375,7 @@ def main(source: Path, target: Path) -> None:
             "interaction_mapping_status": (
                 "REVIEW_REQUIRED" if interaction_refs else
                 "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip", "terrain_resistance", "twins", "long_jump", "taming_knack", "ore_sense", "chest_finder"} else
-                "REVIEW_REQUIRED" if slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "long_reach", "fast_eating", "fuel_saver", "fast_brewing", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else
+                "REVIEW_REQUIRED" if slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "long_reach", "fast_eating", "fuel_saver", "fast_brewing", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity", "replant"} else
                 "NO_DIRECT_MENTION_FOUND"
             ),
             "compatibility_class": (
@@ -375,7 +387,7 @@ def main(source: Path, target: Path) -> None:
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
-                "B" if slug in {"bumper_crop", "seed_saver", "extra_piece"} else
+                "B" if slug in {"bumper_crop", "seed_saver", "extra_piece", "replant"} else
                 "B" if slug == "hearty_meal" else
                 "B" if slug == "loot_scoop" else
                 "B" if slug == "dexterity" else
@@ -395,6 +407,7 @@ def main(source: Path, target: Path) -> None:
                 "Scale player drowning damage in the stable entityHurt before-event by 15% per level; max level 3" if slug == "strong_lungs" else
                 "On stable playerBreakBlock after-event, inspect the saved mature vanilla crop permutation and independently spawn its ordinary product with exact 8% per-level chance; max level 5" if slug == "bumper_crop" else
                 "On stable playerBreakBlock after-event, independently spawn a mapped vanilla crop planting item with exact 15% per-level chance; max level 3" if slug == "seed_saver" else
+                "On stable playerBreakBlock after-event, recognize mature Java CropBlock-equivalent vanilla crops, wait one tick, and replant at age 0 only when one matching item can be consumed from the Java-shaped 1.5-block expanded crop AABB or the breaker inventory; max level 1" if slug == "replant" else
                 "On stable playerBreakBlock after-event, recognize vanilla ore IDs and ore-tagged blocks, recalculate the Java-shaped first ordinary drop from the captured pre-break permutation and tool, and spawn one cloned item at the exact 5% per-level chance; max level 3" if slug == "extra_piece" else
                 "Capture a player's selected slot before a stable block-break event; after a successful break, compare the before/after durability snapshots and restore the pre-break value on a 5% per-level Tool Care roll, returning a tool only if that same slot is empty; max level 5" if slug == "tool_care" else
                 "On stable playerBreakBlock after-event, accept the Java gathering whitelist and roll exact 10% / 20% / 30% chance; re-run the captured block permutation's loot with the captured tool and spawn one copy of the first Java-eligible ordinary stack; max level 3" if slug == "dexterity" else
@@ -440,6 +453,7 @@ def main(source: Path, target: Path) -> None:
                 "Stable Entity.isOnGround/isClimbing, location, Block.isLiquid/isWaterlogged, and writable minecraft:movement/minecraft:underwater_movement support this route. Stable @minecraft/server has no fallDistance property and BDS shows isFalling starts after initial downward displacement, so peak-position sampling reconstructs the four-block threshold. If the level is first acquired during an existing fall, Bedrock starts sampling at the current position and can undercount the preceding distance; Java's fallDistance carries it. Runtime bonus clears on death, respawn, and leave; live-client movement, water/climb/teleport edge cases, reconnect timing, multiplayer, and Elastic Storage coexistence remain unverified" if slug == "momentum_shift" else
                 "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot only. Stable after-event provides the pre-break permutation and player, but not the calculated ordinary drop list; Java modded crops and tool-specific crop drops are unresolved" if slug == "bumper_crop" else
                 "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot planting items only. Java runs this 15% per-level roll independently after Bumper Crop; actual block-break delivery and external/modded crops remain unresolved" if slug == "seed_saver" else
+                "Stable playerBreakBlock after-events expose the pre-break permutation, player, dimension, and block position. Bedrock covers wheat, carrots, potatoes, beetroot, and Torchflower Crop; the latter is a Java CropBlock with a matching vanilla BlockItem. Pitcher Crop, Nether Wart, cocoa, berry bushes, and external crops are excluded because the pinned Java implementation is not CropBlock-based or has no matching BlockItem. Vanilla drop lists remain inaccessible, so the API route queries nearby item entities then falls back to the recorded breaker inventory" if slug == "replant" else
                 "Stable playerBreakBlock exposes the captured block permutation and itemStackBeforeBreak; LootTableManager can recalculate a drop list from that permutation and tool but does not expose the already-spawned vanilla drop list. Vanilla ore IDs and exposed ore tags are covered. External ores, add-on tag parity, real-client behavior and multiplayer remain unverified; Java also applies this roll during derived breaks, so Bedrock derived-break routing must be added with Tunneling" if slug == "extra_piece" else
                 "Stable Script API has no global pre-durability event for vanilla tools. This route only restores durability lost on player block-break events; melee/use durability and automatically derived mining/harvest breaks are not covered. The stable item component surface does not expose Java's DataComponents.TOOL marker for exact item classification; reconnect, client play and multiplayer remain unverified" if slug == "tool_care" else
                 "Stable block-break events expose no mining-speed/progress setter. Haste is a whole-effect substitute, not Java's submerged_mining_speed modifier: integer amplifiers only approximate the 1.8×/2.6×/3.4× curve, and applying/removing Haste can conflict with potion or other add-on effects. The Java interaction contract has no Underwater Work-specific cross-augment rule; no substitute is shipped" if slug == "underwater_work" else
@@ -484,6 +498,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS GameTest: production before-event handler reduces 10 simulated-player drowning damage to 8.5/7/5.5 at levels 1/2/3; test-only production-pack entry seeds the pack-scoped property" if slug == "strong_lungs" else
                 "BDS GameTest calls the shared handler with synthetic break-event payloads: mature wheat at each exact level threshold, immature and unsupported blocks, and one ordinary product for each mapped vanilla crop; real block-break event delivery remains untested" if slug == "bumper_crop" else
                 "BDS GameTest calls the shared crop handler with synthetic events: exact 15/30/45% boundaries, mapped planting items, and independent rolls alongside Bumper Crop; real player block-break delivery remains untested" if slug == "seed_saver" else
+                "Official BDS 1.26.62.1 production-handler GameTest performs live SimulatedPlayer crop breaks and verifies one-tick mature wheat replanting from guaranteed Seed Saver drops, the owner-inventory fallback consuming exactly one seed, Torchflower Crop replanting, a two-seed ground stack remaining at one, Bumper Crop product use, and blocked/immature/missing-seed/non-CropBlock controls. Java's `replantConsumesSeedAfterImmediatePickupWindow` covers owner fallback; `RareTierPlaytestRegressionGameTests` covers derived Sweeping Harvest interaction. Client UI, reconnect/restart, multiplayer, and derived-break Bedrock routing remain unverified" if slug == "replant" else
                 "BDS GameTest deterministically verifies 5/10/15% roll boundaries and one block/tool-derived drop, including Silk Touch and Fortune; a separate SimulatedPlayer break verifies live playerBreakBlock event delivery" if slug == "extra_piece" else
                 "BDS 1.26.62.1 GameTests verify exact 5/10/15/20/25% chance boundaries and level cap, successful restoration, occupied-slot safety, and near-break tool return. A production-handler SimulatedPlayer mines vanilla stone 40 times at level 5 and observes repeated durability restoration through real before/after events; this does not verify the probability distribution" if slug == "tool_care" else
                 "BDS 1.26.62.1 GameTests verify exact 10/20/30% chance boundaries, level cap, vanilla leaf/flower and explicit whitelist matching, first eligible dandelion duplication, and rejection of unlisted blocks, damageable/custom-named/lore-bearing items, cores, and unowned levels. A production-handler SimulatedPlayer performs 50 level-3 dandelion breaks and checks for at least one additional item beyond native yields; this only samples the live effect path and does not establish probability distribution or actual-drop equivalence. Derived breaks, reconnect, client and multiplayer remain untested" if slug == "dexterity" else
@@ -518,8 +533,8 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver", "replant"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver", "replant"},
         })
         if slug == "ride_current":
             record = records[-1]

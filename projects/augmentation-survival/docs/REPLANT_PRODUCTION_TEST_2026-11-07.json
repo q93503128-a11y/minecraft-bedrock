@@ -1,0 +1,14 @@
+{
+  "tag": "augmentation_survival_replant_production",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 9297,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:replant_uses_mature_crop_drops_or_owner_seed_without_duplication",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}

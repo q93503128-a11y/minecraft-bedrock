@@ -185,7 +185,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:momentum_shift",
       "augmentation_survival:mantle",
       ]
-      : tier === "rare" ? ["augmentation_survival:arrow_saver", ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
+      : tier === "rare" ? ["augmentation_survival:arrow_saver", "augmentation_survival:replant", ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
@@ -594,6 +594,152 @@ GameTest.registerAsync("AugmentationSurvival", "crop_bonus_augments_match_maturi
   ensure(rolls === 0, "An unowned augment consumed a bonus roll.");
   test.succeed();
 }).maxTicks(40).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "replant_uses_mature_crop_drops_or_owner_seed_without_duplication", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 2, z: 3 }, "ASReplantProduction", GameMode.survival);
+  const inventory = inventoryOf(player);
+  const target = { x: 5, y: 2, z: 3 };
+  const worldTarget = test.worldBlockLocation(target);
+  const dimension = player.dimension;
+  const worldCenter = { x: worldTarget.x + 0.5, y: worldTarget.y + 0.5, z: worldTarget.z + 0.5 };
+  const plantableItems = ["minecraft:wheat_seeds", "minecraft:carrot", "minecraft:potato", "minecraft:beetroot_seeds", "minecraft:torchflower_seeds"];
+  const errors = [];
+
+  const removeNearbyPlantingItems = itemIds => {
+    for (const entity of dimension.getEntities({ type: "minecraft:item", location: worldCenter, maxDistance: 4 })) {
+      const stack = entity.getComponent("minecraft:item")?.itemStack;
+      if (itemIds.includes(stack?.typeId)) entity.remove();
+    }
+  };
+  const setProductionLevels = async tag => {
+    player.addTag(tag);
+    await test.idle(2);
+  };
+  const setCrop = (blockId, state, age) => {
+    const soil = dimension.getBlock({ x: worldTarget.x, y: worldTarget.y - 1, z: worldTarget.z });
+    const block = dimension.getBlock(worldTarget);
+    ensure(soil && block, `Could not access soil/crop position for ${blockId}.`);
+    soil.setType(blockId === "minecraft:nether_wart" ? "minecraft:soul_sand" : "minecraft:farmland");
+    block.setPermutation(BlockPermutation.resolve(blockId, { [state]: age }));
+  };
+  const breakTarget = async (label, onBreak) => {
+    player.teleport({ x: worldTarget.x - 1, y: worldTarget.y, z: worldTarget.z }, { checkForBlocks: false });
+    await test.idle(1);
+    let observed = 0;
+    const observer = event => {
+      if (event.player.id !== player.id || event.block.location.x !== worldTarget.x
+        || event.block.location.y !== worldTarget.y || event.block.location.z !== worldTarget.z) return;
+      observed += 1;
+      try { onBreak?.(event); } catch (error) { errors.push(`${label}: ${String(error)}`); }
+    };
+    world.afterEvents.playerBreakBlock.subscribe(observer);
+    try {
+      ensure(player.breakBlock(target), `${label}: SimulatedPlayer could not start the crop break.`);
+      await test.idle(3);
+    } finally {
+      world.afterEvents.playerBreakBlock.unsubscribe(observer);
+    }
+    ensure(observed === 1, `${label}: expected one live playerBreakBlock event, got ${observed}.`);
+    ensure(errors.length === 0, errors.join("; "));
+  };
+  const cropAge = expectedId => {
+    const block = dimension.getBlock(worldTarget);
+    ensure(block?.typeId === expectedId, `Expected ${expectedId} at the crop cell, found ${block?.typeId}.`);
+    const age = block.permutation.getState("growth");
+    ensure(typeof age === "number", `${expectedId} did not expose its stable growth state.`);
+    return age;
+  };
+
+  // Crop bonuses execute before the delayed Replant handler. Force Seed Saver
+  // and Bumper Crop procs in this test-only player to verify the shared drop
+  // route feeds the same planting-item search Java uses.
+  player.addTag("as_force_crop_harvest_proc");
+  await setProductionLevels("as_replant_test_seed_saver");
+  inventory.setItem(0, new ItemStack("minecraft:wheat_seeds", 4));
+  setCrop("minecraft:wheat", "growth", 7);
+  await breakTarget("Seed Saver interaction", event => {
+    event.player.teleport({ x: worldTarget.x - 4, y: worldTarget.y + 4, z: worldTarget.z }, { checkForBlocks: false });
+  });
+  ensure(cropAge("minecraft:wheat") === 0, "Mature wheat did not replant at growth 0 from the guaranteed Seed Saver/native drop route.");
+  ensure(player.hasTag("as_crop_bonus_roll_observed"), "Seed Saver did not reach the deterministic production roll path.");
+  ensure(countItem(inventory, "minecraft:wheat_seeds") === 4,
+    "Replant should consume the nearby Seed Saver/native seed before the owner's inventory fallback.");
+  removeNearbyPlantingItems(plantableItems);
+
+  await setProductionLevels("as_replant_test_only");
+  inventory.setItem(0, new ItemStack("minecraft:wheat_seeds", 4));
+  setCrop("minecraft:wheat", "growth", 7);
+  await breakTarget("owner inventory fallback", () => removeNearbyPlantingItems(["minecraft:wheat_seeds"]));
+  ensure(cropAge("minecraft:wheat") === 0, "Replant did not restore a mature crop from the owner's inventory fallback.");
+  ensure(countItem(inventory, "minecraft:wheat_seeds") === 3, "Owner fallback must consume exactly one seed.");
+  removeNearbyPlantingItems(plantableItems);
+
+  // A seed stack larger than one exercises the stable-API replacement path.
+  // Place it at the far edge of Java's expanded crop box, away from pickup.
+  const torchflowerSeedLocation = { x: worldTarget.x + 2, y: worldTarget.y + 0.5, z: worldTarget.z + 0.5 };
+  inventory.setItem(0, new ItemStack("minecraft:torchflower_seeds", 6));
+  await setProductionLevels("as_replant_test_only");
+  setCrop("minecraft:torchflower_crop", "growth", 1);
+  await breakTarget("stacked ground item and Torchflower Crop", () => {
+    removeNearbyPlantingItems(["minecraft:torchflower_seeds"]);
+    dimension.spawnItem(new ItemStack("minecraft:torchflower_seeds", 2), torchflowerSeedLocation);
+  });
+  ensure(cropAge("minecraft:torchflower_crop") === 0, "The Java CropBlock Torchflower did not replant from its planting item.");
+  ensure(countItem(inventory, "minecraft:torchflower_seeds") === 6, "Ground-item consumption incorrectly changed the player's seed inventory.");
+  ensure(countDroppedItem(dimension, torchflowerSeedLocation, "minecraft:torchflower_seeds") === 1,
+    "Consuming one seed from a dropped stack must leave exactly one seed without duplication.");
+  removeNearbyPlantingItems(plantableItems);
+
+  // Bumper Crop's carrot product is also its planting item, as in Java.
+  inventory.setItem(0, new ItemStack("minecraft:carrot", 5));
+  await setProductionLevels("as_replant_test_bumper");
+  player.removeTag("as_crop_bonus_roll_observed");
+  setCrop("minecraft:carrots", "growth", 7);
+  await breakTarget("Bumper Crop interaction", event => {
+    event.player.teleport({ x: worldTarget.x - 4, y: worldTarget.y + 4, z: worldTarget.z }, { checkForBlocks: false });
+  });
+  ensure(cropAge("minecraft:carrots") === 0, "Mature carrots did not replant from their product drops.");
+  ensure(player.hasTag("as_crop_bonus_roll_observed"), "Bumper Crop did not reach the deterministic production roll path.");
+  ensure(countItem(inventory, "minecraft:carrot") === 5, "Replant should prefer nearby carrots before the owner's inventory.");
+  removeNearbyPlantingItems(plantableItems);
+
+  inventory.setItem(0, new ItemStack("minecraft:wheat_seeds", 4));
+  await setProductionLevels("as_replant_test_only");
+  setCrop("minecraft:wheat", "growth", 7);
+  await breakTarget("blocked target", () => {
+    removeNearbyPlantingItems(["minecraft:wheat_seeds"]);
+    dimension.getBlock(worldTarget)?.setType("minecraft:stone");
+  });
+  ensure(dimension.getBlock(worldTarget)?.typeId === "minecraft:stone", "A concurrent solid block was overwritten by Replant.");
+  ensure(countItem(inventory, "minecraft:wheat_seeds") === 4, "A blocked planting cell consumed a seed.");
+
+  setCrop("minecraft:wheat", "growth", 6);
+  await breakTarget("immature crop", () => removeNearbyPlantingItems(["minecraft:wheat_seeds"]));
+  ensure(dimension.getBlock(worldTarget)?.isAir, "An immature crop should not be replanted.");
+  ensure(countItem(inventory, "minecraft:wheat_seeds") === 4, "An immature crop consumed a seed.");
+
+  inventory.setItem(0, undefined);
+  setCrop("minecraft:wheat", "growth", 7);
+  await breakTarget("missing seed", () => removeNearbyPlantingItems(["minecraft:wheat_seeds"]));
+  ensure(dimension.getBlock(worldTarget)?.isAir, "Replant created a crop without consuming a matching planting item.");
+
+  inventory.setItem(0, new ItemStack("minecraft:nether_wart", 3));
+  await setProductionLevels("as_replant_test_only");
+  setCrop("minecraft:nether_wart", "age", 3);
+  await breakTarget("non-CropBlock Nether Wart", () => {});
+  ensure(dimension.getBlock(worldTarget)?.isAir, "A non-CropBlock was incorrectly replanted.");
+  ensure(countItem(inventory, "minecraft:nether_wart") === 3, "Unsupported Nether Wart consumed an item.");
+
+  console.warn("AS_REPLANT_PRODUCTION_TEST " + JSON.stringify({
+    bds: "1.26.62.1",
+    branches: ["seed_saver_ground_priority", "owner_inventory_fallback", "torchflower_item_stack_decrement", "bumper_crop_product_priority", "blocked_cell", "immature_crop", "missing_seed", "unsupported_nether_wart"],
+    delayedTicks: 1,
+    groundPickupRadius: 1.5,
+    itemStackAfterReplacement: 1,
+  }));
+  player.disconnect();
+  test.succeed();
+}).maxTicks(240).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_replant_production");
 
 GameTest.registerAsync("AugmentationSurvival", "extra_piece_matches_ore_loot_chances_and_tool_enchants", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASExtraPieceLoot", GameMode.survival);
@@ -1743,6 +1889,66 @@ GameTest.registerAsync("AugmentationSurvival", "arrow_saver_restores_one_exact_v
   ensure(arrowSpawns.get(infinity.id) === 1, "Infinity should still release a normal arrow projectile.");
   test.succeed();
 }).maxTicks(190).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_arrow_saver_production");
+
+// Diagnostic only: inspect the pinned BDS crop state names and whether mutating
+// the ItemStack snapshot from minecraft:item persists to a world item entity.
+GameTest.registerAsync("AugmentationSurvival", "replant_stable_api_surface_probe", async (test) => {
+  const dimension = world.getDimension("overworld");
+  const candidates = [
+    ["minecraft:wheat", "minecraft:wheat_seeds"],
+    ["minecraft:carrots", "minecraft:carrot"],
+    ["minecraft:potatoes", "minecraft:potato"],
+    ["minecraft:beetroot", "minecraft:beetroot_seeds"],
+    ["minecraft:torchflower_crop", "minecraft:torchflower_seeds"],
+    ["minecraft:pitcher_crop", "minecraft:pitcher_pod"],
+    ["minecraft:nether_wart", "minecraft:nether_wart"],
+    ["minecraft:cocoa", "minecraft:cocoa_beans"],
+    ["minecraft:sweet_berry_bush", "minecraft:sweet_berries"],
+  ];
+  const cropResults = candidates.map(([blockId, itemId]) => {
+    const result = { blockId, itemId, itemValid: false, states: {}, ageStates: {} };
+    try {
+      new ItemStack(itemId, 1);
+      result.itemValid = true;
+    } catch { /* Record unavailable item IDs as unsupported in this BDS. */ }
+    try {
+      const permutation = BlockPermutation.resolve(blockId);
+      result.states = permutation.getAllStates();
+    } catch (error) {
+      result.blockError = String(error);
+      return result;
+    }
+    for (const stateName of ["growth", "age"]) {
+      const accepted = [];
+      for (let value = 0; value <= 15; value += 1) {
+        try {
+          const permutation = BlockPermutation.resolve(blockId, { [stateName]: value });
+          if (permutation.getState(stateName) === value) accepted.push(value);
+        } catch { /* State name/value is not supported for this block. */ }
+      }
+      if (accepted.length > 0) result.ageStates[stateName] = accepted;
+    }
+    return result;
+  });
+
+  const itemLocation = test.worldLocation({ x: 4, y: 3, z: 4 });
+  const itemEntity = dimension.spawnItem(new ItemStack("minecraft:wheat_seeds", 2), itemLocation);
+  const before = itemEntity.getComponent("minecraft:item")?.itemStack.amount;
+  let assignmentError = "";
+  try {
+    const itemStackSnapshot = itemEntity.getComponent("minecraft:item")?.itemStack;
+    if (itemStackSnapshot) itemStackSnapshot.amount = 1;
+  } catch (error) {
+    assignmentError = String(error);
+  }
+  await test.idle(2);
+  let after;
+  try { after = itemEntity.getComponent("minecraft:item")?.itemStack.amount; }
+  catch { after = "entity_removed"; }
+  console.warn("AS_REPLANT_API_SURFACE", JSON.stringify({ cropResults, itemAmountBefore: before, itemAmountAfter: after, assignmentError }));
+  if (itemEntity.isValid) itemEntity.remove();
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag("augmentation_survival_replant_probe");
 
 // Diagnostic only: the official stable declarations do not expose the
 // pre-release breathable.airSupply property. Check whether the installed BDS
