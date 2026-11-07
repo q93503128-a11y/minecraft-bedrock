@@ -164,7 +164,7 @@ The uncommon augment has maximum level 5 and gives each equipped armor piece an 
 
 The production BP snapshots each player's damageable head, chest, legs, and feet equipment in `world.beforeEvents.entityHurt`. After `world.afterEvents.entityHurt`, it checks for increased durability in each corresponding slot, rolls the saved Armor Care level independently for the changed pieces, and writes a cloned post-hit stack with its previous durability restored. It skips empty slots and stacks with different item type IDs; identical same-type replacements cannot be distinguished by the stable API. The shared progression property remains the authority for the saved level. Armor Care is passive and introduces no key binding, so its gameplay route does not require platform-specific keyboard, touch, or controller controls.
 
-The isolated production tests ran 20 ordinary and 20 near-break level-5 hits against four diamond armor pieces. The latest full 52-test run saved 14 of 80 ordinary and 18 of 80 near-break outcomes; a separate three-test `armor_probe` run saved 17 and 20. Both runs spent durability on the other outcomes. A level-5-unowned control retained native durability loss on all four iron armor slots. Pure-rule checks cover exact 5% increments, the five-level cap, just-below success, and the exclusive failure boundary. The event-surface diagnostic observed the before event before armor wear and the after event after native damage. The standard suite contains two Armor Care production tests; the separate diagnostic pack also passed all three `armor_probe` tests.
+The isolated production tests ran 20 ordinary and 20 near-break level-5 hits against four diamond armor pieces. The latest full 52-test run saved 24 of 80 ordinary and 26 of 80 near-break outcomes; a separate three-test `armor_probe` run saved 17 and 20. Both runs spent durability on the other outcomes. A level-5-unowned control retained native durability loss on all four iron armor slots. Pure-rule checks cover exact 5% increments, the five-level cap, just-below success, and the exclusive failure boundary. The event-surface diagnostic observed the before event before armor wear and the after event after native damage. The standard suite contains two Armor Care production tests; the separate diagnostic pack also passed all three `armor_probe` tests.
 
 ### Classification and interaction limits
 
@@ -182,3 +182,30 @@ See [`ARMOR_CARE_IMPLEMENTATION_2026-11-07.md`](ARMOR_CARE_IMPLEMENTATION_2026-1
 - [Stable `EntityHurtAfterEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtafterevent?view=minecraft-bedrock-stable)
 - [Stable `EntityEquippableComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityequippablecomponent?view=minecraft-bedrock-stable)
 - [Stable `ItemDurabilityComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemdurabilitycomponent?view=minecraft-bedrock-stable)
+
+
+## `빠른 양조` (Fast Brewing)
+
+### Java contract and implementation
+
+The uncommon augment has maximum level 3. At the instant a brew begins, Java snapshots the highest saved Fast Brewing level among online players within 8 blocks of the brewing stand. Its 15% / 30% / 45% reductions convert the vanilla 400-tick duration to 340 / 280 / 220 ticks. `BrewingStandUtilityMixin.serverTick` applies the new timer only when the observed timer is exactly 400, leaving the selected duration on the brewing stand after players move away.
+
+The same Java mixin also calls `AreaAccelerationService.extraTicksAt` and re-enters the brewing-stand tick with a recursion guard. While Area Acceleration is active within 24 blocks, level 1 provides 14 extra stand ticks per world tick; level 2 provides 29. This interaction is implemented in Java source but has no explicit Fast Brewing row in the October interaction contract, so it must remain part of the source-derived parity requirements. The Bedrock addon currently implements neither machine tick injection nor Area Acceleration.
+
+### Stable Bedrock API review and BDS probe
+
+Stable `Block.getComponent` is limited to registered vanilla `BlockComponentTypes` and custom components, and `BlockInventoryComponent` provides a container of item stacks. The stable reference documents no vanilla brew-time component, timer, progress value, or brewing-start/completion event. The brewing block's inventory and occupancy states do not report whether a recipe is actively processing. See the official [Block](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable), [BlockComponentTypes](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockcomponenttypes?view=minecraft-bedrock-stable), and [BlockInventoryComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockinventorycomponent?view=minecraft-bedrock-stable) references.
+
+The separate BDS 1.26.62.1 `fast_brewing_api_surface_probe` passed (1/1, 7.356 seconds) using `@minecraft/server` 2.11.0. The vanilla brewing stand exposed exactly `minecraft:instrument_sound`, `minecraft:inventory`, `minecraft:movable`, and `minecraft:precipitation_interactions`; its inventory has five slots. `getComponent` returned no `minecraft:recipe_processing`, `minecraft:brewing`, or `minecraft:brewing_stand` component. The only block states were `brewing_stand_slot_a_bit`, `brewing_stand_slot_b_bit`, and `brewing_stand_slot_c_bit`, which report bottle presence. This probe enumerated the API surface only; it did not measure a vanilla brew's completion time or augment effect.
+
+### Classification and limits
+
+Class **D**, `NOT_PORTED`, and disabled as a core candidate. Stable Script API has no way to change the vanilla brew timer or to know its exact start tick. Polling the exposed inventory cannot separate a valid active brew from prepared ingredients, account for existing blaze-powder charge, or robustly observe hopper/manual slot changes. Replacing potion recipes or awarding results on a guessed schedule would change vanilla recipes, fuel use, timing, and container behavior, and could duplicate results in multiplayer. No approximation is shipped.
+
+Fast Brewing is native-vanilla content and has no dependency on external Java mods. Its exact interaction with Area Acceleration remains unported with that separate active augment.
+
+### References
+
+- [Stable `Block`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable)
+- [Stable `BlockComponentTypes`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockcomponenttypes?view=minecraft-bedrock-stable)
+- [Stable `BlockInventoryComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockinventorycomponent?view=minecraft-bedrock-stable)

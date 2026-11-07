@@ -1366,6 +1366,76 @@ GameTest.registerAsync("AugmentationSurvival", "furnace_fuel_api_surface_probe",
   test.succeed();
 }).maxTicks(260).structureName(STRUCTURE).tag(TAG);
 
+// Diagnostic only: inspect the vanilla brewing-stand API surface. No augment
+// state or gameplay hook is installed.
+GameTest.registerAsync("AugmentationSurvival", "fast_brewing_api_surface_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASFastBrewingSurfaceProbe", GameMode.survival);
+  const location = { x: 5, y: 2, z: 5 };
+  test.setBlockType("minecraft:brewing_stand", location);
+  await test.idle(2);
+
+  const origin = {
+    x: Math.floor(player.location.x) - 4,
+    y: Math.round(player.location.y - 3),
+    z: Math.floor(player.location.z) - 3,
+  };
+  const worldLocation = {
+    x: origin.x + location.x,
+    y: origin.y + location.y,
+    z: origin.z + location.z,
+  };
+  const stand = player.dimension.getBlock(worldLocation);
+  ensure(stand?.typeId === "minecraft:brewing_stand",
+    `Expected a brewing stand at ${JSON.stringify(worldLocation)}, found ${stand?.typeId ?? "unloaded"}.`);
+
+  const blockComponents = stand.getComponents().map(component => component.typeId).sort();
+  const componentChecks = ["minecraft:inventory", "minecraft:recipe_processing", "minecraft:brewing", "minecraft:brewing_stand"]
+    .map(componentId => {
+      try {
+        const component = stand.getComponent(componentId);
+        return { componentId, available: Boolean(component), keys: component ? Object.keys(component) : [] };
+      } catch (error) {
+        return { componentId, available: false, error: String(error) };
+      }
+    });
+
+  let inventory;
+  let inventoryError;
+  try {
+    inventory = stand.getComponent("minecraft:inventory")?.container;
+  } catch (error) {
+    inventoryError = String(error);
+  }
+  ensure(inventory && inventory.size >= 5,
+    `Brewing-stand block inventory was unavailable or too small (${inventory?.size ?? "none"}); ${inventoryError ?? ""}`);
+
+  const states = stand.permutation.getAllStates();
+  const stateNames = Object.keys(states).sort();
+  const exposedComponentIds = new Set(blockComponents);
+  const timerComponents = ["minecraft:recipe_processing", "minecraft:brewing", "minecraft:brewing_stand"];
+  ensure(exposedComponentIds.has("minecraft:inventory"), "The brewing stand did not expose its five-slot inventory.");
+  ensure(timerComponents.every(componentId => !exposedComponentIds.has(componentId)),
+    `Unexpected brewing timer component exposed by BDS: ${blockComponents.filter(componentId => timerComponents.includes(componentId))}.`);
+  ensure(JSON.stringify(stateNames) === JSON.stringify([
+    "brewing_stand_slot_a_bit",
+    "brewing_stand_slot_b_bit",
+    "brewing_stand_slot_c_bit",
+  ]), `Unexpected brewing-stand state surface: ${JSON.stringify(states)}.`);
+
+  const observations = {
+    blockTypeId: stand.typeId,
+    blockComponents,
+    states,
+    componentChecks,
+    inventoryAvailable: Boolean(inventory),
+    inventorySize: inventory.size,
+    inventoryError,
+    timerComponents,
+  };
+  console.warn(`AS_FAST_BREWING_API_SURFACE_PROBE ${JSON.stringify(observations)}`);
+  test.succeed();
+}).maxTicks(20).structureName(STRUCTURE).tag("augmentation_survival_brewing_probe");
+
 GameTest.registerAsync("AugmentationSurvival", "core_item_use_keeps_core_until_choice", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASCoreUse", GameMode.survival);
   const inventory = inventoryOf(player);

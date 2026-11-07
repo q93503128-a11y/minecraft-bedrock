@@ -1127,14 +1127,19 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/UtilityAugmentTuning.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/BrewingStandUtilityMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/BrewingStandAugmentAccessor.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/active/AreaAccelerationService.java",
+        "src/main/resources/data/augmentation_survival/augmentation/utility_runtime_contract.json",
+        "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "D",
+      "bedrock_method": "No production substitute shipped. Bedrock Script API exposes the brewing stand inventory but no vanilla brew-time getter/setter, brewing progress value, or timer component; exact per-brew duration control is unavailable",
+      "api_constraints": "Class D for Java's exact brewing timer change on stable @minecraft/server 2.11.0. Block.getComponents/getComponent exposes a brewing stand inventory and general block components, but no brew timer, progress value, or before-start/after-brew event. Its only vanilla block states are three bottle-slot occupancy bits. BDS 1.26.62.1 reports instrument_sound, inventory, movable, and precipitation_interactions; it returns no recipe_processing, brewing, or brewing_stand component. Inventory polling cannot distinguish an active recipe from prepared slots or observe the exact 400-tick timer start, especially with stored blaze-powder fuel and hopper edits. Replacing potion recipes or granting outputs on a guessed schedule would change vanilla recipe, fuel, inventory, and multiplayer semantics; no substitute is shipped",
+      "test_method": "BDS 1.26.62.1 diagnostic GameTest enumerates a vanilla brewing stand's stable scripting components and block states. It found a five-slot inventory, no brewing/recipe-processing timer component, and only the three bottle-slot occupancy states. This is API-surface evidence only; brew completion/timing, nearby-player snapshots, and Area Acceleration stacking were not tested. No Fast Brewing gameplay or offer is enabled",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

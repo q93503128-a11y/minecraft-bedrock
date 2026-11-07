@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 32852,
+  "durationMs": 36616,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -193,6 +193,14 @@
     },
     {
       "id": "AugmentationSurvival:rider_speed_does_not_change_unowned_mount",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:armor_care_matches_java_chance_and_restores_real_armor_wear",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:armor_care_does_not_change_unowned_armor",
       "outcome": "pass"
     },
     {

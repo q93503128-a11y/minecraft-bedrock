@@ -1,0 +1,14 @@
+{
+  "tag": "augmentation_survival_brewing_probe",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 7356,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:fast_brewing_api_surface_probe",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}
