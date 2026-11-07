@@ -156,6 +156,15 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "momentum_shift":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MovementAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MovementTuning.java",
+                "src/main/resources/data/augmentation_survival/augmentation/movement_modifier_contract.json",
+                "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         if slug == "quick_feet":
             # This entry is declared by the generic stat-modifier contract rather than
             # a Java source literal containing its catalog ID.
@@ -321,6 +330,14 @@ def main(source: Path, target: Path) -> None:
                 or line.strip().startswith("- **ROOT 직접 적중/직접 처치**")
                 or line.strip().startswith("`분산 사격` 보조탄은")
             )
+        if slug == "momentum_shift":
+            interaction_refs.extend(
+                {"line": line_number, "text": line.strip()}
+                for line_number, line in enumerate(interaction_lines, start=1)
+                if line.strip().startswith("### `탄성 저장` × `관성 전환`")
+                or ("관성 전환" in line and ("실제 낙하 거리" in line or "동시에" in line or "임시 발판" in line))
+            )
+            interaction_refs = list({(ref["line"], ref["text"]): ref for ref in interaction_refs}.values())
         source_mismatch = []
         if name != entry["canonical_name_ko"]:
             source_mismatch.append(f"catalog name={entry['canonical_name_ko']}")
@@ -352,7 +369,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug == "loot_scoop" else
                 "B" if slug == "dexterity" else
                 "B" if slug == "last_strength" else
-                "B" if slug in {"catch_breath", "quick_feet"} else
+                "B" if slug in {"catch_breath", "quick_feet", "momentum_shift"} else
                 "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care", "underwater_work", "pickup_hand", "brace", "step_up", "terrain_resistance", "twins", "long_jump"} else
                 "D" if slug in {"fishing_sense", "treasure_fishing", "long_reach", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "fast_brewing", "rapid_strikes", "recovery", "shield_grip"} else
                 "UNASSESSED"
@@ -378,6 +395,7 @@ def main(source: Path, target: Path) -> None:
                 "Reconcile stable minecraft:movement to defaultValue × (1 + 0.03 × saved level) every server tick; coordinate this writer with other movement augments" if slug == "quick_feet" else
                 "No exact stable route: Bedrock's native player block_interaction_range has no stable Script API getter/setter; raycast queries do not extend vanilla placement or block-use range" if slug == "long_reach" else
                 "Use the stable minecraft:movement attribute and Player.isSprinting; count 60 consecutive non-sprinting server ticks, then reconcile defaultValue × (1 + 0.10 × saved level) each tick. In water, combine Catch Breath and Webbed Feet into the underwater movement multiplier to preserve Java's shared additive movement bonus" if slug == "catch_breath" else
+                "On each server tick, reconstruct fall distance from the highest sampled player Y while outside Java-equivalent ground, climbable, and feet-water reset contact. On a grounded transition after at least 4.0 blocks, start a 60-tick runtime window and add exactly 0.10 × saved Momentum Shift level to the shared general/underwater movement bonus" if slug == "momentum_shift" else
                 "On stable itemCompleteUse after-event, apply the Java food saturation bonus; read exact custom food properties when exposed and infer vanilla food saturation gain from adjacent server-tick samples" if slug == "hearty_meal" else
                 "No stable API changes a vanilla furnace's per-fuel burn duration. The stable block inventory surface can observe slots, but does not expose the furnace burn timer or the vanilla item's fuel duration" if slug == "fuel_saver" else
                 "No production substitute shipped. Bedrock Script API exposes the brewing stand inventory but no vanilla brew-time getter/setter, brewing progress value, or timer component; exact per-brew duration control is unavailable" if slug == "fast_brewing" else
@@ -408,6 +426,7 @@ def main(source: Path, target: Path) -> None:
                 "B partial: Java applies after vanilla mitigation and skips delayed-damage context; Bedrock modifies before remaining mitigation and has no delayed-damage provenance mapping yet; armor/effect stacking parity unverified" if slug == "tough_skin" else
                 "B partial: Bedrock cause fall maps the tested damage path, but its before-event runs before remaining mitigation while Java applies after mitigation; natural landing and Feather Falling stacking unverified" if slug == "light_landing" else
                 "Stable before-event BDS verified; Bedrock applies the reduction before its remaining mitigation while Java applies it post-mitigation; armor/effect stacking parity is not yet verified" if slug == "strong_lungs" else
+                "Stable Entity.isOnGround/isClimbing, location, Block.isLiquid/isWaterlogged, and writable minecraft:movement/minecraft:underwater_movement support this route. Stable @minecraft/server has no fallDistance property and BDS shows isFalling starts after initial downward displacement, so peak-position sampling reconstructs the four-block threshold. If the level is first acquired during an existing fall, Bedrock starts sampling at the current position and can undercount the preceding distance; Java's fallDistance carries it. Runtime bonus clears on death, respawn, and leave; live-client movement, water/climb/teleport edge cases, reconnect timing, multiplayer, and Elastic Storage coexistence remain unverified" if slug == "momentum_shift" else
                 "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot only. Stable after-event provides the pre-break permutation and player, but not the calculated ordinary drop list; Java modded crops and tool-specific crop drops are unresolved" if slug == "bumper_crop" else
                 "Partial mapping supports vanilla wheat, carrots, potatoes, and beetroot planting items only. Java runs this 15% per-level roll independently after Bumper Crop; actual block-break delivery and external/modded crops remain unresolved" if slug == "seed_saver" else
                 "Stable playerBreakBlock exposes the captured block permutation and itemStackBeforeBreak; LootTableManager can recalculate a drop list from that permutation and tool but does not expose the already-spawned vanilla drop list. Vanilla ore IDs and exposed ore tags are covered. External ores, add-on tag parity, real-client behavior and multiplayer remain unverified; Java also applies this roll during derived breaks, so Bedrock derived-break routing must be added with Tunneling" if slug == "extra_piece" else
@@ -463,6 +482,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 production-handler GameTest verifies exact +4% / +8% / +12% daytime movement and night deactivation; Java's natural-regeneration interval half is not implemented" if slug == "sun_affinity" else
                 "Static stable @minecraft/server 2.11.0 declaration review and official stable API reference review: heal events expose cause/amount/cancellation but no natural-regeneration timer; no recovery behavior or BDS runtime test implemented" if slug == "recovery" else
                 "BDS GameTest uses the production pack: no bonus after 35 idle ticks, exact 10/20/30% general movement component values by 70 ticks at levels 1–3; separate production-path test measures 1.10/1.10/1.20 swim ratios for Catch Breath, Webbed Feet, and both together. The direct ground-velocity SimulatedPlayer probe yielded no valid control/level-1 ratio and is not counted" if slug == "catch_breath" else
+                "BDS 1.26.62.1 production-handler GameTest checks exact +10% / +20% / +30% landing values for four-block falls, a before-event-cancelled landing hit, the 60-tick active/expiry window, additive level-3 Quick Feet stacking, and no activation at three blocks. The separate state probe shows isFalling starts 3.9216 blocks below the peak while sampled peak-to-land distance is exactly 4; real-client movement, mobile/controller behavior, water/climbing edges, reconnect, multiplayer and Elastic Storage stacking remain open" if slug == "momentum_shift" else
                 "BDS 1.26.62.1 end-to-end GameTest consumes cooked beef through the production handler and checks exact saturation at levels 1–3 plus the food saturation cap" if slug == "hearty_meal" else
                 "BDS 1.26.62.1 diagnostic GameTest consumes coal in a vanilla furnace and observes the lit furnace and inventory slots; it found no furnace burn-duration component and coal exposed no minecraft:fuel script component. Diagnostic only; no Fuel Saver behavior implemented" if slug == "fuel_saver" else
                 "BDS 1.26.62.1 diagnostic GameTest enumerates a vanilla brewing stand's stable scripting components and block states. It found a five-slot inventory, no brewing/recipe-processing timer component, and only the three bottle-slot occupancy states. This is API-surface evidence only; brew completion/timing, nearby-player snapshots, and Area Acceleration stacking were not tested. No Fast Brewing gameplay or offer is enabled" if slug == "fast_brewing" else
@@ -487,8 +507,8 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift"},
         })
         if slug == "ride_current":
             record = records[-1]

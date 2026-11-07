@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -125,9 +125,41 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 17, "C": 13, "D": 11, "UNASSESSED": 106},
+            {"A": 2, "B": 18, "C": 13, "D": 11, "UNASSESSED": 105},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
+
+    def test_momentum_shift_matches_the_java_landing_contract_and_partial_bedrock_route(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        momentum = next(item for item in data["augments"] if item["id"].endswith(":momentum_shift"))
+        self.assertEqual("관성 전환", momentum["name_ko"])
+        self.assertEqual("uncommon", momentum["tier"])
+        self.assertEqual(3, momentum["max_level"])
+        self.assertIn("4블록 이상 낙하 후 착지", momentum["canonical_effect_ko"])
+        self.assertIn("+10% / +20% / +30%", momentum["canonical_effect_ko"])
+        self.assertEqual("B", momentum["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", momentum["port_status"])
+        self.assertTrue(momentum["candidate_enabled"])
+        self.assertEqual("REVIEW_REQUIRED", momentum["interaction_mapping_status"])
+        self.assertIn("MovementAugmentService.java", " ".join(momentum["java_source_paths"]))
+        self.assertIn("movement_modifier_contract.json", " ".join(momentum["java_source_paths"]))
+        self.assertIn("탄성 저장", " ".join(ref["text"] for ref in momentum["interaction_contract_refs"]))
+        self.assertIn("isFalling", momentum["api_constraints"])
+        self.assertIn("four-block threshold", momentum["api_constraints"])
+        self.assertIn("acquired during an existing fall", momentum["api_constraints"])
+        self.assertIn("60-tick", momentum["test_method"])
+        self.assertIn("three blocks", momentum["test_method"])
+        movement_script = (ROOT / "BP/scripts/movement.js").read_text(encoding="utf-8")
+        self.assertIn("MOMENTUM_SHIFT_MINIMUM_FALL_DISTANCE = 4", movement_script)
+        self.assertIn("MOMENTUM_SHIFT_DURATION_TICKS = 60", movement_script)
+        self.assertIn("landingFallDistance", movement_script)
+        self.assertIn("urgentStepsBonus + momentumShiftBonus", movement_script)
+        self.assertNotIn("player.fallDistance", movement_script)
+        probe = json.loads((ROOT / "docs/MOMENTUM_FALL_STATE_PROBE_2026-11-07.json").read_text(encoding="utf-8"))
+        self.assertEqual("pass", probe["outcome"])
+        self.assertEqual(4.0, probe["fallDistanceFromPeak"])
+        self.assertLess(probe["fallDistanceFromFirstFallingSample"], 4.0)
+        self.assertEqual([], probe["entityHurtAfterEvents"])
 
     def test_underwater_work_is_assessed_but_not_shipped(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

@@ -176,6 +176,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:ride_current",
         "augmentation_survival:urgent_steps",
         "augmentation_survival:armor_care",
+        "augmentation_survival:momentum_shift",
       ]
       : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
@@ -849,6 +850,190 @@ GameTest.registerAsync("AugmentationSurvival", "taming_component_and_event_surfa
   }
   test.succeed();
 }).maxTicks(240).structureName(STRUCTURE).tag("augmentation_survival_taming_probe");
+
+GameTest.registerAsync("AugmentationSurvival", "momentum_shift_fall_state_surface_probe", async (test) => {
+  const floor = { x: 5, y: 2, z: 5 };
+  test.setBlockType("minecraft:stone", floor);
+  const player = test.spawnSimulatedPlayer({ x: 5, y: 12, z: 5 }, "ASMomentumFallProbe", GameMode.survival);
+  const startY = player.location.y;
+  let peakY = startY;
+  const samples = [];
+  const fallHurtEvents = [];
+  const onHurt = event => {
+    if (event.hurtEntity.id === player.id) fallHurtEvents.push({ damage: event.damage, cause: event.damageSource.cause });
+  };
+  let firstFallingY;
+  let observedAirborne = false;
+  let landed = false;
+  world.afterEvents.entityHurt.subscribe(onHurt);
+  try {
+    for (let tick = 0; tick < 120; tick += 1) {
+      const location = player.location;
+      const onGround = player.isOnGround;
+      const falling = player.isFalling;
+      const velocityY = player.getVelocity().y;
+      if (!onGround) peakY = Math.max(peakY, location.y);
+      if (falling && firstFallingY === undefined) firstFallingY = location.y;
+      if (!onGround || falling || velocityY < -0.001) observedAirborne = true;
+      samples.push({ tick, y: location.y, onGround, falling, velocityY });
+      if (tick >= 2 && observedAirborne && onGround && !falling) {
+        landed = true;
+        break;
+      }
+      await test.idle(1);
+    }
+  } finally {
+    world.afterEvents.entityHurt.unsubscribe(onHurt);
+  }
+  const finalY = player.location.y;
+  const observedFallFromFirstFallingSample = firstFallingY === undefined ? undefined : firstFallingY - finalY;
+  const observedFallFromPeak = peakY - finalY;
+  const transitions = samples.filter((sample, index) => index === 0
+    || sample.onGround !== samples[index - 1].onGround
+    || sample.falling !== samples[index - 1].falling
+    || sample.tick % 5 === 0);
+  console.warn("AS_MOMENTUM_FALL_STATE_PROBE " + JSON.stringify({
+    startY,
+    finalY,
+    netDrop: startY - finalY,
+    peakY,
+    firstFallingY,
+    observedFallFromFirstFallingSample,
+    observedFallFromPeak,
+    observedAirborne,
+    landed,
+    fallHurtEvents,
+    transitions,
+  }));
+  ensure(landed && observedAirborne, "Simulated player did not expose a complete airborne-to-ground transition.");
+  ensure(startY - finalY >= 4, `Test player dropped fewer than four blocks: ${startY - finalY}.`);
+  ensure(firstFallingY !== undefined && observedFallFromPeak >= 4,
+    `Stable position samples from the airborne peak did not cover the four-block threshold: ${observedFallFromPeak}.`);
+  player.disconnect();
+  test.succeed();
+}).maxTicks(150).structureName(STRUCTURE).tag("augmentation_survival_momentum_probe");
+
+GameTest.registerAsync("AugmentationSurvival", "momentum_shift_applies_landing_bonus_and_expires", async (test) => {
+  const floor = { x: 5, y: 2, z: 5 };
+  test.setBlockType("minecraft:stone", floor);
+  const players = [];
+  const fallDamageEvents = [];
+  let cancelledFallDamage = 0;
+  const onHurtBefore = event => {
+    if (players.some(player => player.id === event.hurtEntity.id)
+        && event.damageSource.cause === EntityDamageCause.fall) {
+      event.cancel = true;
+      cancelledFallDamage += 1;
+    }
+  };
+  const onHurt = event => {
+    if (players.some(player => player.id === event.hurtEntity.id)) {
+      fallDamageEvents.push({ id: event.hurtEntity.id, cause: event.damageSource.cause, damage: event.damage });
+    }
+  };
+  world.beforeEvents.entityHurt.subscribe(onHurtBefore);
+  world.afterEvents.entityHurt.subscribe(onHurt);
+
+  async function spawnAndLand(name, startY, expectedDrop) {
+    const player = test.spawnSimulatedPlayer({ x: 5, y: startY, z: 5 }, name, GameMode.survival);
+    players.push(player);
+    const start = player.location.y;
+    const seedLevel = name === "ASMomentumShiftStack" ? 1
+      : name === "ASMomentumShiftBelowThreshold" ? 3
+        : Number(name.slice(-1));
+    let seeded = false;
+    for (let tick = 0; tick < 10; tick += 1) {
+      if (player.hasTag(`as_momentum_shift_seeded_${seedLevel}`)) {
+        seeded = true;
+        break;
+      }
+      await test.idle(1);
+    }
+    ensure(seeded, `${name}: production test profile did not seed its saved augment level.`);
+    let airborne = false;
+    let landed = false;
+    for (let tick = 0; tick < 120; tick += 1) {
+      const velocityY = player.getVelocity().y;
+      if (!player.isOnGround || player.isFalling || velocityY < -0.001) airborne = true;
+      if (airborne && player.isOnGround && !player.isFalling) {
+        landed = true;
+        break;
+      }
+      await test.idle(1);
+    }
+    ensure(landed, `${name}: did not complete a fall and landing.`);
+    const drop = start - player.location.y;
+    ensure(Math.abs(drop - expectedDrop) < 0.05, `${name}: expected a ${expectedDrop}-block fall, observed ${drop}.`);
+    return player;
+  }
+
+  function movementOf(player) {
+    const movement = player.getComponent("minecraft:movement");
+    ensure(movement, `${player.name}: native movement component was unavailable.`);
+    return movement;
+  }
+
+  try {
+    for (let level = 1; level <= 3; level += 1) {
+      const player = await spawnAndLand(`ASMomentumShiftLevel${level}`, 12, 4);
+      const movement = movementOf(player);
+      const expected = movement.defaultValue * (1 + 0.10 * level);
+      let activated = false;
+      for (let tick = 0; tick < 5; tick += 1) {
+        await test.idle(1);
+        if (Math.abs(movement.currentValue - expected) < 0.00001) {
+          activated = true;
+          break;
+        }
+      }
+      ensure(activated, `Level ${level} landing did not set movement to its exact +${10 * level}% value.`);
+
+      if (level === 3) {
+        for (let tick = 0; tick < 54; tick += 1) {
+          await test.idle(1);
+          ensure(Math.abs(movement.currentValue - expected) < 0.00001,
+            "Momentum Shift expired before its 60-tick Java window elapsed.");
+        }
+        let expired = false;
+        for (let tick = 0; tick < 12; tick += 1) {
+          await test.idle(1);
+          if (Math.abs(movement.currentValue - movement.defaultValue) < 0.00001) {
+            expired = true;
+            break;
+          }
+        }
+        ensure(expired, "Momentum Shift did not restore its base movement after the 60-tick window.");
+      }
+      player.disconnect();
+    }
+
+    const stacked = await spawnAndLand("ASMomentumShiftStack", 12, 4);
+    const stackedMovement = movementOf(stacked);
+    await test.idle(1);
+    ensure(Math.abs(stackedMovement.currentValue - stackedMovement.defaultValue * 1.19) < 0.00001,
+      "Level-1 Momentum Shift did not add +10% to level-3 Quick Feet's +9% shared movement bonus.");
+    stacked.disconnect();
+
+    const shortFall = await spawnAndLand("ASMomentumShiftBelowThreshold", 11, 3);
+    const shortMovement = movementOf(shortFall);
+    await test.idle(3);
+    ensure(Math.abs(shortMovement.currentValue - shortMovement.defaultValue) < 0.00001,
+      "A three-block fall incorrectly activated Momentum Shift.");
+    shortFall.disconnect();
+
+    ensure(cancelledFallDamage > 0,
+      "No fall before-event was observed to verify Momentum Shift when landing damage is cancelled.");
+    ensure(fallDamageEvents.length === 0,
+      "A cancelled fall before-event still emitted an after-event; Momentum Shift's test should be independent of damage.");
+  } finally {
+    world.beforeEvents.entityHurt.unsubscribe(onHurtBefore);
+    world.afterEvents.entityHurt.unsubscribe(onHurt);
+    for (const player of players) {
+      try { player.disconnect(); } catch { /* Clean up a simulated player after a failed assertion. */ }
+    }
+  }
+  test.succeed();
+}).maxTicks(400).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_momentum_production");
 
 GameTest.registerAsync("AugmentationSurvival", "nocturnal_and_sun_affinity_share_the_day_night_movement_axis", async (test) => {
   const previousTime = world.getTimeOfDay();

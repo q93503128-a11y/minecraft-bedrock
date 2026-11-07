@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 36616,
+  "durationMs": 37607,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -57,6 +57,10 @@
     },
     {
       "id": "AugmentationSurvival:quick_feet_scales_server_movement_by_level",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:momentum_shift_applies_landing_bonus_and_expires",
       "outcome": "pass"
     },
     {

@@ -1,0 +1,55 @@
+{
+  "serverVersion": "1.26.62.1",
+  "stableScriptApiVersion": "2.11.0",
+  "testId": "AugmentationSurvival:momentum_shift_fall_state_surface_probe",
+  "outcome": "pass",
+  "durationMs": 9697,
+  "coordinates": "GameTest-relative peak / landing Y in the isolated test cell",
+  "startY": -48.0,
+  "finalY": -52.0,
+  "netDrop": 4.0,
+  "peakY": -48.0,
+  "firstFallingY": -48.078399658203125,
+  "fallDistanceFromFirstFallingSample": 3.921600341796875,
+  "fallDistanceFromPeak": 4.0,
+  "airborneToGroundTransitionObserved": true,
+  "entityHurtAfterEvents": [],
+  "sampledTransitions": [
+    {
+      "tick": 0,
+      "y": -48.0,
+      "onGround": false,
+      "isFalling": false,
+      "velocityY": 0.0
+    },
+    {
+      "tick": 2,
+      "y": -48.078399658203125,
+      "onGround": false,
+      "isFalling": true,
+      "velocityY": -0.078399658203125
+    },
+    {
+      "tick": 5,
+      "y": -48.76847457885742,
+      "onGround": false,
+      "isFalling": true,
+      "velocityY": -0.3043174743652344
+    },
+    {
+      "tick": 10,
+      "y": -51.34627151489258,
+      "onGround": false,
+      "isFalling": true,
+      "velocityY": -0.6517105102539062
+    },
+    {
+      "tick": 11,
+      "y": -52.0,
+      "onGround": true,
+      "isFalling": false,
+      "velocityY": -0.6537284851074219
+    }
+  ],
+  "interpretation": "isFalling becomes true after downward motion has started and undershoots the four-block threshold when used as the starting position. The sampled peak position and grounded landing position span exactly four blocks; this test's fall emitted no entityHurt after-event."
+}

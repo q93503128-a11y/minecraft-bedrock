@@ -291,6 +291,21 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       player.addTag(`as_urgent_steps_seeded_${urgentStepsLevel}`);
       return;
     }
+    const momentumShiftLevels = {
+      ASMomentumShiftLevel1: 1,
+      ASMomentumShiftLevel2: 2,
+      ASMomentumShiftLevel3: 3,
+      ASMomentumShiftStack: 1,
+      ASMomentumShiftBelowThreshold: 3,
+    };
+    const momentumShiftLevel = momentumShiftLevels[player.name];
+    if (momentumShiftLevel) {
+      const levels = { "augmentation_survival:momentum_shift": momentumShiftLevel };
+      if (player.name === "ASMomentumShiftStack") levels["augmentation_survival:quick_feet"] = 3;
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
+      player.addTag(`as_momentum_shift_seeded_${momentumShiftLevel}`);
+      return;
+    }
     if (player.name !== "ASCoreCommitProduction") return;
 
     const coreId = "augmentation_survival:common_augment_core";
