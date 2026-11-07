@@ -211,6 +211,19 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "terrain_resistance":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/StatAugmentCatalog.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/stat/PlayerStatAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/AugmentPresentationCatalog.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/TerrainResistanceService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/WebBlockTerrainResistanceMixin.java",
+                "src/main/resources/data/augmentation_survival/augmentation/stat_modifier_contract.json",
+                "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json",
+                "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/MovementEdgeCaseGameTests.java",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         interaction_refs = [
             {"line": line_number, "text": line.strip()}
             for line_number, line in enumerate(interaction_lines, start=1)
@@ -278,7 +291,7 @@ def main(source: Path, target: Path) -> None:
             "interaction_contract_refs": interaction_refs,
             "interaction_mapping_status": (
                 "REVIEW_REQUIRED" if interaction_refs else
-                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip"} else
+                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip", "terrain_resistance"} else
                 "REVIEW_REQUIRED" if slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "long_reach", "fast_eating", "fuel_saver", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else
                 "NO_DIRECT_MENTION_FOUND"
             ),
@@ -292,7 +305,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug == "dexterity" else
                 "B" if slug == "last_strength" else
                 "B" if slug in {"catch_breath", "quick_feet"} else
-                "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care", "underwater_work", "pickup_hand", "brace", "step_up"} else
+                "C" if slug in {"miners_hand", "logging_knack", "nocturnal", "sun_affinity", "tool_care", "underwater_work", "pickup_hand", "brace", "step_up", "terrain_resistance"} else
                 "D" if slug in {"fishing_sense", "treasure_fishing", "long_reach", "long_breath", "cold_adaptation", "fast_eating", "fuel_saver", "rapid_strikes", "recovery", "shield_grip"} else
                 "UNASSESSED"
             ),
@@ -332,6 +345,7 @@ def main(source: Path, target: Path) -> None:
                 "No production substitute shipped; the stable Script API has no player knockback-resistance setter, and a velocity correction would occur after the first physics impulse and could alter ordinary movement" if slug == "brace" else
                 "No production substitute shipped; stable Player cooldown APIs cannot shorten Bedrock's native shield-disable state" if slug == "shield_grip" else
                 "No production substitute shipped; Player.inputInfo can expose client movement input, but collision-triggered teleport or impulse assistance would not preserve Java's smooth native step-height behavior" if slug == "step_up" else
+                "No production substitute shipped; Bedrock exposes a writable general minecraft:movement value but no Java-equivalent movement_efficiency modifier or surface-specific slowdown multiplier" if slug == "terrain_resistance" else
                 "Not assessed"
             ),
             "api_constraints": (
@@ -371,6 +385,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS setter probe retained 1.25 for two ticks without changing hunger/saturation; stable API 2.11.0 exposes the current attribute but no per-player hook for each action-exhaustion addition; ordering relative to hunger processing remains unverified" if slug == "efficient_metabolism" else
                 "Java adds Webbed Feet to a shared conditional movement modifier with Catch Breath, Nocturnal, Sun Affinity, and Momentum Shift; Bedrock currently uses the stable underwater_movement attribute. Standalone parity is verified on BDS 1.26.62.1, but stacking with those not-yet-ported augments and other attribute writers is untested" if slug == "webbed_feet" else
                 "Class C: Java adds 0.40 to STEP_HEIGHT for a one-block no-jump step. Stable Player exposes inputInfo but no writable step-height attribute/component; minecraft:variable_max_auto_step is entity JSON, and Microsoft recommends not overriding minecraft:player. BDS found neither step component on Player. A movement-input/collision teleport or impulse route could approximate the result but would pop instead of stepping smoothly; SimulatedPlayer.move did not populate inputInfo, so that route has not been validated against client input" if slug == "step_up" else
+                "Class C: stable API has no Java-equivalent movement_efficiency player modifier or writable surface-specific slowdown vector. minecraft:movement changes general speed; a conditional movement/velocity route could be explored, but the BDS SimulatedPlayer probe left stone, soul sand, and honey displacement unchanged at 1.45× and does not establish cobweb vertical or real-client parity" if slug == "terrain_resistance" else
                 "Not assessed"
             ),
             "test_method": (
@@ -409,6 +424,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic GameTest enumerates player runtime components and EntityComponentTypes, attempts minecraft:knockback_resistance, and records velocity during the melee hurt callback, next script tick, and four physics ticks. It found no player component; the callback retained baseline velocity and knockback appeared only after one physics tick. Diagnostic only; no Brace effect is implemented" if slug == "brace" else
                 "BDS 1.26.62.1 diagnostic GameTest blocks an axe attack with a sneaking SimulatedPlayer's vanilla offhand shield, observes the native shield cooldown at 98 ticks after two ticks, writes 55 through startItemCooldown and confirms its exposed timer reaches zero, then verifies the shield still takes damage until the native disable interval expires. Replacing the shield with a clone does not bypass that interval. Diagnostic only; no Shield Grip gameplay is implemented" if slug == "shield_grip" else
                 "BDS 1.26.62.1 GameTest diagnostic: Player lacks minecraft:step_height and minecraft:variable_max_auto_step components but has minecraft:movement; SimulatedPlayer.move advances position 0.2 blocks while inputInfo.getMovementVector stays {0,0}. Diagnostic only; no Step Up gameplay or core offer is enabled" if slug == "step_up" else
+                "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
             "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"} else "NOT_PORTED",
@@ -450,6 +466,7 @@ def main(source: Path, target: Path) -> None:
         "MANUAL_PLAYTEST_BACKLOG.md", "AUTHORITY_THEFT_IMPLEMENTATION_REVIEW_2026-11-05.md",
         "AUTHORITY_THEFT_SIGNATURE_ROADMAP_2026-11-05.md",
         "DOMINATION_SPECIAL_AI_REPAIR_2026-11-05.md", "UI_REDESIGN_DIRECTION_2026-11-05.md",
+        "RAID_CACHE_BONUS_CONTRACT_2026-11-06.md", "DOMINATION_RUNTIME_REMAINING_VERIFICATION_2026-11-06.md",
     ]
     archive = target / "docs/java-canon"
     archive.mkdir(parents=True, exist_ok=True)

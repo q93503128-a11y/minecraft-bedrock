@@ -2001,3 +2001,53 @@ GameTest.registerAsync("AugmentationSurvival", "step_up_stable_player_api_surfac
   test.succeed();
 }).maxTicks(30).structureName(STRUCTURE).tag(TAG);
 
+GameTest.registerAsync("AugmentationSurvival", "terrain_resistance_vanilla_surface_probe", async (test) => {
+  const results = [];
+  for (let x = 1; x <= 5; x += 1) {
+    for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  for (const surface of ["stone", "soul_sand", "honey_block", "web"]) {
+    if (surface === "soul_sand" || surface === "honey_block") {
+      for (let z = 1; z <= 5; z += 1) test.setBlockType(`minecraft:${surface}`, { x: 3, y: 2, z });
+    }
+    if (surface === "web") {
+      for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:stone", { x: 3, y: 2, z });
+      for (let z = 2; z <= 4; z += 1) {
+        test.setBlockType("minecraft:web", { x: 3, y: 3, z });
+        test.setBlockType("minecraft:web", { x: 3, y: 4, z });
+      }
+    }
+    for (const scale of [1, 1.45]) {
+      const player = test.spawnSimulatedPlayer(
+        { x: 3, y: 3, z: 3 },
+        `AS_TERRAIN_${surface}_${scale}`,
+        GameMode.survival,
+      );
+      await test.idle(2);
+      const component = player.getComponent("minecraft:movement");
+      ensure(component, "Terrain probe player lacked minecraft:movement.");
+      const defaultValue = component.defaultValue;
+      component.setCurrentValue(defaultValue * scale);
+      const start = player.location;
+      player.setRotation({ x: 0, y: 0 });
+      player.moveRelative(0, 1, 0.2);
+      await test.idle(20);
+      const end = player.location;
+      results.push({
+        surface,
+        movementScale: scale,
+        displacement: { x: end.x - start.x, y: end.y - start.y, z: end.z - start.z },
+        velocityBeforeStop: player.getVelocity(),
+        onGround: player.isOnGround,
+        movement: { current: component.currentValue, defaultValue },
+      });
+      player.stopMoving();
+      player.disconnect();
+      await test.idle(1);
+    }
+  }
+  console.warn("AS_TERRAIN_SURFACE_PROBE " + JSON.stringify(results));
+  ensure(Math.abs(results[0].displacement.z) > 0.1, "Terrain probe stone control player did not move.");
+  test.succeed();
+}).maxTicks(240).structureName(STRUCTURE).tag(TAG);
+

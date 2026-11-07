@@ -46,12 +46,23 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["pickup_hand"]["compatibility_class"])
         self.assertEqual("C", by_id["brace"]["compatibility_class"])
         self.assertEqual("C", by_id["step_up"]["compatibility_class"])
+        self.assertEqual("C", by_id["terrain_resistance"]["compatibility_class"])
+        self.assertEqual("NOT_PORTED", by_id["terrain_resistance"]["port_status"])
+        self.assertFalse(by_id["terrain_resistance"]["candidate_enabled"])
+        self.assertEqual("REVIEWED_NO_DIRECT_RULE", by_id["terrain_resistance"]["interaction_mapping_status"])
+        self.assertIn("movement_efficiency", by_id["terrain_resistance"]["api_constraints"])
+        self.assertIn("vertical", by_id["terrain_resistance"]["api_constraints"])
+        self.assertIn("diagnostic only", by_id["terrain_resistance"]["test_method"])
+        terrain_sources = " ".join(by_id["terrain_resistance"]["java_source_paths"])
+        self.assertIn("TerrainResistanceService.java", terrain_sources)
+        self.assertIn("WebBlockTerrainResistanceMixin.java", terrain_sources)
+        self.assertIn("MovementEdgeCaseGameTests.java", terrain_sources)
         self.assertEqual("NOT_PORTED", by_id["step_up"]["port_status"])
         self.assertFalse(by_id["step_up"]["candidate_enabled"])
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 9, "D": 10, "UNASSESSED": 115},
+            {"A": 2, "B": 13, "C": 10, "D": 10, "UNASSESSED": 114},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
