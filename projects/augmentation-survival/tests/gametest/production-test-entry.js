@@ -1,6 +1,7 @@
 import "./main.js";
 import { ItemStack, system, world } from "@minecraft/server";
 import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progression.js";
+import { withdrawPocketSlot } from "./pockets.js";
 import { setArrowSaverRandomProvider } from "./arrow-saver.js";
 import { setCropHarvestRandomProvider } from "./harvest.js";
 
@@ -40,6 +41,15 @@ system.runInterval(() => {
 // production pack's namespace here instead of from the separate GameTest pack.
 world.afterEvents.playerSpawn.subscribe(({ player }) => {
   try {
+    const pocketsLevel = /^ASPocketsLevel([1-3])(?:Shared)?$/.exec(player.name)?.[1];
+    if (pocketsLevel) {
+      const levels = { "augmentation_survival:pockets": Number(pocketsLevel) };
+      if (player.name.endsWith("Shared")) levels["augmentation_survival:pickup_hand"] = 3;
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
+      player.addTag(`as_pockets_seeded_${pocketsLevel}`);
+      if (player.name.endsWith("Shared")) player.addTag("as_pockets_pickup_hand_seeded");
+      return;
+    }
     if (player.name === "ASToolCareLive") {
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
         "augmentation_survival:tool_care": 5,
@@ -446,3 +456,17 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
     }, 1);
   } catch { /* Simulated players may despawn before their spawn callback is processed. */ }
 });
+
+// This request/response bridge exists only in the generated BDS test copy.
+system.runInterval(() => {
+  for (const player of world.getPlayers()) {
+    const tag = player.getTags().find(value => /^as_test_pockets_withdraw_\d+$/.test(value));
+    if (!tag) continue;
+    player.removeTag(tag);
+    const slot = Number(tag.slice("as_test_pockets_withdraw_".length));
+    const result = withdrawPocketSlot(player, slot);
+    player.addTag(result.ok
+      ? `as_pockets_withdraw_moved_${result.moved}_remaining_${result.remaining}`
+      : `as_pockets_withdraw_failed_${result.reason}`);
+  }
+}, 1);

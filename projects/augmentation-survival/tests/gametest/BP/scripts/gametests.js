@@ -185,7 +185,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:momentum_shift",
       "augmentation_survival:mantle",
       ]
-      : tier === "rare" ? ["augmentation_survival:arrow_saver", "augmentation_survival:replant", ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
+    : tier === "rare" ? ["augmentation_survival:arrow_saver", "augmentation_survival:replant", "augmentation_survival:pockets", ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
@@ -3025,6 +3025,133 @@ GameTest.registerAsync("AugmentationSurvival", "core_selection_commits_level_and
   ensure(health.effectiveMax === baseMax + 4, `Production pack did not restore the committed level 1 into Sturdiness; expected +4 HP, got ${health.effectiveMax - baseMax}.`);
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "pockets_store_inventory_overflow_and_withdraw_without_loss", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASPocketsLevel1", GameMode.survival);
+  await test.idle(3);
+  ensure(player.hasTag("as_pockets_seeded_1"), "Production pack did not seed level-1 Pockets.");
+
+  const anchors = player.dimension.getEntities({
+    type: "augmentation_survival:pocket_storage",
+    location: player.location,
+    maxDistance: 3,
+  });
+  ensure(anchors.length === 1, `Expected one owner storage anchor near the level-1 player; got ${anchors.length}.`);
+  const pocket = anchors[0].getComponent("minecraft:inventory")?.container;
+  ensure(pocket?.size === 9, "The persistent storage anchor must expose nine physical slots.");
+
+  const inventory = inventoryOf(player);
+  for (let slot = 0; slot < inventory.size; slot += 1) inventory.setItem(slot, new ItemStack("minecraft:dirt", 64));
+  inventory.setItem(0, new ItemStack("minecraft:stone", 60));
+  const location = player.getAABB().center;
+  player.dimension.spawnItem(new ItemStack("minecraft:stone", 10), location);
+  await test.idle(5);
+
+  ensure(inventory.getItem(0)?.typeId === "minecraft:stone" && inventory.getItem(0)?.amount === 64,
+    "Pockets did not preserve vanilla-first insertion into the partial player stack.");
+  ensure(pocket.getItem(0)?.typeId === "minecraft:stone" && pocket.getItem(0)?.amount === 6,
+    "The six-item stone overflow was not stored in pocket slot 1.");
+  // The isolated production entry exposes this server transaction through a
+  // test-only tag. Two free slots in the existing stone stack exercise partial
+  // withdrawal while keeping the player inventory otherwise full.
+  inventory.setItem(0, new ItemStack("minecraft:stone", 62));
+  const beforeWithdrawal = inventory.getItem(0).amount + pocket.getItem(0).amount;
+  player.addTag("as_test_pockets_withdraw_0");
+  await test.idle(2);
+  ensure(player.hasTag("as_pockets_withdraw_moved_2_remaining_4"),
+    "Production storage withdrawal did not report the exact partial transfer.");
+  ensure(inventory.getItem(0)?.amount === 64, "Partial withdrawal did not fill the matching player stack exactly.");
+  ensure(pocket.getItem(0)?.amount === 4, "Partial withdrawal did not leave the exact remainder in storage.");
+  ensure(inventory.getItem(0).amount + pocket.getItem(0).amount === beforeWithdrawal,
+    "Partial withdrawal duplicated or lost stored items.");
+
+  // The ordinary inventory is full now. Both additional overflow stacks must
+  // fit in level 1's remaining two slots, while a fourth remains in-world.
+  player.dimension.spawnItem(new ItemStack("minecraft:coal", 8), location);
+  player.dimension.spawnItem(new ItemStack("minecraft:iron_ingot", 8), location);
+  await test.idle(7);
+  const secondAndThird = [pocket.getItem(1), pocket.getItem(2)];
+  ensure(secondAndThird.every(stack => stack?.amount === 8)
+    && secondAndThird.map(stack => stack.typeId).sort().join(",") === "minecraft:coal,minecraft:iron_ingot",
+  "The remaining unlocked slots did not store both full-inventory overflow stacks.");
+  ensure(!pocket.getItem(3), "Level 1 must leave pocket slots 4–9 locked and empty.");
+  const goldOverflow = player.dimension.spawnItem(new ItemStack("minecraft:gold_ingot", 8), location);
+  await test.idle(5);
+  ensure(countDroppedItem(player.dimension, location, "minecraft:gold_ingot") === 8,
+    "Overflow beyond the three unlocked slots must remain in the world.");
+  ensure(countDroppedItem(player.dimension, location, "minecraft:coal") === 0
+    && countDroppedItem(player.dimension, location, "minecraft:iron_ingot") === 0,
+  "A stored full-inventory overflow stack was duplicated or left behind in the world.");
+
+  goldOverflow.remove();
+  const competitor = test.spawnSimulatedPlayer({ x: 6, y: 3, z: 3 }, "ASPocketsLevel1Shared", GameMode.survival);
+  await test.idle(3);
+  ensure(competitor.hasTag("as_pockets_seeded_1"), "Production pack did not seed the second player's Pockets level.");
+  ensure(competitor.hasTag("as_pockets_pickup_hand_seeded"), "Production pack did not seed Pickup Hand alongside Pockets.");
+  competitor.teleport(player.location);
+  competitor.stopMoving();
+  competitor.clearVelocity();
+  player.stopMoving();
+  player.clearVelocity();
+  await test.idle(1);
+  const competitorInventory = inventoryOf(competitor);
+  for (let slot = 0; slot < competitorInventory.size; slot += 1) {
+    competitorInventory.setItem(slot, new ItemStack("minecraft:dirt", 64));
+  }
+  competitorInventory.setItem(0, new ItemStack("minecraft:stone", 64));
+  const sharedLocation = player.getAABB().center;
+  player.dimension.spawnItem(new ItemStack("minecraft:diamond", 8), sharedLocation);
+  await test.idle(8);
+  const sharedAnchors = player.dimension.getEntities({
+    type: "augmentation_survival:pocket_storage",
+    location: sharedLocation,
+    maxDistance: 4,
+  });
+  const storedDiamonds = sharedAnchors.reduce((count, entity) => {
+    const container = entity.getComponent("minecraft:inventory")?.container;
+    return count + (container ? countItem(container, "minecraft:diamond") : 0);
+  }, 0);
+  ensure(sharedAnchors.length === 2, `Expected separate pocket anchors for both players; got ${sharedAnchors.length}.`);
+  ensure(storedDiamonds === 8, `Two nearby full-inventory owners stored ${storedDiamonds} of 8 shared diamonds.`);
+  ensure(countItem(inventory, "minecraft:diamond") + countItem(competitorInventory, "minecraft:diamond") === 0,
+    "The shared overflow was also copied into a player inventory.");
+  ensure(countDroppedItem(player.dimension, sharedLocation, "minecraft:diamond") === 0,
+    "The shared overflow remained as a world item after being stored.");
+
+  // Pickup Hand should still deliver a farther item to the owning player; the
+  // Pockets overflow route then stores it instead of losing or duplicating it.
+  competitor.teleport({
+    x: player.location.x + 3.5,
+    y: player.location.y,
+    z: player.location.z,
+  });
+  competitor.stopMoving();
+  competitor.clearVelocity();
+  player.stopMoving();
+  player.clearVelocity();
+  await test.idle(2);
+  const pickupHandOrigin = competitor.getAABB().center;
+  const beyondNativeReach = {
+    x: pickupHandOrigin.x + 3.25,
+    y: pickupHandOrigin.y,
+    z: pickupHandOrigin.z,
+  };
+  player.dimension.spawnItem(new ItemStack("minecraft:emerald", 8), beyondNativeReach);
+  await test.idle(10);
+  const competitorAnchors = competitor.dimension.getEntities({
+    type: "augmentation_survival:pocket_storage",
+    location: competitor.location,
+    maxDistance: 1.5,
+  });
+  ensure(competitorAnchors.length === 1, "The Pickup Hand owner did not retain a separate nearby storage anchor.");
+  const competitorPocket = competitorAnchors[0].getComponent("minecraft:inventory")?.container;
+  ensure(countItem(competitorPocket, "minecraft:emerald") === 8,
+    "Pickup Hand + Pockets failed to move the extended-reach overflow to its owner's storage.");
+  ensure(countItem(competitorInventory, "minecraft:emerald") === 0
+    && countDroppedItem(competitor.dimension, beyondNativeReach, "minecraft:emerald") === 0,
+  "Pickup Hand + Pockets duplicated the extended-reach overflow or left it on the ground.");
+  test.succeed();
+}).maxTicks(100).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_pockets_production");
 
 async function verifyPickupHandProductionRadius(test, player, level) {
   const inventory = inventoryOf(player);

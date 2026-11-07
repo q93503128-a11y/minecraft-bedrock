@@ -41,6 +41,8 @@ def validate() -> None:
         texture = definition["textures"]
         texture_path = RP / f"{texture}.png"
         assert texture_path.is_file() and texture_path.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"), texture_path
+    pocket_texture = RP / "textures/entity/pocket_storage.png"
+    assert pocket_texture.is_file() and pocket_texture.read_bytes().startswith(b"\x89PNG\r\n\x1a\n"), pocket_texture
     for file in (BP / "items").glob("*.json"):
         components = json.loads(file.read_text(encoding="utf-8"))["minecraft:item"]["components"]
         icon = components["minecraft:icon"]["textures"]["default"]

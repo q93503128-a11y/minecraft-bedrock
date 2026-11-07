@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미", "상자 찾기", "위험 감지", "화살 아끼기", "다시 심기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense", "chest_finder", "danger_sense", "arrow_saver", "replant"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미", "상자 찾기", "위험 감지", "화살 아끼기", "다시 심기", "주머니"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense", "chest_finder", "danger_sense", "arrow_saver", "replant", "pockets"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -62,6 +62,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["logging_knack"]["compatibility_class"])
         self.assertEqual("C", by_id["underwater_work"]["compatibility_class"])
         self.assertEqual("C", by_id["pickup_hand"]["compatibility_class"])
+        self.assertEqual("C", by_id["pockets"]["compatibility_class"])
         self.assertEqual("C", by_id["brace"]["compatibility_class"])
         self.assertEqual("C", by_id["step_up"]["compatibility_class"])
         self.assertEqual("C", by_id["terrain_resistance"]["compatibility_class"])
@@ -125,7 +126,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 22, "C": 15, "D": 11, "UNASSESSED": 99},
+            {"A": 2, "B": 22, "C": 16, "D": 11, "UNASSESSED": 98},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -701,6 +702,45 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("world.afterEvents.entityDie.subscribe", script)
         self.assertIn("world.afterEvents.playerLeave.subscribe", script)
         self.assertIn("world.afterEvents.playerSpawn.subscribe", script)
+
+    def test_pockets_retains_java_slot_curve_with_an_explicit_partial_storage_route(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        pockets = next(item for item in data["augments"] if item["id"] == "augmentation_survival:pockets")
+        self.assertEqual("주머니", pockets["name_ko"])
+        self.assertEqual("rare", pockets["tier"])
+        self.assertEqual(3, pockets["max_level"])
+        self.assertEqual("추가 소지 슬롯 +3 / +6 / +9칸.", pockets["canonical_effect_ko"])
+        self.assertEqual("C", pockets["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", pockets["port_status"])
+        self.assertTrue(pockets["candidate_enabled"])
+        self.assertEqual("REVIEW_REQUIRED", pockets["interaction_mapping_status"])
+        java_sources = " ".join(pockets["java_source_paths"])
+        self.assertIn("StorageAugmentService.java", java_sources)
+        self.assertIn("InventoryPocketAugmentMixin.java", java_sources)
+        self.assertIn("AugmentStorageMenu.java", java_sources)
+        self.assertIn("Stable Player inventory exposes its fixed 36-slot container", pockets["api_constraints"])
+        self.assertIn("not crafting, command/give, item use", pockets["api_constraints"])
+        self.assertIn("3 / 6 / 9-slot progression", pockets["bedrock_method"])
+        self.assertIn("partial 2-item withdrawal", pockets["test_method"])
+        self.assertIn("two nearby full-inventory owners", pockets["test_method"])
+        self.assertIn("world.restart", pockets["api_constraints"].replace("server restart", "world.restart"))
+
+        runtime = (ROOT / "BP/scripts/pockets.js").read_text(encoding="utf-8")
+        self.assertIn("world.beforeEvents.entityItemPickup.subscribe", runtime)
+        self.assertIn("insertionRemainderAmount", runtime)
+        self.assertIn("collectFullInventoryOverflow", runtime)
+        self.assertIn("maxDistance: 1.25", runtime)
+        self.assertIn("world.gameRules.keepInventory", runtime)
+        self.assertIn('getStoredAugmentLevel(deadEntity, KEEP_INVENTORY_ID, 1)', runtime)
+
+        entity = json.loads((ROOT / "BP/entities/pocket_storage.json").read_text(encoding="utf-8"))["minecraft:entity"]
+        self.assertTrue(entity["description"]["is_summonable"])
+        self.assertEqual(9, entity["components"]["minecraft:inventory"]["inventory_size"])
+        self.assertTrue(entity["components"]["minecraft:persistent"] == {})
+
+        gametest = (ROOT / "tests/gametest/BP/scripts/gametests.js").read_text(encoding="utf-8")
+        self.assertIn("pockets_store_inventory_overflow_and_withdraw_without_loss", gametest)
+        self.assertIn("augmentation_survival_pockets_production", gametest)
 
 
 if __name__ == "__main__":

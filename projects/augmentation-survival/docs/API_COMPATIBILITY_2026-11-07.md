@@ -3,6 +3,24 @@
 Java source revision: `5269a32109255b2d583081e775619087bed0507c`
 Bedrock target observed: Minecraft Bedrock/BDS 1.26.62.1; stable Script API `@minecraft/server` 2.11.0.
 
+## `주머니` (Pockets)
+
+### Java rule and source
+
+Java's rare Pockets augment has maximum level 3. It unlocks 3 / 6 / 9 additional player inventory slots and hooks `Inventory.add` after vanilla insertion; any remainder accepted by Java's insertion flow goes into the player's persistent pocket container. `StorageAugmentService` keeps a separate 9-slot container per player, `InventoryPocketAugmentMixin` handles overflow, and `AugmentStorageMenu` / `StorageInputClient` / `StorageNetworking` open retrieval UI. Pocket items drop on death unless `keepInventory` or `Keep Inventory` applies. The Java interaction contract has no Pockets-specific row; interactions with other item-transfer effects therefore remain explicitly reviewable.
+
+### Stable Bedrock route and BDS evidence
+
+Stable Script API exposes a fixed player `minecraft:inventory` container and no API to extend its 36 slots or hook every `Inventory.add` call. Stable `entityItemPickup` before-events are restricted. On BDS 1.26.62.1, changing a cloned `ItemStack.amount` in that callback throws `Native property setter ... cannot be used in restricted execution`; the add-on therefore computes capacity read-only, cancels eligible partial world pickups, and commits inventory/container changes on the next server callback. BDS does not emit the event when the player inventory cannot accept the stack at all, so a second server sweep checks item entities only within 1.25 blocks of the player's hitbox center, and only when the vanilla inventory has no capacity for that stack.
+
+The replacement container is a private 9-slot inventory on a persistent, invisible custom entity owner-bound by server dynamic properties. Level 1 / 2 / 3 capacity is applied as 3 / 6 / 9 slots. The basic augmentation device opens a short ActionForm with unlocked slots; choosing a stack moves only the amount that fits and keeps the remainder stored. Pickup Hand + Pockets is covered in BDS: Pickup Hand moves a beyond-native-reach overflow stack to its owner's hitbox, and Pockets stores that stack without duplication. This only covers world-item pickup; crafting, command/give, item-use outputs, and other Java `Inventory.add` call sites do not use this Bedrock route.
+
+The isolated production test on BDS 1.26.62.1 passed 1/1 (5.8 s). It verifies vanilla-first partial insertion, level-1's three unlocked slots, full-inventory overflow, partial 2-item retrieval with a 4-item remainder and count conservation, a fourth stack remaining in-world, separate storage anchors for two nearby owners, one shared 8-item drop stored once, and the Pickup Hand interaction. This is simulated-player evidence, not online multiplayer. Reconnect, actual BDS world restart, death-drop handling, device/form navigation, mobile/controller legibility, metadata-heavy stacks, and Replant/seed fallback interaction remain untested.
+
+**Classification: C / `PARTIAL_BDS_VERIFIED`, rare candidate enabled.** Bedrock keeps the canonical slot counts and server-owned items, but side storage accessed by a form is not equivalent to extra player slots and it only captures world pickups. Future interaction work should test Pockets with Replant, harvest bonuses, and any feature that consumes nearby drops.
+
+Official stable references: [WorldBeforeEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldbeforeevents?view=minecraft-bedrock-stable), [EntityInventoryComponent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityinventorycomponent?view=minecraft-bedrock-stable), [ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable), [ActionFormData](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-ui/actionformdata?view=minecraft-bedrock-stable), and [minecraft:inventory](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/entityreference/examples/entitycomponents/minecraftcomponent_inventory?view=minecraft-bedrock-stable).
+
 ## `발 안 묶이기` (Terrain Resistance)
 
 ### Java contract and implementation

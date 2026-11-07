@@ -15,6 +15,7 @@ TEST_BP = PROJECT / "tests/gametest/BP"
 
 def main() -> None:
     subprocess.run([sys.executable, str(PROJECT / "tools/build_ore_sense_particle.py")], check=True)
+    subprocess.run([sys.executable, str(PROJECT / "tools/build_pocket_anchor_texture.py")], check=True)
     if OUTPUT.exists():
         shutil.rmtree(OUTPUT)
     OUTPUT.mkdir(parents=True)
@@ -47,6 +48,7 @@ def main() -> None:
     shutil.copy2(PROJECT / "BP/scripts/danger-sense.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/danger-sense.js")
     shutil.copy2(PROJECT / "BP/scripts/perception-outline.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/perception-outline.js")
     shutil.copy2(PROJECT / "BP/scripts/pickup-hand.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/pickup-hand.js")
+    shutil.copy2(PROJECT / "BP/scripts/pockets.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/pockets.js")
     shutil.copy2(PROJECT / "BP/scripts/armor-care-rules.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/armor-care-rules.js")
     shutil.copy2(PROJECT / "BP/scripts/arrow-saver-rules.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/arrow-saver-rules.js")
 

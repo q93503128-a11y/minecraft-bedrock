@@ -1320,16 +1320,19 @@
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceCardPresentationMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentDeviceUiRescueMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AugmentOfferBreathingRoomMixin.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/storage/StorageAugmentService.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/storage/StorageAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/InventoryPocketAugmentMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/menu/AugmentStorageMenu.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/network/StorageNetworking.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "C",
+      "bedrock_method": "Keep Java's 3 / 6 / 9-slot progression in a private persistent owner-bound entity inventory and expose retrieval through the basic device's touch/controller-friendly ActionForm. Preserve vanilla-first inventory insertion; intercept cancellable world-item pickup overflow and sweep only the 1.25-block full-inventory touch radius when the player inventory cannot accept any of the stack.",
+      "api_constraints": "Stable Player inventory exposes its fixed 36-slot container but no player-inventory resize, post-Inventory.add hook, or general inventory insertion event. Stable entityItemPickup before-events are restricted/read-only, so they use numeric capacity checks and defer writes; entirely full inventories also need the server's per-tick 1.25-block item-entity sweep because BDS does not emit the pickup event without a successful vanilla insertion. This covers world item pickup only, not crafting, command/give, item use, or other Java Inventory.add call sites. The owner-bound persistent entity inventory differs from Java's extra player slots. Death follows keepInventory and Keep Inventory; dimension changes move the anchor. Reconnect, actual server restart, death drops, real client UI, and online multiplayer remain untested.",
+      "test_method": "Official BDS 1.26.62.1 production-handler GameTest verifies level-1 vanilla-first partial insertion, exact 3-slot limit, full-player-inventory overflow, partial 2-item withdrawal with a 4-item remainder and conservation, fourth-stack world preservation, two nearby full-inventory owners sharing one 8-item drop without duplication, separate owner storage anchors, and Pickup Hand delivering a beyond-native-reach item into the same owner's Pockets. It does not verify client form navigation, disconnect/reconnect, world restart, death handling, Replant interaction, or online multiplayer.",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:night_vision",

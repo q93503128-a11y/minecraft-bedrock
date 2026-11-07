@@ -1,0 +1,14 @@
+{
+  "tag": "augmentation_survival_pockets_production",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 6519,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:pockets_store_inventory_overflow_and_withdraw_without_loss",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}

@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 38873,
+  "durationMs": 30489,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -188,6 +188,10 @@
       "outcome": "pass"
     },
     {
+      "id": "AugmentationSurvival:pockets_store_inventory_overflow_and_withdraw_without_loss",
+      "outcome": "pass"
+    },
+    {
       "id": "AugmentationSurvival:pickup_hand_extends_item_and_xp_radius_at_all_levels",
       "outcome": "pass"
     },
@@ -221,7 +225,8 @@
     },
     {
       "id": "AugmentationSurvival:rider_speed_does_not_change_unowned_mount",
-      "outcome": "pass"
+      "outcome": "fail",
+      "error": "Error: Unaugmented rider control could not mount its horse.    at ensure (gametests.js:37)"
     },
     {
       "id": "AugmentationSurvival:armor_care_matches_java_chance_and_restores_real_armor_wear",
@@ -240,7 +245,11 @@
       "outcome": "pass"
     }
   ],
-  "regressions": [],
-  "scriptErrors": [],
-  "infraError": null
+  "regressions": [
+    "AugmentationSurvival:rider_speed_does_not_change_unowned_mount"
+  ],
+  "scriptErrors": [
+    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Unaugmented rider control could not mount its horse.    at ensure (gametests.js:37)"
+  ],
+  "infraError": "1 uncaught script error(s) were logged. They are thrown outside any test, so no test can fail on them. Pass --allow-script-errors to report without failing."
 }

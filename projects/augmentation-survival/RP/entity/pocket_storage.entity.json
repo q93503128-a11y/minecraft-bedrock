@@ -1,0 +1,20 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "augmentation_survival:pocket_storage",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/pocket_storage"
+      },
+      "geometry": {
+        "default": "geometry.pocket_storage"
+      },
+      "render_controllers": [
+        "controller.render.pocket_storage"
+      ]
+    }
+  }
+}

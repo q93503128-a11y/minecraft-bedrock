@@ -536,6 +536,30 @@ def main(source: Path, target: Path) -> None:
             "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver", "replant"} else "NOT_PORTED",
             "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver", "replant"},
         })
+        if slug == "pockets":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/storage/StorageAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/InventoryPocketAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/menu/AugmentStorageMenu.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/client/StorageInputClient.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/network/StorageNetworking.java",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["interaction_mapping_status"] = "REVIEW_REQUIRED"
+            record["compatibility_class"] = "C"
+            record["bedrock_method"] = (
+                "Keep Java's 3 / 6 / 9-slot progression in a private persistent owner-bound entity inventory and expose retrieval through the basic device's touch/controller-friendly ActionForm. Preserve vanilla-first inventory insertion; intercept cancellable world-item pickup overflow and sweep only the 1.25-block full-inventory touch radius when the player inventory cannot accept any of the stack."
+            )
+            record["api_constraints"] = (
+                "Stable Player inventory exposes its fixed 36-slot container but no player-inventory resize, post-Inventory.add hook, or general inventory insertion event. Stable entityItemPickup before-events are restricted/read-only, so they use numeric capacity checks and defer writes; entirely full inventories also need the server's per-tick 1.25-block item-entity sweep because BDS does not emit the pickup event without a successful vanilla insertion. This covers world item pickup only, not crafting, command/give, item use, or other Java Inventory.add call sites. The owner-bound persistent entity inventory differs from Java's extra player slots. Death follows keepInventory and Keep Inventory; dimension changes move the anchor. Reconnect, actual server restart, death drops, real client UI, and online multiplayer remain untested."
+            )
+            record["test_method"] = (
+                "Official BDS 1.26.62.1 production-handler GameTest verifies level-1 vanilla-first partial insertion, exact 3-slot limit, full-player-inventory overflow, partial 2-item withdrawal with a 4-item remainder and conservation, fourth-stack world preservation, two nearby full-inventory owners sharing one 8-item drop without duplication, separate owner storage anchors, and Pickup Hand delivering a beyond-native-reach item into the same owner's Pockets. It does not verify client form navigation, disconnect/reconnect, world restart, death handling, Replant interaction, or online multiplayer."
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
         if slug == "ride_current":
             record = records[-1]
             for relative in (

@@ -19,6 +19,7 @@ import "./chest-finder.js";
 import "./danger-sense.js";
 import "./pickup-hand.js";
 import { registerLootScoopHandler } from "./loot-scoop.js";
+import { openPocketStorage, pocketLevel } from "./pockets.js";
 
 const NS = "augmentation_survival";
 /** @typedef {{id:string, name_ko:string, tier:string, tier_ko:string, max_level:number, canonical_effect_ko:string, candidate_enabled:boolean}} Augment */
@@ -212,23 +213,28 @@ async function showAugmentDetail(player, augment, page) {
 /** @param {Player} player */
 async function openBasicDevice(player) {
   if (OPEN_FORMS.has(player.id)) return;
+  const pockets = pocketLevel(player);
   const form = new ActionFormData()
     .title("증강 장치")
     .body("등급 코어를 사용해 세 후보 중 하나를 선택하세요. 보유 효과는 이 장치에서 확인할 수 있어요.")
-    .button(`보유 증강 확인 (${ownedAugments(player).length}/149)`)
-    .button("닫기");
+    .button(`보유 증강 확인 (${ownedAugments(player).length}/149)`);
+  if (pockets > 0) form.button(`주머니 열기 (${pockets * 3}칸)`);
+  form.button("닫기");
   let openInventory = false;
+  let openPockets = false;
   const formToken = claimForm(player);
   if (formToken === undefined) return;
   try {
     const response = await form.show(player);
     openInventory = !response.canceled && response.selection === 0;
+    openPockets = pockets > 0 && !response.canceled && response.selection === 1;
   } catch {
     // UI unavailable; no items or state are changed.
   } finally {
     releaseForm(player, formToken);
   }
   if (openInventory) await showOwnedPage(player, 0);
+  else if (openPockets) await openPocketStorage(player);
 }
 
 /** @param {Player} player */
