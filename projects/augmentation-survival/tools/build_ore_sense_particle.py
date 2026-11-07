@@ -11,6 +11,7 @@ PROJECT = Path(__file__).resolve().parents[1]
 OUTPUTS = (
     PROJECT / "RP/textures/particles/ore_sense_marker.png",
     PROJECT / "RP/textures/particles/chest_finder_marker.png",
+    PROJECT / "RP/textures/particles/danger_sense_marker.png",
 )
 SIZE = 16
 

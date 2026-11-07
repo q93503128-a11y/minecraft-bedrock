@@ -338,6 +338,13 @@ def main(source: Path, target: Path) -> None:
                 or ("관성 전환" in line and ("실제 낙하 거리" in line or "동시에" in line or "임시 발판" in line))
             )
             interaction_refs = list({(ref["line"], ref["text"]): ref for ref in interaction_refs}.values())
+        if slug == "danger_sense":
+            interaction_refs.extend(
+                {"line": line_number, "text": line.strip()}
+                for line_number, line in enumerate(interaction_lines, start=1)
+                if "지배 즉시 hostile target filter에서 제외" in line
+            )
+            interaction_refs = list({(ref["line"], ref["text"]): ref for ref in interaction_refs}.values())
         source_mismatch = []
         if name != entry["canonical_name_ko"]:
             source_mismatch.append(f"catalog name={entry['canonical_name_ko']}")
@@ -363,6 +370,7 @@ def main(source: Path, target: Path) -> None:
                 "C" if slug == "taming_knack" else
                 "B" if slug == "ore_sense" else
                 "C" if slug == "chest_finder" else
+                "C" if slug == "danger_sense" else
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
@@ -509,8 +517,8 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder", "danger_sense"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder", "danger_sense"},
         })
         if slug == "ride_current":
             record = records[-1]
@@ -677,6 +685,32 @@ def main(source: Path, target: Path) -> None:
             )
             record["test_method"] = (
                 "Official BDS 1.26.62.1 production-script GameTest commits Chest Finder level 1 by consuming one rare core, then checks the level 1 / 2 / 3 spherical radii, exact-radius and outside-sphere controls, a chest behind a wall, empty versus filled inventory, a real blockContainerOpened event, round-trip storage of a placement exclusion marker, unique owner-targeted particles, and the rare-candidate allowlist. The pinned SimulatedPlayer could not complete a player block-placement fixture, so playerPlaceBlock delivery remains unverified. Java has no Chest Finder-specific GameTest in its current source. Client visuals, legacy empty-container provenance, reconnect, and server restart remain untested"
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
+        if slug == "danger_sense":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/client/ClientPerceptionState.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/client/PerceptionClientNetworking.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/EntityRendererPerceptionMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/network/PerceptionStatePayload.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/companion/CompanionAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/integration/EntityCompatibilityProfileService.java",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["interaction_mapping_status"] = "REVIEW_REQUIRED"
+            record["compatibility_class"] = "C"
+            record["bedrock_method"] = (
+                "Every 10 server ticks, query nearby entities in the stable monster/boss families, check the exact 8 / 12 / 16-block sphere against their entity locations, and retain at most the 256 closest living targets as in Java. Exclude the server-owned dominated tag, use each target's stable collision AABB to place a red 20-point outline, and emit it through owner-only Player.spawnParticle."
+            )
+            record["api_constraints"] = (
+                "Stable @minecraft/server 2.11.0 exposes Dimension.getEntities family/distance filters, EntityTypeFamilyComponent, EntityHealthComponent, Entity.getAABB, and owner-only Player.spawnParticle. It does not provide Java's Enemy/boss-profile predicate, generic entity-alliance test, or client-local entity outline renderer. The vanilla monster family is a practical filter, while the boss family and the add-on's reserved augmentation_survival:dominated tag cover only available integration signals; custom families, neutral/friendly alliances, and Java mod boss profiles can diverge. Client-side particle visibility through opaque blocks and mobile/controller readability are not verifiable on BDS."
+            )
+            record["test_method"] = (
+                "Official BDS 1.26.62.1 production-script GameTest consumes one rare core and verifies the level-1 save, then tests saved-level 8 / 12 / 16 spherical radii, just-outside and passive-entity controls, a tagged dominated hostile exclusion, hostile AABB marker geometry, a wall-obstructed target selection, unique owner-targeted red marker calls, and the rare offer allowlist. It does not visually prove through-wall rendering or test Java-mod boss profiles."
             )
             record["port_status"] = "PARTIAL_BDS_VERIFIED"
             record["candidate_enabled"] = True

@@ -6,10 +6,11 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "build:addon": "python tools/build_icons.py && python tools/build_ore_sense_particle.py && python tools/build_addon.py",
+    "test:danger-sense-production": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival_danger_sense_production --expect-registered 1 --json .bds/logs/augmentation-survival-danger-sense-production.json",
     "test:chest-finder-production": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival_chest_finder_production --expect-registered 1 --json .bds/logs/augmentation-survival-chest-finder-production.json",
     "test:static": "python -m unittest discover -s tests -v",
     "build:engine-tests": "python tools/build_gametest.py",
-    "test:engine": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival --expect-registered 56 --json .bds/logs/augmentation-survival-results.json",
+    "test:engine": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival --expect-registered 57 --json .bds/logs/augmentation-survival-results.json",
     "test:brewing-probe": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival_brewing_probe --expect-registered 1 --json .bds/logs/augmentation-survival-brewing-probe.json",
     "test:taming-probe": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival_taming_probe --expect-registered 1 --json .bds/logs/augmentation-survival-taming-probe.json",
     "test:momentum-probe": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival_momentum_probe --expect-registered 1 --json .bds/logs/augmentation-survival-momentum-probe.json",

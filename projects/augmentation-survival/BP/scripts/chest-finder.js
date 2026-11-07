@@ -1,5 +1,6 @@
 import { BlockVolume, system, world } from "@minecraft/server";
 import { getStoredAugmentLevel } from "./progression.js";
+import { blockOutlineBounds, outlineMarkerLocations, perceptionMarkerKey } from "./perception-outline.js";
 
 export const CHEST_FINDER_ID = "augmentation_survival:chest_finder";
 export const CHEST_FINDER_PARTICLE_ID = "augmentation_survival:chest_finder_marker";
@@ -8,7 +9,6 @@ const CHEST_FINDER_RADIUS = [0, 12, 18, 24];
 const SCAN_INTERVAL_TICKS = 10;
 const MAX_CONTAINER_MARKERS = 512;
 const MARKER_PROPERTY_PREFIX = "augmentation_survival:chest_finder:v1";
-const GOLD_OUTLINE_MARGIN = 0.06;
 const LOOT_CONTAINER_TYPES = [
   "minecraft:chest",
   "minecraft:trapped_chest",
@@ -114,33 +114,6 @@ export function findUnconsumedLootContainers(dimension, blockCenter, radius) {
   return found;
 }
 
-/** @param {{x:number,y:number,z:number}} container */
-function outlineMarkerLocations(container) {
-  const low = GOLD_OUTLINE_MARGIN;
-  const high = 1 - GOLD_OUTLINE_MARGIN;
-  const points = [];
-  for (const x of [low, high]) {
-    for (const y of [low, high]) {
-      for (const z of [low, high]) points.push({ x: container.x + x, y: container.y + y, z: container.z + z });
-    }
-  }
-  for (const x of [low, high]) {
-    for (const y of [low, high]) points.push({ x: container.x + x, y: container.y + y, z: container.z + 0.5 });
-  }
-  for (const x of [low, high]) {
-    for (const z of [low, high]) points.push({ x: container.x + x, y: container.y + 0.5, z: container.z + z });
-  }
-  for (const y of [low, high]) {
-    for (const z of [low, high]) points.push({ x: container.x + 0.5, y: container.y + y, z: container.z + z });
-  }
-  return points;
-}
-
-/** @param {{x:number,y:number,z:number}} point */
-function markerKey(point) {
-  return `${point.x.toFixed(3)},${point.y.toFixed(3)},${point.z.toFixed(3)}`;
-}
-
 /** @param {import("@minecraft/server").Player} player @param {(player:import("@minecraft/server").Player, location:{x:number,y:number,z:number})=>void} [onMarker] */
 export function refreshChestFinderPlayer(player, onMarker) {
   const level = getStoredAugmentLevel(player, CHEST_FINDER_ID, CHEST_FINDER_MAX_LEVEL);
@@ -151,8 +124,8 @@ export function refreshChestFinderPlayer(player, onMarker) {
   const sent = new Set();
   let markerCount = 0;
   for (const container of containers) {
-    for (const marker of outlineMarkerLocations(container)) {
-      const key = markerKey(marker);
+    for (const marker of outlineMarkerLocations(blockOutlineBounds(container))) {
+      const key = perceptionMarkerKey(marker);
       if (sent.has(key)) continue;
       sent.add(key);
       try {

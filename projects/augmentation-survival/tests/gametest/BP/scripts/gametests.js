@@ -4,10 +4,12 @@ import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
 import { armorCareChance, armorCareRollSucceeds } from "./armor-care-rules.js";
 import { CHEST_FINDER_ID, CHEST_FINDER_PARTICLE_ID, chestFinderRadius, findUnconsumedLootContainers, isChestFinderContainerExcluded, markChestFinderContainerExcluded, refreshChestFinderPlayer } from "./chest-finder.js";
+import { DANGER_SENSE_ID, DANGER_SENSE_PARTICLE_ID, DOMINATED_HOSTILE_TAG, dangerSenseRadius, refreshDangerSensePlayer } from "./danger-sense.js";
 import { applyCropHarvestBonuses, applyDexterityGatheringBonus, applyExtraPieceBonus, bumperCropBonusChance, dexterityBonusChance, extraPieceBonusChance, isDexterityGatheringBlock, isEligibleDexterityDrop, isOreBlock, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { tryMantle } from "./movement.js";
 import { ORE_SENSE_ID, ORE_SENSE_PARTICLE_ID, oreSenseRadius, refreshOreSensePlayer } from "./ore-sense.js";
+import { outlineMarkerLocations, perceptionMarkerKey } from "./perception-outline.js";
 import { pickupHandRadius } from "./pickup-hand.js";
 import { LEVELS_KEY } from "./progression.js";
 import { toolCareChance, toolCareRollSucceeds, tryPreventBlockToolDamage } from "./tool-care.js";
@@ -182,7 +184,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:momentum_shift",
       "augmentation_survival:mantle",
       ]
-      : tier === "rare" ? [ORE_SENSE_ID, CHEST_FINDER_ID] : [];
+      : tier === "rare" ? [ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
@@ -381,6 +383,90 @@ GameTest.registerAsync("AugmentationSurvival", "chest_finder_tracks_empty_contai
   console.warn("AS_CHEST_FINDER_PRODUCTION_TEST " + JSON.stringify({ observedLevels, openedMarkedByEvent: true, placementMarkerStored: true }));
   test.succeed();
 }).maxTicks(120).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_chest_finder_production");
+
+GameTest.registerAsync("AugmentationSurvival", "danger_sense_marks_hostile_entities_at_all_saved_radii_for_its_owner", async (test) => {
+  const corePlayer = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASDangerSenseCoreCommit", GameMode.survival);
+  await test.idle(3);
+  ensure(corePlayer.hasTag("as_test_danger_sense_core_committed"), "Production core selection did not commit rare Danger Sense level 1.");
+  ensure(corePlayer.hasTag("as_test_danger_sense_core_consumed"), "Production rare-core selection did not consume its core.");
+  ensure(!corePlayer.hasTag("as_test_danger_sense_core_commit_failed"), "Production rare-core selection reported a commit failure.");
+  ensure(countItem(inventoryOf(corePlayer), "augmentation_survival:rare_augment_core") === 0,
+    "Rare-core selection left a core in the player's inventory.");
+
+  const dimension = corePlayer.dimension;
+  const center = { ...corePlayer.location };
+  const hostileAtRadius = [8, 12, 16].map(radius => {
+    const location = { x: center.x, y: center.y, z: center.z + radius };
+    const hostile = dimension.spawnEntity("minecraft:zombie", location);
+    hostile.teleport(location);
+    hostile.nameTag = `ASDangerSense${radius}`;
+    return hostile;
+  });
+  const outsideLocation = { x: center.x, y: center.y, z: center.z + 16.5 };
+  const outside = dimension.spawnEntity("minecraft:zombie", outsideLocation);
+  outside.teleport(outsideLocation);
+  outside.nameTag = "ASDangerSenseOutside";
+  const passiveLocation = { x: center.x + 2, y: center.y, z: center.z };
+  dimension.spawnEntity("minecraft:cow", passiveLocation).nameTag = "ASDangerSensePassive";
+  const dominatedLocation = { x: center.x - 2, y: center.y, z: center.z };
+  const dominated = dimension.spawnEntity("minecraft:zombie", dominatedLocation);
+  dominated.teleport(dominatedLocation);
+  dominated.addTag(DOMINATED_HOSTILE_TAG);
+  dominated.nameTag = "ASDangerSenseDominated";
+
+  // Java ignores line of sight. Keep a solid wall between the owner and the
+  // first target; this asserts the server selection path only, not client draw.
+  const wallZ = Math.floor(center.z + 4);
+  for (let y = Math.floor(center.y); y <= Math.floor(center.y) + 2; y += 1) {
+    dimension.setBlockType({ x: Math.floor(center.x), y, z: wallZ }, "minecraft:stone");
+  }
+
+  const observedLevels = [];
+  for (let level = 1; level <= 3; level += 1) {
+    // The test pack has its own dynamic-property namespace; this seeds only
+    // the scanner fixture after the production pack transaction above.
+    corePlayer.setDynamicProperty(LEVELS_KEY, JSON.stringify({ [DANGER_SENSE_ID]: level }));
+    const ownedMarkers = [];
+    const result = refreshDangerSensePlayer(corePlayer, (owner, entity, location) => {
+      ownedMarkers.push({ ownerId: owner.id, entityId: entity.id, location });
+    });
+    const expectedRadius = [0, 8, 12, 16][level];
+    const expected = hostileAtRadius.filter(entity => {
+      const location = entity.location;
+      const dx = location.x - center.x;
+      const dy = location.y - center.y;
+      const dz = location.z - center.z;
+      return dx * dx + dy * dy + dz * dz <= expectedRadius * expectedRadius;
+    });
+    ensure(dangerSenseRadius(level) === expectedRadius && result.radius === expectedRadius,
+      `Danger Sense level ${level} should scan ${expectedRadius} blocks; got ${result.radius}.`);
+    ensure(result.hostiles.length === expected.length && expected.length === level,
+      `Danger Sense level ${level} expected ${level} boundary hostiles, got ${result.hostiles.length}.`);
+    ensure(expected.every(entity => result.hostiles.some(found => found.id === entity.id)),
+      `Danger Sense level ${level} missed a hostile at its exact canonical radius.`);
+    ensure(!result.hostiles.some(entity => [outside.id, dominated.id].includes(entity.id)),
+      "Danger Sense included an outside-radius or dominated entity.");
+    ensure(result.markerCount === expected.length * 20 && result.markerCount === ownedMarkers.length,
+      `Danger Sense level ${level} emitted ${result.markerCount} markers for ${expected.length} hostile entities.`);
+    ensure(ownedMarkers.every(marker => marker.ownerId === corePlayer.id && result.hostiles.some(entity => entity.id === marker.entityId)),
+      "Danger Sense emitted a marker for the wrong player or an unselected entity.");
+    for (const entity of expected) {
+      const actualPoints = ownedMarkers.filter(marker => marker.entityId === entity.id).map(marker => perceptionMarkerKey(marker.location)).sort();
+      const expectedPoints = outlineMarkerLocations(entity.getAABB(), 0.035).map(perceptionMarkerKey).sort();
+      ensure(actualPoints.length === 20 && JSON.stringify(actualPoints) === JSON.stringify(expectedPoints),
+        `Danger Sense did not draw the expected 20-point collision-AABB outline for ${entity.nameTag}.`);
+    }
+    ensure(new Set(ownedMarkers.map(marker => `${marker.location.x},${marker.location.y},${marker.location.z}`)).size === ownedMarkers.length,
+      "Danger Sense emitted duplicate outline points for the same scan.");
+    observedLevels.push({ level, radius: result.radius, hostiles: result.hostiles.length, markers: result.markerCount });
+  }
+  ensure(DANGER_SENSE_PARTICLE_ID === "augmentation_survival:danger_sense_marker",
+    "Danger Sense marker ID diverged from its RP definition.");
+
+  corePlayer.disconnect();
+  console.warn("AS_DANGER_SENSE_PRODUCTION_TEST " + JSON.stringify({ observedLevels, exactRadiusTargets: hostileAtRadius.length, outsideExcluded: true, dominatedExcluded: true, passiveExcluded: true, wallObstructionPresent: true }));
+  test.succeed();
+}).maxTicks(100).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_danger_sense_production");
 
 GameTest.registerAsync("AugmentationSurvival", "crop_bonus_augments_match_maturity_levels_products_and_independent_rolls", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASBumperCrop", GameMode.survival);

@@ -1,0 +1,62 @@
+{
+  "test": "danger_sense_marks_hostile_entities_at_all_saved_radii_for_its_owner",
+  "run_command": "npm run test:danger-sense-production",
+  "result": "PASS",
+  "registered": 1,
+  "passed": 1,
+  "failed": 0,
+  "server": {
+    "edition": "Bedrock Dedicated Server",
+    "version": "1.26.62.1",
+    "build": "53244553",
+    "branch": "r/26_u6"
+  },
+  "script_api": {
+    "module": "@minecraft/server",
+    "version": "2.11.0",
+    "stability": "stable"
+  },
+  "production_core_transaction": {
+    "tier": "rare",
+    "core_id": "augmentation_survival:rare_augment_core",
+    "augment_id": "augmentation_survival:danger_sense",
+    "level_saved": 1,
+    "core_consumed": true
+  },
+  "observations": [
+    {
+      "level": 1,
+      "radius_blocks": 8,
+      "exact_radius_hostiles_selected": 1,
+      "owner_targeted_markers": 20
+    },
+    {
+      "level": 2,
+      "radius_blocks": 12,
+      "exact_radius_hostiles_selected": 2,
+      "owner_targeted_markers": 40
+    },
+    {
+      "level": 3,
+      "radius_blocks": 16,
+      "exact_radius_hostiles_selected": 3,
+      "owner_targeted_markers": 60
+    }
+  ],
+  "controls": {
+    "outside_radius_hostile_distance_blocks": 16.5,
+    "outside_radius_excluded": true,
+    "passive_cow_excluded": true,
+    "dominated_tagged_zombie_excluded": true,
+    "stone_obstruction_present": true,
+    "server_selection_ignores_line_of_sight": true,
+    "collision_aabb_outline_points_match": true,
+    "marker_calls_directed_to_owner_only": true,
+    "duplicate_marker_points": false
+  },
+  "limits": [
+    "BDS verifies server-side target selection and owner-targeted particle calls, not actual client particle rendering through opaque blocks.",
+    "The monster/boss family query is a proxy for Java Enemy plus configured boss profiles; generic alliance matching and external Java boss profiles are unavailable through the confirmed stable route.",
+    "PC, touch, controller, reconnect, world restart, and online multiplayer were not tested."
+  ]
+}

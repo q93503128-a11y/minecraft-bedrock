@@ -303,7 +303,7 @@ The passive scan introduces no device-specific input, so keyboard, touch, and co
 
 ### BDS verification and classification
 
-`ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner` passed **1/1** on official BDS 1.26.62.1 with stable Script API 2.11.0. Its production entry first grants Ore Sense by consuming a rare core through `commitCoreSelection` and verifies the saved level; the GameTest then exercises the production refresh at levels 1–3 (6 / 8 / 10 blocks), air- and water-exposed ore detection, omission of a fully stone-enclosed ore, unique outline markers, and that all marker calls use the selected augment owner's `Player.spawnParticle`. The run found 2 / 3 / 4 exposed ores and emitted 40 / 60 / 80 unique markers at the three levels. The same GameTest passed in the full 56-test run; that full suite was **not clean** because Rider level 1 and 2 mount fixtures failed to expose `minecraft:rideable` (54 passed / 2 failed). `npm run verify` passed 33 static tests, the stable API type-check, and package creation. See [`ORE_SENSE_PRODUCTION_TEST_2026-11-07.json`](ORE_SENSE_PRODUCTION_TEST_2026-11-07.json).
+`ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner` passed **1/1** on official BDS 1.26.62.1 with stable Script API 2.11.0. Its production entry first grants Ore Sense by consuming a rare core through `commitCoreSelection` and verifies the saved level; the GameTest then exercises the production refresh at levels 1–3 (6 / 8 / 10 blocks), air- and water-exposed ore detection, omission of a fully stone-enclosed ore, unique outline markers, and that all marker calls use the selected augment owner's `Player.spawnParticle`. The run found 2 / 3 / 4 exposed ores and emitted 40 / 60 / 80 unique markers at the three levels. The same GameTest passed in the latest 57-test run. A previous 56-test run was **not clean** because Rider level 1 and 2 mount fixtures failed to expose `minecraft:rideable` (54 passed / 2 failed). `npm run verify` passed 33 static tests at that earlier checkpoint. See [`ORE_SENSE_PRODUCTION_TEST_2026-11-07.json`](ORE_SENSE_PRODUCTION_TEST_2026-11-07.json).
 
 Class **B**, `PARTIAL_BDS_VERIFIED`, enabled as a rare candidate. The scan/ownership/radius path is verified on BDS; exact collision-shape parity, client visuals on PC/mobile/controller, and live online multiplayer rendering remain unverified.
 
@@ -344,3 +344,28 @@ The test does not verify persistent marker recovery after a server restart, actu
 - [Stable `PlayerBreakBlockAfterEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockafterevent?view=minecraft-bedrock-stable)
 - [Stable `Player.spawnParticle`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable)
 - [Stable-only note for `Dimension.getGeneratedStructures`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable)
+
+## `위험 감지` (Danger Sense)
+
+### Java contract and implementation
+
+The rare augment has maximum level 3 and marks hostile living entities in spherical radii of 8 / 12 / 16 blocks with a red outline that is visible through walls. `PerceptionAugmentService` refreshes its owner-specific perception payload every 10 server ticks, searches an inflated player AABB, applies an exact squared-distance cutoff, and caps the returned entity IDs at 256. Its hostile predicate delegates to `CompanionAugmentService.isHostileTarget`: dead entities, the source itself, dominated entities, allies, and `source.isAlliedTo(candidate)` are excluded; candidates are Java `Enemy` types or entities accepted by `EntityCompatibilityProfileService.isBoss`. The owner receives entity IDs through `PerceptionStatePayload`; `ClientPerceptionState` and `EntityRendererPerceptionMixin` render the local red `0xFFFF4A4A` entity outline. The interaction contract explicitly removes dominated entities from this hostile-target filter. There is no dedicated Java Danger Sense GameTest.
+
+### Stable Bedrock route and constraints
+
+Stable `Dimension.getEntities` accepts family, location, maximum-distance, exclusion-tag, and closest-result filters. `EntityTypeFamilyComponent` supports checking a candidate's family, `EntityHealthComponent` exposes its current health, and `Entity.getAABB()` returns the bounds used by the shared outline-point generator. The production script queries the `monster` and `boss` families separately, rejects invalid/dead/player entities and those tagged `augmentation_survival:dominated`, then applies the exact 8 / 12 / 16 sphere to entity locations. It sorts and caps accepted hostiles at 256. For each target, the BP generates eight AABB corners and twelve edge midpoints, insets them slightly, and calls owner-only `Player.spawnParticle` with a red marker every 10 ticks.
+
+This is class **C**, `PARTIAL_BDS_VERIFIED`, and the rare candidate is enabled. Stable Script API has no Java `Enemy` or dynamic compatibility-profile predicate, generic entity-alliance test, or client-local entity-outline writer. The vanilla `monster`/`boss` family proxy can include or omit Java-equivalent targets; the reserved dominated tag only excludes companions from this add-on or cooperating add-ons. Server selection ignores walls, but the BDS test cannot establish whether a real client draws particles through opaque blocks. PC, mobile, and controller rendering have not been inspected. Java's 256-target cap means up to 5,120 point particles per owner refresh; mobile performance at this bound is unmeasured. Custom Java boss profiles and interaction with external add-ons also remain open.
+
+### BDS verification
+
+`danger_sense_marks_hostile_entities_at_all_saved_radii_for_its_owner` passed **1/1** on official BDS 1.26.62.1 with stable Script API 2.11.0 in 6.0 seconds. Its production entry grants level 1 by consuming one rare core and verifies the production pack stored level. The GameTest then places hostile targets at exactly 8 / 12 / 16 blocks plus a 16.5-block control and checks all three saved levels. It rejects a passive cow and a zombie tagged dominated, selects the target behind a three-block stone obstruction, and compares each target's 20 observed marker calls with the exact points generated from its collision AABB. At levels 1 / 2 / 3 it observed 1 / 2 / 3 hostiles and 20 / 40 / 60 unique marker calls, all directed to the owner. This is server detection and API-call evidence only; it does not verify reconnect, world restart, visible client rendering, or multiplayer.
+
+### References
+
+- [Stable `Dimension.getEntities`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable)
+- [Stable `EntityFilter`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityfilter?view=minecraft-bedrock-stable)
+- [Stable `EntityTypeFamilyComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitytypefamilycomponent?view=minecraft-bedrock-stable)
+- [Stable `Entity.getAABB`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
+- [Stable `AABB`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/aabb?view=minecraft-bedrock-stable)
+- [Stable `Player.spawnParticle`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable)

@@ -1587,7 +1587,7 @@
       "compatibility_class": "C",
       "bedrock_method": "Every 10 server ticks, query only already-loaded blocks in the canonical spherical radius 12 / 18 / 24, select empty vanilla chest/trapped-chest/barrel inventories, and emit a gold 20-point outline through owner-only Player.spawnParticle. Persist per-location exclusions when stable blockContainerOpened or playerPlaceBlock events observe a container; clear the marker after a player breaks that block",
       "api_constraints": "Stable @minecraft/server 2.11.0 provides Dimension.getBlocks with includeTypes and allowUnloadedChunks, BlockInventoryComponent.container, owner-only Player.spawnParticle, blockContainerOpened, playerPlaceBlock, playerBreakBlock, and world dynamic properties. Stable APIs do not expose a vanilla block-entity loot-table ID/state or reliable natural-versus-player placement provenance. Empty inventory is only a proxy for unconsumed loot, and placement/open markers only cover activity observed since the addon was installed; an already-opened empty chest or an older player-placed empty container can be misidentified. Dimension.getGeneratedStructures is still pre-release and is not used. Custom external container block types are not included. Exact Java filtering is therefore not available through the confirmed stable API",
-      "test_method": "Official BDS 1.26.62.1 production-script GameTest commits Chest Finder level 1 by consuming one rare core, then checks the level 1 / 2 / 3 spherical radii, exact-radius and outside-sphere controls, a chest behind a wall, empty versus filled inventory, real blockContainerOpened and playerPlaceBlock exclusion markers, unique owner-targeted particles, and the rare-candidate allowlist. Java has no Chest Finder-specific GameTest in its current source. Client visuals, legacy empty-container provenance, reconnect, and server restart remain untested",
+      "test_method": "Official BDS 1.26.62.1 production-script GameTest commits Chest Finder level 1 by consuming one rare core, then checks the level 1 / 2 / 3 spherical radii, exact-radius and outside-sphere controls, a chest behind a wall, empty versus filled inventory, a real blockContainerOpened event, round-trip storage of a placement exclusion marker, unique owner-targeted particles, and the rare-candidate allowlist. The pinned SimulatedPlayer could not complete a player block-placement fixture, so playerPlaceBlock delivery remains unverified. Java has no Chest Finder-specific GameTest in its current source. Client visuals, legacy empty-container provenance, reconnect, and server restart remain untested",
       "port_status": "PARTIAL_BDS_VERIFIED",
       "candidate_enabled": true
     },
@@ -1600,16 +1600,27 @@
       "canonical_effect_ko": "반경 8 / 12 / 16블록 내 모든 적대적 개체를 벽 너머에서도 붉은 외곽선으로 표시.",
       "catalog_discrepancy": "",
       "java_source_paths": [
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/client/ClientPerceptionState.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/client/PerceptionClientNetworking.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/EntityRendererPerceptionMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/network/PerceptionStatePayload.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/companion/CompanionAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/integration/EntityCompatibilityProfileService.java"
       ],
-      "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_contract_refs": [
+        {
+          "line": 326,
+          "text": "- 지배 즉시 hostile target filter에서 제외."
+        }
+      ],
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "C",
+      "bedrock_method": "Every 10 server ticks, query nearby entities in the stable monster/boss families, check the exact 8 / 12 / 16-block sphere against their entity locations, and retain at most the 256 closest living targets as in Java. Exclude the server-owned dominated tag, use each target's stable collision AABB to place a red 20-point outline, and emit it through owner-only Player.spawnParticle.",
+      "api_constraints": "Stable @minecraft/server 2.11.0 exposes Dimension.getEntities family/distance filters, EntityTypeFamilyComponent, EntityHealthComponent, Entity.getAABB, and owner-only Player.spawnParticle. It does not provide Java's Enemy/boss-profile predicate, generic entity-alliance test, or client-local entity outline renderer. The vanilla monster family is a practical filter, while the boss family and the add-on's reserved augmentation_survival:dominated tag cover only available integration signals; custom families, neutral/friendly alliances, and Java mod boss profiles can diverge. Client-side particle visibility through opaque blocks and mobile/controller readability are not verifiable on BDS.",
+      "test_method": "Official BDS 1.26.62.1 production-script GameTest consumes one rare core and verifies the level-1 save, then tests saved-level 8 / 12 / 16 spherical radii, just-outside and passive-entity controls, a tagged dominated hostile exclusion, hostile AABB marker geometry, a wall-obstructed target selection, unique owner-targeted red marker calls, and the rare offer allowlist. It does not visually prove through-wall rendering or test Java-mod boss profiles.",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:kill_streak",

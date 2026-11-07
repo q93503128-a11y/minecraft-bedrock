@@ -14,6 +14,7 @@ import "./movement.js";
 import "./rider.js";
 import "./ore-sense.js";
 import "./chest-finder.js";
+import "./danger-sense.js";
 import "./pickup-hand.js";
 import { registerLootScoopHandler } from "./loot-scoop.js";
 

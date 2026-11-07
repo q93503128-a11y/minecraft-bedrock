@@ -1,13 +1,13 @@
 import { system, world } from "@minecraft/server";
 import { isOreBlock } from "./harvest.js";
 import { getStoredAugmentLevel } from "./progression.js";
+import { blockOutlineBounds, outlineMarkerLocations, perceptionMarkerKey } from "./perception-outline.js";
 
 export const ORE_SENSE_ID = "augmentation_survival:ore_sense";
 export const ORE_SENSE_MAX_LEVEL = 3;
 export const ORE_SENSE_PARTICLE_ID = "augmentation_survival:ore_sense_marker";
 const ORE_SENSE_RADIUS = [0, 6, 8, 10];
 const SCAN_INTERVAL_TICKS = 10;
-const OUTLINE_MARGIN = 0.018;
 
 // Stable Script API does not expose a block collision shape. These vanilla
 // blocks have empty collision and therefore reveal adjacent Java ore shapes.
@@ -152,33 +152,6 @@ export function findExposedOreBlocks(dimension, blockCenter, radius) {
   return found;
 }
 
-/** @param {{x:number,y:number,z:number}} ore */
-function outlineMarkerLocations(ore) {
-  const low = OUTLINE_MARGIN;
-  const high = 1 - OUTLINE_MARGIN;
-  const points = [];
-  for (const x of [low, high]) {
-    for (const y of [low, high]) {
-      for (const z of [low, high]) points.push({ x: ore.x + x, y: ore.y + y, z: ore.z + z });
-    }
-  }
-  for (const x of [low, high]) {
-    for (const y of [low, high]) points.push({ x: ore.x + x, y: ore.y + y, z: ore.z + 0.5 });
-  }
-  for (const x of [low, high]) {
-    for (const z of [low, high]) points.push({ x: ore.x + x, y: ore.y + 0.5, z: ore.z + z });
-  }
-  for (const y of [low, high]) {
-    for (const z of [low, high]) points.push({ x: ore.x + 0.5, y: ore.y + y, z: ore.z + z });
-  }
-  return points;
-}
-
-/** @param {{x:number,y:number,z:number}} point */
-function markerKey(point) {
-  return `${point.x.toFixed(3)},${point.y.toFixed(3)},${point.z.toFixed(3)}`;
-}
-
 /** @param {import("@minecraft/server").Player} player @param {(player:import("@minecraft/server").Player, location:{x:number,y:number,z:number})=>void} [onMarker] */
 export function refreshOreSensePlayer(player, onMarker) {
   const level = getStoredAugmentLevel(player, ORE_SENSE_ID, ORE_SENSE_MAX_LEVEL);
@@ -190,8 +163,8 @@ export function refreshOreSensePlayer(player, onMarker) {
   const sent = new Set();
   let markerCount = 0;
   for (const ore of oreBlocks) {
-    for (const marker of outlineMarkerLocations(ore)) {
-      const key = markerKey(marker);
+    for (const marker of outlineMarkerLocations(blockOutlineBounds(ore, 0.018))) {
+      const key = perceptionMarkerKey(marker);
       if (sent.has(key)) continue;
       sent.add(key);
       try {
