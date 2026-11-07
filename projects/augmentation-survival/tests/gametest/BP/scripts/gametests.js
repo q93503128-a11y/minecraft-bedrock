@@ -2128,3 +2128,58 @@ GameTest.registerAsync("AugmentationSurvival", "twins_breeding_event_surface_pro
   test.succeed();
 }).maxTicks(180).structureName(STRUCTURE).tag(TAG);
 
+GameTest.registerAsync("AugmentationSurvival", "long_jump_input_event_surface_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 5 }, "ASLongJumpInputProbe", GameMode.survival);
+  player.setRotation({ x: 0, y: 0 });
+  player.isSprinting = true;
+  player.moveRelative(0, 1, 0.2);
+  const inputs = [];
+  const inputCallback = (event) => {
+    if (event.player.id !== player.id || event.button !== InputButton.Jump) return;
+    inputs.push({
+      button: event.button,
+      state: event.newButtonState,
+      isOnGround: event.player.isOnGround,
+      isSprinting: event.player.isSprinting,
+      isJumping: event.player.isJumping,
+      velocity: event.player.getVelocity(),
+      location: event.player.location,
+    });
+  };
+  world.afterEvents.playerButtonInput.subscribe(inputCallback);
+  let jumpAccepted = false;
+  let before = undefined;
+  let afterOneTick = undefined;
+  let afterFiveTicks = undefined;
+  try {
+    await test.idle(4);
+    before = {
+      isOnGround: player.isOnGround,
+      isSprinting: player.isSprinting,
+      isJumping: player.isJumping,
+      velocity: player.getVelocity(),
+      location: player.location,
+    };
+    jumpAccepted = player.jump();
+    await test.idle(1);
+    afterOneTick = {
+      isOnGround: player.isOnGround,
+      isJumping: player.isJumping,
+      velocity: player.getVelocity(),
+      location: player.location,
+    };
+    await test.idle(4);
+    afterFiveTicks = {
+      isOnGround: player.isOnGround,
+      isJumping: player.isJumping,
+      velocity: player.getVelocity(),
+      location: player.location,
+    };
+  } finally {
+    world.afterEvents.playerButtonInput.unsubscribe(inputCallback);
+  }
+  console.warn("AS_LONG_JUMP_INPUT_SURFACE_PROBE " + JSON.stringify({ jumpAccepted, before, inputs, afterOneTick, afterFiveTicks }));
+  ensure(jumpAccepted, "SimulatedPlayer could not perform a ground jump.");
+  test.succeed();
+}).maxTicks(120).structureName(STRUCTURE).tag(TAG);
+

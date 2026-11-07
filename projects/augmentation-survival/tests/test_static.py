@@ -57,12 +57,24 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("TerrainResistanceService.java", terrain_sources)
         self.assertIn("WebBlockTerrainResistanceMixin.java", terrain_sources)
         self.assertIn("MovementEdgeCaseGameTests.java", terrain_sources)
+        self.assertEqual("C", by_id["twins"]["compatibility_class"])
+        self.assertEqual("NOT_PORTED", by_id["twins"]["port_status"])
+        self.assertFalse(by_id["twins"]["candidate_enabled"])
+        self.assertIn("AnimalBreedingAugmentMixin.java", " ".join(by_id["twins"]["java_source_paths"]))
+        long_jump = by_id["long_jump"]
+        self.assertEqual("지상 달리기 점프 수평 속도 X/Z ×1.08 / ×1.16 / ×1.24.", long_jump["canonical_effect_ko"])
+        self.assertEqual("C", long_jump["compatibility_class"])
+        self.assertEqual("NOT_PORTED", long_jump["port_status"])
+        self.assertFalse(long_jump["candidate_enabled"])
+        self.assertEqual("REVIEWED_NO_DIRECT_RULE", long_jump["interaction_mapping_status"])
+        self.assertIn("playerButtonInput", long_jump["test_method"])
+        self.assertIn("MovementAugmentMixin.java", " ".join(long_jump["java_source_paths"]))
         self.assertEqual("NOT_PORTED", by_id["step_up"]["port_status"])
         self.assertFalse(by_id["step_up"]["candidate_enabled"])
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 13, "C": 11, "D": 10, "UNASSESSED": 113},
+            {"A": 2, "B": 13, "C": 12, "D": 10, "UNASSESSED": 112},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 

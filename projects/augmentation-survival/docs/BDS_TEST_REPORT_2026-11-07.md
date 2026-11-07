@@ -2,12 +2,12 @@
 
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Stable Script API declarations: `@minecraft/server` 2.11.0 and `@minecraft/server-ui` 2.3.0.
-- `npm run verify`: **PASS** — static checks, stable API type-check, and `.mcaddon` package build (57,740 bytes).
+- `npm run verify`: **PASS** — static checks, stable API type-check, and `.mcaddon` package build (58,118 bytes).
 - Command: `npm run test:engine`.
-- Latest GameTests: **43 passed / 0 failed**, 21,839 ms; no regressions, script errors, or infrastructure errors.
+- Latest GameTests: **44 passed / 0 failed**, 26,083 ms; no regressions, script errors, or infrastructure errors.
 - Machine-readable results: [`BDS_TEST_RESULTS_2026-11-07.json`](BDS_TEST_RESULTS_2026-11-07.json).
 
-The previous 42 registered tests all passed in this run. They retain the coverage and limits recorded in the [2026-11-06 report](BDS_TEST_REPORT_2026-11-06.md). The `terrain_resistance_vanilla_surface_probe` remains diagnostic only:
+The previous 43 registered tests all passed in this run. They retain the coverage and limits recorded in the [2026-11-06 report](BDS_TEST_REPORT_2026-11-06.md). The `terrain_resistance_vanilla_surface_probe` remains diagnostic only:
 
 | Surface | `minecraft:movement` scale | 20-tick displacement (`x`, `y`, `z`) |
 | --- | ---: | --- |
@@ -27,3 +27,5 @@ Client import, mobile/controller input, visual UI review, reconnect, online mult
 ## Twins event surface
 
 `twins_breeding_event_surface_probe` adds a 43rd engine test. It forced both cows to adult state, confirmed two accepted SimulatedPlayer interactions consumed exactly two wheat, and observed a native breeding child with `cause: "Born"` and the `minecraft:is_baby` component. Passing `{ spawnEvent: "minecraft:entity_born" }` to `Dimension.spawnEntity` also created a baby cow. The `playerInteractWithEntity` after-event callback stayed empty during the successful SimulatedPlayer interactions. This verifies only that the pinned BDS can expose a baby birth and create a baby; it does not verify the Twins 10% / 20% / 30% rolls, identify the breeder or parents, save a level, or spawn an augment bonus. `쌍둥이` stays class C / `NOT_PORTED` and disabled from core offers; see [`API_COMPATIBILITY_2026-11-07.md`](API_COMPATIBILITY_2026-11-07.md#쌍둥이-twins).
+
+`long_jump_input_event_surface_probe` adds a 44th engine test. A sprinting grounded SimulatedPlayer accepted `.jump()`; one tick later it was airborne with vertical velocity `0.2000007629`, but no `playerButtonInput` Jump event was delivered. The SimulatedPlayer probe does not test real-client input delivery, horizontal sprint-jump velocity, or any Long Jump correction. `멀리뛰기` stays class C / `NOT_PORTED` and disabled from core offers; see [`API_COMPATIBILITY_2026-11-07.md`](API_COMPATIBILITY_2026-11-07.md#멀리뛰기-long-jump).

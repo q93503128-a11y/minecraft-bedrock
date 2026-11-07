@@ -996,14 +996,19 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MovementAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MovementTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MovementTuning.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/FinalAugmentRuntimeService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/MovementAugmentMixin.java",
+        "src/main/resources/data/augmentation_survival/augmentation/movement_modifier_contract.json",
+        "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json",
+        "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/SurvivalResourceMatrixGameTests.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_mapping_status": "REVIEWED_NO_DIRECT_RULE",
+      "compatibility_class": "C",
+      "bedrock_method": "No production behavior shipped. Stable playerButtonInput exposes the shared Jump input; a server handler could scale current X/Z velocity by 8% per saved level for a sprinting ground jump. The playerButtonInput path was not emitted by BDS SimulatedPlayer.jump, and its timing against native ground-jump velocity is unverified",
+      "api_constraints": "Stable playerButtonInput is an after-event for a changed button state, not a native jump-from-ground event. @minecraft/server 2.11.0 exposes getVelocity, applyImpulse, isOnGround, isSprinting and isJumping, but not the Java jumpFromGround callback. BDS 1.26.62.1 SimulatedPlayer.jump performed a jump without emitting playerButtonInput; the event's real-client tick order and X/Z scaling parity are unverified, so no production correction is shipped",
+      "test_method": "BDS 1.26.62.1 diagnostic GameTest: SimulatedPlayer.jump succeeded from ground while sprinting; after one tick it was airborne with vertical velocity 0.2000008. No playerButtonInput Jump event was emitted. Diagnostic only; no Long Jump scaling or real-client input delivery was tested",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

@@ -53,3 +53,29 @@ The add-on uses only vanilla Bedrock entities; no external Java-mod animal, asse
 - [Stable `EntityIsBabyComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityisbabycomponent?view=minecraft-bedrock-stable)
 - [Built-in `minecraft:entity_born` event](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/entityreference/examples/entityevents/minecraftevents_entity_born?view=minecraft-bedrock-stable)
 
+## `멀리뛰기` (Long Jump)
+
+### Java contract and implementation
+
+The canonical uncommon augment has maximum level 3 and multiplies horizontal X/Z velocity on a sprinting ground jump by ×1.08 / ×1.16 / ×1.24; vertical Y is unchanged. `movement_modifier_contract.json` sets `horizontal_bonus_per_level` to `0.08`. `MovementAugmentMixin` injects at the tail of `LivingEntity.jumpFromGround` for server players, where `MovementAugmentService.afterGroundJump` skips action-locked players, then scales X/Z only when the saved level is positive and the player is sprinting. `FinalAugmentRuntimeService.afterGroundJump` runs next and may add the separate vertical `탄성 저장` bonus. The Java GameTest checks unowned and non-sprinting controls, maximum-level X/Z scaling, and unchanged Y. The canonical interaction contract contains no direct Long Jump rule; the ground-jump velocity adjustment and Elastic Storage's later Y-only adjustment are orthogonal. The separate air-jump path does not pass through the vanilla ground-jump hook.
+
+### Stable Bedrock surface and BDS probe
+
+Stable `InputButton.Jump` and `world.afterEvents.playerButtonInput` expose a jump-button state change. Microsoft documents that Jump is mapped to keyboard, controller, and touch interfaces ([`InputButton`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputbutton?view=minecraft-bedrock-stable), [`WorldAfterEvents`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable)). Stable Player/Entity APIs also expose `isOnGround`, `isSprinting`, `isJumping`, `getVelocity()`, and `applyImpulse()` ([`Player`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable), [`Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)). The event is an input-state change, not a native post-`jumpFromGround` hook, and World after-event callbacks are deferred. The stable API does not expose the Java jump method boundary.
+
+The BDS 1.26.62.1 `long_jump_input_event_surface_probe` called `SimulatedPlayer.jump()` from a sprinting grounded state. The jump was accepted and one tick later the player was airborne with vertical velocity `0.2000007629`; no Jump `playerButtonInput` event was emitted. The test's zero input-event count is scoped to the GameTest SimulatedPlayer route; Microsoft documents that SimulatedPlayer does not necessarily fire world events in the same capacity as a real player ([`SimulatedPlayer`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-gametest/simulatedplayer?view=minecraft-bedrock-experimental)). The probe does not validate real keyboard/touch/controller delivery, sprint-jump horizontal velocity, an impulse correction, or parity with Java's ground-jump callback.
+
+### Classification
+
+Class **C**, `NOT_PORTED`, and disabled as a core candidate. A possible server route would observe the shared Jump input, use the saved level and sprint/ground state, then adjust X/Z velocity with `applyImpulse`. The pinned BDS SimulatedPlayer jump did not deliver the input event, and the stable callback is not tied to the vanilla ground-jump velocity update. A correction could miss the first airborne movement tick or respond to a jump input that is not a ground jump. No effect is shipped until actual client event delivery, exact timing, mobile/controller behavior, and stacking with the later Y-only Elastic Storage jump are demonstrated.
+
+Long Jump is passive, needs no extra control binding, and uses no external Java-mod entities or assets.
+
+### References
+
+- [Stable `InputButton`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputbutton?view=minecraft-bedrock-stable)
+- [Stable `WorldAfterEvents`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable)
+- [Stable `Player`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable)
+- [Stable `Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
+- [Experimental GameTest `SimulatedPlayer`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-gametest/simulatedplayer?view=minecraft-bedrock-experimental)
+
