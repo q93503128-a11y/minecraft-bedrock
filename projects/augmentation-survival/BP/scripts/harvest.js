@@ -132,7 +132,7 @@ export function applyCropHarvestBonuses(event, random = Math.random) {
 }
 
 /** @param {import("@minecraft/server").BlockPermutation} permutation */
-function isOre(permutation) {
+export function isOreBlock(permutation) {
   const blockId = permutation.type.id;
   if (VANILLA_ORES.has(blockId)) return true;
   try {
@@ -157,7 +157,7 @@ function firstOrdinaryDrop(drops) {
  * @returns {boolean} whether one item was spawned
  */
 export function applyExtraPieceBonus(event, random = Math.random) {
-  if (!isOre(event.brokenBlockPermutation)) return false;
+  if (!isOreBlock(event.brokenBlockPermutation)) return false;
   const level = getStoredAugmentLevel(event.player, EXTRA_PIECE, EXTRA_PIECE_MAX_LEVEL);
   const chance = extraPieceBonusChance(level);
   if (chance <= 0 || !passesChance(chance, random)) return false;

@@ -306,6 +306,24 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       player.addTag(`as_momentum_shift_seeded_${momentumShiftLevel}`);
       return;
     }
+    if (player.name === "ASOreSenseCoreCommit") {
+      const coreId = "augmentation_survival:rare_augment_core";
+      const augment = { id: "augmentation_survival:ore_sense", max_level: 3 };
+      const inventory = player.getComponent("minecraft:inventory")?.container;
+      if (!inventory) {
+        player.addTag("as_test_ore_sense_core_missing_inventory");
+        return;
+      }
+      inventory.setItem(0, new ItemStack(coreId, 1));
+      const granted = commitCoreSelection(player, coreId, augment);
+      if (!granted.ok || granted.level !== 1 || getStoredAugmentLevel(player, augment.id, augment.max_level) !== 1) {
+        player.addTag("as_test_ore_sense_core_commit_failed");
+        return;
+      }
+      player.addTag("as_test_ore_sense_core_committed");
+      if (!inventory.getItem(0)) player.addTag("as_test_ore_sense_core_consumed");
+      return;
+    }
     if (player.name !== "ASCoreCommitProduction") return;
 
     const coreId = "augmentation_survival:common_augment_core";

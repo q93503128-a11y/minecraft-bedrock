@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 30148,
+  "durationMs": 30086,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -13,6 +13,10 @@
     },
     {
       "id": "AugmentationSurvival:core_offers_only_bds_verified_effects_and_preserves_locked_tiers",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner",
       "outcome": "pass"
     },
     {
@@ -193,12 +197,12 @@
     },
     {
       "id": "AugmentationSurvival:rider_speed_level_2_applies_and_restores",
-      "outcome": "fail",
-      "error": "Error: Rider level 2 test horse did not expose the rideable component.    at ensure (gametests.js:32)"
+      "outcome": "pass"
     },
     {
       "id": "AugmentationSurvival:rider_speed_level_3_applies_and_restores",
-      "outcome": "pass"
+      "outcome": "fail",
+      "error": "Error: Rider level 3 test horse did not expose the rideable component.    at ensure (gametests.js:33)"
     },
     {
       "id": "AugmentationSurvival:rider_speed_does_not_change_unowned_mount",
@@ -222,10 +226,10 @@
     }
   ],
   "regressions": [
-    "AugmentationSurvival:rider_speed_level_2_applies_and_restores"
+    "AugmentationSurvival:rider_speed_level_3_applies_and_restores"
   ],
   "scriptErrors": [
-    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Rider level 2 test horse did not expose the rideable component.    at ensure (gametests.js:32)"
+    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Rider level 3 test horse did not expose the rideable component.    at ensure (gametests.js:33)"
   ],
   "infraError": "1 uncaught script error(s) were logged. They are thrown outside any test, so no test can fail on them. Pass --allow-script-errors to report without failing."
 }

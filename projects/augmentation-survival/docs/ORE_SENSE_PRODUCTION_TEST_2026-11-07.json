@@ -1,0 +1,14 @@
+{
+  "tag": "augmentation_survival_ore_sense_production",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 5526,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}

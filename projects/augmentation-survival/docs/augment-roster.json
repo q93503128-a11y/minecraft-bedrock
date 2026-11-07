@@ -1239,16 +1239,20 @@
       "canonical_effect_ko": "전방위 반경 6 / 8 / 10블록 안의 노출 광석을 청록 외곽선으로 표시.",
       "catalog_discrepancy": "",
       "java_source_paths": [
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/client/ClientPerceptionState.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/client/PerceptionClientNetworking.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/EntityRendererPerceptionMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/network/PerceptionStatePayload.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_mapping_status": "REVIEWED_NO_DIRECT_RULE",
+      "compatibility_class": "B",
+      "bedrock_method": "Every 10 server ticks, read the saved Ore Sense level and scan only loaded block positions in the canonical spherical radius 6 / 8 / 10. Reuse the shared ore ID/tag detector, treat air, liquid, and an explicit set of common collisionless vanilla neighbors as exposed, and emit a cyan custom-particle outline at the block corners and edge midpoints with Player.spawnParticle; Bedrock sends these particles only to the owning player",
+      "api_constraints": "Stable @minecraft/server 2.11.0 provides Dimension.isChunkLoaded/getBlock/heightRange, BlockPermutation.hasTag, and owner-only Player.spawnParticle. It does not expose a block collision-shape getter, so exposure uses air/liquid plus a maintained list of known collisionless vanilla IDs; custom or unlisted collisionless blocks can differ from Java's exact VoxelShape.isEmpty check. The Resource Pack's static cyan particles approximate Java's continuous thin wireframe with twenty small markers per ore. Java uses ConventionalBlockTags.ORES; Bedrock checks its ore/ores tags and explicit vanilla ore IDs. Online multiplayer delivery isolation is guaranteed by the API contract, but real-client rendering, mobile readability, and cross-add-on/custom-block tags have not been visually tested",
+      "test_method": "BDS 1.26.62.1 production-script GameTest grants Ore Sense through a rare core, verifies the level-1 save and one-core consumption, then seeds levels 1–3 and exposed ores at exact 6 / 8 / 10-block distances. It checks water exposure, rejects a six-face stone-enclosed ore, verifies the production refresh emits unique cyan markers, and asserts every marker call targets only the owning SimulatedPlayer. Java has no Ore Sense-specific GameTest in its current source",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:arrow_saver",

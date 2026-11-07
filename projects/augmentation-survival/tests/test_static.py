@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -125,9 +125,36 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 19, "C": 13, "D": 11, "UNASSESSED": 104},
+            {"A": 2, "B": 20, "C": 13, "D": 11, "UNASSESSED": 103},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
+
+    def test_ore_sense_uses_the_canonical_radius_and_owner_only_markers(self):
+        roster = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        ore_sense = next(item for item in roster["augments"] if item["id"] == "augmentation_survival:ore_sense")
+        self.assertEqual("광석 눈썰미", ore_sense["name_ko"])
+        self.assertEqual("rare", ore_sense["tier"])
+        self.assertEqual(3, ore_sense["max_level"])
+        self.assertEqual("전방위 반경 6 / 8 / 10블록 안의 노출 광석을 청록 외곽선으로 표시.", ore_sense["canonical_effect_ko"])
+        self.assertEqual("B", ore_sense["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", ore_sense["port_status"])
+        self.assertTrue(ore_sense["candidate_enabled"])
+        self.assertEqual("REVIEWED_NO_DIRECT_RULE", ore_sense["interaction_mapping_status"])
+        java_sources = " ".join(ore_sense["java_source_paths"])
+        for source in ["PerceptionAugmentService.java", "ClientPerceptionState.java", "PerceptionStatePayload.java", "PerceptionClientNetworking.java", "EntityRendererPerceptionMixin.java"]:
+            self.assertIn(source, java_sources)
+        self.assertIn("collision-shape getter", ore_sense["api_constraints"])
+        self.assertIn("owner-only", ore_sense["api_constraints"])
+        self.assertIn("one-core consumption", ore_sense["test_method"])
+        self.assertIn("6 / 8 / 10-block", ore_sense["test_method"])
+
+        script = (ROOT / "BP/scripts/ore-sense.js").read_text(encoding="utf-8")
+        self.assertIn("Player.spawnParticle", script)
+        self.assertIn("SCAN_INTERVAL_TICKS = 10", script)
+        self.assertIn("findExposedOreBlocks", script)
+        particle = json.loads((ROOT / "RP/particles/ore_sense_marker.json").read_text(encoding="utf-8"))
+        self.assertEqual("augmentation_survival:ore_sense_marker", particle["particle_effect"]["description"]["identifier"])
+        self.assertEqual("#39E6D0", particle["particle_effect"]["components"]["minecraft:particle_appearance_tinting"]["color"])
 
     def test_momentum_shift_matches_the_java_landing_contract_and_partial_bedrock_route(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

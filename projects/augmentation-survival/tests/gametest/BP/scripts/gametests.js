@@ -3,9 +3,10 @@ import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
 import { armorCareChance, armorCareRollSucceeds } from "./armor-care-rules.js";
-import { applyCropHarvestBonuses, applyDexterityGatheringBonus, applyExtraPieceBonus, bumperCropBonusChance, dexterityBonusChance, extraPieceBonusChance, isDexterityGatheringBlock, isEligibleDexterityDrop, seedSaverBonusChance } from "./harvest.js";
+import { applyCropHarvestBonuses, applyDexterityGatheringBonus, applyExtraPieceBonus, bumperCropBonusChance, dexterityBonusChance, extraPieceBonusChance, isDexterityGatheringBlock, isEligibleDexterityDrop, isOreBlock, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { tryMantle } from "./movement.js";
+import { ORE_SENSE_ID, ORE_SENSE_PARTICLE_ID, oreSenseRadius, refreshOreSensePlayer } from "./ore-sense.js";
 import { pickupHandRadius } from "./pickup-hand.js";
 import { LEVELS_KEY } from "./progression.js";
 import { toolCareChance, toolCareRollSucceeds, tryPreventBlockToolDamage } from "./tool-care.js";
@@ -180,7 +181,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:momentum_shift",
       "augmentation_survival:mantle",
       ]
-      : [];
+      : tier === "rare" ? [ORE_SENSE_ID] : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
@@ -195,6 +196,89 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
   ensure(countItem(inventory, NEXT_CORE) === 1, "Using a locked-tier core consumed it despite there being no enabled candidates.");
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner", async (test) => {
+  const observedLevels = [];
+  const corePlayer = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASOreSenseCoreCommit", GameMode.survival);
+  await test.idle(3);
+  ensure(corePlayer.hasTag("as_test_ore_sense_core_committed"), "Production core selection did not commit rare Ore Sense level 1.");
+  ensure(corePlayer.hasTag("as_test_ore_sense_core_consumed"), "Production rare-core selection did not consume its core.");
+  ensure(!corePlayer.hasTag("as_test_ore_sense_core_commit_failed"), "Production rare-core selection reported a commit failure.");
+  ensure(countItem(inventoryOf(corePlayer), "augmentation_survival:rare_augment_core") === 0,
+    "Rare-core selection left a core in the player's inventory.");
+  corePlayer.disconnect();
+  await test.idle(1);
+
+  const offsets = [
+    { x: 6, y: 0, z: 0, id: "minecraft:diamond_ore", exposed: "minecraft:air" },
+    { x: 0, y: 8, z: 0, id: "minecraft:iron_ore", exposed: "minecraft:air" },
+    { x: 0, y: 0, z: 10, id: "minecraft:coal_ore", exposed: "minecraft:air" },
+    { x: 3, y: 2, z: 1, id: "minecraft:gold_ore", exposed: "minecraft:water" },
+  ];
+  const faceOffsets = [
+    { x: 1, y: 0, z: 0 }, { x: -1, y: 0, z: 0 },
+    { x: 0, y: 1, z: 0 }, { x: 0, y: -1, z: 0 },
+    { x: 0, y: 0, z: 1 }, { x: 0, y: 0, z: -1 },
+  ];
+
+  for (let level = 1; level <= 3; level += 1) {
+    const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, `ASOreSense${level}`, GameMode.survival);
+    await test.idle(3);
+    const center = {
+      x: Math.floor(player.location.x),
+      y: Math.floor(player.location.y),
+      z: Math.floor(player.location.z),
+    };
+    const positionOf = offset => ({ x: center.x + offset.x, y: center.y + offset.y, z: center.z + offset.z });
+    const dimension = player.dimension;
+
+    for (const ore of offsets) {
+      const location = positionOf(ore);
+      dimension.setBlockType(location, ore.id);
+      for (const face of faceOffsets) {
+        dimension.setBlockType({ x: location.x + face.x, y: location.y + face.y, z: location.z + face.z }, "minecraft:stone");
+      }
+      const openFace = { x: location.x + 1, y: location.y, z: location.z };
+      dimension.setBlockType(openFace, ore.exposed);
+    }
+
+    const buried = positionOf({ x: 2, y: 3, z: 2 });
+    dimension.setBlockType(buried, "minecraft:emerald_ore");
+    for (const face of faceOffsets) {
+      dimension.setBlockType({ x: buried.x + face.x, y: buried.y + face.y, z: buried.z + face.z }, "minecraft:stone");
+    }
+
+    player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ [ORE_SENSE_ID]: level }));
+    const ownedMarkers = [];
+    const result = refreshOreSensePlayer(player, (target, location) => ownedMarkers.push({ targetId: target.id, location }));
+    const expectedRadius = [0, 6, 8, 10][level];
+    ensure(oreSenseRadius(level) === expectedRadius && result.radius === expectedRadius,
+      `Ore Sense level ${level} should scan ${expectedRadius} blocks; got ${result.radius}.`);
+    const found = result.oreBlocks.map(position => `${position.x - center.x},${position.y - center.y},${position.z - center.z}`).sort();
+    const expected = offsets
+      .filter(ore => Math.sqrt(ore.x * ore.x + ore.y * ore.y + ore.z * ore.z) <= expectedRadius)
+      .map(ore => `${ore.x},${ore.y},${ore.z}`)
+      .sort();
+    ensure(JSON.stringify(found) === JSON.stringify(expected),
+      `Ore Sense level ${level} expected exposed ores ${JSON.stringify(expected)}, got ${JSON.stringify(found)}.`);
+    ensure(!result.oreBlocks.some(position => position.x === buried.x && position.y === buried.y && position.z === buried.z),
+      "Ore Sense marked an ore fully enclosed by solid blocks.");
+    ensure(result.markerCount === ownedMarkers.length && ownedMarkers.length > 0,
+      "Ore Sense did not emit its custom markers for the selected player.");
+    ensure(ownedMarkers.every(marker => marker.targetId === player.id),
+      "Ore Sense sent a marker through a player other than the augment owner.");
+    ensure(result.markerCount === new Set(ownedMarkers.map(marker => `${marker.location.x},${marker.location.y},${marker.location.z}`)).size,
+      "Ore Sense emitted duplicate outline points for the same scan.");
+    ensure(ORE_SENSE_PARTICLE_ID === "augmentation_survival:ore_sense_marker",
+      "The production Ore Sense particle identifier diverged from its RP definition.");
+    observedLevels.push({ level, radius: result.radius, ores: found.length, markers: result.markerCount });
+    player.disconnect();
+    await test.idle(1);
+  }
+
+  console.warn("AS_ORE_SENSE_PRODUCTION_TEST " + JSON.stringify({ observedLevels }));
+  test.succeed();
+}).maxTicks(80).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_ore_sense_production");
 
 GameTest.registerAsync("AugmentationSurvival", "crop_bonus_augments_match_maturity_levels_products_and_independent_rolls", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASBumperCrop", GameMode.survival);

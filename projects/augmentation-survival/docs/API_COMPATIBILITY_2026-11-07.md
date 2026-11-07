@@ -286,3 +286,31 @@ Mantle adds no key binding or custom client UI. It uses the ordinary forward mov
 - [Stable `Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
 - [Stable `Dimension`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable)
 - [Stable `Block`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable)
+
+## `광석 눈썰미` (Ore Sense)
+
+### Java contract and implementation
+
+The rare augment has maximum level 3 and displays exposed ores within a full spherical block-position radius of 6 / 8 / 10. Java scans every 10 client ticks. It matches `ConventionalBlockTags.ORES`, then checks the six face-adjacent blocks with `VoxelShape.isEmpty`; an exposed ore is rendered as a thin cyan `0xFF39E6D0` block outline. The saved level reaches the client through `PerceptionAugmentService` and `PerceptionStatePayload`; the render scan and outline are in `ClientPerceptionState`. The current Java interaction contract has no Ore Sense-specific cross-augment rule, and the Java source has no dedicated Ore Sense GameTest.
+
+### Stable Bedrock route
+
+The production BP reads the saved player level, runs every 10 server ticks, scans only already-loaded chunks, and bounds the scan to the player's current dimension and its height range. It uses the shared vanilla ore ID/tag helper (`ore` / `ores` plus explicit vanilla IDs), checks air, liquid, or a maintained list of common collisionless vanilla blocks on the six faces, and emits 20 custom cyan points per ore (eight corners and twelve edge midpoints). The Resource Pack particle has zero initial speed, 0.65-second lifetime, and small 0.09-block billboard size; the half-second refresh interval keeps the points visible between scans. There is no custom key or menu interaction; it is a passive effect and uses the stored level owned by the server.
+
+Stable `Player.spawnParticle` is documented as visible only to the target player, so these visual markers are sent to the owner and not disclosed to other players. The local scan is bounded and checks `Dimension.isChunkLoaded` before block access; it does not request new chunk loads. Bedrock's `Block` / `BlockPermutation` surface does not expose Java's collision shape or an equivalent generic empty-collision query. The explicit vanilla neighbor list can therefore miss custom or unlisted collisionless blocks and can diverge on partial blocks. Ore discovery uses Bedrock tags and vanilla fallbacks; an external add-on block must expose a compatible ore tag for this route to recognize it. The 20 particle points approximate the Java continuous wireframe and are not pixel-identical.
+
+The passive scan introduces no device-specific input, so keyboard, touch, and controller use the same regular gameplay controls. The custom particle's contrast, marker density and legibility have not been inspected in the Windows client, mobile client, or controller play; BDS cannot validate rendered client visuals.
+
+### BDS verification and classification
+
+`ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner` passed **1/1** on official BDS 1.26.62.1 with stable Script API 2.11.0. Its production entry first grants Ore Sense by consuming a rare core through `commitCoreSelection` and verifies the saved level; the GameTest then exercises the production refresh at levels 1–3 (6 / 8 / 10 blocks), air- and water-exposed ore detection, omission of a fully stone-enclosed ore, unique outline markers, and that all marker calls use the selected augment owner's `Player.spawnParticle`. The run found 2 / 3 / 4 exposed ores and emitted 40 / 60 / 80 unique markers at the three levels. The same GameTest passed in the full 55-test run; that full suite was **not clean** because the Rider level-3 mount fixture failed to expose `minecraft:rideable` (54 passed / 1 failed). `npm run verify` passed 32 static tests, the stable API type-check, and package creation. See [`ORE_SENSE_PRODUCTION_TEST_2026-11-07.json`](ORE_SENSE_PRODUCTION_TEST_2026-11-07.json).
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, enabled as a rare candidate. The scan/ownership/radius path is verified on BDS; exact collision-shape parity, client visuals on PC/mobile/controller, and live online multiplayer rendering remain unverified.
+
+### References
+
+- [Stable Player API (`spawnParticle`)](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable)
+- [Stable Dimension API (`isChunkLoaded`, `getBlock`, height range)](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable)
+- [Stable Block API](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable)
+- [Particle system overview](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/particlesintroduction?view=minecraft-bedrock-stable)
+- [Particle tinting component](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/examples/particlecomponents/particle_appearance_tinting?view=minecraft-bedrock-stable)

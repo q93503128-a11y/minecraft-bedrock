@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[1]
@@ -12,6 +14,7 @@ TEST_BP = PROJECT / "tests/gametest/BP"
 
 
 def main() -> None:
+    subprocess.run([sys.executable, str(PROJECT / "tools/build_ore_sense_particle.py")], check=True)
     if OUTPUT.exists():
         shutil.rmtree(OUTPUT)
     OUTPUT.mkdir(parents=True)
@@ -38,6 +41,7 @@ def main() -> None:
     shutil.copy2(PROJECT / "BP/scripts/loot-scoop.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/loot-scoop.js")
     shutil.copy2(PROJECT / "BP/scripts/progression.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/progression.js")
     shutil.copy2(PROJECT / "BP/scripts/movement.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/movement.js")
+    shutil.copy2(PROJECT / "BP/scripts/ore-sense.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/ore-sense.js")
     shutil.copy2(PROJECT / "BP/scripts/pickup-hand.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/pickup-hand.js")
     shutil.copy2(PROJECT / "BP/scripts/armor-care-rules.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/armor-care-rules.js")
 

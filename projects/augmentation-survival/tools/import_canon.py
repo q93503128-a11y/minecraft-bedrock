@@ -355,12 +355,13 @@ def main(source: Path, target: Path) -> None:
             "interaction_contract_refs": interaction_refs,
             "interaction_mapping_status": (
                 "REVIEW_REQUIRED" if interaction_refs else
-                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip", "terrain_resistance", "twins", "long_jump", "taming_knack"} else
+                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip", "terrain_resistance", "twins", "long_jump", "taming_knack", "ore_sense"} else
                 "REVIEW_REQUIRED" if slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "long_reach", "fast_eating", "fuel_saver", "fast_brewing", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else
                 "NO_DIRECT_MENTION_FOUND"
             ),
             "compatibility_class": (
                 "C" if slug == "taming_knack" else
+                "B" if slug == "ore_sense" else
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
@@ -627,6 +628,30 @@ def main(source: Path, target: Path) -> None:
             )
             record["test_method"] = (
                 "BDS 1.26.62.1 production-handler GameTests verify the exact 5% / level chance boundaries and five-level cap in the pure rule helper, then exercise 20 ordinary hits and 20 near-break hits against four equipped diamond armor pieces through the production entityHurt handlers. An unowned iron-armor control retained native durability loss on all four slots. A separate armor_probe run observed 17 saved / 63 spent ordinary-piece outcomes and 20 saved / 60 spent break-boundary outcomes; the latest full 52-test run observed 14 saved / 66 spent ordinary outcomes and 18 saved / 62 spent break-boundary outcomes. Same-tick repeated hits, Unbreaking combinations, unrelated add-on durability writes, reconnect/restart, and online multiplayer remain untested"
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
+        if slug == "ore_sense":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/client/ClientPerceptionState.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/client/PerceptionClientNetworking.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/EntityRendererPerceptionMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/network/PerceptionStatePayload.java",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["interaction_mapping_status"] = "REVIEWED_NO_DIRECT_RULE"
+            record["compatibility_class"] = "B"
+            record["bedrock_method"] = (
+                "Every 10 server ticks, read the saved Ore Sense level and scan only loaded block positions in the canonical spherical radius 6 / 8 / 10. Reuse the shared ore ID/tag detector, treat air, liquid, and an explicit set of common collisionless vanilla neighbors as exposed, and emit a cyan custom-particle outline at the block corners and edge midpoints with Player.spawnParticle; Bedrock sends these particles only to the owning player"
+            )
+            record["api_constraints"] = (
+                "Stable @minecraft/server 2.11.0 provides Dimension.isChunkLoaded/getBlock/heightRange, BlockPermutation.hasTag, and owner-only Player.spawnParticle. It does not expose a block collision-shape getter, so exposure uses air/liquid plus a maintained list of known collisionless vanilla IDs; custom or unlisted collisionless blocks can differ from Java's exact VoxelShape.isEmpty check. The Resource Pack's static cyan particles approximate Java's continuous thin wireframe with twenty small markers per ore. Java uses ConventionalBlockTags.ORES; Bedrock checks its ore/ores tags and explicit vanilla ore IDs. Online multiplayer delivery isolation is guaranteed by the API contract, but real-client rendering, mobile readability, and cross-add-on/custom-block tags have not been visually tested"
+            )
+            record["test_method"] = (
+                "BDS 1.26.62.1 production-script GameTest grants Ore Sense through a rare core, verifies the level-1 save and one-core consumption, then seeds levels 1–3 and exposed ores at exact 6 / 8 / 10-block distances. It checks water exposure, rejects a six-face stone-enclosed ore, verifies the production refresh emits unique cyan markers, and asserts every marker call targets only the owning SimulatedPlayer. Java has no Ore Sense-specific GameTest in its current source"
             )
             record["port_status"] = "PARTIAL_BDS_VERIFIED"
             record["candidate_enabled"] = True
