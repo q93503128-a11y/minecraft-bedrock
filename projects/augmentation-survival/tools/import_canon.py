@@ -109,6 +109,18 @@ def main(source: Path, target: Path) -> None:
             ):
                 if relative not in source_paths:
                     source_paths.append(relative)
+        if slug == "taming_knack":
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/WolfTamingAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/CatTamingAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ParrotTamingAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/NautilusTamingAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/HorseTamingAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/TamingAugmentService.java",
+                "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json",
+            ):
+                if relative not in source_paths:
+                    source_paths.append(relative)
         if slug == "extra_piece":
             relative = "src/main/resources/data/augmentation_survival/augmentation/resource_harvest_contract.json"
             if relative not in source_paths:
@@ -326,11 +338,12 @@ def main(source: Path, target: Path) -> None:
             "interaction_contract_refs": interaction_refs,
             "interaction_mapping_status": (
                 "REVIEW_REQUIRED" if interaction_refs else
-                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip", "terrain_resistance", "twins", "long_jump"} else
+                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip", "terrain_resistance", "twins", "long_jump", "taming_knack"} else
                 "REVIEW_REQUIRED" if slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "long_reach", "fast_eating", "fuel_saver", "fast_brewing", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else
                 "NO_DIRECT_MENTION_FOUND"
             ),
             "compatibility_class": (
+                "C" if slug == "taming_knack" else
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
@@ -345,6 +358,7 @@ def main(source: Path, target: Path) -> None:
                 "UNASSESSED"
             ),
             "bedrock_method": (
+                "Investigated alternate route: intercept matching vanilla tame-item interactions, roll the Java multiplier against the species' base probability, consume one item, and call EntityTameableComponent.tame on success; no production handler is shipped because the pinned BDS SimulatedPlayer does not emit the required interaction events and the horse temper probability path cannot be verified" if slug == "taming_knack" else
                 "health_boost effect refreshed from saved level" if slug == "sturdiness" else
                 "Scale root melee damage in the stable entityHurt before-event; BDS verifies level 5 via production handler" if slug == "keen_edge" else
                 "Scale player-owned projectile damage in the stable entityHurt before-event by 4% per level; max level 5" if slug == "precise_aim" else
@@ -387,6 +401,7 @@ def main(source: Path, target: Path) -> None:
                 "Not assessed"
             ),
             "api_constraints": (
+                "Stable WorldBeforeEvents.playerInteractWithEntity is cancellable and exposes target/held item, while EntityTameableComponent.tame can set tamed state and emits entityTamed before/after events. BDS 1.26.62.1 SimulatedPlayer emits neither playerInteractWithEntity event. Nautilus probability/tamed-state/owner getters throw; wolf tamed-state/owner getters also throw after direct tame. The vanilla horse runtime lists neither minecraft:tamemount nor minecraft:tameable (though getComponent(...).tameToPlayer returns true); no horse temper value or buck-off attempt result is exposed, so the complete Java item-and-horse contract has no verified parity route" if slug == "taming_knack" else
                 "health_boost route is +4 HP/level vs Java +2; effectiveMax is read-only; exact alternative not assessed" if slug == "sturdiness" else
                 "Stable before-event; BDS simulated-player entityAttack event is verified; physical client melee and acquisition path remain untested" if slug == "keen_edge" else
                 "Stable damage source exposes damagingProjectile and projectile owner. Current owner attribution cannot distinguish every ROOT_PROJECTILE from a player-owned DERIVED_PROJECTILE; physical arrow collision and acquisition remain untested" if slug == "precise_aim" else
@@ -430,6 +445,7 @@ def main(source: Path, target: Path) -> None:
                 "Not assessed"
             ),
             "test_method": (
+                "Separate BDS 1.26.62.1 GameTest: one native item interaction on wolf/cat/parrot/nautilus, native tame event observation, component getter probes, direct wolf component.tame ownership event, and vanilla horse component inventory. This is an API-surface diagnostic only; it does not test an augment multiplier, real-player cancellation, horse temper, persistence, or production gameplay" if slug == "taming_knack" else
                 "BDS GameTest: max health at levels 1 and 5; core retained before selection result" if slug == "sturdiness" else
                 "BDS GameTest: production before-event handler scales 10 simulated-player entityAttack damage to 12 at level 5; test-only production-pack entry seeds the pack-scoped property" if slug == "keen_edge" else
                 "BDS GameTest: production before-event handler scales 1-damage owner-attributed projectile sources to 1.04/1.08/1.12/1.16/1.20 at levels 1–5; unaugmented and ownerless sources stay at 1; a physical arrow-hit experiment did not hit and is not counted as passing" if slug == "precise_aim" else

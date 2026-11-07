@@ -87,6 +87,18 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("REVIEWED_NO_DIRECT_RULE", long_jump["interaction_mapping_status"])
         self.assertIn("playerButtonInput", long_jump["test_method"])
         self.assertIn("MovementAugmentMixin.java", " ".join(long_jump["java_source_paths"]))
+        taming_knack = by_id["taming_knack"]
+        self.assertEqual("길들이기 요령", taming_knack["name_ko"])
+        self.assertEqual("길들이기 성공 확률 ×1.25 / ×1.50 / ×2.00, 최대 100%.", taming_knack["canonical_effect_ko"])
+        self.assertEqual("C", taming_knack["compatibility_class"])
+        self.assertEqual("NOT_PORTED", taming_knack["port_status"])
+        self.assertFalse(taming_knack["candidate_enabled"])
+        self.assertEqual("REVIEWED_NO_DIRECT_RULE", taming_knack["interaction_mapping_status"])
+        self.assertIn("HorseTamingAugmentMixin.java", " ".join(taming_knack["java_source_paths"]))
+        self.assertIn("NautilusTamingAugmentMixin.java", " ".join(taming_knack["java_source_paths"]))
+        self.assertIn("horse temper probability path cannot be verified", taming_knack["bedrock_method"])
+        self.assertIn("SimulatedPlayer emits neither playerInteractWithEntity event", taming_knack["api_constraints"])
+        self.assertIn("augment multiplier", taming_knack["test_method"])
         ride_current = by_id["ride_current"]
         self.assertEqual("흐르는 물과 같은 방향으로 수영 시 속도 +15% / +30% / +45%.", ride_current["canonical_effect_ko"])
         self.assertEqual("B", ride_current["compatibility_class"])
@@ -113,7 +125,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 17, "C": 12, "D": 11, "UNASSESSED": 107},
+            {"A": 2, "B": 17, "C": 13, "D": 11, "UNASSESSED": 106},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 

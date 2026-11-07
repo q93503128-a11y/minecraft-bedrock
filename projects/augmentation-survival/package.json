@@ -10,6 +10,7 @@
     "build:engine-tests": "python tools/build_gametest.py",
     "test:engine": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival --expect-registered 52 --json .bds/logs/augmentation-survival-results.json",
     "test:brewing-probe": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival_brewing_probe --expect-registered 1 --json .bds/logs/augmentation-survival-brewing-probe.json",
+    "test:taming-probe": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival_taming_probe --expect-registered 1 --json .bds/logs/augmentation-survival-taming-probe.json",
     "check:api": "tsc -p tsconfig.json",
     "verify": "npm run test:static && npm run check:api && npm run build:addon"
   },

@@ -1152,14 +1152,20 @@
       "canonical_effect_ko": "길들이기 성공 확률 ×1.25 / ×1.50 / ×2.00, 최대 100%.",
       "catalog_discrepancy": "",
       "java_source_paths": [
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/TamingAugmentService.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/TamingAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/WolfTamingAugmentMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/CatTamingAugmentMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ParrotTamingAugmentMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/NautilusTamingAugmentMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/HorseTamingAugmentMixin.java",
+        "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_mapping_status": "REVIEWED_NO_DIRECT_RULE",
+      "compatibility_class": "C",
+      "bedrock_method": "Investigated alternate route: intercept matching vanilla tame-item interactions, roll the Java multiplier against the species' base probability, consume one item, and call EntityTameableComponent.tame on success; no production handler is shipped because the pinned BDS SimulatedPlayer does not emit the required interaction events and the horse temper probability path cannot be verified",
+      "api_constraints": "Stable WorldBeforeEvents.playerInteractWithEntity is cancellable and exposes target/held item, while EntityTameableComponent.tame can set tamed state and emits entityTamed before/after events. BDS 1.26.62.1 SimulatedPlayer emits neither playerInteractWithEntity event. Nautilus probability/tamed-state/owner getters throw; wolf tamed-state/owner getters also throw after direct tame. The vanilla horse runtime lists neither minecraft:tamemount nor minecraft:tameable (though getComponent(...).tameToPlayer returns true); no horse temper value or buck-off attempt result is exposed, so the complete Java item-and-horse contract has no verified parity route",
+      "test_method": "Separate BDS 1.26.62.1 GameTest: one native item interaction on wolf/cat/parrot/nautilus, native tame event observation, component getter probes, direct wolf component.tame ownership event, and vanilla horse component inventory. This is an API-surface diagnostic only; it does not test an augment multiplier, real-player cancellation, horse temper, persistence, or production gameplay",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

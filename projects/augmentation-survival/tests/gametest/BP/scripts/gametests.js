@@ -733,6 +733,123 @@ GameTest.registerAsync("AugmentationSurvival", "quick_feet_scales_server_movemen
   test.succeed();
 }).maxTicks(150).structureName(STRUCTURE).tag(TAG);
 
+GameTest.registerAsync("AugmentationSurvival", "taming_component_and_event_surface_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASTamingProbe", GameMode.survival);
+  const inventory = inventoryOf(player);
+  const interactionsBefore = [];
+  const interactionsAfter = [];
+  const tamesBefore = [];
+  const tamesAfter = [];
+  const readApi = getter => {
+    try { return getter(); }
+    catch (error) { return `error:${error?.name ?? "Error"}:${error?.message ?? "unknown"}`; }
+  };
+  const beforeInteraction = event => {
+    if (event.player.id === player.id) interactionsBefore.push({ target: event.target.typeId, item: event.itemStack?.typeId });
+  };
+  const afterInteraction = event => {
+    if (event.player.id === player.id) interactionsAfter.push({ target: event.target.typeId, item: event.beforeItemStack?.typeId });
+  };
+  const beforeTame = event => tamesBefore.push({ entityId: event.entity.id, target: event.entity.typeId, actorId: event.tamingEntity.id, actor: event.tamingEntity.typeId });
+  const afterTame = event => tamesAfter.push({ entityId: event.entity.id, target: event.entity.typeId, actorId: event.tamingEntity.id, actor: event.tamingEntity.typeId });
+  world.beforeEvents.playerInteractWithEntity.subscribe(beforeInteraction);
+  world.afterEvents.playerInteractWithEntity.subscribe(afterInteraction);
+  world.beforeEvents.entityTamed.subscribe(beforeTame);
+  world.afterEvents.entityTamed.subscribe(afterTame);
+
+  const species = ["minecraft:wolf", "minecraft:cat", "minecraft:parrot", "minecraft:nautilus"];
+  const nativeResults = [];
+  const tameEntities = [];
+  try {
+    await test.idle(2);
+    for (let index = 0; index < species.length; index += 1) {
+      const typeId = species[index];
+      let entity;
+      try {
+        entity = player.dimension.spawnEntity(typeId, test.worldLocation({ x: 6 + index * 2, y: 3, z: 5 }));
+      } catch (error) {
+        nativeResults.push({ typeId, spawnError: `${error?.name ?? "Error"}:${error?.message ?? "unknown"}` });
+        continue;
+      }
+      tameEntities.push(entity);
+      const component = entity.getComponent("minecraft:tameable");
+      if (!component) {
+        nativeResults.push({ typeId, missingTameable: true, components: entity.getComponents().map(value => value.typeId) });
+        continue;
+      }
+      const tameItems = readApi(() => component.getTameItems.map(item => item.typeId));
+      const food = Array.isArray(tameItems) ? tameItems[0] : undefined;
+      let interactionsAccepted = 0;
+      let initialFood = 0;
+      if (food) {
+        inventory.setItem(0, new ItemStack(food, 64));
+        initialFood = inventory.getItem(0)?.amount ?? 0;
+        player.selectedSlotIndex = 0;
+        if (player.interactWithEntity(entity)) interactionsAccepted += 1;
+        await test.idle(2);
+      }
+      nativeResults.push({
+        typeId,
+        tameItems,
+        probability: readApi(() => component.probability),
+        attemptedFood: food,
+        interactionsAccepted,
+        initialFood,
+        remainingFood: inventory.getItem(0)?.amount ?? 0,
+        remainingFoodType: inventory.getItem(0)?.typeId,
+        isTamed: readApi(() => component.isTamed),
+        ownerId: readApi(() => component.tamedToPlayerId),
+      });
+    }
+
+    const directWolf = player.dimension.spawnEntity("minecraft:wolf", test.worldLocation({ x: 6, y: 3, z: 8 }));
+    const directWolfTameable = directWolf.getComponent("minecraft:tameable");
+    ensure(directWolfTameable, "Wolf did not expose minecraft:tameable.");
+    const directTameResult = readApi(() => directWolfTameable.tame(player));
+    await test.idle(2);
+    const horse = player.dimension.spawnEntity("minecraft:horse", test.worldLocation({ x: 9, y: 3, z: 8 }));
+    const horseTameMount = horse.getComponent("minecraft:tamemount");
+    const horseTameResult = horseTameMount ? readApi(() => horseTameMount.tameToPlayer(true, player)) : "component_unavailable";
+    if (horseTameMount) await test.idle(2);
+    console.warn("AS_TAMING_API_SURFACE_PROBE " + JSON.stringify({
+      nativeResults,
+      interactionsBefore,
+      interactionsAfter,
+      tamesBefore,
+      tamesAfter,
+      directTame: {
+        entityId: directWolf.id,
+        result: directTameResult,
+        isTamed: readApi(() => directWolfTameable.isTamed),
+        ownerId: readApi(() => directWolfTameable.tamedToPlayerId),
+      },
+      horseDirectTame: {
+        entityType: horse.typeId,
+        result: horseTameResult,
+        isTamed: horseTameMount ? readApi(() => horseTameMount.isTamed) : "component_unavailable",
+        isTamedToPlayer: horseTameMount ? readApi(() => horseTameMount.isTamedToPlayer) : "component_unavailable",
+        ownerId: horseTameMount ? readApi(() => horseTameMount.tamedToPlayerId) : "component_unavailable",
+        components: horse.getComponents().map(value => value.typeId),
+        hasTameable: horse.hasComponent("minecraft:tameable"),
+        hasTameMount: horse.hasComponent("minecraft:tamemount"),
+      },
+    }));
+    ensure(directTameResult === true, "EntityTameableComponent.tame did not return true for an untamed wolf.");
+    ensure(tamesBefore.some(event => event.entityId === directWolf.id && event.actorId === player.id), "Direct component.tame did not emit entityTamed before-event with the owner.");
+    ensure(tamesAfter.some(event => event.entityId === directWolf.id && event.actorId === player.id), "Direct component.tame did not emit entityTamed after-event with the owner.");
+  } finally {
+    world.beforeEvents.playerInteractWithEntity.unsubscribe(beforeInteraction);
+    world.afterEvents.playerInteractWithEntity.unsubscribe(afterInteraction);
+    world.beforeEvents.entityTamed.unsubscribe(beforeTame);
+    world.afterEvents.entityTamed.unsubscribe(afterTame);
+    for (const entity of tameEntities) {
+      try { entity.remove(); } catch { /* Test cleanup after an already-despawned entity. */ }
+    }
+    player.disconnect();
+  }
+  test.succeed();
+}).maxTicks(240).structureName(STRUCTURE).tag("augmentation_survival_taming_probe");
+
 GameTest.registerAsync("AugmentationSurvival", "nocturnal_and_sun_affinity_share_the_day_night_movement_axis", async (test) => {
   const previousTime = world.getTimeOfDay();
   try {

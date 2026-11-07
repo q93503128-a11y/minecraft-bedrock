@@ -209,3 +209,33 @@ Fast Brewing is native-vanilla content and has no dependency on external Java mo
 - [Stable `Block`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable)
 - [Stable `BlockComponentTypes`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockcomponenttypes?view=minecraft-bedrock-stable)
 - [Stable `BlockInventoryComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockinventorycomponent?view=minecraft-bedrock-stable)
+
+## `길들이기 요령` (Taming Knack)
+
+### Java contract and implementation
+
+The uncommon augment has maximum level 3. It multiplies the animal's original tame-success probability by 1.25 / 1.50 / 2.00, capped at 100%. `TamingAugmentService.boostZeroRoll` preserves the original `nextInt(bound) == 0` success and stochastically adds only the probability needed to reach the multiplier. Java applies that roll in the wolf, cat, parrot, and Abstract Nautilus tame paths. `HorseTamingAugmentMixin` instead scales the horse-family temper threshold for a player passenger, including fractional thresholds in expectation. This probability change does not alter temper accumulation. The interaction contract has no direct Taming Knack rule; these species and mechanics are derived from the Java service and mixins.
+
+### Stable Bedrock API review and BDS probe
+
+Stable Script API provides a cancellable `world.beforeEvents.playerInteractWithEntity` event carrying the player, target, and held item. `EntityTameableComponent` exposes its tame items and read-only probability, plus `tame(player)`; `EntityTameMountComponent` exposes `tameToPlayer(showParticles, player)`. A potential item-taming adapter could cancel only matching vanilla item interactions, defer state changes until after the before-event, reproduce the Java multiplier from the species probability, consume one item, and call `tame(player)` on a successful server roll. The `entityTamed` before/after events fire after a successful tame decision and cannot reveal failed attempts by themselves.
+
+The separate `taming_component_and_event_surface_probe` passed 1/1 on BDS 1.26.62.1 using stable `@minecraft/server` 2.11.0. A SimulatedPlayer successfully performed one native tame-item interaction on each of a wolf, cat, parrot, and nautilus. The wolf, cat, and parrot each exposed probability `0.33000001311302185` in this run; nautilus probability and tame-state/owner getters threw `Failed to get property 'seatCount'` / `isTamed` / `tamedToPlayerId`. A native nautilus tame and a direct wolf tame were observed through `entityTamed` before/after events in this run. The wolf's direct `tame(player)` returned true and emitted both tame events with that player as actor, but its tame-state and owner getters threw after the direct call. The SimulatedPlayer interaction did not emit either `playerInteractWithEntity` before- or after-event for any species. A real client interaction was not tested, so this does not establish whether the event is delivered for an actual PC, mobile, or controller player.
+
+The exact run summary is recorded in [`TAMING_API_SURFACE_PROBE_2026-11-07.json`](TAMING_API_SURFACE_PROBE_2026-11-07.json).
+
+On the horse probe, `EntityTameMountComponent.tameToPlayer(true, player)` returned true, while the horse's `getComponents()` omitted `minecraft:tamemount`, `hasComponent("minecraft:tamemount")` and `hasComponent("minecraft:tameable")` both returned false, and the component's tamed/owner getters threw at runtime. The entity exposed `minecraft:rideable` and `minecraft:is_tamed` after the direct call. Stable components and events do not expose the native horse temper value, max temper, or the buck-off attempt result needed to transform Java's threshold on each attempt. A successful setter is not evidence that its random native attempt probability can be preserved.
+
+The official stable references document [player interaction before-events](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerinteractwithentitybeforeevent?view=minecraft-bedrock-stable), [tameable entity components](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitytameablecomponent?view=minecraft-bedrock-stable), [tame-mount components](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitytamemountcomponent?view=minecraft-bedrock-stable), [tame before-events](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitytamedbeforeevent?view=minecraft-bedrock-stable), and [world before-events](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldbeforeevents?view=minecraft-bedrock-stable). State-changing calls must be deferred out of restricted before-event execution.
+
+### Classification and limits
+
+Class **C**, `NOT_PORTED`, and disabled as a core candidate. A stable item-interaction interception route may support the four item-tamed Java families, but its cancellation and item replacement behavior was not exercised because BDS SimulatedPlayer does not deliver the required interaction events; no real-client verification is available in this pass. Runtime getter failures also make the property surface inconsistent for nautilus and wolf. The horse-family probability depends on per-attempt temper state that stable Script API does not expose. No gameplay handler or guessed probability is shipped. This is vanilla content and has no external Java mod dependency.
+
+### References
+
+- [Stable `PlayerInteractWithEntityBeforeEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerinteractwithentitybeforeevent?view=minecraft-bedrock-stable)
+- [Stable `EntityTameableComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitytameablecomponent?view=minecraft-bedrock-stable)
+- [Stable `EntityTameMountComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitytamemountcomponent?view=minecraft-bedrock-stable)
+- [Stable `EntityTamedBeforeEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitytamedbeforeevent?view=minecraft-bedrock-stable)
+- [Stable `WorldBeforeEvents`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldbeforeevents?view=minecraft-bedrock-stable)

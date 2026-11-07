@@ -1,0 +1,76 @@
+{
+  "test": "AugmentationSurvival:taming_component_and_event_surface_probe",
+  "tag": "augmentation_survival_taming_probe",
+  "outcome": "pass",
+  "registered": 1,
+  "bdsVersion": "1.26.62.1",
+  "scriptApiVersion": "2.11.0",
+  "durationMs": 13933,
+  "nativeItemInteractions": [
+    {
+      "entity": "minecraft:wolf",
+      "tameItems": ["minecraft:bone"],
+      "probability": 0.33000001311302185,
+      "attemptedItem": "minecraft:bone",
+      "acceptedInteractions": 1,
+      "itemCount": "64 to 63",
+      "isTamedAfterOneAttempt": false
+    },
+    {
+      "entity": "minecraft:cat",
+      "tameItems": ["minecraft:cod", "minecraft:salmon"],
+      "probability": 0.33000001311302185,
+      "attemptedItem": "minecraft:cod",
+      "acceptedInteractions": 1,
+      "itemCount": "64 to 63",
+      "isTamedAfterOneAttempt": false
+    },
+    {
+      "entity": "minecraft:parrot",
+      "tameItems": [
+        "minecraft:wheat_seeds",
+        "minecraft:pumpkin_seeds",
+        "minecraft:melon_seeds",
+        "minecraft:beetroot_seeds",
+        "minecraft:pitcher_pod",
+        "minecraft:torchflower_seeds"
+      ],
+      "probability": 0.33000001311302185,
+      "attemptedItem": "minecraft:wheat_seeds",
+      "acceptedInteractions": 1,
+      "itemCount": "64 to 63",
+      "isTamedAfterOneAttempt": false
+    },
+    {
+      "entity": "minecraft:nautilus",
+      "tameItems": ["minecraft:pufferfish_bucket", "minecraft:pufferfish"],
+      "probability": "throws: Failed to get property seatCount on minecraft:tameable",
+      "attemptedItem": "minecraft:pufferfish_bucket",
+      "acceptedInteractions": 1,
+      "itemCount": "1 to 1 (the item stack clamps at one)",
+      "tameStateAndOwnerGetters": "throw",
+      "entityTamedBeforeAndAfterEventsObserved": true
+    }
+  ],
+  "simulatedPlayerInteractionEvents": {
+    "playerInteractWithEntityBefore": 0,
+    "playerInteractWithEntityAfter": 0
+  },
+  "directTameableMethod": {
+    "entity": "minecraft:wolf",
+    "tameReturned": true,
+    "entityTamedBeforeAndAfterEventsObserved": true,
+    "eventActorWasPlayer": true,
+    "tamedStateAndOwnerGettersAfterCall": "throw"
+  },
+  "horseMountMethod": {
+    "entity": "minecraft:horse",
+    "tameToPlayerReturned": true,
+    "hasComponentTamemount": false,
+    "hasComponentTameable": false,
+    "runtimeComponentsAfterCallInclude": ["minecraft:rideable", "minecraft:is_tamed"],
+    "tamedStateAndOwnerGetters": "throw",
+    "temperOrBuckOffAttemptDataAvailable": false
+  },
+  "interpretation": "API surface diagnostic only. No Taming Knack multiplier, real-client interaction cancellation, horse temper adjustment, production gameplay, or online multiplayer was tested."
+}
