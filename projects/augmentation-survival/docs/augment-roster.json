@@ -1344,16 +1344,17 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalTuning.java",
+        "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/RareTierPlaytestRegressionGameTests.java"
       ],
       "interaction_contract_refs": [],
       "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "compatibility_class": "C",
+      "bedrock_method": "Mirror Java's native Night Vision effect for the saved level-1 passive: apply amplifier 0 for 600 ticks when absent or at/below 220 ticks remaining, with no particles. Reconcile immediately on acquisition and spawn, then every server tick; do not change world light, visual blocks, or spawn conditions.",
+      "api_constraints": "Stable @minecraft/server 2.11.0 Entity.addEffect/getEffect supports the native night_vision effect, duration and amplifier; EntityEffectOptions exposes showParticles but not Java's ambient or showIcon flags. Gameplay illumination and no-world-light/spawn-rule changes are preserved, while the Java-hidden effect icon cannot be controlled through the stable effect options and actual client HUD rendering remains unverified.",
+      "test_method": "BDS 1.26.62.1 production-handler GameTest checks the exact 600-tick duration and 220-tick refresh threshold, threshold boundaries, level-1 application after spawn, amplifier 0, refresh of a low-duration effect, restoration after external effect removal, and a no-augment player control. Client light rendering, icon visibility, PC/mobile/controller UI, reconnect, and online multiplayer are not asserted.",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:tunneling",

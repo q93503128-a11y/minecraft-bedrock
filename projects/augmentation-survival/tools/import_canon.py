@@ -533,9 +533,26 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver", "replant"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver", "replant"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver", "replant", "night_vision"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver", "replant", "night_vision"},
         })
+        if slug == "night_vision":
+            record = records[-1]
+            relative = "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/RareTierPlaytestRegressionGameTests.java"
+            if relative not in record["java_source_paths"]:
+                record["java_source_paths"].append(relative)
+            record["compatibility_class"] = "C"
+            record["bedrock_method"] = (
+                "Mirror Java's native Night Vision effect for the saved level-1 passive: apply amplifier 0 for 600 ticks when absent or at/below 220 ticks remaining, with no particles. Reconcile immediately on acquisition and spawn, then every server tick; do not change world light, visual blocks, or spawn conditions."
+            )
+            record["api_constraints"] = (
+                "Stable @minecraft/server 2.11.0 Entity.addEffect/getEffect supports the native night_vision effect, duration and amplifier; EntityEffectOptions exposes showParticles but not Java's ambient or showIcon flags. Gameplay illumination and no-world-light/spawn-rule changes are preserved, while the Java-hidden effect icon cannot be controlled through the stable effect options and actual client HUD rendering remains unverified."
+            )
+            record["test_method"] = (
+                "BDS 1.26.62.1 production-handler GameTest checks the exact 600-tick duration and 220-tick refresh threshold, threshold boundaries, level-1 application after spawn, amplifier 0, refresh of a low-duration effect, restoration after external effect removal, and a no-augment player control. Client light rendering, icon visibility, PC/mobile/controller UI, reconnect, and online multiplayer are not asserted."
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
         if slug == "pockets":
             record = records[-1]
             for relative in (

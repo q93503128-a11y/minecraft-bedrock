@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미", "상자 찾기", "위험 감지", "화살 아끼기", "다시 심기", "주머니"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense", "chest_finder", "danger_sense", "arrow_saver", "replant", "pockets"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미", "상자 찾기", "위험 감지", "화살 아끼기", "다시 심기", "주머니", "밤눈"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense", "chest_finder", "danger_sense", "arrow_saver", "replant", "pockets", "night_vision"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -63,6 +63,9 @@ class StaticAddonTests(unittest.TestCase):
         self.assertEqual("C", by_id["underwater_work"]["compatibility_class"])
         self.assertEqual("C", by_id["pickup_hand"]["compatibility_class"])
         self.assertEqual("C", by_id["pockets"]["compatibility_class"])
+        self.assertEqual("C", by_id["night_vision"]["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", by_id["night_vision"]["port_status"])
+        self.assertTrue(by_id["night_vision"]["candidate_enabled"])
         self.assertEqual("C", by_id["brace"]["compatibility_class"])
         self.assertEqual("C", by_id["step_up"]["compatibility_class"])
         self.assertEqual("C", by_id["terrain_resistance"]["compatibility_class"])
@@ -126,7 +129,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 22, "C": 16, "D": 11, "UNASSESSED": 98},
+            {"A": 2, "B": 22, "C": 17, "D": 11, "UNASSESSED": 97},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -741,6 +744,35 @@ class StaticAddonTests(unittest.TestCase):
         gametest = (ROOT / "tests/gametest/BP/scripts/gametests.js").read_text(encoding="utf-8")
         self.assertIn("pockets_store_inventory_overflow_and_withdraw_without_loss", gametest)
         self.assertIn("augmentation_survival_pockets_production", gametest)
+
+    def test_night_vision_preserves_java_refresh_contract_and_uses_the_native_effect(self):
+        data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        night_vision = next(item for item in data["augments"] if item["id"] == "augmentation_survival:night_vision")
+        self.assertEqual("밤눈", night_vision["name_ko"])
+        self.assertEqual("rare", night_vision["tier"])
+        self.assertEqual(1, night_vision["max_level"])
+        self.assertEqual("어두운 곳에서도 밝게 보인다. 실제 광원·스폰 조건은 바꾸지 않는다.", night_vision["canonical_effect_ko"])
+        self.assertEqual("C", night_vision["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", night_vision["port_status"])
+        self.assertTrue(night_vision["candidate_enabled"])
+        self.assertIn("SurvivalAugmentService.java", " ".join(night_vision["java_source_paths"]))
+        self.assertIn("RareTierPlaytestRegressionGameTests.java", " ".join(night_vision["java_source_paths"]))
+        self.assertIn("600 ticks", night_vision["bedrock_method"])
+        self.assertIn("220 ticks", night_vision["bedrock_method"])
+        self.assertIn("showIcon", night_vision["api_constraints"])
+        self.assertIn("amplifier 0", night_vision["test_method"])
+
+        runtime = (ROOT / "BP/scripts/night-vision.js").read_text(encoding="utf-8")
+        self.assertIn('player.addEffect("night_vision", NIGHT_VISION_REFRESH_DURATION_TICKS', runtime)
+        self.assertIn("showParticles: false", runtime)
+        self.assertIn("currentDurationTicks <= NIGHT_VISION_REFRESH_THRESHOLD_TICKS", runtime)
+        self.assertIn("system.runInterval(reconcileOnlineNightVision, 1)", (ROOT / "BP/scripts/main.js").read_text(encoding="utf-8"))
+        self.assertIn("NIGHT_VISION_REFRESH_DURATION_TICKS = 600", runtime)
+        self.assertIn("NIGHT_VISION_REFRESH_THRESHOLD_TICKS = 220", runtime)
+
+        gametest = (ROOT / "tests/gametest/BP/scripts/gametests.js").read_text(encoding="utf-8")
+        self.assertIn("night_vision_is_owned_refreshed_before_flicker_and_keeps_java_tuning", gametest)
+        self.assertIn("augmentation_survival_night_vision_production", gametest)
 
 
 if __name__ == "__main__":

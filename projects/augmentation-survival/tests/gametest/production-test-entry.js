@@ -41,6 +41,12 @@ system.runInterval(() => {
 // production pack's namespace here instead of from the separate GameTest pack.
 world.afterEvents.playerSpawn.subscribe(({ player }) => {
   try {
+    if (player.name === "ASNightVision") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:night_vision": 1,
+      }));
+      return;
+    }
     const pocketsLevel = /^ASPocketsLevel([1-3])(?:Shared)?$/.exec(player.name)?.[1];
     if (pocketsLevel) {
       const levels = { "augmentation_survival:pockets": Number(pocketsLevel) };

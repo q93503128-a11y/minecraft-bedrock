@@ -20,6 +20,7 @@ import "./danger-sense.js";
 import "./pickup-hand.js";
 import { registerLootScoopHandler } from "./loot-scoop.js";
 import { openPocketStorage, pocketLevel } from "./pockets.js";
+import { reconcileNightVision, reconcileOnlineNightVision } from "./night-vision.js";
 
 const NS = "augmentation_survival";
 /** @typedef {{id:string, name_ko:string, tier:string, tier_ko:string, max_level:number, canonical_effect_ko:string, candidate_enabled:boolean}} Augment */
@@ -143,6 +144,7 @@ async function openOffer(player, coreId) {
     const nextLevel = result.level;
     player.sendMessage(`${selected.name_ko} Lv.${nextLevel} 획득!`);
     if (selected.id === `${NS}:sturdiness`) applySturdiness(player);
+    else if (selected.id === `${NS}:night_vision`) reconcileNightVision(player);
   } catch {
     // A busy screen, player leaving, or form rejection leaves the core untouched.
   } finally {
@@ -296,7 +298,11 @@ world.afterEvents.playerLeave.subscribe(({ playerId }) => {
 });
 
 world.afterEvents.playerSpawn.subscribe(({ player }) => system.runTimeout(() => {
-  try { applySturdiness(player); } catch { /* The player can leave before this deferred callback runs. */ }
+  try {
+    applySturdiness(player);
+    reconcileNightVision(player);
+  } catch { /* The player can leave before this deferred callback runs. */ }
 }, 1));
 system.runInterval(applyImplementedPassives, 200);
+system.runInterval(reconcileOnlineNightVision, 1);
 registerLootScoopHandler();

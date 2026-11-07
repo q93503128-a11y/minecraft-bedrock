@@ -436,3 +436,25 @@ The handler is dimension/position keyed and token guarded for simultaneous break
 - [Stable PlayerBreakBlockAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockafterevent?view=minecraft-bedrock-stable)
 - [Stable BlockPermutation](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockpermutation?view=minecraft-bedrock-stable)
 - [Stable ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable)
+
+## Night Vision (`밤눈`)
+
+### Java contract
+
+The rare passive has maximum level 1. `SurvivalAugmentService.tickNightVision` checks the saved level on every server tick and leaves players without the augment untouched. If the native Night Vision effect is absent or has 220 ticks or less remaining, Java applies amplifier 0 for 600 ticks with `ambient=true`, particles hidden, and the effect icon hidden. The 220-tick refresh threshold stays above Java's 200-tick flicker window. The canonical effect brightens dark vision only; it does not change actual block/sky light or mob-spawn rules. The current interaction contract has no direct Night Vision entry.
+
+### Stable Bedrock route and constraints
+
+The production BP reads the authoritative saved level and uses stable `Player.addEffect("night_vision", 600, { amplifier: 0, showParticles: false })`. It reconciles every server tick, immediately after acquisition, and one tick after player spawn/respawn. Missing or ≤220-tick effects are refreshed; a longer native effect is left in place. The code does not clear the effect if saved ownership is absent, matching Java's `tickNightVision` early return.
+
+Stable `Entity.addEffect` and `getEffect` support native status effects, while `EntityEffectOptions` exposes `amplifier` and `showParticles`; it does not expose Java's ambient or `showIcon` flags. The no-particle behavior is requested, but the API cannot set the Java hidden-icon state. Status-icon behavior and actual dark-scene brightness are therefore unverified on a client. Night Vision is a passive and needs no new user input, but PC, mobile, and controller screen readability have not been visually reviewed. No external Java mod dependency is involved.
+
+### Classification and BDS evidence
+
+Class **C**, `PARTIAL_BDS_VERIFIED`, rare candidate enabled. The isolated production-handler GameTest checks the exact 600-tick duration and 220-tick refresh threshold; verifies no refresh above the threshold and refresh at/below its boundary; confirms the level-1 saved player receives amplifier 0 after spawn; restores the effect after a forced removal; and keeps the unowned control clear. BDS verifies server effect state, not its rendered brightness, particles, or HUD icon. Reconnect, online multiplayer, client rendering, and mobile/controller display remain untested.
+
+### References
+
+- [Stable Entity.addEffect and Entity.getEffect](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
+- [Stable EntityEffectOptions](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityeffectoptions?view=minecraft-bedrock-stable)
+- [Stable Effect](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/effect?view=minecraft-bedrock-stable)

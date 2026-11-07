@@ -1,0 +1,14 @@
+{
+  "tag": "augmentation_survival_night_vision_production",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 5136,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:night_vision_is_owned_refreshed_before_flicker_and_keeps_java_tuning",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}

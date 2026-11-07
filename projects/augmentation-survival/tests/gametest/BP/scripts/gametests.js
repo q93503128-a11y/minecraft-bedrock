@@ -12,6 +12,7 @@ import { ORE_SENSE_ID, ORE_SENSE_PARTICLE_ID, oreSenseRadius, refreshOreSensePla
 import { outlineMarkerLocations, perceptionMarkerKey } from "./perception-outline.js";
 import { pickupHandRadius } from "./pickup-hand.js";
 import { LEVELS_KEY } from "./progression.js";
+import { NIGHT_VISION_REFRESH_DURATION_TICKS, NIGHT_VISION_REFRESH_THRESHOLD_TICKS, shouldRefreshNightVision } from "./night-vision.js";
 import { arrowSaverChance, arrowSaverRollSucceeds, consumedExactlyOneArrow, isVanillaArrow } from "./arrow-saver-rules.js";
 import { toolCareChance, toolCareRollSucceeds, tryPreventBlockToolDamage } from "./tool-care.js";
 import { isAugmentCore, lootScoopChance, lootScoopRollSucceeds, processLootScoopDeath } from "./loot-scoop.js";
@@ -185,7 +186,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:momentum_shift",
       "augmentation_survival:mantle",
       ]
-    : tier === "rare" ? ["augmentation_survival:arrow_saver", "augmentation_survival:replant", "augmentation_survival:pockets", ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
+    : tier === "rare" ? ["augmentation_survival:arrow_saver", "augmentation_survival:replant", "augmentation_survival:pockets", "augmentation_survival:night_vision", ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
@@ -200,6 +201,38 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
   ensure(countItem(inventory, NEXT_CORE) === 1, "Using a locked-tier core consumed it despite there being no enabled candidates.");
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "night_vision_is_owned_refreshed_before_flicker_and_keeps_java_tuning", async (test) => {
+  ensure(NIGHT_VISION_REFRESH_DURATION_TICKS === 600, "Night Vision refresh duration diverged from Java's 600 ticks.");
+  ensure(NIGHT_VISION_REFRESH_THRESHOLD_TICKS === 220, "Night Vision refresh threshold diverged from Java's 220 ticks.");
+  ensure(NIGHT_VISION_REFRESH_THRESHOLD_TICKS > 200, "Night Vision refresh threshold entered Java's vanilla flicker window.");
+  ensure(shouldRefreshNightVision(undefined), "A missing Night Vision effect should be restored.");
+  ensure(shouldRefreshNightVision(200) && shouldRefreshNightVision(220), "Night Vision should refresh at and below the saved threshold.");
+  ensure(!shouldRefreshNightVision(221) && !shouldRefreshNightVision(600), "Night Vision should keep effects above the saved threshold without replacing them.");
+
+  const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASNightVision", GameMode.survival);
+  const unowned = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 3 }, "ASNightVisionUnowned", GameMode.survival);
+  await test.idle(4);
+  let effect = player.getEffect("night_vision");
+  ensure(effect, "The production runtime did not grant the saved Night Vision augment after player spawn.");
+  ensure(effect.amplifier === 0, `Night Vision should use amplifier 0; got ${effect.amplifier}.`);
+  ensure(effect.duration > NIGHT_VISION_REFRESH_THRESHOLD_TICKS && effect.duration <= NIGHT_VISION_REFRESH_DURATION_TICKS,
+    `Production Night Vision duration should remain above the no-flicker threshold and at most 600; got ${effect.duration}.`);
+  ensure(!unowned.getEffect("night_vision"), "A player without Night Vision received the passive effect.");
+
+  player.addEffect("night_vision", NIGHT_VISION_REFRESH_THRESHOLD_TICKS, { amplifier: 0, showParticles: true });
+  await test.idle(3);
+  effect = player.getEffect("night_vision");
+  ensure(effect && effect.duration > NIGHT_VISION_REFRESH_THRESHOLD_TICKS,
+    "The production per-tick reconciler did not refresh a low-duration Night Vision effect.");
+  ensure(!unowned.getEffect("night_vision"), "The unowned control received Night Vision during a refresh cycle.");
+
+  player.removeEffect("night_vision");
+  await test.idle(3);
+  ensure(player.getEffect("night_vision"), "The production runtime did not restore Night Vision after an external effect clear.");
+  console.warn(`AS_NIGHT_VISION_PRODUCTION ${JSON.stringify({ refreshDurationTicks: NIGHT_VISION_REFRESH_DURATION_TICKS, refreshThresholdTicks: NIGHT_VISION_REFRESH_THRESHOLD_TICKS, amplifier: effect.amplifier, unownedControl: true, externalClearRestored: true })}`);
+  test.succeed();
+}).maxTicks(40).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_night_vision_production");
 
 GameTest.registerAsync("AugmentationSurvival", "ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner", async (test) => {
   const observedLevels = [];
