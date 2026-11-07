@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -81,12 +81,21 @@ class StaticAddonTests(unittest.TestCase):
         ride_current_sources = " ".join(ride_current["java_source_paths"])
         self.assertIn("MobilityUtilityAugmentService.java", ride_current_sources)
         self.assertIn("CombatExpansionSpeedConversionMixin.java", ride_current_sources)
+        urgent_steps = by_id["urgent_steps"]
+        self.assertEqual("피해를 받으면 3초간 이동 속도 +10% / +20% / +30%.", urgent_steps["canonical_effect_ko"])
+        self.assertEqual("B", urgent_steps["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", urgent_steps["port_status"])
+        self.assertTrue(urgent_steps["candidate_enabled"])
+        self.assertEqual("REVIEW_REQUIRED", urgent_steps["interaction_mapping_status"])
+        self.assertIn("refresh", urgent_steps["test_method"])
+        self.assertIn("Speed Conversion", urgent_steps["api_constraints"])
+        self.assertIn("CombatAugmentService.java", " ".join(urgent_steps["java_source_paths"]))
         self.assertEqual("NOT_PORTED", by_id["step_up"]["port_status"])
         self.assertFalse(by_id["step_up"]["candidate_enabled"])
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 14, "C": 12, "D": 10, "UNASSESSED": 111},
+            {"A": 2, "B": 15, "C": 12, "D": 10, "UNASSESSED": 110},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -452,6 +461,18 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("world.afterEvents.playerLeave.subscribe", script)
         self.assertIn("if (OPEN_FORMS.get(player.id) === token) OPEN_FORMS.delete(player.id)", script)
         self.assertIn("pending.offerToken !== offerToken", script)
+
+    def test_urgent_steps_uses_positive_hurt_window_and_shared_movement_axis(self):
+        script = (ROOT / "BP/scripts/movement.js").read_text(encoding="utf-8")
+        self.assertIn("world.afterEvents.entityHurt.subscribe(onEntityHurt)", script)
+        self.assertIn("!(damage > 0)", script)
+        self.assertIn("now + URGENT_STEPS_DURATION_TICKS", script)
+        self.assertIn("Math.max(URGENT_STEPS_UNTIL.get(hurtEntity.id) ?? 0", script)
+        self.assertIn("URGENT_STEPS_DURATION_TICKS = 60", script)
+        self.assertIn("catchBreathBonus + urgentStepsBonus", script)
+        self.assertIn("world.afterEvents.entityDie.subscribe", script)
+        self.assertIn("world.afterEvents.playerLeave.subscribe", script)
+        self.assertIn("world.afterEvents.playerSpawn.subscribe", script)
 
 
 if __name__ == "__main__":

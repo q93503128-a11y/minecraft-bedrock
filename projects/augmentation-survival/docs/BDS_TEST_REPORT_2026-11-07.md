@@ -2,12 +2,12 @@
 
 - Server: official Bedrock Dedicated Server 1.26.62.1, pinned by `bds-runner.json`.
 - Stable Script API declarations: `@minecraft/server` 2.11.0 and `@minecraft/server-ui` 2.3.0.
-- `npm run verify`: **PASS** — 28 static tests, stable API type-check, and `.mcaddon` package build (59,473 bytes).
+- `npm run verify`: **PASS** — 29 static tests, stable API type-check, and `.mcaddon` package build (60,499 bytes).
 - Command: `npm run test:engine`.
-- Latest GameTests: **45 passed / 0 failed**, 23,599 ms; no regressions, script errors, or infrastructure errors.
+- Latest GameTests: **46 passed / 0 failed**, 28,098 ms; no regressions, script errors, or infrastructure errors.
 - Machine-readable results: [`BDS_TEST_RESULTS_2026-11-07.json`](BDS_TEST_RESULTS_2026-11-07.json).
 
-The previous 43 registered tests all passed in this run. They retain the coverage and limits recorded in the [2026-11-06 report](BDS_TEST_REPORT_2026-11-06.md). The `terrain_resistance_vanilla_surface_probe` remains diagnostic only:
+The original 43 registered tests also passed in this run. They retain the coverage and limits recorded in the [2026-11-06 report](BDS_TEST_REPORT_2026-11-06.md). The `terrain_resistance_vanilla_surface_probe` remains diagnostic only:
 
 | Surface | `minecraft:movement` scale | 20-tick displacement (`x`, `y`, `z`) |
 | --- | ---: | --- |
@@ -32,4 +32,8 @@ Client import, mobile/controller input, visual UI review, reconnect, online mult
 
 `ride_current_liquid_state_probe` adds a 45th engine test and exercises the production BP runtime. In an eastward stream, the observed `liquid_depth` row was 0, 9, 10, 11, 12, 13, 14, 15. At levels 1–3 the underwater movement value matched 0.023 / 0.026 / 0.029 from a 0.02 baseline. The test also verified no bonus at negative X velocity (−0.5196), no bonus in flat source water, and additive level-1 Webbed Feet stacking to 0.025. It does not test real-client/mobile movement, reconnect, multiplayer, complex drop geometry, or Speed Conversion. `물살 타기` is class B / `PARTIAL_BDS_VERIFIED` and is enabled for uncommon offers; see [`API_COMPATIBILITY_2026-11-07.md`](API_COMPATIBILITY_2026-11-07.md#물살-타기-ride-current).
 
-One intermediate full-suite rerun had a single unrelated failure in the shared 4-point XP pickup test; the following full rerun passed all 45 tests. The cause was not established, so the pickup timing/race surface remains a test-stability watch item.
+`urgent_steps_triggers_refreshes_and_stacks_on_real_damage` adds a 46th engine test and exercises the production BP runtime. Positive synthetic damage at levels 1–3 sets the general movement component to 0.11 / 0.12 / 0.13 from a 0.10 baseline. Level-5 Quick Feet plus level-2 Urgent Steps stacks additively to 0.135 (+35%). A second hit 40 ticks later refreshes the 60-tick window without another stack; the bonus remains active past the original expiry and then expires after the refreshed window. A before-event-cancelled hit produces no hurt after-event and does not activate the augment. The test does not establish visible client displacement, reconnect timing, or online multiplayer. `다급한 발걸음` is class B / `PARTIAL_BDS_VERIFIED` and enabled as an uncommon candidate; see [`API_COMPATIBILITY_2026-11-07.md`](API_COMPATIBILITY_2026-11-07.md#다급한-발걸음-urgent-steps).
+
+The latest run also asserts that BDS can generate the cow's beef from a dead entity. Loot Scoop's production helper is tested against a real player-attributed death event with an injected deterministic bundle, including exclusion of an augment core. A prior isolated call to the native generator returned an empty bundle even though a separate dead-cow probe returned beef and leather. This keeps the duplicate-spawning test deterministic while recording that native re-roll output may be empty or differ; it does not claim a guaranteed production bonus or native-drop parity.
+
+One intermediate full-suite rerun had a single unrelated failure in the shared 4-point XP pickup test; the following 45-test rerun and latest 46-test rerun passed. The cause was not established, so the pickup timing/race surface remains a test-stability watch item.

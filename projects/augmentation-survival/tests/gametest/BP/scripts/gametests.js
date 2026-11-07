@@ -173,6 +173,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:dexterity",
         "augmentation_survival:pickup_hand",
         "augmentation_survival:ride_current",
+        "augmentation_survival:urgent_steps",
       ]
       : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
@@ -1461,6 +1462,9 @@ GameTest.registerAsync("AugmentationSurvival", "stable_mob_death_and_loot_event_
   console.warn(`AS_LOOT_EVENT_SURFACE ${JSON.stringify({ applied, events })}`);
   ensure(applied, "The simulated attacker could not kill the vanilla cow in the loot-event probe.");
   ensure(events.some(event => event.type === "entityDie"), `Stable entityDie did not report the victim death: ${JSON.stringify(events)}.`);
+  const deathEvent = events.find(event => event.type === "entityDie");
+  ensure(Array.isArray(deathEvent?.generated) && deathEvent.generated.some(stack => stack.typeId === "minecraft:beef" && stack.amount > 0),
+    `Stable LootTableManager did not return the cow's guaranteed beef stack for the dead-entity probe: ${JSON.stringify(events)}.`);
   test.succeed();
 }).maxTicks(20).structureName(STRUCTURE).tag(TAG);
 
@@ -1488,7 +1492,11 @@ GameTest.registerAsync("AugmentationSurvival", "loot_scoop_matches_chance_levels
   const callback = (event) => {
     if (event?.deadEntity?.id !== victim.id) return;
     ensure(event.damageSource.damagingEntity?.id === attacker.id, "The death event did not preserve direct player attribution.");
-    result = processLootScoopDeath(event, () => 0);
+    result = processLootScoopDeath(event, () => 0, (generatedVictim, tool) => {
+      ensure(generatedVictim.id === victim.id, "Loot Scoop generated a bonus bundle for a different victim.");
+      ensure(tool === undefined, "Loot Scoop unexpectedly received a test-held tool.");
+      return [new ItemStack("minecraft:beef", 2), new ItemStack(CORE, 1)];
+    });
   };
   world.afterEvents.entityDie.subscribe(callback);
   const applied = victim.applyDamage(100, {
@@ -1499,7 +1507,8 @@ GameTest.registerAsync("AugmentationSurvival", "loot_scoop_matches_chance_levels
   world.afterEvents.entityDie.unsubscribe(callback);
   ensure(applied, "The simulated player could not kill the cow for Loot Scoop.");
   ensure(result?.status === "duplicated", `Loot Scoop did not generate a bonus bundle on a guaranteed level-3 roll: ${JSON.stringify(result)}.`);
-  ensure(result.spawnedStacks?.length > 0, "The regenerated cow loot bundle was empty.");
+  ensure(result.spawnedStacks?.length === 1 && result.spawnedStacks[0].typeId === "minecraft:beef" && result.spawnedStacks[0].amount === 2,
+    `Loot Scoop did not preserve the eligible bonus stack while excluding augment cores: ${JSON.stringify(result.spawnedStacks)}.`);
   for (const stack of result.spawnedStacks ?? []) {
     ensure(!isAugmentCore(stack.typeId), `Loot Scoop copied a core: ${stack.typeId}.`);
     ensure(countDroppedItem(attacker.dimension, lootLocation, stack.typeId) >= stack.amount, `The bonus ${stack.typeId} stack was not present in the world after entityDie.`);
@@ -2329,6 +2338,126 @@ GameTest.registerAsync("AugmentationSurvival", "ride_current_liquid_state_probe"
   ensure(stillPlayer.isSwimming && stillMovement, "The simulated player left swimming state in the source-water control basin.");
   ensure(Math.abs(stillMovement.currentValue - stillMovement.defaultValue) < 0.000001,
     "Ride Current activated without a horizontal liquid-depth gradient.");
+  const urgentInCurrent = test.spawnSimulatedPlayer({ x: 4, y: 2, z: 3 }, "ASRideCurrentUrgent", GameMode.survival);
+  urgentInCurrent.setRotation({ x: 0, y: -90 });
+  urgentInCurrent.swim();
+  urgentInCurrent.moveRelative(0, 1, 0.2);
+  await test.idle(6);
+  ensure(urgentInCurrent.isInWater && urgentInCurrent.isSwimming,
+    "Urgent Steps + Ride Current + Webbed Feet player did not enter flowing-water swim state.");
+  const urgentDamageApplied = urgentInCurrent.applyDamage(1, { cause: EntityDamageCause.magic });
+  ensure(urgentDamageApplied, "Urgent Steps water-stack damage was rejected.");
+  await test.idle(3);
+  const urgentUnderwater = urgentInCurrent.getComponent("minecraft:underwater_movement");
+  ensure(urgentUnderwater && urgentInCurrent.isInWater && urgentInCurrent.isSwimming,
+    "Urgent Steps water-stack player left water after its damage event.");
+  const expectedUrgentWaterStack = urgentUnderwater.defaultValue * 1.45;
+  ensure(Math.abs(urgentUnderwater.currentValue - expectedUrgentWaterStack) < 0.000001,
+    `Urgent Steps + Ride Current + Webbed Feet should add +45% underwater movement; expected ${expectedUrgentWaterStack}, got ${urgentUnderwater.currentValue}.`);
+  urgentInCurrent.teleport(test.worldLocation({ x: 4, y: 6, z: 3 }));
+  await test.idle(3);
+  const urgentGroundMovement = urgentInCurrent.getComponent("minecraft:movement");
+  ensure(!urgentInCurrent.isInWater && urgentGroundMovement,
+    "Urgent Steps water-stack player did not leave the water basin.");
+  ensure(Math.abs(urgentUnderwater.currentValue - urgentUnderwater.defaultValue) < 0.000001,
+    "Leaving water should restore the underwater movement value after Ride Current and Urgent Steps.");
+  const expectedUrgentGround = urgentGroundMovement.defaultValue * 1.20;
+  ensure(Math.abs(urgentGroundMovement.currentValue - expectedUrgentGround) < 0.000001,
+    `Urgent Steps should remain active on land after leaving water; expected ${expectedUrgentGround}, got ${urgentGroundMovement.currentValue}.`);
+  console.warn("AS_RIDE_CURRENT_URGENT_STACK_TEST " + JSON.stringify({
+    underwater: urgentUnderwater.currentValue,
+    underwaterDefault: urgentUnderwater.defaultValue,
+    ground: urgentGroundMovement.currentValue,
+    groundExpected: expectedUrgentGround,
+  }));
+  urgentInCurrent.disconnect();
   test.succeed();
 }).maxTicks(90).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "urgent_steps_triggers_refreshes_and_stacks_on_real_damage", async (test) => {
+  const levelResults = [];
+  for (let level = 1; level <= 3; level += 1) {
+    const player = test.spawnSimulatedPlayer({ x: 2, y: 2, z: 2 }, `ASUrgentStepsLevel${level}`, GameMode.survival);
+    await test.idle(3);
+    ensure(player.hasTag(`as_urgent_steps_seeded_${level}`), `Production behavior pack did not seed Urgent Steps level ${level}.`);
+    const movement = player.getComponent("minecraft:movement");
+    ensure(movement, `Urgent Steps level ${level} player has no movement component.`);
+    const damageEvents = [];
+    const observeDamage = event => {
+      if (event.hurtEntity.id === player.id) damageEvents.push({ damage: event.damage, isPlayer: event.hurtEntity instanceof Player });
+    };
+    world.afterEvents.entityHurt.subscribe(observeDamage);
+    try {
+      const applied = player.applyDamage(1, { cause: EntityDamageCause.magic });
+      ensure(applied, `Urgent Steps level ${level} test damage was rejected.`);
+      await test.idle(3);
+    } finally {
+      world.afterEvents.entityHurt.unsubscribe(observeDamage);
+    }
+    ensure(damageEvents.length === 1 && damageEvents[0].damage > 0 && damageEvents[0].isPlayer,
+      `Urgent Steps level ${level} should receive one positive player hurt after-event; got ${JSON.stringify(damageEvents)}.`);
+    const expected = movement.defaultValue * (1 + level * 0.10);
+    levelResults.push({ level, damage: damageEvents[0].damage, current: movement.currentValue, expected });
+    ensure(Math.abs(movement.currentValue - expected) < 0.000001,
+      `Urgent Steps level ${level} should add exactly ${level * 10}% movement; expected ${expected}, got ${movement.currentValue}.`);
+    player.disconnect();
+    await test.idle(1);
+  }
+
+  const stacked = test.spawnSimulatedPlayer({ x: 2, y: 2, z: 2 }, "ASUrgentStepsStack", GameMode.survival);
+  await test.idle(3);
+  const stackedMovement = stacked.getComponent("minecraft:movement");
+  ensure(stackedMovement, "Quick Feet + Urgent Steps player has no movement component.");
+  const quickFeetBaseline = stackedMovement.defaultValue * 1.15;
+  ensure(Math.abs(stackedMovement.currentValue - quickFeetBaseline) < 0.000001,
+    `Level-5 Quick Feet should establish a +15% baseline before damage; expected ${quickFeetBaseline}, got ${stackedMovement.currentValue}.`);
+  const firstHit = stacked.applyDamage(1, { cause: EntityDamageCause.magic });
+  ensure(firstHit, "Urgent Steps refresh test's first damage was rejected.");
+  await test.idle(3);
+  const combinedMovement = stackedMovement.defaultValue * 1.35;
+  ensure(Math.abs(stackedMovement.currentValue - combinedMovement) < 0.000001,
+    `Quick Feet + level-2 Urgent Steps should add to +35%; expected ${combinedMovement}, got ${stackedMovement.currentValue}.`);
+  await test.idle(40);
+  const refreshHit = stacked.applyDamage(1, { cause: EntityDamageCause.magic });
+  ensure(refreshHit, "Urgent Steps refresh test's second damage was rejected.");
+  await test.idle(20);
+  ensure(Math.abs(stackedMovement.currentValue - combinedMovement) < 0.000001,
+    "A second real hit should refresh the 60-tick timer without stacking a duplicate movement bonus.");
+  await test.idle(42);
+  ensure(Math.abs(stackedMovement.currentValue - quickFeetBaseline) < 0.000001,
+    `Urgent Steps should expire after the refreshed 60-tick window and retain Quick Feet; expected ${quickFeetBaseline}, got ${stackedMovement.currentValue}.`);
+  stacked.disconnect();
+  await test.idle(1);
+
+  const cancelled = test.spawnSimulatedPlayer({ x: 2, y: 2, z: 2 }, "ASUrgentStepsCancelled", GameMode.survival);
+  await test.idle(3);
+  const cancelledMovement = cancelled.getComponent("minecraft:movement");
+  const cancelledHealth = cancelled.getComponent("minecraft:health");
+  ensure(cancelledMovement && cancelledHealth, "Cancelled-hit control is missing player components.");
+  const healthBefore = cancelledHealth.currentValue;
+  let afterEventCount = 0;
+  const cancelDamage = event => {
+    if (event.hurtEntity.id === cancelled.id) event.cancel = true;
+  };
+  const observeHurt = event => {
+    if (event.hurtEntity.id === cancelled.id) afterEventCount += 1;
+  };
+  world.beforeEvents.entityHurt.subscribe(cancelDamage);
+  world.afterEvents.entityHurt.subscribe(observeHurt);
+  try {
+    cancelled.applyDamage(1, { cause: EntityDamageCause.magic });
+    await test.idle(2);
+  } finally {
+    world.beforeEvents.entityHurt.unsubscribe(cancelDamage);
+    world.afterEvents.entityHurt.unsubscribe(observeHurt);
+  }
+  ensure(afterEventCount === 0, `A before-event-cancelled hit should not produce entityHurt after-event; observed ${afterEventCount}.`);
+  ensure(Math.abs(cancelledHealth.currentValue - healthBefore) < 0.000001,
+    "Cancelling the hit should preserve the player's health.");
+  ensure(Math.abs(cancelledMovement.currentValue - cancelledMovement.defaultValue) < 0.000001,
+    "A cancelled hit must not activate Urgent Steps.");
+  console.warn("AS_URGENT_STEPS_RUNTIME_TEST " + JSON.stringify({ levelResults, quickFeetBaseline, combinedMovement, refreshed: true, expired: true, cancelledAfterEvents: afterEventCount }));
+  cancelled.disconnect();
+  test.succeed();
+}).maxTicks(150).structureName(STRUCTURE).tag(TAG);
 

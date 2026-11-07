@@ -1,4 +1,4 @@
-import { system, world } from "@minecraft/server";
+import { Player, system, world } from "@minecraft/server";
 import { getStoredAugmentLevel } from "./progression.js";
 
 const CATCH_BREATH_ID = "augmentation_survival:catch_breath";
@@ -7,14 +7,18 @@ const RIDE_CURRENT_ID = "augmentation_survival:ride_current";
 const QUICK_FEET_ID = "augmentation_survival:quick_feet";
 const NOCTURNAL_ID = "augmentation_survival:nocturnal";
 const SUN_AFFINITY_ID = "augmentation_survival:sun_affinity";
+const URGENT_STEPS_ID = "augmentation_survival:urgent_steps";
 const CATCH_BREATH_PER_LEVEL = 0.10;
 const SWIM_SPEED_PER_LEVEL = 0.10;
 const QUICK_FEET_PER_LEVEL = 0.03;
 const NOCTURNAL_MOVEMENT_PER_LEVEL = 0.05;
 const SUN_AFFINITY_MOVEMENT_PER_LEVEL = 0.04;
+const URGENT_STEPS_MOVEMENT_PER_LEVEL = 0.10;
 const CATCH_BREATH_MAX_LEVEL = 3;
 const WEBBED_FEET_MAX_LEVEL = 3;
 const RIDE_CURRENT_MAX_LEVEL = 3;
+const URGENT_STEPS_MAX_LEVEL = 3;
+const URGENT_STEPS_DURATION_TICKS = 60;
 const QUICK_FEET_MAX_LEVEL = 5;
 const DAY_TICKS = 24_000;
 const DAYTIME_END_TICK = 13_000;
@@ -23,6 +27,23 @@ const VALUE_EPSILON = 0.000001;
 const CURRENT_DOT_EPSILON = 0.0000001;
 const RIDE_CURRENT_BONUSES = [0, 0.15, 0.30, 0.45];
 const MOVEMENT_STATE = new Map();
+const URGENT_STEPS_UNTIL = new Map();
+
+/** @param {import("@minecraft/server").EntityHurtAfterEvent} event */
+function onEntityHurt({ hurtEntity, damage }) {
+  if (!(hurtEntity instanceof Player) || !(damage > 0) || !Number.isFinite(damage)) return;
+  const level = getStoredAugmentLevel(hurtEntity, URGENT_STEPS_ID, URGENT_STEPS_MAX_LEVEL);
+  if (level <= 0) return;
+
+  const now = system.currentTick;
+  const nextUntil = Math.max(URGENT_STEPS_UNTIL.get(hurtEntity.id) ?? 0, now + URGENT_STEPS_DURATION_TICKS);
+  URGENT_STEPS_UNTIL.set(hurtEntity.id, nextUntil);
+}
+
+/** @param {string} playerId */
+function clearUrgentSteps(playerId) {
+  URGENT_STEPS_UNTIL.delete(playerId);
+}
 
 /** @param {import("@minecraft/server").Block | undefined} block */
 function waterDepth(block) {
@@ -76,8 +97,14 @@ function reconcileMovement(player) {
   const quickFeetLevel = getStoredAugmentLevel(player, QUICK_FEET_ID, QUICK_FEET_MAX_LEVEL);
   const nocturnalLevel = getStoredAugmentLevel(player, NOCTURNAL_ID, 3);
   const sunAffinityLevel = getStoredAugmentLevel(player, SUN_AFFINITY_ID, 3);
+  const urgentStepsLevel = getStoredAugmentLevel(player, URGENT_STEPS_ID, URGENT_STEPS_MAX_LEVEL);
+  const urgentStepsUntil = URGENT_STEPS_UNTIL.get(player.id) ?? 0;
+  if (urgentStepsUntil > 0 && system.currentTick >= urgentStepsUntil) URGENT_STEPS_UNTIL.delete(player.id);
+  const urgentStepsBonus = urgentStepsLevel > 0 && system.currentTick < urgentStepsUntil
+    ? URGENT_STEPS_MOVEMENT_PER_LEVEL * urgentStepsLevel
+    : 0;
   const hasMovementAugment = catchBreathLevel > 0 || webbedFeetLevel > 0 || rideCurrentLevel > 0 || quickFeetLevel > 0
-    || nocturnalLevel > 0 || sunAffinityLevel > 0;
+    || nocturnalLevel > 0 || sunAffinityLevel > 0 || urgentStepsLevel > 0;
   const hasConditionalMovementAugment = catchBreathLevel > 0 || webbedFeetLevel > 0
     || nocturnalLevel > 0 || sunAffinityLevel > 0;
   if (!hasMovementAugment && !MOVEMENT_STATE.has(player.id)) return;
@@ -101,12 +128,12 @@ function reconcileMovement(player) {
     const daytimeBonus = dayTime < DAYTIME_END_TICK
       ? SUN_AFFINITY_MOVEMENT_PER_LEVEL * sunAffinityLevel
       : NOCTURNAL_MOVEMENT_PER_LEVEL * nocturnalLevel;
-    const sharedMovementBonus = quickFeetBonus + daytimeBonus + catchBreathBonus;
+    const sharedMovementBonus = quickFeetBonus + daytimeBonus + catchBreathBonus + urgentStepsBonus;
     const isInWater = player.isInWater;
     const webbedFeetBonus = isInWater ? SWIM_SPEED_PER_LEVEL * webbedFeetLevel : 0;
     const rideCurrentMovementBonus = isInWater ? rideCurrentBonus(player, rideCurrentLevel) : 0;
     const hasGeneralMovementAugment = catchBreathLevel > 0 || quickFeetLevel > 0
-      || nocturnalLevel > 0 || sunAffinityLevel > 0;
+      || nocturnalLevel > 0 || sunAffinityLevel > 0 || urgentStepsLevel > 0;
 
     const movement = player.getComponent("minecraft:movement");
     if (movement) {
@@ -126,7 +153,9 @@ function reconcileMovement(player) {
       if (shouldRestoreOrApply && Math.abs(underwaterMovement.currentValue - targetValue) > VALUE_EPSILON) {
         underwaterMovement.setCurrentValue(targetValue);
       }
-      state.lastUnderwaterValue = isInWater && (hasGeneralMovementAugment || webbedFeetLevel > 0) ? targetValue : undefined;
+      state.lastUnderwaterValue = isInWater && (hasGeneralMovementAugment || webbedFeetLevel > 0 || rideCurrentLevel > 0)
+        ? targetValue
+        : undefined;
     }
 
     if (!hasMovementAugment) {
@@ -139,7 +168,15 @@ function reconcileOnlinePlayers() {
   for (const player of world.getPlayers()) reconcileMovement(player);
 }
 
-world.afterEvents.playerLeave.subscribe(({ playerId }) => MOVEMENT_STATE.delete(playerId));
+world.afterEvents.playerLeave.subscribe(({ playerId }) => {
+  MOVEMENT_STATE.delete(playerId);
+  clearUrgentSteps(playerId);
+});
+world.afterEvents.playerSpawn.subscribe(({ player }) => clearUrgentSteps(player.id));
+world.afterEvents.entityDie.subscribe(({ deadEntity }) => {
+  if (deadEntity instanceof Player) clearUrgentSteps(deadEntity.id);
+});
+world.afterEvents.entityHurt.subscribe(onEntityHurt);
 
 // Reconcile native movement attributes each tick. The per-player idle counter
 // and multiplier stay server-authoritative while vanilla input and swimming

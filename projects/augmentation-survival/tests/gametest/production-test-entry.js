@@ -243,12 +243,32 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       ASRideCurrentWebbedLevel1: 1,
       ASRideCurrentAgainstLevel3: 3,
       ASRideCurrentStillLevel3: 3,
+      ASRideCurrentUrgent: 1,
     };
     const rideCurrentLevel = rideCurrentLevels[player.name];
     if (rideCurrentLevel) {
       const levels = { "augmentation_survival:ride_current": rideCurrentLevel };
       if (player.name === "ASRideCurrentWebbedLevel1") levels["augmentation_survival:webbed_feet"] = 1;
+      if (player.name === "ASRideCurrentUrgent") {
+        levels["augmentation_survival:webbed_feet"] = 1;
+        levels["augmentation_survival:urgent_steps"] = 2;
+      }
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
+      return;
+    }
+    const urgentStepsLevels = {
+      ASUrgentStepsLevel1: 1,
+      ASUrgentStepsLevel2: 2,
+      ASUrgentStepsLevel3: 3,
+      ASUrgentStepsStack: 2,
+      ASUrgentStepsCancelled: 3,
+    };
+    const urgentStepsLevel = urgentStepsLevels[player.name];
+    if (urgentStepsLevel) {
+      const levels = { "augmentation_survival:urgent_steps": urgentStepsLevel };
+      if (player.name === "ASUrgentStepsStack") levels["augmentation_survival:quick_feet"] = 5;
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
+      player.addTag(`as_urgent_steps_seeded_${urgentStepsLevel}`);
       return;
     }
     if (player.name !== "ASCoreCommitProduction") return;

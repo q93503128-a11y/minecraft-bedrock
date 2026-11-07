@@ -103,3 +103,26 @@ Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon core candidate. 
 - [Stable `Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
 - [Stable `EntityUnderwaterMovementComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityunderwatermovementcomponent?view=minecraft-bedrock-stable)
 
+## `다급한 발걸음` (Urgent Steps)
+
+### Java contract and implementation
+
+The canonical uncommon augment has maximum level 3 and grants +10% / +20% / +30% movement speed for 60 ticks after taking positive final damage. `combat_modifier_contract.json` defines `movement_per_level: 0.10` and `duration_ticks: 60`. Java `CombatAugmentService.afterDamage` ignores blocked or non-positive damage, extends the timer with `max(previousUntil, now + 60)`, and combines the transient bonus additively with other positive movement-speed modifiers. Its combat runtime is cleared on join, death, and respawn; the passive proc presentation triggers once at activation and does not repeat on refreshed hits. The interaction contract places this augment on the shared movement-speed axis with Quick Feet, Catch Breath, day/night movement, Kill Streak, Momentum Shift, and Time Acceleration. The speed bonus is also an input to Java's `속도 전환` calculation. The augment is passive and requires no additional control input on touch, controller, or keyboard.
+
+### Stable Bedrock route and BDS verification
+
+Stable `WorldAfterEvents.entityHurt` reports an `EntityHurtAfterEvent` with the hurt entity and damage after the hurt operation; `System.currentTick` provides the server's current world tick. The Bedrock runtime stores an in-memory expiry keyed by player ID, starts or extends it by 60 ticks only after a positive player hurt after-event, and adds +10% per saved level through the shared movement reconciler. It clears the temporary window when a player leaves, dies, or spawns/respawns. The saved augment level remains in the existing player dynamic-property store. No custom key or mobile-only input is needed; the effect uses normal vanilla movement controls.
+
+The BDS 1.26.62.1 production-handler GameTest applies positive synthetic magic damage to players seeded at levels 1–3 and verifies exact `minecraft:movement` component ratios of 1.10× / 1.20× / 1.30×. A level-2 Urgent Steps player with level-5 Quick Feet verifies additive +35% total movement. A combined swimming test verifies +20% Urgent Steps, +15% Ride Current, and +10% Webbed Feet stack to +45% underwater movement; leaving the flowing pool restores the underwater baseline while the timed Urgent Steps bonus remains on land. A second hit after 40 ticks extends the timer without adding another stack; the bonus remains through the original expiry, then expires after the refreshed 60-tick period. A separate before-event-cancelled hit produces no hurt after-event and no Urgent Steps bonus. These checks measure server component values, not visible player displacement.
+
+### Classification and interaction limits
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon core candidate. The positive-damage gate, three level values, 60-tick duration, refresh rule, cancellation exclusion, and additive Quick Feet stacking are verified against the production BP handler. Bedrock's writable `minecraft:movement` component is the existing server route for movement augments, but exact visible client-motion parity has not been established; the Java proc particles/sound are not yet reproduced. Damage provenance for any future Bedrock delayed-damage augment, the `속도 전환` interaction, real-client mobile/controller movement, reconnect timing, and online multiplayer remain open. The runtime window is intentionally transient and is not saved, matching Java's cleared runtime state; permanent augment level persistence uses the existing store.
+
+### References
+
+- [Stable `WorldAfterEvents`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable)
+- [Stable `EntityHurtAfterEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtafterevent?view=minecraft-bedrock-stable)
+- [Stable `EntityMovementComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitymovementcomponent?view=minecraft-bedrock-stable)
+- [Stable `System`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/system?view=minecraft-bedrock-stable)
+

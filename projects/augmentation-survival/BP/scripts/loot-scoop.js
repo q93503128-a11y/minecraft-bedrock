@@ -44,9 +44,14 @@ function playerKiller(event) {
  * the final entity-loot stacks, so the bonus bundle is generated independently from the table.
  * @param {import("@minecraft/server").EntityDieAfterEvent} event
  * @param {() => number} [random]
+ * @param {(victim: import("@minecraft/server").Entity, tool?: import("@minecraft/server").ItemStack) => import("@minecraft/server").ItemStack[]} [generateLoot]
  * @returns {{status:"ineligible"|"no_level"|"miss"|"empty"|"duplicated"|"generation_failed", level?:number, chance?:number, spawnedStacks?:Array<{typeId:string,amount:number}>}}
  */
-export function processLootScoopDeath(event, random = Math.random) {
+export function processLootScoopDeath(
+  event,
+  random = Math.random,
+  generateLoot = (victim, tool) => world.getLootTableManager().generateLootFromEntity(victim, tool) ?? [],
+) {
   const victim = event?.deadEntity;
   const player = playerKiller(event);
   if (!victim || !player || victim instanceof Player || VANILLA_BOSSES.has(victim.typeId)) return { status: "ineligible" };
@@ -63,7 +68,7 @@ export function processLootScoopDeath(event, random = Math.random) {
 
   try {
     const tool = player.getComponent("minecraft:equippable")?.getEquipment(EquipmentSlot.Mainhand);
-    const generated = world.getLootTableManager().generateLootFromEntity(victim, tool) ?? [];
+    const generated = generateLoot(victim, tool) ?? [];
     const copies = generated.filter(stack => stack && stack.amount > 0 && !isAugmentCore(stack.typeId));
     if (copies.length === 0) return { status: "empty", level, chance, spawnedStacks: [] };
 

@@ -427,7 +427,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS GameTest deterministically verifies 5/10/15% roll boundaries and one block/tool-derived drop, including Silk Touch and Fortune; a separate SimulatedPlayer break verifies live playerBreakBlock event delivery" if slug == "extra_piece" else
                 "BDS 1.26.62.1 GameTests verify exact 5/10/15/20/25% chance boundaries and level cap, successful restoration, occupied-slot safety, and near-break tool return. A production-handler SimulatedPlayer mines vanilla stone 40 times at level 5 and observes repeated durability restoration through real before/after events; this does not verify the probability distribution" if slug == "tool_care" else
                 "BDS 1.26.62.1 GameTests verify exact 10/20/30% chance boundaries, level cap, vanilla leaf/flower and explicit whitelist matching, first eligible dandelion duplication, and rejection of unlisted blocks, damageable/custom-named/lore-bearing items, cores, and unowned levels. A production-handler SimulatedPlayer performs 50 level-3 dandelion breaks and checks for at least one additional item beyond native yields; this only samples the live effect path and does not establish probability distribution or actual-drop equivalence. Derived breaks, reconnect, client and multiplayer remain untested" if slug == "dexterity" else
-                "BDS 1.26.62.1 GameTest: exact 5/10/15% exclusive roll boundaries, all six augment-core exclusions, and a guaranteed level-3 bonus generated during a real player-attributed cow entityDie event; vanilla random original-vs-reroll bundle equality, looting variants, boss profiles and multiplayer are untested" if slug == "loot_scoop" else
+                "BDS 1.26.62.1 GameTests verify exact 5/10/15% exclusive chance boundaries and all six augment-core exclusions; a separate real cow entityDie probe confirms generateLootFromEntity returns beef for a dead entity, while deterministic injected eligible loot verifies player attribution and bonus spawning through the production function. An isolated native re-roll returned an empty bundle, so exact original-vs-bonus equality and stable non-empty bonus generation remain unverified; looting variants, boss profiles and multiplayer are also open" if slug == "loot_scoop" else
                 "BDS 1.26.62.1 production-handler GameTests verify exact +10% / +20% / +30% damage at levels 1–3 for synthetic root melee and player-owned projectile sources; exact 30% is inclusive, 29% activates, and 31% does not. Tests also verify additive Keen Edge and Precise Aim stacking. Physical client attacks, derived-projectile provenance, Focused Aim, Clone, reconnect and multiplayer remain untested" if slug == "last_strength" else
                 "BDS 1.26.62.1 production-handler GameTest verifies exact +5% / +10% / +15% night movement at levels 1–3 and daytime deactivation; Java's +5% / level mining-speed half is not implemented" if slug == "nocturnal" else
                 "BDS 1.26.62.1 production-handler GameTest verifies exact +4% / +8% / +12% daytime movement and night deactivation; Java's natural-regeneration interval half is not implemented" if slug == "sun_affinity" else
@@ -481,6 +481,31 @@ def main(source: Path, target: Path) -> None:
             )
             record["test_method"] = (
                 "BDS 1.26.62.1 production-handler GameTest reads a flowing channel whose liquid_depth rises eastward, verifies the exact +15% / +30% / +45% underwater movement value at levels 1–3, confirms no bonus while moving west against the current or in flat source water, and verifies additive +10% Webbed Feet stacking. The full 45-test engine suite passed; client, mobile/controller, reconnect, multiplayer, and Java Speed Conversion interaction remain untested"
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
+        if slug == "urgent_steps":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/CombatAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/CombatTuning.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/presentation/PassivePresentationService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/presentation/PassiveProcReadabilityService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/CombatPassivePresentationMixin.java",
+                "src/main/resources/data/augmentation_survival/augmentation/combat_modifier_contract.json",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["interaction_mapping_status"] = "REVIEW_REQUIRED"
+            record["compatibility_class"] = "B"
+            record["bedrock_method"] = (
+                "On the stable server entityHurt after-event, start or extend a 60-tick runtime window only for a player with a saved Urgent Steps level and positive actual damage. The shared per-tick movement reconciler adds exactly 10% per level to the same additive movement bonus axis, including its underwater calculation"
+            )
+            record["api_constraints"] = (
+                "Stable entityHurt after-events report the hurt entity and damage after the event; before-event cancellations do not create an after-event in the pinned BDS test. The writable minecraft:movement value is the existing approximate route for Java's transient movement-speed attribute modifier, so tested component values do not prove visible client displacement parity. Transient speed state is cleared on leave, death, and spawn/respawn like Java's runtime map. Delayed-damage provenance, reconnect edge timing, client/mobile/controller behavior, multiplayer, and Speed Conversion's shared positive-bonus interaction remain unverified"
+            )
+            record["test_method"] = (
+                "BDS 1.26.62.1 production-handler GameTests use synthetic magic damage against seeded simulated players to verify exact +10% / +20% / +30% movement values, additive stacking with level-5 Quick Feet, a +45% underwater stack with level-2 Urgent Steps + level-1 Ride Current + level-1 Webbed Feet, water-to-land underwater-value restoration, timer refresh without stacking, expiration, and exclusion of a before-event-cancelled hit. They measure server component values only; physical client motion, delayed-damage provenance, reconnect, and multiplayer remain untested"
             )
             record["port_status"] = "PARTIAL_BDS_VERIFIED"
             record["candidate_enabled"] = True
