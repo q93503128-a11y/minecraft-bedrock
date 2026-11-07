@@ -1,6 +1,6 @@
 # API compatibility investigation — 2026-11-07
 
-Java source revision: `70a1e548086aef395113bb732a815dbfbbf35053`
+Java source revision: `023e0ca8169da0669faa04a249eedae7169f4f51`
 Bedrock target observed: Minecraft Bedrock/BDS 1.26.62.1; stable Script API `@minecraft/server` 2.11.0.
 
 ## `발 안 묶이기` (Terrain Resistance)
@@ -136,7 +136,7 @@ The uncommon augment has maximum level 3 and grants a directly controlled terres
 
 Stable `EntityRidingComponent.entityRidingOn` identifies the mount; `EntityRideableComponent` exposes the control-seat index and current riders; `EntityMovementComponent` can write the mount movement value. The server checks an explicit vanilla animal-mount ID allowlist, control seat 0, exactly one rider matching the player, and a mount outside water. It applies the exact Java speed percentages against the mount's per-entity `defaultValue`. The speed value is restored after dismount or loss of an eligible online controller. A runtime tag lets the next server tick clear a stranded value after script reload if no qualified controller is online. Java's player level remains in the existing progression store.
 
-The production BDS tests at levels 1–3 verify exact +10% / +20% / +30% horse movement component values with randomized base values, then verify each mount returns to its default after ejection. A separate production control confirms an unowned player cannot alter horse movement. The isolated riding probe verifies mount/player identity, control seat 0, one rider, and successful movement writes. The separate mount-family probe found that Script API's `families: ["animal"]` query did not match the vanilla mount types it spawned; the implementation therefore uses an explicit vanilla allowlist. That diagnostic and the full 50-test suite passed on BDS 1.26.62.1.
+The production BDS tests at levels 1–3 verify exact +10% / +20% / +30% horse movement component values with randomized base values, then verify each mount returns to its default after ejection. A separate production control confirms an unowned player cannot alter horse movement. The isolated riding probe verifies mount/player identity, control seat 0, one rider, and successful movement writes. The separate mount-family probe found that Script API's `families: ["animal"]` query did not match the vanilla mount types it spawned; the implementation therefore uses an explicit vanilla allowlist. That diagnostic and the full 52-test suite passed on BDS 1.26.62.1.
 
 ### Classification and interaction limits
 
@@ -152,3 +152,33 @@ The detailed source-to-runtime comparison is in [`RIDER_IMPLEMENTATION_2026-11-0
 - [Stable `EntityCanPowerJumpComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitycanpowerjumpcomponent?view=minecraft-bedrock-stable)
 - [Horse jump-strength entity component reference](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/entityreference/examples/entitycomponents/minecraftcomponent_horse.jump_strength?view=minecraft-bedrock-stable)
 
+
+
+## `방어구 관리` (Armor Care)
+
+### Java contract and implementation
+
+The uncommon augment has maximum level 5 and gives each equipped armor piece an independent 5% / 10% / 15% / 20% / 25% chance to avoid durability damage on a hit. `survival_modifier_contract.json` defines `armor_care.durability_avoid_per_level: 0.05`. `SurvivalAugmentService.modifyDurabilityDamage` detects the four equipped armor slots and returns zero damage on a successful roll; `ItemStackDurabilityAugmentMixin.hurtAndBreak` cancels the whole event at HEAD, before vanilla Unbreaking. The Java interaction contract has no direct Armor Care-specific rule. The Java passive readability mixin signals a successful prevention; that cue is not ported.
+
+### Stable Bedrock route and BDS verification
+
+The production BP snapshots each player's damageable head, chest, legs, and feet equipment in `world.beforeEvents.entityHurt`. After `world.afterEvents.entityHurt`, it checks for increased durability in each corresponding slot, rolls the saved Armor Care level independently for the changed pieces, and writes a cloned post-hit stack with its previous durability restored. It skips empty slots and stacks with different item type IDs; identical same-type replacements cannot be distinguished by the stable API. The shared progression property remains the authority for the saved level. Armor Care is passive and introduces no key binding, so its gameplay route does not require platform-specific keyboard, touch, or controller controls.
+
+The isolated production tests ran 20 ordinary and 20 near-break level-5 hits against four diamond armor pieces. The latest full 52-test run saved 14 of 80 ordinary and 18 of 80 near-break outcomes; a separate three-test `armor_probe` run saved 17 and 20. Both runs spent durability on the other outcomes. A level-5-unowned control retained native durability loss on all four iron armor slots. Pure-rule checks cover exact 5% increments, the five-level cap, just-below success, and the exclusive failure boundary. The event-surface diagnostic observed the before event before armor wear and the after event after native damage. The standard suite contains two Armor Care production tests; the separate diagnostic pack also passed all three `armor_probe` tests.
+
+### Classification and interaction limits
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon candidate. The stable `ItemCustomComponent.onBeforeDurabilityDamage` callback concerns durability damage to the custom item hitting an entity, not vanilla armor while the wearer is hurt. The player hurt before/after events and stable equipment/durability writers provide a workable alternate route, but there is no stable event for cancelling the precise armor durability sub-event. Bedrock therefore restores observed wear after native processing instead of cancelling Java's original callback. The route avoids overwriting empty or different-type slots, but cannot prove the same-type stack is the identical armor instance.
+
+The handler skips empty or different-type slots, but stable API does not expose a unique identity for a vanilla armor stack; an identical same-type replacement made during the same event cannot be distinguished. Same-player repeated hurt events within one tick, Unbreaking combinations, concurrent writes from other add-ons, behavior after death/dimension change/reconnect/world restart, and online multiplayer have not been tested. A successful durability restore is verified in BDS, but Java's passive readability presentation and actual client UI have not been.
+
+See [`ARMOR_CARE_IMPLEMENTATION_2026-11-07.md`](ARMOR_CARE_IMPLEMENTATION_2026-11-07.md) for the source-to-runtime decision and exact test counts.
+
+### References
+
+- [Stable `ItemCustomComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemcustomcomponent?view=minecraft-bedrock-stable)
+- [Stable `ItemComponentBeforeDurabilityDamageEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemcomponentbeforedurabilitydamageevent?view=minecraft-bedrock-stable)
+- [Stable `EntityHurtBeforeEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable)
+- [Stable `EntityHurtAfterEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtafterevent?view=minecraft-bedrock-stable)
+- [Stable `EntityEquippableComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityequippablecomponent?view=minecraft-bedrock-stable)
+- [Stable `ItemDurabilityComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemdurabilitycomponent?view=minecraft-bedrock-stable)

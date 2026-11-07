@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -42,6 +42,18 @@ class StaticAddonTests(unittest.TestCase):
         self.assertFalse(rider["candidate_enabled"])
         self.assertIn("horse.jump_strength", rider["api_constraints"])
         self.assertIn("+10% / +20% / +30%", rider["test_method"])
+        armor_care = by_id["armor_care"]
+        self.assertEqual("방어구 관리", armor_care["name_ko"])
+        self.assertEqual("uncommon", armor_care["tier"])
+        self.assertEqual(5, armor_care["max_level"])
+        self.assertEqual("피격 시 각 장착 방어구 내구도 감소 무효 확률 5% / 10% / 15% / 20% / 25%.", armor_care["canonical_effect_ko"])
+        self.assertEqual("B", armor_care["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", armor_care["port_status"])
+        self.assertTrue(armor_care["candidate_enabled"])
+        self.assertEqual("REVIEWED_NO_DIRECT_RULE", armor_care["interaction_mapping_status"])
+        self.assertIn("ItemStackDurabilityAugmentMixin.java", " ".join(armor_care["java_source_paths"]))
+        self.assertIn("entityHurt before/after", armor_care["api_constraints"])
+        self.assertIn("20 ordinary hits", armor_care["test_method"])
         self.assertEqual("C", by_id["nocturnal"]["compatibility_class"])
         self.assertEqual("C", by_id["sun_affinity"]["compatibility_class"])
         self.assertIn("PlayerStatAugmentService.java", " ".join(by_id["quick_feet"]["java_source_paths"]))
@@ -101,7 +113,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 16, "C": 12, "D": 10, "UNASSESSED": 109},
+            {"A": 2, "B": 17, "C": 12, "D": 10, "UNASSESSED": 108},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 

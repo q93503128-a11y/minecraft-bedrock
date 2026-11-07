@@ -6,6 +6,7 @@ import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progre
 import { synthesizeCore } from "./cores.js";
 import { listAvailableCandidates } from "./offers.js";
 import "./combat.js";
+import "./armor-care.js";
 import "./harvest.js";
 import "./tool-care.js";
 import "./food.js";

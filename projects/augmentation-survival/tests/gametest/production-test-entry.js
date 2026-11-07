@@ -269,6 +269,13 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       player.addTag(`as_rider_seeded_${riderLevel}`);
       return;
     }
+    if (player.name === "ASArmorCareLevel5") {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:armor_care": 5,
+      }));
+      player.addTag("as_armor_care_seeded");
+      return;
+    }
     const urgentStepsLevels = {
       ASUrgentStepsLevel1: 1,
       ASUrgentStepsLevel2: 2,

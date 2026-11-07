@@ -456,8 +456,8 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care"},
         })
         if slug == "ride_current":
             record = records[-1]
@@ -531,6 +531,30 @@ def main(source: Path, target: Path) -> None:
             )
             record["port_status"] = "PARTIAL_BDS_VERIFIED"
             record["candidate_enabled"] = False
+        if slug == "armor_care":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/survival/SurvivalTuning.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ItemStackDurabilityAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/DurabilityPassiveReadabilityMixin.java",
+                "src/main/resources/data/augmentation_survival/augmentation/survival_modifier_contract.json",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["interaction_mapping_status"] = "REVIEWED_NO_DIRECT_RULE"
+            record["compatibility_class"] = "B"
+            record["bedrock_method"] = (
+                "On the server, snapshot each damageable item in the player's four equipped armor slots before entity damage. After the hurt event, compare the same slot and item type; independently roll 5% per saved Armor Care level for each piece whose durability increased, and restore only that post-hit stack's durability to its saved value. The versioned progression remains on the player entity"
+            )
+            record["api_constraints"] = (
+                "Stable ItemCustomComponent.onBeforeDurabilityDamage applies when the custom item itself is hitting an entity; it cannot intercept vanilla armor durability on its wearer. Stable entityHurt before/after events expose player damage, and EntityEquippableComponent.getEquipment/setEquipment plus ItemDurabilityComponent.damage support a measured after-event restore, but the API does not expose the armor durability sub-event or its Unbreaking decision. The route therefore restores the same-type stack in its original slot after native damage, rather than cancelling that item's exact durability event. Empty or different-type slots are skipped to avoid overwrites and item duplication. Stable API does not expose unique vanilla armor stack identity, so an identical same-type replacement made during the event cannot be distinguished. Concurrent same-player hurt events in one tick, another add-on changing armor durability, reconnect/restart, and online multiplayer are not verified"
+            )
+            record["test_method"] = (
+                "BDS 1.26.62.1 production-handler GameTests verify the exact 5% / level chance boundaries and five-level cap in the pure rule helper, then exercise 20 ordinary hits and 20 near-break hits against four equipped diamond armor pieces through the production entityHurt handlers. An unowned iron-armor control retained native durability loss on all four slots. A separate armor_probe run observed 17 saved / 63 spent ordinary-piece outcomes and 20 saved / 60 spent break-boundary outcomes; the latest full 52-test run observed 14 saved / 66 spent ordinary outcomes and 18 saved / 62 spent break-boundary outcomes. Same-tick repeated hits, Unbreaking combinations, unrelated add-on durability writes, reconnect/restart, and online multiplayer remain untested"
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}
     if len(records) != 149 or counts != catalog["expected_counts"] or any(canon_index[t] != len(roster_tables[t]) for t in canon_index):

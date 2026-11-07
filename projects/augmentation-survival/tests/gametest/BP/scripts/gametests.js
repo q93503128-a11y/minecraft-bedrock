@@ -1,7 +1,8 @@
-import { BlockPermutation, EnchantmentTypes, EntityComponentTypes, EntityDamageCause, GameMode, InputButton, ItemStack, Player, system, world } from "@minecraft/server";
+import { BlockPermutation, EnchantmentTypes, EntityComponentTypes, EntityDamageCause, EquipmentSlot, GameMode, InputButton, ItemStack, Player, system, world } from "@minecraft/server";
 import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
+import { armorCareChance, armorCareRollSucceeds } from "./armor-care-rules.js";
 import { applyCropHarvestBonuses, applyDexterityGatheringBonus, applyExtraPieceBonus, bumperCropBonusChance, dexterityBonusChance, extraPieceBonusChance, isDexterityGatheringBlock, isEligibleDexterityDrop, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { pickupHandRadius } from "./pickup-hand.js";
@@ -174,6 +175,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:pickup_hand",
         "augmentation_survival:ride_current",
         "augmentation_survival:urgent_steps",
+        "augmentation_survival:armor_care",
       ]
       : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
@@ -2202,7 +2204,11 @@ async function verifyRiderSpeedLevel(test, level) {
   ensure(player.hasTag(`as_rider_seeded_${level}`), `Production behavior pack did not seed Rider level ${level}.`);
   const mount = test.spawn("minecraft:horse", { x: 5, y: 3, z: 3 });
   await test.idle(1);
-  const rideable = mount.getComponent("minecraft:rideable");
+  let rideable = mount.getComponent("minecraft:rideable");
+  for (let retry = 0; !rideable && retry < 4; retry += 1) {
+    await test.idle(1);
+    rideable = mount.getComponent("minecraft:rideable");
+  }
   ensure(rideable, `Rider level ${level} test horse did not expose the rideable component.`);
   ensure(rideable.addRider(player), `Rider level ${level} player could not mount its test horse.`);
   await test.idle(4);
@@ -2246,7 +2252,11 @@ GameTest.registerAsync("AugmentationSurvival", "rider_speed_does_not_change_unow
   const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASRiderControl", GameMode.survival);
   const mount = test.spawn("minecraft:horse", { x: 5, y: 3, z: 3 });
   await test.idle(1);
-  const rideable = mount.getComponent("minecraft:rideable");
+  let rideable = mount.getComponent("minecraft:rideable");
+  for (let retry = 0; !rideable && retry < 4; retry += 1) {
+    await test.idle(1);
+    rideable = mount.getComponent("minecraft:rideable");
+  }
   ensure(rideable?.addRider(player), "Unaugmented rider control could not mount its horse.");
   await test.idle(5);
   const movement = mount.getComponent("minecraft:movement");
@@ -2394,6 +2404,174 @@ GameTest.registerAsync("AugmentationSurvival", "rider_mount_family_probe", async
   console.warn("AS_RIDER_MOUNT_FAMILY_PROBE " + JSON.stringify(results));
   test.succeed();
 }).maxTicks(100).structureName(STRUCTURE).tag("rider_probe");
+
+GameTest.registerAsync("AugmentationSurvival", "armor_care_damage_event_probe", async (test) => {
+  for (let x = 1; x <= 8; x += 1) {
+    for (let z = 1; z <= 8; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASArmorCareProbe", GameMode.survival);
+  const equippable = player.getComponent("minecraft:equippable");
+  ensure(equippable, "Armor Care probe player did not expose equippable.");
+  const armor = [
+    [EquipmentSlot.Head, new ItemStack("minecraft:diamond_helmet")],
+    [EquipmentSlot.Chest, new ItemStack("minecraft:diamond_chestplate")],
+    [EquipmentSlot.Legs, new ItemStack("minecraft:diamond_leggings")],
+    [EquipmentSlot.Feet, new ItemStack("minecraft:diamond_boots")],
+  ];
+  for (const [slot, stack] of armor) ensure(equippable.setEquipment(slot, stack), `Could not equip ${stack.typeId} for Armor Care probe.`);
+
+  const readArmor = () => armor.map(([slot]) => {
+    const stack = equippable.getEquipment(slot);
+    const durability = stack?.getComponent("minecraft:durability");
+    return { slot, typeId: stack?.typeId, damage: durability?.damage, maxDurability: durability?.maxDurability };
+  });
+  const beforeEvents = [];
+  const afterEvents = [];
+  const before = event => {
+    if (event.hurtEntity.id === player.id) beforeEvents.push({ damage: event.damage, armor: readArmor() });
+  };
+  const after = event => {
+    if (event.hurtEntity.id === player.id) afterEvents.push({ damage: event.damage, armor: readArmor() });
+  };
+  world.beforeEvents.entityHurt.subscribe(before);
+  world.afterEvents.entityHurt.subscribe(after);
+  let applied;
+  let breakApplied;
+  try {
+    applied = player.applyDamage(16, { cause: EntityDamageCause.entityAttack });
+    await test.idle(12);
+    for (const [slot] of armor) {
+      const stack = equippable.getEquipment(slot);
+      const durability = stack?.getComponent("minecraft:durability");
+      ensure(stack && durability, `Armor Care probe lost a piece before the break probe at ${slot}.`);
+      durability.damage = durability.maxDurability - 4;
+      ensure(equippable.setEquipment(slot, stack), `Could not set ${slot} armor to the break boundary.`);
+    }
+    breakApplied = player.applyDamage(16, { cause: EntityDamageCause.entityAttack });
+    await test.idle(1);
+  } finally {
+    world.beforeEvents.entityHurt.unsubscribe(before);
+    world.afterEvents.entityHurt.unsubscribe(after);
+  }
+  const result = { applied, breakApplied, beforeEvents, afterEvents, finalArmor: readArmor() };
+  console.warn("AS_ARMOR_CARE_DAMAGE_EVENT_PROBE " + JSON.stringify(result));
+  ensure(applied, "Armor Care damage-event probe could not apply synthetic attack damage.");
+  ensure(breakApplied, "Armor Care damage-event probe could not apply damage at the armor-break boundary.");
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag("armor_probe");
+
+GameTest.registerAsync("AugmentationSurvival", "armor_care_matches_java_chance_and_restores_real_armor_wear", async (test) => {
+  for (let x = 1; x <= 8; x += 1) {
+    for (let z = 1; z <= 8; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  ensure(armorCareChance(0) === 0 && armorCareChance(-1) === 0, "Armor Care must be inactive below level 1.");
+  for (let level = 1; level <= 5; level += 1) {
+    const chance = level * 0.05;
+    ensure(armorCareChance(level) === chance, `Armor Care level ${level} chance should be ${chance}.`);
+    ensure(armorCareRollSucceeds(level, chance - 1e-9), `Armor Care level ${level} must save just below its chance boundary.`);
+    ensure(!armorCareRollSucceeds(level, chance), `Armor Care level ${level} must fail at its exclusive chance boundary.`);
+  }
+  ensure(armorCareChance(6) === 0.25, "Armor Care must cap at its five-level maximum.");
+
+  const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASArmorCareLevel5", GameMode.survival);
+  await test.idle(2);
+  ensure(player.hasTag("as_armor_care_seeded"), "Production behavior pack did not seed Armor Care level 5.");
+  const equippable = player.getComponent("minecraft:equippable");
+  ensure(equippable, "Armor Care production test player did not expose equippable.");
+  const armor = [
+    [EquipmentSlot.Head, new ItemStack("minecraft:diamond_helmet")],
+    [EquipmentSlot.Chest, new ItemStack("minecraft:diamond_chestplate")],
+    [EquipmentSlot.Legs, new ItemStack("minecraft:diamond_leggings")],
+    [EquipmentSlot.Feet, new ItemStack("minecraft:diamond_boots")],
+  ];
+  for (const [slot, stack] of armor) ensure(equippable.setEquipment(slot, stack), `Could not equip ${stack.typeId} for Armor Care production test.`);
+  const readArmor = () => armor.map(([slot]) => {
+    const stack = equippable.getEquipment(slot);
+    const durability = stack?.getComponent("minecraft:durability");
+    return { slot, typeId: stack?.typeId, damage: durability?.damage, maxDurability: durability?.maxDurability };
+  });
+  const health = player.getComponent("minecraft:health");
+  ensure(health, "Armor Care production test player did not expose health.");
+  let savedPieces = 0;
+  let spentPieces = 0;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    if (attempt > 0) await test.idle(12);
+    ensure(player.applyDamage(16, { cause: EntityDamageCause.entityAttack }), `BDS rejected Armor Care trial ${attempt + 1}.`);
+    await test.idle(1);
+    const state = readArmor();
+    for (const item of state) {
+      if (item.damage === 0) savedPieces += 1;
+      else if (item.damage === 4) spentPieces += 1;
+      else ensure(false, `Armor Care produced an unexpected ordinary-hit durability state: ${JSON.stringify(item)}.`);
+    }
+    for (const [slot] of armor) {
+      const stack = equippable.getEquipment(slot);
+      const durability = stack?.getComponent("minecraft:durability");
+      ensure(stack && durability, `Armor Care lost a piece during ordinary-hit trial ${attempt + 1}.`);
+      durability.damage = 0;
+      ensure(equippable.setEquipment(slot, stack), `Could not reset ${slot} durability for the next ordinary-hit trial.`);
+    }
+    ensure(health.setCurrentValue(health.effectiveMax), `Could not restore test health after Armor Care trial ${attempt + 1}.`);
+  }
+  ensure(savedPieces > 0 && spentPieces > 0,
+    `Twenty level-5 hits did not produce both saved and native durability outcomes (${savedPieces} saved, ${spentPieces} spent).`);
+
+  let savedBreakPieces = 0;
+  let spentBreakPieces = 0;
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    if (attempt > 0) await test.idle(12);
+    for (const [slot, template] of armor) {
+      const current = equippable.getEquipment(slot);
+      const stack = current?.typeId === template.typeId ? current : template.clone();
+      const durability = stack.getComponent("minecraft:durability");
+      ensure(durability, `Armor Care break trial ${attempt + 1} lacks ${template.typeId} durability.`);
+      durability.damage = durability.maxDurability - 4;
+      ensure(equippable.setEquipment(slot, stack), `Could not set ${slot} to its break boundary in trial ${attempt + 1}.`);
+    }
+    ensure(health.setCurrentValue(health.effectiveMax), `Could not restore health before break-boundary trial ${attempt + 1}.`);
+    ensure(player.applyDamage(16, { cause: EntityDamageCause.entityAttack }), `BDS rejected Armor Care break trial ${attempt + 1}.`);
+    await test.idle(1);
+    const state = readArmor();
+    for (const item of state) {
+      if (item.damage === item.maxDurability - 4) savedBreakPieces += 1;
+      else spentBreakPieces += 1;
+    }
+  }
+  ensure(savedBreakPieces > 0 && spentBreakPieces > 0,
+    `Twenty level-5 break-boundary hits did not produce both saved and native outcomes (${savedBreakPieces} saved, ${spentBreakPieces} spent).`);
+  ensure(armor.every(([, stack]) => countItem(inventoryOf(player), stack.typeId) === 0),
+    "Armor Care's break-boundary restoration duplicated armor into the inventory.");
+  console.warn("AS_ARMOR_CARE_PRODUCTION_TEST " + JSON.stringify({ savedPieces, spentPieces, savedBreakPieces, spentBreakPieces }));
+  player.disconnect();
+  test.succeed();
+}).maxTicks(520).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "armor_care_does_not_change_unowned_armor", async (test) => {
+  for (let x = 1; x <= 8; x += 1) {
+    for (let z = 1; z <= 8; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASArmorCareControl", GameMode.survival);
+  const equippable = player.getComponent("minecraft:equippable");
+  ensure(equippable, "Unaugmented Armor Care control player did not expose equippable.");
+  const armor = [
+    [EquipmentSlot.Head, new ItemStack("minecraft:iron_helmet")],
+    [EquipmentSlot.Chest, new ItemStack("minecraft:iron_chestplate")],
+    [EquipmentSlot.Legs, new ItemStack("minecraft:iron_leggings")],
+    [EquipmentSlot.Feet, new ItemStack("minecraft:iron_boots")],
+  ];
+  for (const [slot, stack] of armor) ensure(equippable.setEquipment(slot, stack), `Could not equip ${stack.typeId} for Armor Care control.`);
+  const applied = player.applyDamage(16, { cause: EntityDamageCause.entityAttack });
+  ensure(applied, "BDS rejected the unaugmented Armor Care control damage.");
+  await test.idle(1);
+  const state = armor.map(([slot]) => {
+    const stack = equippable.getEquipment(slot);
+    return { slot, typeId: stack?.typeId, damage: stack?.getComponent("minecraft:durability")?.damage };
+  });
+  ensure(state.every(item => item.damage === 4), `A player without Armor Care must retain native armor wear: ${JSON.stringify(state)}.`);
+  console.warn("AS_ARMOR_CARE_UNOWNED_CONTROL " + JSON.stringify(state));
+  player.disconnect();
+  test.succeed();
+}).maxTicks(30).structureName(STRUCTURE).tag(TAG);
 
 GameTest.registerAsync("AugmentationSurvival", "ride_current_liquid_state_probe", async (test) => {
   const dimension = world.getDimension("overworld");
