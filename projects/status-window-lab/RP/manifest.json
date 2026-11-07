@@ -1,0 +1,20 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Duskveil Status Window RP",
+    "description": "Original dark-fantasy character UI artwork.",
+    "uuid": "fcb9b4ec-ecef-47e4-ad9b-867e391b3f17",
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 26, 0]
+  },
+  "modules": [
+    {
+      "type": "resources",
+      "uuid": "e8e85a60-1f62-4771-b927-60c7bfc33e01",
+      "version": [0, 1, 0]
+    }
+  ],
+  "metadata": {
+    "product_type": "addon"
+  }
+}

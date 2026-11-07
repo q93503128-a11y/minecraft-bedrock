@@ -1,0 +1,41 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Duskveil Status Window BP",
+    "description": "A standalone player status UI experiment.",
+    "uuid": "c86b0346-d451-4b6e-a7d0-9860f82adcec",
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 26, 0]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "972b19b7-220a-4b96-8dd0-a0eb7a1a4e82",
+      "version": [0, 1, 0]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "aea73eb9-cc7e-4adc-98f3-6ebaede062c5",
+      "entry": "scripts/main.js",
+      "version": [0, 1, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "fcb9b4ec-ecef-47e4-ad9b-867e391b3f17",
+      "version": [0, 1, 0]
+    },
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.11.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.3.0"
+    }
+  ],
+  "metadata": {
+    "product_type": "addon"
+  }
+}

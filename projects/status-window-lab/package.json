@@ -1,0 +1,11 @@
+{
+  "name": "duskveil-status-window-lab",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Standalone Minecraft Bedrock RPG status UI experiment",
+  "scripts": {
+    "validate": "python tools/validate_pack.py",
+    "build": "python tools/build_addon.py",
+    "verify": "npm run validate && npm run build"
+  }
+}
