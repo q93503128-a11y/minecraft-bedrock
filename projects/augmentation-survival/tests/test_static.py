@@ -15,8 +15,8 @@ class StaticAddonTests(unittest.TestCase):
 
     def test_only_verified_gameplay_is_counted_complete(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
-        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미", "상자 찾기", "위험 감지"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
-        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense", "chest_finder", "danger_sense"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
+        self.assertEqual({"강건함", "날 선 감각", "정확한 조준", "질긴 피부", "가벼운 착지", "튼튼한 폐", "풍작", "씨앗 챙기기", "한 조각 더", "든든한 한 끼", "물갈퀴", "숨 고르기", "전리품 챙기기", "빠른 발", "야행성", "햇빛 체질", "마지막 힘", "도구 관리", "손재주", "줍는 손", "물살 타기", "다급한 발걸음", "기수", "방어구 관리", "관성 전환", "매달리기", "광석 눈썰미", "상자 찾기", "위험 감지", "화살 아끼기"}, {item["name_ko"] for item in data["augments"] if item["port_status"] == "PARTIAL_BDS_VERIFIED"})
+        self.assertEqual({"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "ride_current", "urgent_steps", "armor_care", "momentum_shift", "mantle", "ore_sense", "chest_finder", "danger_sense", "arrow_saver"}, {item["id"].split(":", 1)[1] for item in data["augments"] if item["candidate_enabled"]})
         self.assertFalse(any(item["candidate_enabled"] and item["port_status"] == "NOT_PORTED" for item in data["augments"]))
         self.assertFalse(any(item["port_status"] == "IMPLEMENTED_UNVERIFIED" for item in data["augments"]))
 
@@ -125,7 +125,7 @@ class StaticAddonTests(unittest.TestCase):
         self.assertIn("SimulatedPlayer.move did not populate inputInfo", by_id["step_up"]["api_constraints"])
         self.assertIn("no vanilla break-progress/speed control", by_id["miners_hand"]["api_constraints"])
         self.assertEqual(
-            {"A": 2, "B": 20, "C": 15, "D": 11, "UNASSESSED": 101},
+            {"A": 2, "B": 21, "C": 15, "D": 11, "UNASSESSED": 100},
             {category: sum(item["compatibility_class"] == category for item in data["augments"]) for category in ["A", "B", "C", "D", "UNASSESSED"]},
         )
 
@@ -214,6 +214,29 @@ class StaticAddonTests(unittest.TestCase):
         particle = json.loads((ROOT / "RP/particles/danger_sense_marker.json").read_text(encoding="utf-8"))
         self.assertEqual("augmentation_survival:danger_sense_marker", particle["particle_effect"]["description"]["identifier"])
         self.assertEqual("#FF4A4A", particle["particle_effect"]["components"]["minecraft:particle_appearance_tinting"]["color"])
+
+    def test_arrow_saver_keeps_the_java_chance_and_root_shot_contract(self):
+        roster = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))
+        arrow_saver = next(item for item in roster["augments"] if item["id"] == "augmentation_survival:arrow_saver")
+        self.assertEqual("화살 아끼기", arrow_saver["name_ko"])
+        self.assertEqual("rare", arrow_saver["tier"])
+        self.assertEqual(3, arrow_saver["max_level"])
+        self.assertEqual("활/쇠뇌 발사 시 탄약 미소모 확률 10% / 20% / 30%.", arrow_saver["canonical_effect_ko"])
+        self.assertEqual("B", arrow_saver["compatibility_class"])
+        self.assertEqual("PARTIAL_BDS_VERIFIED", arrow_saver["port_status"])
+        self.assertTrue(arrow_saver["candidate_enabled"])
+        self.assertEqual("REVIEW_REQUIRED", arrow_saver["interaction_mapping_status"])
+        self.assertIn("same server tick", arrow_saver["api_constraints"])
+        self.assertIn("Multishot", arrow_saver["test_method"])
+        self.assertIn("ProjectileWeaponItemAugmentMixin.java", " ".join(arrow_saver["java_source_paths"]))
+
+        rules = (ROOT / "BP/scripts/arrow-saver-rules.js").read_text(encoding="utf-8")
+        handler = (ROOT / "BP/scripts/arrow-saver.js").read_text(encoding="utf-8")
+        self.assertIn("ARROW_SAVER_CHANCE_PER_LEVEL = 0.10", rules)
+        self.assertIn("world.afterEvents.itemStopUse.subscribe", handler)
+        self.assertIn("world.afterEvents.playerInventoryItemChange.subscribe", handler)
+        self.assertIn("action.tick !== system.currentTick", handler)
+        self.assertIn("beforeItemStack.clone()", handler)
 
     def test_momentum_shift_matches_the_java_landing_contract_and_partial_bedrock_route(self):
         data = json.loads((ROOT / "docs/augment-roster.json").read_text(encoding="utf-8"))

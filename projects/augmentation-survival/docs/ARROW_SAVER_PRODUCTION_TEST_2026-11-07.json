@@ -1,0 +1,14 @@
+{
+  "tag": "augmentation_survival_arrow_saver_production",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 15948,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:arrow_saver_restores_one_exact_vanilla_arrow_per_root_shot",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}

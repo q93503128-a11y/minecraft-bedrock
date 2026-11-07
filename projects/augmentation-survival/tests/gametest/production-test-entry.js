@@ -1,6 +1,16 @@
 import "./main.js";
 import { ItemStack, system, world } from "@minecraft/server";
 import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progression.js";
+import { setArrowSaverRandomProvider } from "./arrow-saver.js";
+
+setArrowSaverRandomProvider(player => {
+  const prefix = "as_arrow_saver_test_roll:";
+  const tag = player.getTags().find(value => value.startsWith(prefix));
+  if (!tag) return Math.random();
+  player.removeTag(tag);
+  const roll = Number(tag.slice(prefix.length));
+  return Number.isFinite(roll) ? roll : Math.random();
+});
 
 // This entry is installed only in the generated BDS test copy of the
 // production behavior pack. Dynamic properties are pack-scoped, so seed the
@@ -358,6 +368,20 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       }
       player.addTag("as_test_danger_sense_core_committed");
       if (!inventory.getItem(0)) player.addTag("as_test_danger_sense_core_consumed");
+      return;
+    }
+    const arrowSaverLevel = {
+      ASArrowSaverBowLevel2Success: 2,
+      ASArrowSaverBowLevel2Miss: 2,
+      ASArrowSaverCrossbowMultishot: 3,
+      ASArrowSaverCrossbowMiss: 3,
+      ASArrowSaverInfinity: 3,
+    }[player.name];
+    if (arrowSaverLevel !== undefined) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:arrow_saver": arrowSaverLevel,
+      }));
+      player.addTag(`as_arrow_saver_seeded_${arrowSaverLevel}`);
       return;
     }
     const dangerSenseLevel = /^ASDangerSenseLevel([1-3])$/.exec(player.name)?.[1];

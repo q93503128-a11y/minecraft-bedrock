@@ -371,6 +371,7 @@ def main(source: Path, target: Path) -> None:
                 "B" if slug == "ore_sense" else
                 "C" if slug == "chest_finder" else
                 "C" if slug == "danger_sense" else
+                "B" if slug == "arrow_saver" else
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
@@ -517,8 +518,8 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder", "danger_sense"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder", "danger_sense"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder", "danger_sense", "arrow_saver"},
         })
         if slug == "ride_current":
             record = records[-1]
@@ -711,6 +712,27 @@ def main(source: Path, target: Path) -> None:
             )
             record["test_method"] = (
                 "Official BDS 1.26.62.1 production-script GameTest consumes one rare core and verifies the level-1 save, then tests saved-level 8 / 12 / 16 spherical radii, just-outside and passive-entity controls, a tagged dominated hostile exclusion, hostile AABB marker geometry, a wall-obstructed target selection, unique owner-targeted red marker calls, and the rare offer allowlist. It does not visually prove through-wall rendering or test Java-mod boss profiles."
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
+        if slug == "arrow_saver":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ProjectileWeaponItemAugmentMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/projectile/ProjectileTuning.java",
+                "src/main/resources/data/augmentation_survival/augmentation/projectile_modifier_contract.json",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["compatibility_class"] = "B"
+            record["bedrock_method"] = (
+                "Correlate a Bow/Crossbow itemStopUse event with the matching one-arrow player inventory decrement in the same server tick. Roll the Java 0.10 × saved level chance once and restore one exact cloned vanilla arrow into the player's inventory on success; max level 3. Crossbow ammo is preserved at load time, so firing a loaded crossbow causes no second roll"
+            )
+            record["api_constraints"] = (
+                "Stable @minecraft/server 2.11.0 exposes itemStopUse and playerInventoryItemChange after-events. Pinned BDS 1.26.62.1 emitted the weapon stop and a one-arrow inventory decrement in the same server tick for a real simulated Bow release and Crossbow load. ItemStack.clone retains item data and Container.addItem restores the one consumed item. Bedrock's vanilla-data package exposes arrows as minecraft:arrow (including stacks with custom metadata); stable API has no arbitrary Java ItemTags.ARROWS membership query, so custom external arrow item IDs are not covered. The refund is applied just after vanilla consumption, so same-tick third-party inventory listeners may observe the transient decrement. Java's success-only particle/sound cue is not implemented; real client controls, mobile/controller play, multiplayer/reconnect and restart have not been checked"
+            )
+            record["test_method"] = (
+                "Official BDS 1.26.62.1 production-handler GameTest verifies exact 10% / 20% / 30% roll boundaries, one-arrow decrement detection, actual SimulatedPlayer Bow release and Crossbow loading, exact arrow name/lore restoration, a Multishot Crossbow producing three projectiles from one preserved root shot, the level-3 miss boundary, Infinity avoiding duplicate ammunition, and the rare candidate allowlist. Java has no Arrow Saver-specific GameTest; real client input, custom arrow add-ons, mobile/controller play, multiplayer, reconnect and world restart remain untested"
             )
             record["port_status"] = "PARTIAL_BDS_VERIFIED"
             record["candidate_enabled"] = True

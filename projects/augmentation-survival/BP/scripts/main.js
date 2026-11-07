@@ -3,6 +3,7 @@ import { ActionFormData } from "@minecraft/server-ui";
 import { AUGMENTS } from "./augment-data.js";
 import { applySturdinessEffect } from "./passives.js";
 import { commitCoreSelection, getStoredAugmentLevel, LEVELS_KEY } from "./progression.js";
+import "./arrow-saver.js";
 import { synthesizeCore } from "./cores.js";
 import { listAvailableCandidates } from "./offers.js";
 import "./combat.js";

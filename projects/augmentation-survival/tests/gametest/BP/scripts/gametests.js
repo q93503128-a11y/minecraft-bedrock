@@ -12,6 +12,7 @@ import { ORE_SENSE_ID, ORE_SENSE_PARTICLE_ID, oreSenseRadius, refreshOreSensePla
 import { outlineMarkerLocations, perceptionMarkerKey } from "./perception-outline.js";
 import { pickupHandRadius } from "./pickup-hand.js";
 import { LEVELS_KEY } from "./progression.js";
+import { arrowSaverChance, arrowSaverRollSucceeds, consumedExactlyOneArrow, isVanillaArrow } from "./arrow-saver-rules.js";
 import { toolCareChance, toolCareRollSucceeds, tryPreventBlockToolDamage } from "./tool-care.js";
 import { isAugmentCore, lootScoopChance, lootScoopRollSucceeds, processLootScoopDeath } from "./loot-scoop.js";
 
@@ -184,7 +185,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:momentum_shift",
       "augmentation_survival:mantle",
       ]
-      : tier === "rare" ? [ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
+      : tier === "rare" ? ["augmentation_survival:arrow_saver", ORE_SENSE_ID, CHEST_FINDER_ID, DANGER_SENSE_ID] : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
@@ -1530,6 +1531,218 @@ GameTest.registerAsync("AugmentationSurvival", "fishing_hook_stable_api_surface_
   console.warn(`AS_FISHING_SURFACE_PROBE ${JSON.stringify({ useResult, observations, nearbyHookCount: hooks.length, ownedHook: Boolean(ownedHook), hookComponents })}`);
   test.succeed();
 }).maxTicks(60).structureName(STRUCTURE).tag(TAG);
+
+// Diagnostic only: observe actual simulated-player bow and crossbow use,
+// inventory deltas, and projectile ownership/order on the pinned BDS runtime.
+GameTest.registerAsync("AugmentationSurvival", "arrow_saver_shot_boundary_probe", async (test) => {
+  const observations = [];
+  const players = [
+    { name: "ASArrowBowProbe", weapon: "minecraft:bow", x: 2 },
+    { name: "ASArrowCrossbowProbe", weapon: "minecraft:crossbow", x: 7 },
+  ].map(entry => {
+    const player = test.spawnSimulatedPlayer({ x: entry.x, y: 3, z: 4 }, entry.name, GameMode.survival);
+    const inventory = inventoryOf(player);
+    inventory.setItem(0, new ItemStack(entry.weapon));
+    inventory.setItem(1, new ItemStack("minecraft:arrow", 4));
+    player.selectedSlotIndex = 0;
+    player.setRotation({ x: 0, y: 0 });
+    return { ...entry, player, inventory };
+  });
+
+  for (const [name, signal] of [
+    ["itemStartUse", world.afterEvents.itemStartUse],
+    ["itemStopUse", world.afterEvents.itemStopUse],
+    ["itemReleaseUse", world.afterEvents.itemReleaseUse],
+    ["itemCompleteUse", world.afterEvents.itemCompleteUse],
+    ["itemUse", world.afterEvents.itemUse],
+  ]) signal.subscribe(event => {
+    const match = players.find(entry => entry.player.id === event.source?.id);
+    if (match) observations.push({ event: name, tick: system.currentTick, player: match.name, item: event.itemStack?.typeId });
+  });
+  world.afterEvents.playerInventoryItemChange.subscribe(event => {
+    const match = players.find(entry => entry.player.id === event.player.id);
+    if (match && (event.beforeItemStack?.typeId === "minecraft:arrow" || event.itemStack?.typeId === "minecraft:arrow")) {
+      observations.push({
+        event: "inventoryChange",
+        tick: system.currentTick,
+        player: match.name,
+        inventoryType: event.inventoryType,
+        slot: event.slot,
+        before: event.beforeItemStack?.typeId === "minecraft:arrow" ? event.beforeItemStack.amount : 0,
+        after: event.itemStack?.typeId === "minecraft:arrow" ? event.itemStack.amount : 0,
+      });
+    }
+  });
+  world.afterEvents.entitySpawn.subscribe(({ entity }) => {
+    if (entity.typeId !== "minecraft:arrow") return;
+    const owner = entity.getComponent("minecraft:projectile")?.owner;
+    const match = players.find(entry => entry.player.id === owner?.id);
+    if (match) observations.push({ event: "arrowSpawn", tick: system.currentTick, player: match.name, location: entity.location });
+  });
+
+  const actions = [];
+  for (const entry of players) {
+    const started = entry.player.useItemInSlot(0);
+    await test.idle(35);
+    let stoppedUsingItem;
+    if (entry.weapon === "minecraft:bow") {
+      stoppedUsingItem = entry.player.stopUsingItem()?.typeId;
+      await test.idle(4);
+    }
+    const afterFirstUse = {
+      arrowCount: countItem(entry.inventory, "minecraft:arrow"),
+      ownedArrowCount: entry.player.dimension.getEntities({ type: "minecraft:arrow", location: entry.player.location, maxDistance: 32 })
+        .filter(entity => entity.getComponent("minecraft:projectile")?.owner?.id === entry.player.id).length,
+    };
+    if (entry.weapon === "minecraft:crossbow") {
+      const fired = entry.player.useItemInSlot(0);
+      await test.idle(10);
+      afterFirstUse.afterSecondUse = {
+        fired,
+        arrowCount: countItem(entry.inventory, "minecraft:arrow"),
+        ownedArrowCount: entry.player.dimension.getEntities({ type: "minecraft:arrow", location: entry.player.location, maxDistance: 32 })
+          .filter(entity => entity.getComponent("minecraft:projectile")?.owner?.id === entry.player.id).length,
+      };
+    }
+    actions.push({ name: entry.name, weapon: entry.weapon, started, stoppedUsingItem, afterFirstUse });
+  }
+  console.warn(`AS_ARROW_SAVER_SHOT_BOUNDARY_PROBE ${JSON.stringify({ actions, observations })}`);
+  test.succeed();
+}).maxTicks(140).structureName(STRUCTURE).tag("augmentation_survival_arrow_saver_probe");
+
+GameTest.registerAsync("AugmentationSurvival", "arrow_saver_restores_one_exact_vanilla_arrow_per_root_shot", async (test) => {
+  ensure(Math.abs(arrowSaverChance(1) - 0.10) < 1e-12
+    && Math.abs(arrowSaverChance(2) - 0.20) < 1e-12
+    && Math.abs(arrowSaverChance(3) - 0.30) < 1e-12,
+    "Arrow Saver must keep Java's 10% / 20% / 30% chance curve.");
+  ensure(Math.abs(arrowSaverChance(4) - 0.30) < 1e-12 && arrowSaverChance(0) === 0 && arrowSaverChance(-1) === 0,
+    "Arrow Saver must clamp at level 3 and remain inactive below level 1.");
+  ensure(arrowSaverRollSucceeds(1, 0.099999) && !arrowSaverRollSucceeds(1, 0.10), "Level 1 roll boundary changed.");
+  ensure(arrowSaverRollSucceeds(2, 0.199999) && !arrowSaverRollSucceeds(2, 0.20), "Level 2 roll boundary changed.");
+  ensure(arrowSaverRollSucceeds(3, arrowSaverChance(3) - 1e-12)
+    && !arrowSaverRollSucceeds(3, arrowSaverChance(3)), "Level 3 roll boundary changed.");
+  ensure(isVanillaArrow("minecraft:arrow"), "The Bedrock vanilla arrow item was not recognized.");
+  ensure(!isVanillaArrow("minecraft:firework_rocket"), "Crossbow fireworks are not arrows and must not be preserved by this augment.");
+  ensure(consumedExactlyOneArrow(new ItemStack("minecraft:arrow", 2), new ItemStack("minecraft:arrow", 1)),
+    "One-arrow inventory consumption was not recognized.");
+  ensure(consumedExactlyOneArrow(new ItemStack("minecraft:arrow", 1), undefined),
+    "Consuming the last arrow was not recognized.");
+  ensure(!consumedExactlyOneArrow(new ItemStack("minecraft:arrow", 2), undefined),
+    "Dropping or removing a stack of multiple arrows must not be mistaken for a shot.");
+  ensure(!consumedExactlyOneArrow(new ItemStack("minecraft:firework_rocket", 2), new ItemStack("minecraft:firework_rocket", 1)),
+    "Firework rocket consumption must not match the arrow filter.");
+
+  const bow = test.spawnSimulatedPlayer({ x: 2, y: 3, z: 4 }, "ASArrowSaverBowLevel2Success", GameMode.survival);
+  const bowMiss = test.spawnSimulatedPlayer({ x: 7, y: 3, z: 4 }, "ASArrowSaverBowLevel2Miss", GameMode.survival);
+  const crossbow = test.spawnSimulatedPlayer({ x: 12, y: 3, z: 4 }, "ASArrowSaverCrossbowMultishot", GameMode.survival);
+  const crossbowMiss = test.spawnSimulatedPlayer({ x: 17, y: 3, z: 4 }, "ASArrowSaverCrossbowMiss", GameMode.survival);
+  const infinity = test.spawnSimulatedPlayer({ x: 22, y: 3, z: 4 }, "ASArrowSaverInfinity", GameMode.survival);
+  await test.idle(2);
+  const bowInventory = inventoryOf(bow);
+  const bowMissInventory = inventoryOf(bowMiss);
+  const crossbowInventory = inventoryOf(crossbow);
+  const crossbowMissInventory = inventoryOf(crossbowMiss);
+  const infinityInventory = inventoryOf(infinity);
+  const namedArrows = new ItemStack("minecraft:arrow", 4);
+  namedArrows.nameTag = "Preserved Arrow Stack";
+  namedArrows.setLore(["Keep this exact stack"]);
+  bowInventory.setItem(0, new ItemStack("minecraft:bow"));
+  bowInventory.setItem(1, namedArrows);
+  bow.selectedSlotIndex = 0;
+  bow.addTag("as_arrow_saver_test_roll:0.199999");
+  bowMissInventory.setItem(0, new ItemStack("minecraft:bow"));
+  bowMissInventory.setItem(1, new ItemStack("minecraft:arrow", 2));
+  bowMiss.selectedSlotIndex = 0;
+  bowMiss.addTag("as_arrow_saver_test_roll:0.2");
+
+  const multishotCrossbow = new ItemStack("minecraft:crossbow");
+  const multishot = EnchantmentTypes.get("minecraft:multishot");
+  ensure(multishot, "Vanilla Multishot enchantment was unavailable.");
+  multishotCrossbow.getComponent("minecraft:enchantable")?.addEnchantment({ type: multishot, level: 1 });
+  crossbowInventory.setItem(0, multishotCrossbow);
+  const namedMultishotArrows = new ItemStack("minecraft:arrow", 4);
+  namedMultishotArrows.nameTag = "Multishot Arrow Stack";
+  namedMultishotArrows.setLore(["One root action"]);
+  crossbowInventory.setItem(1, namedMultishotArrows);
+  crossbow.selectedSlotIndex = 0;
+  crossbow.addTag("as_arrow_saver_test_roll:0.299999");
+  crossbowMissInventory.setItem(0, new ItemStack("minecraft:crossbow"));
+  crossbowMissInventory.setItem(1, new ItemStack("minecraft:arrow", 2));
+  crossbowMiss.selectedSlotIndex = 0;
+  crossbowMiss.addTag(`as_arrow_saver_test_roll:${arrowSaverChance(3)}`);
+  const infinityBow = new ItemStack("minecraft:bow");
+  const infinityType = EnchantmentTypes.get("minecraft:infinity");
+  ensure(infinityType, "Vanilla Infinity enchantment was unavailable.");
+  infinityBow.getComponent("minecraft:enchantable")?.addEnchantment({ type: infinityType, level: 1 });
+  infinityInventory.setItem(0, infinityBow);
+  infinityInventory.setItem(1, new ItemStack("minecraft:arrow", 4));
+  infinity.selectedSlotIndex = 0;
+
+  const arrowSpawns = new Map();
+  const onArrowSpawn = ({ entity }) => {
+    if (entity.typeId !== "minecraft:arrow") return;
+    const ownerId = entity.getComponent("minecraft:projectile")?.owner?.id;
+    if (ownerId) arrowSpawns.set(ownerId, (arrowSpawns.get(ownerId) ?? 0) + 1);
+  };
+  world.afterEvents.entitySpawn.subscribe(onArrowSpawn);
+  try {
+    ensure(bow.useItemInSlot(0), "Level-2 bow action did not start.");
+    await test.idle(35);
+    ensure(bow.stopUsingItem()?.typeId === "minecraft:bow", "The simulated bow did not release its shot.");
+    await test.idle(1);
+    ensure(countItem(bowInventory, "minecraft:arrow") === 4, "The level-2 Bow success roll did not restore one arrow.");
+    const restoredArrow = Array.from({ length: bowInventory.size }, (_, slot) => bowInventory.getItem(slot))
+      .find(stack => stack?.typeId === "minecraft:arrow");
+    ensure(restoredArrow?.nameTag === "Preserved Arrow Stack"
+      && JSON.stringify(restoredArrow.getLore()) === JSON.stringify(["Keep this exact stack"]),
+    "The refunded arrow lost its item data.");
+
+    ensure(bowMiss.useItemInSlot(0), "The level-2 miss-boundary bow action did not start.");
+    await test.idle(35);
+    ensure(bowMiss.stopUsingItem()?.typeId === "minecraft:bow", "The miss-boundary simulated bow did not release.");
+    await test.idle(1);
+    ensure(countItem(bowMissInventory, "minecraft:arrow") === 1,
+      "A level-2 Bow roll at the exclusive 20% boundary must consume one arrow.");
+
+    ensure(crossbow.useItemInSlot(0), "The Multishot crossbow load did not start.");
+    await test.idle(26);
+    ensure(countItem(crossbowInventory, "minecraft:arrow") === 4,
+      "A successful level-3 crossbow load did not restore one arrow.");
+    ensure(crossbow.useItemInSlot(0), "The loaded Multishot crossbow did not fire.");
+    await test.idle(4);
+    ensure(countItem(crossbowInventory, "minecraft:arrow") === 4,
+      "Firing a loaded Multishot crossbow must not trigger another ammo roll.");
+    ensure(arrowSpawns.get(crossbow.id) === 3,
+      `One Multishot root action should emit three arrows; got ${arrowSpawns.get(crossbow.id) ?? 0}.`);
+    const restoredMultishotArrow = Array.from({ length: crossbowInventory.size }, (_, slot) => crossbowInventory.getItem(slot))
+      .find(stack => stack?.typeId === "minecraft:arrow");
+    ensure(restoredMultishotArrow?.nameTag === "Multishot Arrow Stack"
+      && JSON.stringify(restoredMultishotArrow.getLore()) === JSON.stringify(["One root action"]),
+    "The refunded Multishot arrow lost its item data.");
+
+    ensure(crossbowMiss.useItemInSlot(0), "The level-3 miss-boundary crossbow load did not start.");
+    await test.idle(26);
+    ensure(countItem(crossbowMissInventory, "minecraft:arrow") === 1,
+      "A level-3 Crossbow roll at the exclusive 30% boundary must consume one arrow.");
+    ensure(crossbowMiss.useItemInSlot(0), "The miss-boundary crossbow did not fire.");
+    await test.idle(3);
+
+    ensure(infinity.useItemInSlot(0), "The Infinity bow action did not start.");
+    await test.idle(35);
+    ensure(infinity.stopUsingItem()?.typeId === "minecraft:bow", "The Infinity bow did not release its shot.");
+    await test.idle(1);
+    ensure(countItem(infinityInventory, "minecraft:arrow") === 4,
+      "Infinity already preserves ammo; Arrow Saver must not duplicate it.");
+  } finally {
+    world.afterEvents.entitySpawn.unsubscribe(onArrowSpawn);
+  }
+
+  ensure(arrowSpawns.get(bow.id) === 1 && arrowSpawns.get(bowMiss.id) === 1, "Both natural Bow releases should spawn one arrow each.");
+  ensure(arrowSpawns.get(crossbow.id) === 3 && arrowSpawns.get(crossbowMiss.id) === 1,
+    "One Multishot root action must spawn three arrows and the miss control one.");
+  ensure(arrowSpawns.get(infinity.id) === 1, "Infinity should still release a normal arrow projectile.");
+  test.succeed();
+}).maxTicks(190).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_arrow_saver_production");
 
 // Diagnostic only: the official stable declarations do not expose the
 // pre-release breathable.airSupply property. Check whether the installed BDS

@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 32308,
+  "durationMs": 36620,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -85,6 +85,10 @@
     },
     {
       "id": "AugmentationSurvival:fishing_hook_stable_api_surface_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:arrow_saver_restores_one_exact_vanilla_arrow_per_root_shot",
       "outcome": "pass"
     },
     {
@@ -181,8 +185,7 @@
     },
     {
       "id": "AugmentationSurvival:pickup_hand_extends_item_and_xp_radius_at_all_levels",
-      "outcome": "fail",
-      "error": "Error: Two nearby players duplicated or lost the 4-point XP orb; got 0.    at ensure (gametests.js:36)"
+      "outcome": "pass"
     },
     {
       "id": "AugmentationSurvival:step_up_stable_player_api_surface_probe",
@@ -203,7 +206,7 @@
     {
       "id": "AugmentationSurvival:rider_speed_level_1_applies_and_restores",
       "outcome": "fail",
-      "error": "Error: Rider level 1 test horse did not expose the rideable component.    at ensure (gametests.js:36)"
+      "error": "Error: Rider level 1 test horse did not expose the rideable component.    at ensure (gametests.js:37)"
     },
     {
       "id": "AugmentationSurvival:rider_speed_level_2_applies_and_restores",
@@ -235,12 +238,10 @@
     }
   ],
   "regressions": [
-    "AugmentationSurvival:pickup_hand_extends_item_and_xp_radius_at_all_levels",
     "AugmentationSurvival:rider_speed_level_1_applies_and_restores"
   ],
   "scriptErrors": [
-    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Rider level 1 test horse did not expose the rideable component.    at ensure (gametests.js:36)",
-    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Two nearby players duplicated or lost the 4-point XP orb; got 0.    at ensure (gametests.js:36)"
+    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Rider level 1 test horse did not expose the rideable component.    at ensure (gametests.js:37)"
   ],
-  "infraError": "2 uncaught script error(s) were logged. They are thrown outside any test, so no test can fail on them. Pass --allow-script-errors to report without failing."
+  "infraError": "1 uncaught script error(s) were logged. They are thrown outside any test, so no test can fail on them. Pass --allow-script-errors to report without failing."
 }

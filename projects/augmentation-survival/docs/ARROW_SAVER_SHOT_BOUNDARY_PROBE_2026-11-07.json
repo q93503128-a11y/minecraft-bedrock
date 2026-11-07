@@ -1,0 +1,14 @@
+{
+  "tag": "augmentation_survival_arrow_saver_probe",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 11705,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:arrow_saver_shot_boundary_probe",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}

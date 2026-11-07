@@ -369,3 +369,26 @@ This is class **C**, `PARTIAL_BDS_VERIFIED`, and the rare candidate is enabled. 
 - [Stable `Entity.getAABB`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
 - [Stable `AABB`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/aabb?view=minecraft-bedrock-stable)
 - [Stable `Player.spawnParticle`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable)
+
+
+## Arrow Saver (화살 아끼기)
+
+### Java contract and implementation
+
+The rare augment has maximum level 3 and preserves a consumed arrow with probability 10% / 20% / 30%. Java injects at the head of ProjectileWeaponItem.useAmmo and returns one intangible projectile instead of consuming the selected stack when the roll succeeds. It skips force-infinite and infinite-material cases, non-player users, non-Bow/Crossbow items, and stacks outside ItemTags.ARROWS. The interaction contract states that the roll runs exactly once per root shot. Crossbow ammunition is checked while loading; Multishot's three derived projectiles do not get three preservation rolls. Java emits a success-only owner feedback cue with enchantment particles, one End Rod particle, and an amethyst chime. The Java source currently has no Arrow Saver-specific GameTest.
+
+### Stable Bedrock route and constraints
+
+Stable @minecraft/server 2.11.0 exposes itemStopUse and playerInventoryItemChange after-events. On BDS 1.26.62.1, a simulated Bow release emitted itemStopUse and the one-arrow inventory decrement on the same server tick; Crossbow loading emitted its stop and decrement together, while firing the loaded Crossbow consumed no second arrow. The production handler records the stopped weapon and selected slot, then accepts only an exactly-one-arrow decrease for that player and tick while the same Bow/Crossbow remains selected. It rolls once and, on success, clones the consumed stack, sets its amount to one, and adds it back to the inventory; an overflow stack is dropped at the player. Creative-mode actions are ignored. Infinity already avoids an inventory decrease and therefore cannot be duplicated by the handler.
+
+This is class B and PARTIAL_BDS_VERIFIED, with the rare candidate enabled. Stable API does not expose Java ItemTags.ARROWS membership. The target vanilla-data package identifies the available arrow item as minecraft:arrow, which is the only arrow ID the production handler accepts. This does not cover custom Java arrow IDs or establish parity for other Bedrock add-on arrow IDs. ItemStack.clone preserved tested custom name and lore, but effect-bearing or unusual arrow metadata was not exercised. The restore happens after vanilla decrements the stack, so another same-tick inventory listener can observe a transient decrease before refund. Java's success-only particle/sound cue is not yet ported. Crosshair/use controls, animation, mobile and controller play, live multiplayer, reconnect, and world restart remain unverified.
+
+### BDS verification
+
+Run npm run test:arrow-saver-production for the isolated production-handler test. On official BDS 1.26.62.1 the current targeted test passed 1/1 in 11.840 seconds with no script, regression, or infrastructure errors. It verifies the exact 10% / 20% / 30% exclusive roll boundaries, one-arrow consumption recognition, an actual simulated Bow release at level 2 for success and miss, Crossbow load-time success and miss at level 3, a Multishot Crossbow firing three projectiles from one preserved root action, custom name/lore retention, Infinity non-duplication, and the rare offer allowlist. The separate event-boundary probe also passed and records the BDS event ordering; its generated JSON is preserved under .bds/logs and is not counted in the standard suite. This does not verify the Java readability cue or live-client input.
+
+### References
+
+- [Stable WorldAfterEvents](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable)
+- [Stable PlayerInventoryItemChangeAfterEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerinventoryitemchangeafterevent?view=minecraft-bedrock-stable)
+- [Stable ItemStack.clone](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable)

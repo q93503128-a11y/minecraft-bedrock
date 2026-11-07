@@ -1264,7 +1264,8 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ProjectileWeaponItemAugmentMixin.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/projectile/ProjectileTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/projectile/ProjectileTuning.java",
+        "src/main/resources/data/augmentation_survival/augmentation/projectile_modifier_contract.json"
       ],
       "interaction_contract_refs": [
         {
@@ -1273,12 +1274,12 @@
         }
       ],
       "interaction_mapping_status": "REVIEW_REQUIRED",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "compatibility_class": "B",
+      "bedrock_method": "Correlate a Bow/Crossbow itemStopUse event with the matching one-arrow player inventory decrement in the same server tick. Roll the Java 0.10 × saved level chance once and restore one exact cloned vanilla arrow into the player's inventory on success; max level 3. Crossbow ammo is preserved at load time, so firing a loaded crossbow causes no second roll",
+      "api_constraints": "Stable @minecraft/server 2.11.0 exposes itemStopUse and playerInventoryItemChange after-events. Pinned BDS 1.26.62.1 emitted the weapon stop and a one-arrow inventory decrement in the same server tick for a real simulated Bow release and Crossbow load. ItemStack.clone retains item data and Container.addItem restores the one consumed item. Bedrock's vanilla-data package exposes arrows as minecraft:arrow (including stacks with custom metadata); stable API has no arbitrary Java ItemTags.ARROWS membership query, so custom external arrow item IDs are not covered. The refund is applied just after vanilla consumption, so same-tick third-party inventory listeners may observe the transient decrement. Java's success-only particle/sound cue is not implemented; real client controls, mobile/controller play, multiplayer/reconnect and restart have not been checked",
+      "test_method": "Official BDS 1.26.62.1 production-handler GameTest verifies exact 10% / 20% / 30% roll boundaries, one-arrow decrement detection, actual SimulatedPlayer Bow release and Crossbow loading, exact arrow name/lore restoration, a Multishot Crossbow producing three projectiles from one preserved root shot, the level-3 miss boundary, Infinity avoiding duplicate ammunition, and the rare candidate allowlist. Java has no Arrow Saver-specific GameTest; real client input, custom arrow add-ons, mobile/controller play, multiplayer, reconnect and world restart remain untested",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:replant",
