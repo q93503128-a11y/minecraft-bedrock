@@ -1,0 +1,14 @@
+{
+  "tag": "augmentation_survival_mantle_production",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 6037,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:mantle_reconstructs_collision_and_resets_momentum_fall_phase",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null
+}

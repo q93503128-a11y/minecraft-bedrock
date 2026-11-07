@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 37607,
+  "durationMs": 30148,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -61,6 +61,10 @@
     },
     {
       "id": "AugmentationSurvival:momentum_shift_applies_landing_bonus_and_expires",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:mantle_reconstructs_collision_and_resets_momentum_fall_phase",
       "outcome": "pass"
     },
     {
@@ -189,7 +193,8 @@
     },
     {
       "id": "AugmentationSurvival:rider_speed_level_2_applies_and_restores",
-      "outcome": "pass"
+      "outcome": "fail",
+      "error": "Error: Rider level 2 test horse did not expose the rideable component.    at ensure (gametests.js:32)"
     },
     {
       "id": "AugmentationSurvival:rider_speed_level_3_applies_and_restores",
@@ -216,7 +221,11 @@
       "outcome": "pass"
     }
   ],
-  "regressions": [],
-  "scriptErrors": [],
-  "infraError": null
+  "regressions": [
+    "AugmentationSurvival:rider_speed_level_2_applies_and_restores"
+  ],
+  "scriptErrors": [
+    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Rider level 2 test horse did not expose the rideable component.    at ensure (gametests.js:32)"
+  ],
+  "infraError": "1 uncaught script error(s) were logged. They are thrown outside any test, so no test can fail on them. Pass --allow-script-errors to report without failing."
 }

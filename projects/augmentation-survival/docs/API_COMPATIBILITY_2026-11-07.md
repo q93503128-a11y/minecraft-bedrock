@@ -259,3 +259,30 @@ The complete event and position measurements are preserved in [`MOMENTUM_FALL_ST
 ### Classification and open checks
 
 Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon core candidate. BDS verifies the server movement-component values, reconstructed four-block threshold, and timer behavior. If a player first acquires the level during an ongoing fall, Bedrock begins its local peak-position sample at the current Y and may miss distance from earlier ticks; Java's `fallDistance` retains it. Live displacement, mobile/controller play, water and climbing transitions, teleport edges, reconnect and multiplayer behavior, and coexistence with `탄성 저장` / Temporary Platform in a complete pair are also unverified. The interaction contract is preserved and marked for review while `탄성 저장` remains unported. No Java behavior has been intentionally removed; the current limitations are this mid-fall sampling edge and unverified movement-component parity.
+
+## `매달리기` (Mantle)
+
+### Java contract and implementation
+
+The uncommon augment has maximum level 1. `MantleAugmentService.tryMantle` runs from the tail of every server-player tick and requires the player to be airborne, outside water and climbable blocks, not riding, flying, or spectating, in horizontal collision, and not moving upward faster than `0.20` blocks/tick. It also rejects the action while `CombatAugmentService.isActionLocked` is true. The service normalizes the horizontal look vector, moves the destination `0.35` blocks forward and `1.0` block up, requires `noCollision` for the player's destination AABB, preserves horizontal velocity, clamps vertical velocity to at least zero, and resets Java fall distance. The action lock specifically covers Reincarnation recovery stasis. The interaction contract has no direct Mantle clause; the source shows a shared interaction with Momentum Shift's fall-distance sampling.
+
+### Stable Bedrock route and BDS verification
+
+Stable `@minecraft/server` 2.11.0 exposes cross-platform `Player.inputInfo.getMovementVector()`, `Entity.getAABB()`, `Dimension.getBlockFromRay()`, `Entity.tryTeleport()`, `getVelocity()`, and `applyImpulse()`. The server tick runtime combines the current input vector with the horizontal view direction, raycasts the leading AABB samples, and accepts a wall only when the hit face is within `0.05` blocks. The stable API has no horizontal-collision or fall-distance property. It reads the stored level, airborne/fluid/climbing/flying/game-mode/riding conditions, and rejects upward Y velocity above `0.20`.
+
+The BDS 1.26.62.1 production test showed two player-teleport differences: `keepVelocity` is unsupported for player teleportation, and `tryTeleport(..., {checkForBlocks: true})` did not reject the obstructed destination fixture. The runtime therefore omits `keepVelocity`, snapshots velocity before teleport, and applies the delta needed to preserve X/Z and clamp Y afterward. It separately scans block cells overlapping the destination player AABB before teleport. Air, liquid, blocks tagged `plant`, `minecraft:crop`, `rail`, or `text_sign`, and a small explicit passable-block set are allowed; other non-air blocks are treated as blocking because Script API does not expose a generic collision-shape/no-collision query. These tags do not describe collision geometry, so some tagged plants with collision may be allowed while unlisted passable or partial blocks may be conservatively rejected. Custom collision shapes do not have exact parity. Living entities are checked with AABB overlap.
+
+After a successful mantle, the shared Momentum Shift fall sampler resets its current peak and accumulated distance, reproducing Java's `resetFallDistance()` interaction. The Java Reincarnation action lock has no Bedrock equivalent yet because Reincarnation is unported, so it cannot suppress Mantle in that state.
+
+### Classification and open checks
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon core candidate. The `mantle_reconstructs_collision_and_resets_momentum_fall_phase` production-script GameTest injects forward input and verifies ownership, no-input and no-wall controls, a blocked block destination, a living-entity destination, exact one-block vertical and `0.35`-block forward displacement, nonnegative Y velocity, and the Momentum Shift fall-phase reset. SimulatedPlayer movement does not populate `inputInfo`, so the test does not demonstrate real keyboard, touch, or controller input delivery. Real-client movement, mobile/controller play, online multiplayer, reconnect, custom block collision shapes, and Reincarnation stasis remain open.
+
+Mantle adds no key binding or custom client UI. It uses the ordinary forward movement input, so keyboard, touch, and controller controls remain the vanilla movement controls.
+
+### References
+
+- [Stable `InputInfo`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/inputinfo?view=minecraft-bedrock-stable)
+- [Stable `Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
+- [Stable `Dimension`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable)
+- [Stable `Block`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable)

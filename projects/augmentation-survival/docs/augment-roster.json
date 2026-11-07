@@ -1217,16 +1217,18 @@
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/ServerPlayerMantleMixin.java",
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/active/AdvancedActiveTuning.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MantleAugmentService.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MantleAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/CombatAugmentService.java",
+        "src/gametest/java/dev/moonseungjun/augmentationsurvival/gametest/MovementEdgeCaseGameTests.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_mapping_status": "REVIEW_REQUIRED",
+      "compatibility_class": "B",
+      "bedrock_method": "On each server tick, read the stable Player.inputInfo movement vector and raycast the moving player's leading collision bounds to reconstruct Java's horizontal-collision trigger. When the owned player is airborne, not in water/climbing/riding/flying/spectator state, and vertical velocity is at most +0.20, try a server-side teleport 0.35 blocks along the horizontal view and 1 block up with block-collision checking; preserve horizontal velocity, clear negative Y velocity, and reset the shared Momentum Shift fall sample",
+      "api_constraints": "Stable @minecraft/server 2.11.0 includes Player.inputInfo.getMovementVector(), Entity.getAABB(), Dimension.getBlockFromRay(), Entity.tryTeleport(), getVelocity(), and applyImpulse(); the input API was released to stable without experimental toggles in Bedrock 1.21.70. There is no stable horizontalCollision or fallDistance property, so wall contact is inferred from movement input and collision-shape raycasts, while the Momentum Shift sampler is explicitly reset after the teleport. SimulatedPlayer.move does not populate the input vector on BDS 1.26.62.1, so deterministic tests inject a forward vector and do not prove keyboard, touch, or controller input delivery. Java's CombatAugmentService.isActionLocked only blocks the Reincarnation recovery window; that Java-only action lock has no Bedrock counterpart yet because Reincarnation is unported. Exact living-entity collision is checked by AABB; non-living colliders, real client/device behavior, reconnect, and multiplayer remain unverified",
+      "test_method": "BDS 1.26.62.1 production-script GameTest injects movement vectors into the shared production handler and verifies owned/unowned gating, no-input and no-wall controls, a clear one-block mantle with 0.35-block forward displacement, nonnegative vertical velocity, rejection of blocked block/entity destinations, and reset of the Momentum Shift fall peak so a four-block pre-mantle fall plus a sub-four-block post-mantle fall does not activate it. The pinned SimulatedPlayer cannot supply client input; physical PC, mobile, controller, and online multiplayer checks are not counted",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:ore_sense",
