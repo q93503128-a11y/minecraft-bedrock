@@ -42,6 +42,7 @@ def main() -> None:
     shutil.copy2(PROJECT / "BP/scripts/progression.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/progression.js")
     shutil.copy2(PROJECT / "BP/scripts/movement.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/movement.js")
     shutil.copy2(PROJECT / "BP/scripts/ore-sense.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/ore-sense.js")
+    shutil.copy2(PROJECT / "BP/scripts/chest-finder.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/chest-finder.js")
     shutil.copy2(PROJECT / "BP/scripts/pickup-hand.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/pickup-hand.js")
     shutil.copy2(PROJECT / "BP/scripts/armor-care-rules.js", OUTPUT / "AugmentationSurvival_GameTests/scripts/armor-care-rules.js")
 

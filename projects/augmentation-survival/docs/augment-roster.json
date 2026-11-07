@@ -1576,16 +1576,20 @@
       "canonical_effect_ko": "반경 12 / 18 / 24블록 내 아직 소비되지 않은 자연 loot 컨테이너를 금색 외곽선으로 표시.",
       "catalog_discrepancy": "",
       "java_source_paths": [
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/client/ClientPerceptionState.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/client/PerceptionClientNetworking.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/EntityRendererPerceptionMixin.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/network/PerceptionStatePayload.java"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
-      "port_status": "NOT_PORTED",
-      "candidate_enabled": false
+      "interaction_mapping_status": "REVIEWED_NO_DIRECT_RULE",
+      "compatibility_class": "C",
+      "bedrock_method": "Every 10 server ticks, query only already-loaded blocks in the canonical spherical radius 12 / 18 / 24, select empty vanilla chest/trapped-chest/barrel inventories, and emit a gold 20-point outline through owner-only Player.spawnParticle. Persist per-location exclusions when stable blockContainerOpened or playerPlaceBlock events observe a container; clear the marker after a player breaks that block",
+      "api_constraints": "Stable @minecraft/server 2.11.0 provides Dimension.getBlocks with includeTypes and allowUnloadedChunks, BlockInventoryComponent.container, owner-only Player.spawnParticle, blockContainerOpened, playerPlaceBlock, playerBreakBlock, and world dynamic properties. Stable APIs do not expose a vanilla block-entity loot-table ID/state or reliable natural-versus-player placement provenance. Empty inventory is only a proxy for unconsumed loot, and placement/open markers only cover activity observed since the addon was installed; an already-opened empty chest or an older player-placed empty container can be misidentified. Dimension.getGeneratedStructures is still pre-release and is not used. Custom external container block types are not included. Exact Java filtering is therefore not available through the confirmed stable API",
+      "test_method": "Official BDS 1.26.62.1 production-script GameTest commits Chest Finder level 1 by consuming one rare core, then checks the level 1 / 2 / 3 spherical radii, exact-radius and outside-sphere controls, a chest behind a wall, empty versus filled inventory, real blockContainerOpened and playerPlaceBlock exclusion markers, unique owner-targeted particles, and the rare-candidate allowlist. Java has no Chest Finder-specific GameTest in its current source. Client visuals, legacy empty-container provenance, reconnect, and server restart remain untested",
+      "port_status": "PARTIAL_BDS_VERIFIED",
+      "candidate_enabled": true
     },
     {
       "id": "augmentation_survival:danger_sense",

@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 30086,
+  "durationMs": 30468,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -17,6 +17,10 @@
     },
     {
       "id": "AugmentationSurvival:ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:chest_finder_tracks_empty_containers_and_marks_them_at_all_saved_radii",
       "outcome": "pass"
     },
     {
@@ -193,16 +197,17 @@
     },
     {
       "id": "AugmentationSurvival:rider_speed_level_1_applies_and_restores",
-      "outcome": "pass"
+      "outcome": "fail",
+      "error": "Error: Rider level 1 test horse did not expose the rideable component.    at ensure (gametests.js:34)"
     },
     {
       "id": "AugmentationSurvival:rider_speed_level_2_applies_and_restores",
-      "outcome": "pass"
+      "outcome": "fail",
+      "error": "Error: Rider level 2 test horse did not expose the rideable component.    at ensure (gametests.js:34)"
     },
     {
       "id": "AugmentationSurvival:rider_speed_level_3_applies_and_restores",
-      "outcome": "fail",
-      "error": "Error: Rider level 3 test horse did not expose the rideable component.    at ensure (gametests.js:33)"
+      "outcome": "pass"
     },
     {
       "id": "AugmentationSurvival:rider_speed_does_not_change_unowned_mount",
@@ -226,10 +231,12 @@
     }
   ],
   "regressions": [
-    "AugmentationSurvival:rider_speed_level_3_applies_and_restores"
+    "AugmentationSurvival:rider_speed_level_1_applies_and_restores",
+    "AugmentationSurvival:rider_speed_level_2_applies_and_restores"
   ],
   "scriptErrors": [
-    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Rider level 3 test horse did not expose the rideable component.    at ensure (gametests.js:33)"
+    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Rider level 1 test horse did not expose the rideable component.    at ensure (gametests.js:34)",
+    "[Augmentation Survival Engine Tests] Unhandled promise rejection: Error: Rider level 2 test horse did not expose the rideable component.    at ensure (gametests.js:34)"
   ],
-  "infraError": "1 uncaught script error(s) were logged. They are thrown outside any test, so no test can fail on them. Pass --allow-script-errors to report without failing."
+  "infraError": "2 uncaught script error(s) were logged. They are thrown outside any test, so no test can fail on them. Pass --allow-script-errors to report without failing."
 }

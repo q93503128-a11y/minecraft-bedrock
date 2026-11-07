@@ -1,0 +1,41 @@
+{
+  "tag": "augmentation_survival_chest_finder_production",
+  "bdsVersion": "1.26.62.1",
+  "durationMs": 4545,
+  "verdicts": [
+    {
+      "id": "AugmentationSurvival:chest_finder_tracks_empty_containers_and_marks_them_at_all_saved_radii",
+      "outcome": "pass"
+    }
+  ],
+  "regressions": [],
+  "scriptErrors": [],
+  "infraError": null,
+  "observedLevels": [
+    {
+      "level": 1,
+      "radius": 12,
+      "containers": 1,
+      "markers": 20
+    },
+    {
+      "level": 2,
+      "radius": 18,
+      "containers": 2,
+      "markers": 40
+    },
+    {
+      "level": 3,
+      "radius": 24,
+      "containers": 3,
+      "markers": 60
+    }
+  ],
+  "openedMarkedByEvent": true,
+  "placementMarkerStored": true,
+  "livePlacementEventVerified": false,
+  "limitations": [
+    "An empty inventory does not prove the vanilla loot table is unconsumed.",
+    "Live playerPlaceBlock delivery was not verified; the SimulatedPlayer placement fixture did not place at the expected coordinates."
+  ]
+}

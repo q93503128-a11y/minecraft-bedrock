@@ -324,6 +324,30 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       if (!inventory.getItem(0)) player.addTag("as_test_ore_sense_core_consumed");
       return;
     }
+    if (player.name === "ASChestFinderCoreCommit") {
+      const coreId = "augmentation_survival:rare_augment_core";
+      const augment = { id: "augmentation_survival:chest_finder", max_level: 3 };
+      const inventory = player.getComponent("minecraft:inventory")?.container;
+      if (!inventory) {
+        player.addTag("as_test_chest_finder_core_missing_inventory");
+        return;
+      }
+      inventory.setItem(0, new ItemStack(coreId, 1));
+      const granted = commitCoreSelection(player, coreId, augment);
+      if (!granted.ok || granted.level !== 1 || getStoredAugmentLevel(player, augment.id, augment.max_level) !== 1) {
+        player.addTag("as_test_chest_finder_core_commit_failed");
+        return;
+      }
+      player.addTag("as_test_chest_finder_core_committed");
+      if (!inventory.getItem(0)) player.addTag("as_test_chest_finder_core_consumed");
+      return;
+    }
+    const chestFinderLevel = /^ASChestFinderLevel([1-3])$/.exec(player.name)?.[1];
+    if (chestFinderLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:chest_finder": Number(chestFinderLevel) }));
+      player.addTag(`as_chest_finder_seeded_${chestFinderLevel}`);
+      return;
+    }
     if (player.name !== "ASCoreCommitProduction") return;
 
     const coreId = "augmentation_survival:common_augment_core";

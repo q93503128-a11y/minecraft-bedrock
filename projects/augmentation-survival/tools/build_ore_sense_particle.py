@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the original 16x16 white spark texture tinted by the ore particle definition."""
+"""Generate the shared 16x16 white spark textures tinted by perception particles."""
 from __future__ import annotations
 
 import binascii
@@ -8,7 +8,10 @@ import zlib
 from pathlib import Path
 
 PROJECT = Path(__file__).resolve().parents[1]
-OUTPUT = PROJECT / "RP/textures/particles/ore_sense_marker.png"
+OUTPUTS = (
+    PROJECT / "RP/textures/particles/ore_sense_marker.png",
+    PROJECT / "RP/textures/particles/chest_finder_marker.png",
+)
 SIZE = 16
 
 
@@ -41,9 +44,11 @@ def build_png() -> bytes:
 
 
 def main() -> None:
-    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    OUTPUT.write_bytes(build_png())
-    print(f"ORE_SENSE_PARTICLE_TEXTURE_READY: {OUTPUT.relative_to(PROJECT)} ({SIZE}x{SIZE})")
+    texture = build_png()
+    for output in OUTPUTS:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_bytes(texture)
+        print(f"PERCEPTION_PARTICLE_TEXTURE_READY: {output.relative_to(PROJECT)} ({SIZE}x{SIZE})")
 
 
 if __name__ == "__main__":

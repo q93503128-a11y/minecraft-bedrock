@@ -3,6 +3,7 @@ import * as GameTest from "@minecraft/server-gametest";
 import { AUGMENTS } from "./augment-data.js";
 import { synthesizeCore } from "./cores.js";
 import { armorCareChance, armorCareRollSucceeds } from "./armor-care-rules.js";
+import { CHEST_FINDER_ID, CHEST_FINDER_PARTICLE_ID, chestFinderRadius, findUnconsumedLootContainers, isChestFinderContainerExcluded, markChestFinderContainerExcluded, refreshChestFinderPlayer } from "./chest-finder.js";
 import { applyCropHarvestBonuses, applyDexterityGatheringBonus, applyExtraPieceBonus, bumperCropBonusChance, dexterityBonusChance, extraPieceBonusChance, isDexterityGatheringBlock, isEligibleDexterityDrop, isOreBlock, seedSaverBonusChance } from "./harvest.js";
 import { listAvailableCandidates } from "./offers.js";
 import { tryMantle } from "./movement.js";
@@ -181,7 +182,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:momentum_shift",
       "augmentation_survival:mantle",
       ]
-      : tier === "rare" ? [ORE_SENSE_ID] : [];
+      : tier === "rare" ? [ORE_SENSE_ID, CHEST_FINDER_ID] : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
     ensure(expected.every(id => candidates.some(augment => augment.id === id)), `${tier} candidate set diverged from its BDS-tested allowlist.`);
   }
@@ -279,6 +280,107 @@ GameTest.registerAsync("AugmentationSurvival", "ore_sense_marks_exposed_ores_at_
   console.warn("AS_ORE_SENSE_PRODUCTION_TEST " + JSON.stringify({ observedLevels }));
   test.succeed();
 }).maxTicks(80).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_ore_sense_production");
+
+GameTest.registerAsync("AugmentationSurvival", "chest_finder_tracks_empty_containers_and_marks_them_at_all_saved_radii", async (test) => {
+  const corePlayer = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASChestFinderCoreCommit", GameMode.survival);
+  await test.idle(3);
+  ensure(corePlayer.hasTag("as_test_chest_finder_core_committed"), "Production core selection did not commit rare Chest Finder level 1.");
+  ensure(corePlayer.hasTag("as_test_chest_finder_core_consumed"), "Production rare-core selection did not consume its core.");
+  ensure(!corePlayer.hasTag("as_test_chest_finder_core_commit_failed"), "Production rare-core selection reported a commit failure.");
+  ensure(countItem(inventoryOf(corePlayer), "augmentation_survival:rare_augment_core") === 0,
+    "Rare-core selection left a core in the player's inventory.");
+  corePlayer.disconnect();
+  await test.idle(1);
+
+  const openPlayer = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASChestFinderLevel1", GameMode.survival);
+  await test.idle(3);
+  ensure(openPlayer.hasTag("as_chest_finder_seeded_1"), "Production test runtime did not seed Chest Finder level 1.");
+  const dimension = openPlayer.dimension;
+  const center = {
+    x: Math.floor(openPlayer.location.x),
+    y: Math.floor(openPlayer.location.y),
+    z: Math.floor(openPlayer.location.z),
+  };
+  const positionOf = (offset) => ({ x: center.x + offset.x, y: center.y + offset.y, z: center.z + offset.z });
+  const exactRadiusChests = [
+    { x: 0, y: 12, z: 0 },
+    { x: 0, y: 18, z: 0 },
+    { x: 0, y: 24, z: 0 },
+  ].map(positionOf);
+  for (const location of exactRadiusChests) dimension.setBlockType(location, "minecraft:chest");
+
+  // Java's scanner sees through walls; this obstructs the direct line to level 1's chest.
+  const wall = positionOf({ x: 0, y: 6, z: 0 });
+  dimension.setBlockType(wall, "minecraft:stone");
+
+  const openedChest = positionOf({ x: 0, y: 0, z: 2 });
+  dimension.setBlockType(openedChest, "minecraft:chest");
+  ensure(openPlayer.interactWithBlock(test.relativeBlockLocation(openedChest)), "Simulated player could not open the empty chest fixture.");
+  await test.idle(2);
+  ensure(isChestFinderContainerExcluded(dimension, openedChest), "The stable blockContainerOpened event did not persist the opened chest marker.");
+
+  const placedChest = positionOf({ x: 1, y: 0, z: 1 });
+  dimension.setBlockType(placedChest, "minecraft:chest");
+  ensure(markChestFinderContainerExcluded(dimension, placedChest), "The production world-dynamic-property marker could not store a player-placement exclusion.");
+  ensure(isChestFinderContainerExcluded(dimension, placedChest), "The stored player-placement marker could not be read back.");
+
+  const filledChest = positionOf({ x: 2, y: 0, z: 0 });
+  dimension.setBlockType(filledChest, "minecraft:barrel");
+  const filledInventory = dimension.getBlock(filledChest)?.getComponent("minecraft:inventory")?.container;
+  ensure(filledInventory, "The vanilla barrel inventory component was unavailable.");
+  filledInventory.setItem(0, new ItemStack("minecraft:diamond", 1));
+
+  const outside = positionOf({ x: 17, y: 17, z: 0 });
+  dimension.setBlockType(outside, "minecraft:trapped_chest");
+  const outsideScan = findUnconsumedLootContainers(dimension, center, 24);
+  ensure(outsideScan.some(position => position.x === exactRadiusChests[0].x && position.y === exactRadiusChests[0].y && position.z === exactRadiusChests[0].z),
+    "The level-1 exact-radius chest was not in the level-3 scan volume.");
+  ensure(!outsideScan.some(position => position.x === outside.x && position.y === outside.y && position.z === outside.z),
+    "Chest Finder included a container outside the canonical spherical radius.");
+  ensure(!outsideScan.some(position => position.x === filledChest.x && position.y === filledChest.y && position.z === filledChest.z),
+    "Chest Finder included a non-empty container in its unopened-loot proxy scan.");
+  ensure(!outsideScan.some(position => position.x === openedChest.x && position.y === openedChest.y && position.z === openedChest.z),
+    "Chest Finder included a chest already observed opening.");
+  ensure(!outsideScan.some(position => position.x === placedChest.x && position.y === placedChest.y && position.z === placedChest.z),
+    "Chest Finder included a chest placed by a player after the addon was installed.");
+
+  const observedLevels = [];
+  openPlayer.disconnect();
+  await test.idle(1);
+  for (let level = 1; level <= 3; level += 1) {
+    const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, `ASChestFinderLevel${level}`, GameMode.survival);
+    await test.idle(3);
+    ensure(player.hasTag(`as_chest_finder_seeded_${level}`), `Production test runtime did not seed Chest Finder level ${level}.`);
+    // Dynamic properties are scoped to the behavior-pack header UUID, so seed
+    // the isolated GameTest copy as well as the production pack's transaction.
+    player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ [CHEST_FINDER_ID]: level }));
+    const ownedMarkers = [];
+    const result = refreshChestFinderPlayer(player, (target, location) => ownedMarkers.push({ targetId: target.id, location }));
+    const expectedRadius = [0, 12, 18, 24][level];
+    const expected = exactRadiusChests.filter(location => {
+      const dx = location.x - center.x;
+      const dy = location.y - center.y;
+      const dz = location.z - center.z;
+      return dx * dx + dy * dy + dz * dz <= expectedRadius * expectedRadius;
+    });
+    const actualKeys = result.containers.map(location => `${location.x},${location.y},${location.z}`).sort();
+    const expectedKeys = expected.map(location => `${location.x},${location.y},${location.z}`).sort();
+    ensure(chestFinderRadius(level) === expectedRadius && result.radius === expectedRadius,
+      `Chest Finder level ${level} should scan ${expectedRadius} blocks; got ${result.radius}.`);
+    ensure(JSON.stringify(actualKeys) === JSON.stringify(expectedKeys),
+      `Chest Finder level ${level} expected ${JSON.stringify(expectedKeys)}, got ${JSON.stringify(actualKeys)}.`);
+    ensure(result.markerCount === expected.length * 20 && result.markerCount === ownedMarkers.length,
+      `Chest Finder level ${level} emitted ${result.markerCount} markers for ${expected.length} containers.`);
+    ensure(ownedMarkers.every(marker => marker.targetId === player.id), "Chest Finder emitted a marker through a player other than the augment owner.");
+    ensure(CHEST_FINDER_PARTICLE_ID === "augmentation_survival:chest_finder_marker", "Chest Finder's marker ID diverged from the RP definition.");
+    observedLevels.push({ level, radius: result.radius, containers: result.containers.length, markers: result.markerCount });
+    player.disconnect();
+    await test.idle(1);
+  }
+
+  console.warn("AS_CHEST_FINDER_PRODUCTION_TEST " + JSON.stringify({ observedLevels, openedMarkedByEvent: true, placementMarkerStored: true }));
+  test.succeed();
+}).maxTicks(120).structureName(STRUCTURE).tag(TAG).tag("augmentation_survival_chest_finder_production");
 
 GameTest.registerAsync("AugmentationSurvival", "crop_bonus_augments_match_maturity_levels_products_and_independent_rolls", async (test) => {
   const player = test.spawnSimulatedPlayer({ x: 4, y: 3, z: 3 }, "ASBumperCrop", GameMode.survival);

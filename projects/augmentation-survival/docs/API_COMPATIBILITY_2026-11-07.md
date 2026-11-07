@@ -303,7 +303,7 @@ The passive scan introduces no device-specific input, so keyboard, touch, and co
 
 ### BDS verification and classification
 
-`ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner` passed **1/1** on official BDS 1.26.62.1 with stable Script API 2.11.0. Its production entry first grants Ore Sense by consuming a rare core through `commitCoreSelection` and verifies the saved level; the GameTest then exercises the production refresh at levels 1–3 (6 / 8 / 10 blocks), air- and water-exposed ore detection, omission of a fully stone-enclosed ore, unique outline markers, and that all marker calls use the selected augment owner's `Player.spawnParticle`. The run found 2 / 3 / 4 exposed ores and emitted 40 / 60 / 80 unique markers at the three levels. The same GameTest passed in the full 55-test run; that full suite was **not clean** because the Rider level-3 mount fixture failed to expose `minecraft:rideable` (54 passed / 1 failed). `npm run verify` passed 32 static tests, the stable API type-check, and package creation. See [`ORE_SENSE_PRODUCTION_TEST_2026-11-07.json`](ORE_SENSE_PRODUCTION_TEST_2026-11-07.json).
+`ore_sense_marks_exposed_ores_at_the_saved_radius_for_its_owner` passed **1/1** on official BDS 1.26.62.1 with stable Script API 2.11.0. Its production entry first grants Ore Sense by consuming a rare core through `commitCoreSelection` and verifies the saved level; the GameTest then exercises the production refresh at levels 1–3 (6 / 8 / 10 blocks), air- and water-exposed ore detection, omission of a fully stone-enclosed ore, unique outline markers, and that all marker calls use the selected augment owner's `Player.spawnParticle`. The run found 2 / 3 / 4 exposed ores and emitted 40 / 60 / 80 unique markers at the three levels. The same GameTest passed in the full 56-test run; that full suite was **not clean** because Rider level 1 and 2 mount fixtures failed to expose `minecraft:rideable` (54 passed / 2 failed). `npm run verify` passed 33 static tests, the stable API type-check, and package creation. See [`ORE_SENSE_PRODUCTION_TEST_2026-11-07.json`](ORE_SENSE_PRODUCTION_TEST_2026-11-07.json).
 
 Class **B**, `PARTIAL_BDS_VERIFIED`, enabled as a rare candidate. The scan/ownership/radius path is verified on BDS; exact collision-shape parity, client visuals on PC/mobile/controller, and live online multiplayer rendering remain unverified.
 
@@ -314,3 +314,33 @@ Class **B**, `PARTIAL_BDS_VERIFIED`, enabled as a rare candidate. The scan/owner
 - [Stable Block API](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable)
 - [Particle system overview](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/particlesintroduction?view=minecraft-bedrock-stable)
 - [Particle tinting component](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/particlesreference/examples/particlecomponents/particle_appearance_tinting?view=minecraft-bedrock-stable)
+
+
+## `상자 찾기` (Chest Finder)
+
+### Java contract and implementation
+
+The rare augment has maximum level 3 and marks unconsumed natural loot containers inside spherical radii of 12 / 18 / 24 blocks with a gold outline. Java `PerceptionAugmentService` checks every 10 server ticks for loaded `RandomizableContainerBlockEntity` instances with a non-null loot-table marker, capped at 512 matches. The saved augment state is sent to the client through `PerceptionStatePayload`; the client cache and block outline are implemented in `ClientPerceptionState` and `EntityRendererPerceptionMixin`. The Java interaction contract has no Chest Finder-specific cross-augment rule. Its code includes randomizable containers generally; the Bedrock port does not copy any external mod containers or assets.
+
+### Stable Bedrock route and constraints
+
+Stable `Dimension.getBlocks(volume, options, allowUnloadedChunks)` supports type-filtered queries. With the loaded-only option, the query does not load chunks. `BlockInventoryComponent` exposes a container inventory, but it does not expose a loot-table identifier, whether vanilla loot was already generated, or whether the block was placed by a player. Stable `blockContainerOpened`, `playerPlaceBlock`, and `playerBreakBlock` after-events provide a server-side activity ledger. The production script scans loaded `minecraft:chest`, `minecraft:trapped_chest`, and `minecraft:barrel` blocks every 10 ticks inside the canonical sphere, uses empty inventory as an approximate unopened-state test, and persists observed placement/open markers in world dynamic properties. Breaking a marked block clears that location marker. Gold Resource Pack particles are sent with owner-targeted `Player.spawnParticle`. The scan ignores walls as Java does.
+
+This is class **C**, `PARTIAL_BDS_VERIFIED`, and the rare candidate is enabled. Empty inventory does not prove that a loot table remains unconsumed: already opened and emptied chests can be false positives. A player-placed empty block that predates the add-on or whose placement event was missed can also be highlighted. Only vanilla chest, trapped chest, and barrel block types are scanned. `Dimension.getGeneratedStructures` appears in the Dimension documentation but is marked pre-release, so it is not part of this stable implementation. No safe stable way was found to recover the exact Java loot-table marker and natural-versus-player origin.
+
+### BDS verification
+
+The isolated production GameTest passed **1/1** on BDS 1.26.62.1 in 4.545 seconds. Through the production core transaction it consumed one rare core and stored Chest Finder level 1, then tested each saved level at exactly 12 / 18 / 24 blocks. It verified one, two, and three accepted empty containers and 20, 40, and 60 owner-targeted gold marker calls; an intervening wall did not hide the level-1 chest. A filled barrel and an outside-radius container were excluded. It observed `blockContainerOpened` and verified that the production marker writer persists an exclusion record. A SimulatedPlayer placement fixture did not create the block at its expected coordinate, so actual `playerPlaceBlock` delivery is not claimed as verified.
+
+The test does not verify persistent marker recovery after a server restart, actual client particle rendering, mobile/controller legibility, reconnect, online multiplayer, or false-positive rate in existing worlds.
+
+### References
+
+- [Stable `Dimension.getBlocks`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable)
+- [Stable `BlockQueryOptions.includeTypes`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockfilter?view=minecraft-bedrock-stable)
+- [Stable `BlockInventoryComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockinventorycomponent?view=minecraft-bedrock-stable)
+- [Stable `blockContainerOpened`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/worldafterevents?view=minecraft-bedrock-stable)
+- [Stable `PlayerPlaceBlockAfterEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerplaceblockafterevent?view=minecraft-bedrock-stable)
+- [Stable `PlayerBreakBlockAfterEvent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/playerbreakblockafterevent?view=minecraft-bedrock-stable)
+- [Stable `Player.spawnParticle`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/player?view=minecraft-bedrock-stable)
+- [Stable-only note for `Dimension.getGeneratedStructures`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable)

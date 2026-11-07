@@ -355,13 +355,14 @@ def main(source: Path, target: Path) -> None:
             "interaction_contract_refs": interaction_refs,
             "interaction_mapping_status": (
                 "REVIEW_REQUIRED" if interaction_refs else
-                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip", "terrain_resistance", "twins", "long_jump", "taming_knack", "ore_sense"} else
+                "REVIEWED_NO_DIRECT_RULE" if slug in {"brace", "shield_grip", "terrain_resistance", "twins", "long_jump", "taming_knack", "ore_sense", "chest_finder"} else
                 "REVIEW_REQUIRED" if slug in {"webbed_feet", "fishing_sense", "treasure_fishing", "long_reach", "fast_eating", "fuel_saver", "fast_brewing", "extra_piece", "loot_scoop", "last_strength", "tool_care", "dexterity"} else
                 "NO_DIRECT_MENTION_FOUND"
             ),
             "compatibility_class": (
                 "C" if slug == "taming_knack" else
                 "B" if slug == "ore_sense" else
+                "C" if slug == "chest_finder" else
                 "A" if slug in {"keen_edge", "webbed_feet"} else
                 "B" if slug == "precise_aim" else
                 "B" if slug in {"tough_skin", "light_landing", "strong_lungs"} else
@@ -508,8 +509,8 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift"} else "NOT_PORTED",
-            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift"},
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider", "armor_care", "momentum_shift", "chest_finder"} else "NOT_PORTED",
+            "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "armor_care", "momentum_shift", "chest_finder"},
         })
         if slug == "ride_current":
             record = records[-1]
@@ -652,6 +653,30 @@ def main(source: Path, target: Path) -> None:
             )
             record["test_method"] = (
                 "BDS 1.26.62.1 production-script GameTest grants Ore Sense through a rare core, verifies the level-1 save and one-core consumption, then seeds levels 1–3 and exposed ores at exact 6 / 8 / 10-block distances. It checks water exposure, rejects a six-face stone-enclosed ore, verifies the production refresh emits unique cyan markers, and asserts every marker call targets only the owning SimulatedPlayer. Java has no Ore Sense-specific GameTest in its current source"
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
+        if slug == "chest_finder":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/utility/PerceptionAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/client/ClientPerceptionState.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/client/PerceptionClientNetworking.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/EntityRendererPerceptionMixin.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/network/PerceptionStatePayload.java",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["interaction_mapping_status"] = "REVIEWED_NO_DIRECT_RULE"
+            record["compatibility_class"] = "C"
+            record["bedrock_method"] = (
+                "Every 10 server ticks, query only already-loaded blocks in the canonical spherical radius 12 / 18 / 24, select empty vanilla chest/trapped-chest/barrel inventories, and emit a gold 20-point outline through owner-only Player.spawnParticle. Persist per-location exclusions when stable blockContainerOpened or playerPlaceBlock events observe a container; clear the marker after a player breaks that block"
+            )
+            record["api_constraints"] = (
+                "Stable @minecraft/server 2.11.0 provides Dimension.getBlocks with includeTypes and allowUnloadedChunks, BlockInventoryComponent.container, owner-only Player.spawnParticle, blockContainerOpened, playerPlaceBlock, playerBreakBlock, and world dynamic properties. Stable APIs do not expose a vanilla block-entity loot-table ID/state or reliable natural-versus-player placement provenance. Empty inventory is only a proxy for unconsumed loot, and placement/open markers only cover activity observed since the addon was installed; an already-opened empty chest or an older player-placed empty container can be misidentified. Dimension.getGeneratedStructures is still pre-release and is not used. Custom external container block types are not included. Exact Java filtering is therefore not available through the confirmed stable API"
+            )
+            record["test_method"] = (
+                "Official BDS 1.26.62.1 production-script GameTest commits Chest Finder level 1 by consuming one rare core, then checks the level 1 / 2 / 3 spherical radii, exact-radius and outside-sphere controls, a chest behind a wall, empty versus filled inventory, a real blockContainerOpened event, round-trip storage of a placement exclusion marker, unique owner-targeted particles, and the rare-candidate allowlist. The pinned SimulatedPlayer could not complete a player block-placement fixture, so playerPlaceBlock delivery remains unverified. Java has no Chest Finder-specific GameTest in its current source. Client visuals, legacy empty-container provenance, reconnect, and server restart remain untested"
             )
             record["port_status"] = "PARTIAL_BDS_VERIFIED"
             record["candidate_enabled"] = True
