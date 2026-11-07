@@ -8,7 +8,7 @@
     "build:addon": "python tools/build_icons.py && python tools/build_addon.py",
     "test:static": "python -m unittest discover -s tests -v",
     "build:engine-tests": "python tools/build_gametest.py",
-    "test:engine": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival --expect-registered 42 --json .bds/logs/augmentation-survival-results.json",
+    "test:engine": "npm run build:engine-tests && bc-bds run --packs build/gametest-packs --tag augmentation_survival --expect-registered 43 --json .bds/logs/augmentation-survival-results.json",
     "check:api": "tsc -p tsconfig.json",
     "verify": "npm run test:static && npm run check:api && npm run build:addon"
   },

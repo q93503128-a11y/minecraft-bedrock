@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 22455,
+  "durationMs": 21839,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -169,6 +169,10 @@
     },
     {
       "id": "AugmentationSurvival:terrain_resistance_vanilla_surface_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:twins_breeding_event_surface_probe",
       "outcome": "pass"
     }
   ],

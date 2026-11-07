@@ -1,5 +1,5 @@
 {
-  "source_revision": "2c82b0a7e62f3b6844735890ec4de8ffae55fecc",
+  "source_revision": "70a1e548086aef395113bb732a815dbfbbf35053",
   "expected_counts": {
     "common": 20,
     "uncommon": 27,
@@ -928,9 +928,9 @@
       "interaction_contract_refs": [],
       "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
       "compatibility_class": "C",
-      "bedrock_method": "Potential client-input and collision checks followed by a server correction; not implemented. A teleport/impulse route would visibly differ from Java's smooth native step-height behavior.",
-      "api_constraints": "Java adds 0.40 to STEP_HEIGHT for a one-block no-jump step. Stable Player exposes inputInfo but no writable step-height attribute/component; minecraft:variable_max_auto_step is entity JSON, and Microsoft recommends not overriding minecraft:player. BDS found neither step component on Player. SimulatedPlayer.move did not populate inputInfo, so input-based emulation remains unvalidated.",
-      "test_method": "BDS 1.26.62.1 diagnostic: Player lacks minecraft:step_height and minecraft:variable_max_auto_step components but has minecraft:movement; SimulatedPlayer.move advanced 0.2 blocks while inputInfo.getMovementVector stayed {x:0,y:0}. Diagnostic only; no Step Up gameplay or core offer is enabled.",
+      "bedrock_method": "No production substitute shipped; Player.inputInfo can expose client movement input, but collision-triggered teleport or impulse assistance would not preserve Java's smooth native step-height behavior",
+      "api_constraints": "Class C: Java adds 0.40 to STEP_HEIGHT for a one-block no-jump step. Stable Player exposes inputInfo but no writable step-height attribute/component; minecraft:variable_max_auto_step is entity JSON, and Microsoft recommends not overriding minecraft:player. BDS found neither step component on Player. A movement-input/collision teleport or impulse route could approximate the result but would pop instead of stepping smoothly; SimulatedPlayer.move did not populate inputInfo, so that route has not been validated against client input",
+      "test_method": "BDS 1.26.62.1 GameTest diagnostic: Player lacks minecraft:step_height and minecraft:variable_max_auto_step components but has minecraft:movement; SimulatedPlayer.move advances position 0.2 blocks while inputInfo.getMovementVector stays {0,0}. Diagnostic only; no Step Up gameplay or core offer is enabled",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },
@@ -971,14 +971,18 @@
       "catalog_discrepancy": "",
       "java_source_paths": [
         "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentService.java",
-        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentTuning.java"
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/resource/ConsumptionAugmentTuning.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/augment/AugmentPresentationCatalog.java",
+        "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/AnimalBreedingAugmentMixin.java",
+        "src/main/resources/data/augmentation_survival/augmentation/consumption_fishing_contract.json",
+        "src/main/resources/data/augmentation_survival/augmentation/presentations/uncommon.json"
       ],
       "interaction_contract_refs": [],
-      "interaction_mapping_status": "NO_DIRECT_MENTION_FOUND",
-      "compatibility_class": "UNASSESSED",
-      "bedrock_method": "Not assessed",
-      "api_constraints": "Not assessed",
-      "test_method": "Not implemented; see tests/ and docs/PORT_MATRIX.csv",
+      "interaction_mapping_status": "REVIEWED_NO_DIRECT_RULE",
+      "compatibility_class": "C",
+      "bedrock_method": "No production behavior shipped. Stable entitySpawn after-events can detect a Born child; a playerInteractWithEntity feed ledger plus unambiguous nearby-parent matching could select a saved Twins level and roll 10% / 20% / 30%, then spawn one baby through the vanilla entity_born spawn event",
+      "api_constraints": "Stable entitySpawn Born reports only the child entity, not either parent or the breeding player; stable declarations expose no LoveCause/breedable component. playerInteractWithEntity reports a player and target, but the BDS SimulatedPlayer breeding probe did not emit that event. A feed-history/location heuristic cannot reliably choose the Java LoveCause actor in crowded farms or preserve every inherited offspring variant; no safe production behavior is shipped",
+      "test_method": "BDS 1.26.62.1 event-surface GameTest: two forced-adult cows accepted SimulatedPlayer wheat interactions, and a vanilla offspring was observed with cause Born plus minecraft:is_baby; spawnEvent minecraft:entity_born also created a baby. The playerInteractWithEntity callback remained empty, so breeding-player attribution, chance rolls, persistent levels and a Twins bonus were not tested",
       "port_status": "NOT_PORTED",
       "candidate_enabled": false
     },

@@ -2051,3 +2051,80 @@ GameTest.registerAsync("AugmentationSurvival", "terrain_resistance_vanilla_surfa
   test.succeed();
 }).maxTicks(240).structureName(STRUCTURE).tag(TAG);
 
+GameTest.registerAsync("AugmentationSurvival", "twins_breeding_event_surface_probe", async (test) => {
+  const player = test.spawnSimulatedPlayer({ x: 5, y: 3, z: 5 }, "ASTwinsBreedingProbe", GameMode.survival);
+  const inventory = inventoryOf(player);
+  inventory.setItem(0, new ItemStack("minecraft:wheat", 8));
+  player.selectedSlotIndex = 0;
+  const first = player.dimension.spawnEntity("minecraft:cow", test.worldLocation({ x: 7, y: 3, z: 5 }), { spawnEvent: "minecraft:spawn_adult" });
+  const second = player.dimension.spawnEntity("minecraft:cow", test.worldLocation({ x: 9, y: 3, z: 5 }), { spawnEvent: "minecraft:spawn_adult" });
+  const firstWasBaby = first.hasComponent("minecraft:is_baby");
+  const secondWasBaby = second.hasComponent("minecraft:is_baby");
+  const interactions = [];
+  const spawns = [];
+  const interactionCallback = (event) => {
+    if (event.target.id !== first.id && event.target.id !== second.id) return;
+    interactions.push({
+      playerId: event.player.id,
+      targetId: event.target.id,
+      before: event.beforeItemStack && { typeId: event.beforeItemStack.typeId, amount: event.beforeItemStack.amount },
+      after: event.itemStack && { typeId: event.itemStack.typeId, amount: event.itemStack.amount },
+    });
+  };
+  const spawnCallback = (event) => {
+    if (event.entity.typeId !== "minecraft:cow") return;
+    spawns.push({
+      id: event.entity.id,
+      cause: event.cause,
+      location: event.entity.location,
+      isBabyComponent: event.entity.hasComponent("minecraft:is_baby"),
+    });
+  };
+  world.afterEvents.playerInteractWithEntity.subscribe(interactionCallback);
+  world.afterEvents.entitySpawn.subscribe(spawnCallback);
+  let firstInteraction = false;
+  let secondInteraction = false;
+  let manualBornEvent = "not_attempted";
+  let manualBornBaby = false;
+  try {
+    await test.idle(2);
+    firstInteraction = player.interactWithEntity(first);
+    await test.idle(1);
+    secondInteraction = player.interactWithEntity(second);
+    await test.idle(80);
+    try {
+      const manual = player.dimension.spawnEntity("minecraft:cow", test.worldLocation({ x: 12, y: 3, z: 5 }), { spawnEvent: "minecraft:entity_born" });
+      manualBornEvent = "spawned:" + manual.id;
+      manualBornBaby = manual.hasComponent("minecraft:is_baby");
+    } catch (error) {
+      manualBornEvent = `error:${error?.name ?? "Error"}:${error?.message ?? "unknown"}`;
+    }
+    await test.idle(2);
+  } finally {
+    world.afterEvents.playerInteractWithEntity.unsubscribe(interactionCallback);
+    world.afterEvents.entitySpawn.unsubscribe(spawnCallback);
+  }
+  const result = {
+    firstInteraction,
+    secondInteraction,
+    playerId: player.id,
+    firstId: first.id,
+    secondId: second.id,
+    firstWasBaby,
+    secondWasBaby,
+    remainingWheat: inventory.getItem(0)?.amount ?? 0,
+    interactions,
+    spawns,
+    manualBornEvent,
+    manualBornBaby,
+    runtimeComponents: first.getComponents().map((component) => component.typeId),
+  };
+  console.warn("AS_TWINS_BREEDING_SURFACE_PROBE " + JSON.stringify(result));
+  ensure(firstInteraction && secondInteraction, "SimulatedPlayer could not interact with both cows.");
+  ensure(!firstWasBaby && !secondWasBaby, "Adult-cow setup did not stay adult before breeding.");
+  ensure((inventory.getItem(0)?.amount ?? 0) === 6, "The two accepted cow feeds did not consume exactly two wheat.");
+  ensure(spawns.some((entry) => entry.cause === "Born" && entry.isBabyComponent), "No vanilla-born cow with the baby marker was observed.");
+  ensure(manualBornBaby, "spawnEvent minecraft:entity_born did not create a baby cow.");
+  test.succeed();
+}).maxTicks(180).structureName(STRUCTURE).tag(TAG);
+
