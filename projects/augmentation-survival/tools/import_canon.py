@@ -459,6 +459,31 @@ def main(source: Path, target: Path) -> None:
             "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"} else "NOT_PORTED",
             "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"},
         })
+        if slug == "ride_current":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MobilityUtilityAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MobilityUtilityTuning.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/AugmentMovementBonusService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/combat/CombatExpansionService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/mixin/CombatExpansionSpeedConversionMixin.java",
+                "src/main/resources/data/augmentation_survival/augmentation/mobility_utility_contract.json",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["interaction_mapping_status"] = "REVIEW_REQUIRED"
+            record["compatibility_class"] = "B"
+            record["bedrock_method"] = (
+                "Each server tick, reconstruct horizontal current from the local water liquid_depth gradient; when a swimming player's horizontal velocity points with that current, add the exact +15% / +30% / +45% level bonus to minecraft:underwater_movement. The existing movement reconciler preserves additive Webbed Feet and other aquatic movement bonuses"
+            )
+            record["api_constraints"] = (
+                "Stable Block.isLiquid/isWaterlogged, BlockPermutation.getState(\"liquid_depth\"), Player.isSwimming, Entity.getVelocity, and EntityUnderwaterMovementComponent.setCurrentValue support this route. Stable API does not expose the fluid flow vector; adjacent same-height depth differences infer established horizontal streams but may miss vectors around newly open edges, drops, or complex waterlogged layouts. Java also feeds Ride Current into Speed Conversion's shared positive-movement bonus; Bedrock Speed Conversion is not yet ported, so that cross-augment interaction remains open. Real-client, mobile/controller, reconnect, and multiplayer movement remain unverified"
+            )
+            record["test_method"] = (
+                "BDS 1.26.62.1 production-handler GameTest reads a flowing channel whose liquid_depth rises eastward, verifies the exact +15% / +30% / +45% underwater movement value at levels 1–3, confirms no bonus while moving west against the current or in flat source water, and verifies additive +10% Webbed Feet stacking. The full 45-test engine suite passed; client, mobile/controller, reconnect, multiplayer, and Java Speed Conversion interaction remain untested"
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = True
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}
     if len(records) != 149 or counts != catalog["expected_counts"] or any(canon_index[t] != len(roster_tables[t]) for t in canon_index):

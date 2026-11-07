@@ -236,6 +236,21 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify({ "augmentation_survival:extra_piece": 3 }));
       return;
     }
+    const rideCurrentLevels = {
+      ASRideCurrentLevel1: 1,
+      ASRideCurrentLevel2: 2,
+      ASRideCurrentLevel3: 3,
+      ASRideCurrentWebbedLevel1: 1,
+      ASRideCurrentAgainstLevel3: 3,
+      ASRideCurrentStillLevel3: 3,
+    };
+    const rideCurrentLevel = rideCurrentLevels[player.name];
+    if (rideCurrentLevel) {
+      const levels = { "augmentation_survival:ride_current": rideCurrentLevel };
+      if (player.name === "ASRideCurrentWebbedLevel1") levels["augmentation_survival:webbed_feet"] = 1;
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
+      return;
+    }
     if (player.name !== "ASCoreCommitProduction") return;
 
     const coreId = "augmentation_survival:common_augment_core";

@@ -172,6 +172,7 @@ GameTest.registerAsync("AugmentationSurvival", "core_offers_only_bds_verified_ef
         "augmentation_survival:sun_affinity",
         "augmentation_survival:dexterity",
         "augmentation_survival:pickup_hand",
+        "augmentation_survival:ride_current",
       ]
       : [];
     ensure(candidates.length === expected.length, `${tier} exposed an unexpected candidate count.`);
@@ -2182,4 +2183,152 @@ GameTest.registerAsync("AugmentationSurvival", "long_jump_input_event_surface_pr
   ensure(jumpAccepted, "SimulatedPlayer could not perform a ground jump.");
   test.succeed();
 }).maxTicks(120).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "ride_current_liquid_state_probe", async (test) => {
+  const dimension = world.getDimension("overworld");
+  for (let x = 0; x <= 9; x += 1) {
+    for (let z = 1; z <= 5; z += 1) {
+      test.setBlockType("minecraft:stone", { x, y: 1, z });
+      test.setBlockType("minecraft:stone", { x, y: 5, z });
+    }
+  }
+  for (let z = 1; z <= 5; z += 1) {
+    for (let y = 2; y <= 4; y += 1) {
+      test.setBlockType("minecraft:stone", { x: 0, y, z });
+      test.setBlockType("minecraft:stone", { x: 9, y, z });
+    }
+  }
+  for (let x = 1; x <= 8; x += 1) {
+    for (let y = 2; y <= 4; y += 1) {
+      test.setBlockType("minecraft:stone", { x, y, z: 2 });
+      test.setBlockType("minecraft:stone", { x, y, z: 4 });
+    }
+  }
+  for (let y = 2; y <= 4; y += 1) {
+    for (let x = 1; x <= 8; x += 1) {
+      const block = dimension.getBlock(test.worldLocation({ x, y, z: 3 }));
+      ensure(block, `No test block at ${x},${y},3.`);
+      block.setPermutation(BlockPermutation.resolve("minecraft:flowing_water", { liquid_depth: x - 1 }));
+    }
+  }
+  for (let x = 0; x <= 9; x += 1) {
+    for (let z = 6; z <= 8; z += 1) {
+      test.setBlockType("minecraft:stone", { x, y: 1, z });
+      test.setBlockType("minecraft:stone", { x, y: 5, z });
+    }
+  }
+  for (let z = 6; z <= 8; z += 1) {
+    for (let y = 2; y <= 4; y += 1) {
+      test.setBlockType("minecraft:stone", { x: 0, y, z });
+      test.setBlockType("minecraft:stone", { x: 9, y, z });
+    }
+  }
+  for (let x = 1; x <= 8; x += 1) {
+    for (let y = 2; y <= 4; y += 1) {
+      test.setBlockType("minecraft:stone", { x, y, z: 6 });
+      test.setBlockType("minecraft:stone", { x, y, z: 8 });
+      test.setBlockType("minecraft:water", { x, y, z: 7 });
+    }
+  }
+
+  const waterRow = [];
+  for (let x = 1; x <= 8; x += 1) {
+    const block = dimension.getBlock(test.worldLocation({ x, y: 3, z: 3 }));
+    waterRow.push({
+      x,
+      typeId: block?.typeId,
+      isLiquid: block?.isLiquid,
+      depth: block?.permutation.getState("liquid_depth"),
+    });
+  }
+  ensure(waterRow.every(block => block.isLiquid && typeof block.depth === "number"), "The flowing-water state was not readable from stable block permutations.");
+
+  const control = test.spawnSimulatedPlayer({ x: 4, y: 2, z: 3 }, "ASRideCurrentControl", GameMode.survival);
+  control.setRotation({ x: 0, y: -90 });
+  control.swim();
+  control.moveRelative(0, 1, 0.2);
+  await test.idle(6);
+  const controlMovement = control.getComponent("minecraft:underwater_movement");
+  ensure(controlMovement && control.isInWater && control.isSwimming, "Ride Current control did not expose swimming and underwater movement state.");
+  const controlVelocity = control.getVelocity();
+  ensure(controlVelocity.x > 0.001, "The test flowing-water gradient did not carry the player toward higher liquid_depth values.");
+  ensure(Math.abs(controlMovement.currentValue - controlMovement.defaultValue) < 0.000001,
+    "An unowned Ride Current level changed the underwater movement component.");
+  control.disconnect();
+  await test.idle(1);
+
+  const rideCurrentLevels = [];
+  for (let level = 1; level <= 3; level += 1) {
+    const player = test.spawnSimulatedPlayer({ x: 4, y: 2, z: 3 }, `ASRideCurrentLevel${level}`, GameMode.survival);
+    player.setRotation({ x: 0, y: -90 });
+    player.swim();
+    player.moveRelative(0, 1, 0.2);
+    await test.idle(6);
+    const underwaterMovement = player.getComponent("minecraft:underwater_movement");
+    ensure(underwaterMovement && player.isInWater && player.isSwimming, `Ride Current level ${level} player did not remain swimming.`);
+    const expected = underwaterMovement.defaultValue * (1 + level * 0.15);
+    rideCurrentLevels.push({ level, current: underwaterMovement.currentValue, expected, velocity: player.getVelocity() });
+    ensure(Math.abs(underwaterMovement.currentValue - expected) < 0.000001,
+      `Ride Current level ${level} should set the exact +${level * 15}% underwater multiplier; expected ${expected}, got ${underwaterMovement.currentValue}.`);
+    ensure(player.getVelocity().x > 0,
+      `Ride Current level ${level} should preserve positive motion with the measured current.`);
+    player.disconnect();
+    await test.idle(1);
+  }
+
+  const webbed = test.spawnSimulatedPlayer({ x: 4, y: 2, z: 3 }, "ASRideCurrentWebbedLevel1", GameMode.survival);
+  webbed.setRotation({ x: 0, y: -90 });
+  webbed.swim();
+  webbed.moveRelative(0, 1, 0.2);
+  await test.idle(6);
+  const webbedMovement = webbed.getComponent("minecraft:underwater_movement");
+  ensure(webbedMovement && webbed.isSwimming, "Ride Current + Webbed Feet player did not remain swimming.");
+  const expectedWebbedStack = webbedMovement.defaultValue * 1.25;
+  ensure(Math.abs(webbedMovement.currentValue - expectedWebbedStack) < 0.000001,
+    `Ride Current + Webbed Feet should add +15% and +10%; expected ${expectedWebbedStack}, got ${webbedMovement.currentValue}.`);
+  const webbedStackResult = { current: webbedMovement.currentValue, expected: expectedWebbedStack };
+  webbed.disconnect();
+  await test.idle(1);
+
+  const against = test.spawnSimulatedPlayer({ x: 4, y: 2, z: 3 }, "ASRideCurrentAgainstLevel3", GameMode.survival);
+  against.setRotation({ x: 0, y: 90 });
+  against.swim();
+  against.moveRelative(0, 1, 0.2);
+  await test.idle(2);
+  against.clearVelocity();
+  against.applyImpulse({ x: -0.5, y: 0, z: 0 });
+  await test.idle(1);
+  const againstMovement = against.getComponent("minecraft:underwater_movement");
+  const againstVelocity = against.getVelocity();
+  ensure(againstMovement && against.isSwimming, "Against-current control player did not remain swimming.");
+  ensure(againstVelocity.x < -0.001, `Against-current control did not achieve negative X motion: ${againstVelocity.x}.`);
+  ensure(Math.abs(againstMovement.currentValue - againstMovement.defaultValue) < 0.000001,
+    "Ride Current activated while the player moved against the measured current.");
+  const againstResult = { velocity: againstVelocity, current: againstMovement.currentValue, defaultValue: againstMovement.defaultValue };
+  against.disconnect();
+  await test.idle(1);
+
+  const stillPlayer = test.spawnSimulatedPlayer({ x: 4, y: 2, z: 7 }, "ASRideCurrentStillLevel3", GameMode.survival);
+  stillPlayer.setRotation({ x: 0, y: -90 });
+  stillPlayer.swim();
+  stillPlayer.moveRelative(0, 1, 0.2);
+  await test.idle(4);
+  const stillMovement = stillPlayer.getComponent("minecraft:underwater_movement");
+  const stillWater = dimension.getBlock(test.worldLocation({ x: 4, y: 3, z: 7 }));
+  const stillWaterDepth = stillWater?.permutation.getState("liquid_depth");
+  console.warn("AS_RIDE_CURRENT_RUNTIME_TEST " + JSON.stringify({
+    rideCurrentLevels,
+    controlVelocity,
+    webbedStack: webbedStackResult,
+    against: againstResult,
+    stillWater: { typeId: stillWater?.typeId, depth: stillWaterDepth },
+    playerSwimming: stillPlayer.isSwimming,
+    underwaterMovement: stillMovement && { current: stillMovement.currentValue, defaultValue: stillMovement.defaultValue },
+  }));
+  ensure(stillWater?.typeId === "minecraft:water" && stillWaterDepth === 0, "The control basin did not remain a flat source-water pool.");
+  ensure(stillPlayer.isSwimming && stillMovement, "The simulated player left swimming state in the source-water control basin.");
+  ensure(Math.abs(stillMovement.currentValue - stillMovement.defaultValue) < 0.000001,
+    "Ride Current activated without a horizontal liquid-depth gradient.");
+  test.succeed();
+}).maxTicks(90).structureName(STRUCTURE).tag(TAG);
 

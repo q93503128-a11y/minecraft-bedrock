@@ -79,3 +79,27 @@ Long Jump is passive, needs no extra control binding, and uses no external Java-
 - [Stable `Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
 - [Experimental GameTest `SimulatedPlayer`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server-gametest/simulatedplayer?view=minecraft-bedrock-experimental)
 
+## `물살 타기` (Ride Current)
+
+### Java contract and implementation
+
+The canonical uncommon augment has maximum level 3 and adds +15% / +30% / +45% movement speed while swimming in the same horizontal direction as flowing water. `mobility_utility_contract.json` stores the exact additive-base amounts. `MobilityUtilityAugmentService` runs on the server tick, reads the player's current `FluidState.getFlow(...)` and horizontal delta movement, and applies the transient movement modifier only while the player is swimming and the flow/motion dot product is positive. The modifier is removed when the player stops swimming, loses the level, disconnects, dies, or respawns. The interaction contract contains no direct Ride Current clause, but source review found that `AugmentMovementBonusService` includes this modifier in the positive movement bonus consumed by `CombatExpansionService`'s `속도 전환` damage calculation. Java also composes independently authored movement bonuses additively on that attribute axis.
+
+### Stable Bedrock route and BDS verification
+
+Stable Script API exposes whether a block is liquid or waterlogged, the block permutation's `liquid_depth` state, the player's swimming state and velocity, and a writable `minecraft:underwater_movement` attribute ([`Block`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable), [`BlockPermutation`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockpermutation?view=minecraft-bedrock-stable), [default block states](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockstateandtraitlistings?view=minecraft-bedrock-stable), [`Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable), [`EntityUnderwaterMovementComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityunderwatermovementcomponent?view=minecraft-bedrock-stable)). It does not expose the native water-flow vector. The Bedrock runtime reconstructs a horizontal local vector from the differences between the player's water block and its four horizontal water neighbors, then requires `flow.x * velocity.x + flow.z * velocity.z > 0` before adding the saved-level bonus to the shared underwater movement calculation.
+
+The BDS 1.26.62.1 production-handler GameTest built an eastward channel whose observed `liquid_depth` values were 0, 9, 10, 11, 12, 13, 14, and 15. A swimming control had positive X motion and retained the default 0.02 underwater movement value. Levels 1–3 set it to 0.023, 0.026, and 0.029, matching +15% / +30% / +45%. The same test confirmed that a player moving west at −0.5196 X speed retained 0.02, flat source water at depth 0 retained 0.02 while swimming, and level-1 Webbed Feet plus level-1 Ride Current stacked additively to 0.025 (+25%). This is a production BP runtime test; it is separate from the diagnostic-only simulation results elsewhere in the report.
+
+### Classification and interaction limits
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon core candidate. The implementation preserves Java's three level values and direction test for established horizontal gradients, uses vanilla swim controls on keyboard, touch, and controller, and does not add a key binding. Bedrock does not provide the current vector directly; same-height depth differences can miss current vectors around newly open edges, drops, or complex waterlogged layouts. The `속도 전환` cross-augment remains open until that Java augment is ported and tested against this movement bonus. Real-client mobile/controller movement, reconnect, and multiplayer were not run; therefore this is a verified partial port, not 149-feature completion.
+
+### References
+
+- [Stable `Block`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/block?view=minecraft-bedrock-stable)
+- [Stable `BlockPermutation`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/blockpermutation?view=minecraft-bedrock-stable)
+- [Default Bedrock block states](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/blockreference/examples/blockstateandtraitlistings?view=minecraft-bedrock-stable)
+- [Stable `Entity`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable)
+- [Stable `EntityUnderwaterMovementComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityunderwatermovementcomponent?view=minecraft-bedrock-stable)
+
