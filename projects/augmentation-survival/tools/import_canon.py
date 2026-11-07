@@ -456,7 +456,7 @@ def main(source: Path, target: Path) -> None:
                 "BDS 1.26.62.1 diagnostic only: setting minecraft:movement to 1.45× default left 20-tick SimulatedPlayer displacement unchanged on stone, soul sand, and honey block; inside cobweb, measured horizontal displacement changed from 0.4901 to 0.7104. This command-driven probe does not validate real-client movement, vertical web descent, or Java parity; no effect is implemented or offered" if slug == "terrain_resistance" else
                 "Not implemented; see tests/ and docs/PORT_MATRIX.csv"
             ),
-            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"} else "NOT_PORTED",
+            "port_status": "PARTIAL_BDS_VERIFIED" if slug in {"sturdiness", "keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand", "rider"} else "NOT_PORTED",
             "candidate_enabled": slug in {"keen_edge", "precise_aim", "tough_skin", "light_landing", "strong_lungs", "bumper_crop", "seed_saver", "extra_piece", "hearty_meal", "webbed_feet", "catch_breath", "loot_scoop", "last_strength", "quick_feet", "nocturnal", "sun_affinity", "tool_care", "dexterity", "pickup_hand"},
         })
         if slug == "ride_current":
@@ -509,6 +509,28 @@ def main(source: Path, target: Path) -> None:
             )
             record["port_status"] = "PARTIAL_BDS_VERIFIED"
             record["candidate_enabled"] = True
+        if slug == "rider":
+            record = records[-1]
+            for relative in (
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MobilityUtilityAugmentService.java",
+                "src/main/java/dev/moonseungjun/augmentationsurvival/augment/movement/MobilityUtilityTuning.java",
+                "src/main/resources/data/augmentation_survival/augmentation/mobility_utility_contract.json",
+            ):
+                if relative not in record["java_source_paths"]:
+                    record["java_source_paths"].append(relative)
+            record["interaction_mapping_status"] = "REVIEW_REQUIRED"
+            record["compatibility_class"] = "B"
+            record["bedrock_method"] = (
+                "On the server, identify an online player as the sole rider in a vanilla rideable animal's controlling seat, exclude mounts in water, and set minecraft:movement to that mount's defaultValue × (1 + 0.10 × the saved Rider level). Restore the mount's default value after dismount, loss of ownership, water entry, player leave/death, or script recovery"
+            )
+            record["api_constraints"] = (
+                "Stable EntityRidingComponent.entityRidingOn, EntityRideableComponent.controllingSeat/getRiders/getSeats, Entity.isInWater, EntityMovementComponent.defaultValue, and setCurrentValue support this speed route. BDS confirms exact +10% / +20% / +30% mount movement component values and restoration. Stable API does not expose a writable horse jump-strength component: minecraft:can_power_jump is a marker and minecraft:horse.jump_strength is static entity JSON. A mounted SimulatedPlayer cannot emit the native Jump action in the pinned BDS, and rider-to-seat mapping for a populated multi-seat mount is undocumented; only a sole rider at controlling seat 0 is accepted. Mount types are an explicit vanilla allowlist. Visible client motion, multiplayer, reconnect and cross-add-on movement-writer conflicts remain unverified"
+            )
+            record["test_method"] = (
+                "BDS 1.26.62.1 diagnostic probes confirm a readable horse riding relation, sole rider at controlling seat 0, writable per-entity movement with randomized default values, and absence of the queried numeric horse jump component; a mounted SimulatedPlayer.jump() returns false and emits no Jump input. The production-handler GameTest verifies saved Rider levels 1–3 set horse movement to exact +10% / +20% / +30%, restores each baseline on dismount, and leaves an unaugmented mount unchanged. Jump strength, real client input, visible motion, water/multi-seat edge cases, reconnect and multiplayer are not verified; Rider remains disabled as a candidate until the full canonical effect is implemented"
+            )
+            record["port_status"] = "PARTIAL_BDS_VERIFIED"
+            record["candidate_enabled"] = False
 
     counts = {tier: sum(1 for x in records if x["tier"] == tier) for tier in TIER_KO}
     if len(records) != 149 or counts != catalog["expected_counts"] or any(canon_index[t] != len(roster_tables[t]) for t in canon_index):

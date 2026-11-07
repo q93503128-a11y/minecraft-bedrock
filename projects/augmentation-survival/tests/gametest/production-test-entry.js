@@ -256,6 +256,19 @@ world.afterEvents.playerSpawn.subscribe(({ player }) => {
       player.setDynamicProperty(LEVELS_KEY, JSON.stringify(levels));
       return;
     }
+    const riderLevels = {
+      ASRiderLevel1: 1,
+      ASRiderLevel2: 2,
+      ASRiderLevel3: 3,
+    };
+    const riderLevel = riderLevels[player.name];
+    if (riderLevel) {
+      player.setDynamicProperty(LEVELS_KEY, JSON.stringify({
+        "augmentation_survival:rider": riderLevel,
+      }));
+      player.addTag(`as_rider_seeded_${riderLevel}`);
+      return;
+    }
     const urgentStepsLevels = {
       ASUrgentStepsLevel1: 1,
       ASUrgentStepsLevel2: 2,

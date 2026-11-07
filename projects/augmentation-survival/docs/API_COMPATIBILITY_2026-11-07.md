@@ -126,3 +126,29 @@ Class **B**, `PARTIAL_BDS_VERIFIED`, and enabled as an uncommon core candidate. 
 - [Stable `EntityMovementComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitymovementcomponent?view=minecraft-bedrock-stable)
 - [Stable `System`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/system?view=minecraft-bedrock-stable)
 
+## `기수` (Rider)
+
+### Java contract
+
+The uncommon augment has maximum level 3 and grants a directly controlled terrestrial animal +10% / +20% / +30% movement speed and jump strength. `mobility_utility_contract.json` defines both curves. `MobilityUtilityAugmentService.applyRider` checks `Animal`, the controlling passenger, and `!isInWater`, then installs transient multiplied-base movement and jump modifiers. It removes them on dismount, level loss, player leave, death, or respawn. No direct Rider rule appears in the interaction contract.
+
+### Stable Bedrock route and BDS verification
+
+Stable `EntityRidingComponent.entityRidingOn` identifies the mount; `EntityRideableComponent` exposes the control-seat index and current riders; `EntityMovementComponent` can write the mount movement value. The server checks an explicit vanilla animal-mount ID allowlist, control seat 0, exactly one rider matching the player, and a mount outside water. It applies the exact Java speed percentages against the mount's per-entity `defaultValue`. The speed value is restored after dismount or loss of an eligible online controller. A runtime tag lets the next server tick clear a stranded value after script reload if no qualified controller is online. Java's player level remains in the existing progression store.
+
+The production BDS tests at levels 1–3 verify exact +10% / +20% / +30% horse movement component values with randomized base values, then verify each mount returns to its default after ejection. A separate production control confirms an unowned player cannot alter horse movement. The isolated riding probe verifies mount/player identity, control seat 0, one rider, and successful movement writes. The separate mount-family probe found that Script API's `families: ["animal"]` query did not match the vanilla mount types it spawned; the implementation therefore uses an explicit vanilla allowlist. That diagnostic and the full 50-test suite passed on BDS 1.26.62.1.
+
+### Classification and interaction limits
+
+Class **B**, `PARTIAL_BDS_VERIFIED`, but disabled as a core candidate: the canonical jump-strength half is not implemented. Stable `minecraft:can_power_jump` is an empty marker, while `minecraft:horse.jump_strength` is static entity JSON and is not a script-writable component ([`EntityCanPowerJumpComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitycanpowerjumpcomponent?view=minecraft-bedrock-stable), [horse jump-strength reference](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/entityreference/examples/entitycomponents/minecraftcomponent_horse.jump_strength?view=minecraft-bedrock-stable)). In the pinned BDS, mounted `SimulatedPlayer.jump()` returned false and no Jump input event was emitted. We do not claim the jump effect, visible speed, exact real-client steering, reconnect/server-restart behavior, multi-seat rider mapping, online multiplayer, or compatibility with other add-ons that write a mount's `minecraft:movement` value. No new key binding is used; mobile and controller riders keep vanilla mount input.
+
+The detailed source-to-runtime comparison is in [`RIDER_IMPLEMENTATION_2026-11-07.md`](RIDER_IMPLEMENTATION_2026-11-07.md).
+
+### References
+
+- [Stable `EntityRidingComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityridingcomponent?view=minecraft-bedrock-stable)
+- [Stable `EntityRideableComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityrideablecomponent?view=minecraft-bedrock-stable)
+- [Stable `EntityMovementComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitymovementcomponent?view=minecraft-bedrock-stable)
+- [Stable `EntityCanPowerJumpComponent`](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitycanpowerjumpcomponent?view=minecraft-bedrock-stable)
+- [Horse jump-strength entity component reference](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/entityreference/examples/entitycomponents/minecraftcomponent_horse.jump_strength?view=minecraft-bedrock-stable)
+

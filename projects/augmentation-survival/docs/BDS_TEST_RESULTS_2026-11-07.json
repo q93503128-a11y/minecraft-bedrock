@@ -1,7 +1,7 @@
 {
   "tag": "augmentation_survival",
   "bdsVersion": "1.26.62.1",
-  "durationMs": 28098,
+  "durationMs": 32852,
   "verdicts": [
     {
       "id": "AugmentationSurvival:tool_care_matches_java_chance_and_restores_only_the_spent_durability",
@@ -177,6 +177,22 @@
     },
     {
       "id": "AugmentationSurvival:long_jump_input_event_surface_probe",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:rider_speed_level_1_applies_and_restores",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:rider_speed_level_2_applies_and_restores",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:rider_speed_level_3_applies_and_restores",
+      "outcome": "pass"
+    },
+    {
+      "id": "AugmentationSurvival:rider_speed_does_not_change_unowned_mount",
       "outcome": "pass"
     },
     {

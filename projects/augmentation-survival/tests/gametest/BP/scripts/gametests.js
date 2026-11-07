@@ -2193,6 +2193,208 @@ GameTest.registerAsync("AugmentationSurvival", "long_jump_input_event_surface_pr
   test.succeed();
 }).maxTicks(120).structureName(STRUCTURE).tag(TAG);
 
+async function verifyRiderSpeedLevel(test, level) {
+  for (let x = 1; x <= 8; x += 1) {
+    for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, `ASRiderLevel${level}`, GameMode.survival);
+  await test.idle(2);
+  ensure(player.hasTag(`as_rider_seeded_${level}`), `Production behavior pack did not seed Rider level ${level}.`);
+  const mount = test.spawn("minecraft:horse", { x: 5, y: 3, z: 3 });
+  await test.idle(1);
+  const rideable = mount.getComponent("minecraft:rideable");
+  ensure(rideable, `Rider level ${level} test horse did not expose the rideable component.`);
+  ensure(rideable.addRider(player), `Rider level ${level} player could not mount its test horse.`);
+  await test.idle(4);
+  ensure(player.getComponent("minecraft:riding")?.entityRidingOn.id === mount.id,
+    `Rider level ${level} player did not stay on the expected mount.`);
+  ensure(rideable.getRiders().length === 1 && rideable.getRiders()[0].id === player.id && rideable.controllingSeat === 0,
+    `Rider level ${level} player was not the sole controller of its horse.`);
+  const movement = mount.getComponent("minecraft:movement");
+  ensure(movement, `Rider level ${level} horse did not expose movement.`);
+  const expected = movement.defaultValue * (1 + level * 0.10);
+  ensure(Math.abs(movement.currentValue - expected) < 0.000001,
+    `Rider level ${level} should set the mount movement component to +${level * 10}%; expected ${expected}, got ${movement.currentValue}.`);
+  const applied = { level, current: movement.currentValue, defaultValue: movement.defaultValue, expected };
+
+  rideable.ejectRiders();
+  await test.idle(3);
+  const restoredMovement = mount.getComponent("minecraft:movement");
+  const restoration = {
+    level,
+    current: restoredMovement?.currentValue,
+    defaultValue: restoredMovement?.defaultValue,
+    hasRuntimeTag: mount.hasTag("augmentation_survival:rider_speed_runtime"),
+  };
+  ensure(restoration.current !== undefined && Math.abs(restoration.current - restoration.defaultValue) < 0.000001 && !restoration.hasRuntimeTag,
+    `Rider level ${level} speed was not removed after dismount: ${JSON.stringify(restoration)}.`);
+  console.warn("AS_RIDER_SPEED_LEVEL_TEST " + JSON.stringify({ applied, restoration }));
+  player.disconnect();
+  mount.remove();
+  test.succeed();
+}
+
+for (let level = 1; level <= 3; level += 1) {
+  GameTest.registerAsync("AugmentationSurvival", `rider_speed_level_${level}_applies_and_restores`, test => verifyRiderSpeedLevel(test, level))
+    .maxTicks(30).structureName(STRUCTURE).tag(TAG);
+}
+
+GameTest.registerAsync("AugmentationSurvival", "rider_speed_does_not_change_unowned_mount", async (test) => {
+  for (let x = 1; x <= 8; x += 1) {
+    for (let z = 1; z <= 5; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASRiderControl", GameMode.survival);
+  const mount = test.spawn("minecraft:horse", { x: 5, y: 3, z: 3 });
+  await test.idle(1);
+  const rideable = mount.getComponent("minecraft:rideable");
+  ensure(rideable?.addRider(player), "Unaugmented rider control could not mount its horse.");
+  await test.idle(5);
+  const movement = mount.getComponent("minecraft:movement");
+  ensure(movement && Math.abs(movement.currentValue - movement.defaultValue) < 0.000001,
+    "A player without Rider must not change a mount's movement value.");
+  console.warn("AS_RIDER_SPEED_UNOWNED_CONTROL " + JSON.stringify({ current: movement.currentValue, defaultValue: movement.defaultValue }));
+  rideable.ejectRiders();
+  player.disconnect();
+  test.succeed();
+}).maxTicks(25).structureName(STRUCTURE).tag(TAG);
+
+GameTest.registerAsync("AugmentationSurvival", "rider_mount_api_surface_probe", async (test) => {
+  for (let x = 1; x <= 8; x += 1) {
+    for (let z = 1; z <= 8; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASRiderApiProbe", GameMode.survival);
+  const mount = player.dimension.spawnEntity("minecraft:horse", test.worldLocation({ x: 5, y: 3, z: 3 }));
+  const rideable = mount.getComponent("minecraft:rideable");
+  const movement = mount.getComponent("minecraft:movement");
+  ensure(rideable && movement, "The vanilla horse did not expose rideable and movement components.");
+  const jumpStrengthComponent = mount.getComponent("minecraft:horse.jump_strength");
+  const canPowerJumpComponent = mount.getComponent("minecraft:can_power_jump");
+  const addRiderSucceeded = rideable.addRider(player);
+  await test.idle(4);
+  const ridingComponent = player.getComponent("minecraft:riding");
+  const riders = rideable.getRiders();
+  const riderRelation = {
+    addRiderSucceeded,
+    playerRidingMountId: ridingComponent?.entityRidingOn.id,
+    mountId: mount.id,
+    riders: riders.map(rider => ({ id: rider.id, typeId: rider.typeId, name: rider instanceof Player ? rider.name : undefined })),
+    seatCount: rideable.seatCount,
+    controllingSeat: rideable.controllingSeat,
+    seats: rideable.getSeats().map(seat => ({ position: seat.position, minRiderCount: seat.minRiderCount, maxRiderCount: seat.maxRiderCount })),
+    isInWater: mount.isInWater,
+    playerIsOnGround: player.isOnGround,
+    mountIsOnGround: mount.isOnGround,
+    playerLocation: player.location,
+    mountLocation: mount.location,
+    riderInputInfoAvailable: Boolean(player.inputInfo),
+    rideControl: player.inputInfo?.getButtonState(InputButton.Jump),
+  };
+
+  const movementBefore = movement.currentValue;
+  const movementSetSucceeded = movement.setCurrentValue(movement.defaultValue * 1.20);
+  await test.idle(1);
+  const movementAfter = movement.currentValue;
+  movement.setCurrentValue(movementBefore);
+
+  const inputs = [];
+  const inputCallback = event => {
+    if (event.player.id === player.id) inputs.push({ button: event.button, state: event.newButtonState });
+  };
+  world.afterEvents.playerButtonInput.subscribe(inputCallback);
+  let jumpAcceptedWithoutEffect = false;
+  let afterJumpWithoutEffect;
+  try {
+    jumpAcceptedWithoutEffect = player.jump();
+    await test.idle(5);
+    afterJumpWithoutEffect = { player: player.location, mount: mount.location, velocity: mount.getVelocity() };
+    mount.addEffect("jump_boost", 100, { amplifier: 0, showParticles: false });
+    await test.idle(2);
+    const jumpBoost = mount.getEffect("jump_boost");
+    const jumpStrengthAfterEffect = mount.getComponent("minecraft:horse.jump_strength");
+    const canPowerJumpAfterEffect = mount.getComponent("minecraft:can_power_jump");
+    const jumpBoostSurface = {
+      effectPresent: Boolean(jumpBoost),
+      effectAmplifier: jumpBoost?.amplifier,
+      effectDuration: jumpBoost?.duration,
+      jumpStrengthComponentPresent: Boolean(jumpStrengthAfterEffect),
+      jumpStrengthValue: jumpStrengthAfterEffect?.value,
+      canPowerJumpComponentPresent: Boolean(canPowerJumpAfterEffect),
+      canPowerJumpValue: canPowerJumpAfterEffect?.value,
+    };
+    let jumpAcceptedWithEffect = false;
+    let afterJumpWithEffect;
+    if (jumpAcceptedWithoutEffect) {
+      await test.idle(35);
+      jumpAcceptedWithEffect = player.jump();
+      await test.idle(5);
+      afterJumpWithEffect = { player: player.location, mount: mount.location, velocity: mount.getVelocity() };
+    }
+    console.warn("AS_RIDER_MOUNT_SURFACE_PROBE " + JSON.stringify({
+      riderRelation,
+      jumpStrengthComponentPresent: Boolean(jumpStrengthComponent),
+      canPowerJumpComponentPresent: Boolean(canPowerJumpComponent),
+      movementBefore,
+      movementDefault: movement.defaultValue,
+      movementSetSucceeded,
+      movementAfter,
+      jumpAcceptedWithoutEffect,
+      afterJumpWithoutEffect,
+      jumpBoostSurface,
+      jumpAcceptedWithEffect,
+      afterJumpWithEffect,
+      inputs,
+    }));
+  } finally {
+    world.afterEvents.playerButtonInput.unsubscribe(inputCallback);
+  }
+
+  ensure(addRiderSucceeded && ridingComponent?.entityRidingOn.id === mount.id,
+    `Stable riding relationship was not readable after addRider: ${JSON.stringify(riderRelation)}.`);
+  ensure(movementSetSucceeded && Math.abs(movementAfter - movement.defaultValue * 1.20) < 0.000001,
+    `The horse movement component did not accept an exact 20% test multiplier: ${JSON.stringify({ movementBefore, movementDefault: movement.defaultValue, movementSetSucceeded, movementAfter })}.`);
+  test.succeed();
+}).maxTicks(120).structureName(STRUCTURE).tag("rider_probe");
+
+GameTest.registerAsync("AugmentationSurvival", "rider_mount_family_probe", async (test) => {
+  for (let x = 1; x <= 8; x += 1) {
+    for (let z = 1; z <= 8; z += 1) test.setBlockType("minecraft:stone", { x, y: 2, z });
+  }
+  const player = test.spawnSimulatedPlayer({ x: 3, y: 3, z: 3 }, "ASRiderFamilyProbe", GameMode.survival);
+  const results = [];
+  for (const typeId of [
+    "minecraft:horse", "minecraft:donkey", "minecraft:mule", "minecraft:skeleton_horse",
+    "minecraft:zombie_horse", "minecraft:camel", "minecraft:pig", "minecraft:strider",
+    "minecraft:llama", "minecraft:trader_llama",
+  ]) {
+    let mount;
+    try {
+      mount = player.dimension.spawnEntity(typeId, test.worldLocation({ x: 5, y: 3, z: 3 }));
+      const rideable = mount.getComponent("minecraft:rideable");
+      const addRiderSucceeded = rideable?.addRider(player) ?? false;
+      await test.idle(2);
+      results.push({
+        typeId,
+        isAnimalFamily: mount.matches({ families: ["animal"] }),
+        addRiderSucceeded,
+        riderRelationMatches: player.getComponent("minecraft:riding")?.entityRidingOn.id === mount.id,
+        riderIds: rideable?.getRiders().map(rider => rider.id),
+        seatCount: rideable?.seatCount,
+        controllingSeat: rideable?.controllingSeat,
+        isInWater: mount.isInWater,
+        mountIsOnGround: mount.isOnGround,
+      });
+      rideable?.ejectRiders();
+      mount.remove();
+      await test.idle(1);
+    } catch (error) {
+      results.push({ typeId, error: String(error) });
+      try { mount?.remove(); } catch { /* Invalid entity or failed spawn. */ }
+    }
+  }
+  console.warn("AS_RIDER_MOUNT_FAMILY_PROBE " + JSON.stringify(results));
+  test.succeed();
+}).maxTicks(100).structureName(STRUCTURE).tag("rider_probe");
+
 GameTest.registerAsync("AugmentationSurvival", "ride_current_liquid_state_probe", async (test) => {
   const dimension = world.getDimension("overworld");
   for (let x = 0; x <= 9; x += 1) {
