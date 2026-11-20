@@ -1,0 +1,36 @@
+{
+  "format_version": "1.19.0",
+  "minecraft:attachable": {
+    "description": {
+      "identifier": "gtrpg:ember_blade_common",
+      "materials": {
+        "default": "entity_alphatest",
+        "enchanted": "entity_alphatest_glint"
+      },
+      "textures": {
+        "default": "textures/entity/ember_blade",
+        "enchanted": "textures/misc/enchanted_item_glint"
+      },
+      "geometry": {
+        "default": "geometry.gtrpg.ember_blade"
+      },
+      "animations": {
+        "normal": "animation.gtrpg.ember_blade.grab",
+        "first_person": "animation.gtrpg.ember_blade.first_person"
+      },
+      "scripts": {
+        "animate": [
+          {
+            "normal": "!c.is_first_person"
+          },
+          {
+            "first_person": "c.is_first_person"
+          }
+        ]
+      },
+      "render_controllers": [
+        "controller.render.item_default"
+      ]
+    }
+  }
+}

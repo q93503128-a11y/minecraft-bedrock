@@ -1,0 +1,38 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "GT RPG · 모험의 시작 [BP]",
+    "description": "한국어 협동 생존 RPG: 성장, 직업, 장비, 균열 보스",
+    "uuid": "73f59f80-b51c-476b-924e-891da3c0c288",
+    "version": [0, 1, 0],
+    "min_engine_version": [1, 26, 60]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "2596f52b-f17c-4d70-ac54-dbedf3f77b96",
+      "version": [0, 1, 0]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "entry": "scripts/main.js",
+      "uuid": "682e3368-3f5a-4c0f-9c20-6ac8f7db7315",
+      "version": [0, 1, 0]
+    }
+  ],
+  "dependencies": [
+    {
+      "uuid": "004c4b48-47dc-4a08-a43f-50a7093fc4ef",
+      "version": [0, 1, 0]
+    },
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.11.0"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "2.3.0"
+    }
+  ]
+}

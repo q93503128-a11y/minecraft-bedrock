@@ -1,0 +1,17 @@
+{
+  "format_version": "1.21.90",
+  "minecraft:item": {
+    "description": {
+      "identifier": "gtrpg:ember_blade_common",
+      "menu_category": { "category": "equipment" }
+    },
+    "components": {
+      "minecraft:display_name": { "value": "item.gtrpg:ember_blade_common.name" },
+      "minecraft:icon": { "textures": { "default": "gtrpg_ember_blade" } },
+      "minecraft:damage": { "value": 5 },
+      "minecraft:durability": { "max_durability": 320 },
+      "minecraft:max_stack_size": 1,
+      "minecraft:hand_equipped": true
+    }
+  }
+}

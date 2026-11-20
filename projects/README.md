@@ -8,6 +8,7 @@
 | [plainkingdoms](plainkingdoms/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](plainkingdoms/PROJECT.md) |
 | [wildbound](wildbound/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](wildbound/PROJECT.md) |
 | [rpg-survival](rpg-survival/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](rpg-survival/PROJECT.md) |
+| [gt-rpg](gt-rpg/) | 수직 슬라이스 / 정적·BDS 팩 로드 통과, 인게임·시각 검증 대기 | [PROJECT.md](gt-rpg/PROJECT.md) · [STATUS.md](gt-rpg/STATUS.md) |
 | [status-window-lab](status-window-lab/) | 독립 UI 실험 / 초기 구현 | [PROJECT.md](status-window-lab/PROJECT.md) · [STATUS.md](status-window-lab/STATUS.md) |
 | [augmentation-survival](augmentation-survival/) | 초기 애드온 / 부분 BDS 검증 20종, 미이식 129종 | [PROJECT.md](augmentation-survival/PROJECT.md) · [STATUS.md](augmentation-survival/STATUS.md) |
 

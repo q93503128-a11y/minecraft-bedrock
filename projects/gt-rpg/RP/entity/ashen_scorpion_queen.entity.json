@@ -1,0 +1,37 @@
+{
+  "format_version": "1.10.0",
+  "minecraft:client_entity": {
+    "description": {
+      "identifier": "gtrpg:ashen_scorpion_queen",
+      "materials": {
+        "default": "entity_alphatest"
+      },
+      "textures": {
+        "default": "textures/entity/ashen_scorpion_queen"
+      },
+      "geometry": {
+        "default": "geometry.gtrpg.ashen_scorpion_queen"
+      },
+      "animations": {
+        "idle": "animation.gtrpg.ashen_scorpion_queen.idle",
+        "walk": "animation.gtrpg.ashen_scorpion_queen.walk",
+        "run": "animation.gtrpg.ashen_scorpion_queen.run",
+        "look_at_target": "animation.common.look_at_target",
+        "attack": "animation.gtrpg.ashen_scorpion_queen.attack",
+        "move": "controller.animation.gtrpg.ashen_scorpion_queen.locomotion",
+        "attack_controller": "controller.animation.gtrpg.ashen_scorpion_queen.attack"
+      },
+      "scripts": {
+        "animate": [
+          "look_at_target",
+          "move",
+          "attack_controller"
+        ],
+        "scale": "1.1"
+      },
+      "render_controllers": [
+        "controller.render.gtrpg.ashen_scorpion_queen"
+      ]
+    }
+  }
+}
