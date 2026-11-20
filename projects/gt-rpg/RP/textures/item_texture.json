@@ -1,9 +1,0 @@
-{
-  "resource_pack_name": "gt_rpg",
-  "texture_name": "atlas.items",
-  "texture_data": {
-    "gtrpg_ember_blade": {
-      "textures": "textures/items/weapon/ember_blade"
-    }
-  }
-}

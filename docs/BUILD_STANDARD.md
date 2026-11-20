@@ -7,6 +7,7 @@
 - 정본은 `projects/<slug>/`. 최소 `PROJECT.md`, `STATUS.md`; 설계중이면 소스가 없어도 되나 **미구현이라고 명시**.
 - 구현할 때 `BP/`(Behavior Pack), `RP/`(Resource Pack), `assets/`(Blockbench 등 원본), `tests/`, `tools/`를 같은 프로젝트에 모은다.
 - `PROJECT.md`에는 목표 Minecraft 버전, namespace, BP/RP UUID와 버전, Script API 의존성, 설치 대상, 월드 호환성, 빌드/테스트 방법을 실제 확정 후 기록한다.
+- 모든 새 애드온의 Behavior Pack `manifest.json` 표시 이름(`header.name`)에는 실제 버전을 `vX.Y.Z` 형태로 포함한다(예: `GT RPG v0.2.0 [BP]`). Resource Pack에도 같은 버전을 표시해 팩 목록에서 식별 가능하도록 한다. 표시 버전은 manifest의 버전 배열 및 배포 파일 버전과 일치시킨다.
 - 다른 프로젝트의 소스를 대신 사용하거나 누락 파일을 가짜 스텁으로 채우지 않는다.
 
 ## 확인 순서
