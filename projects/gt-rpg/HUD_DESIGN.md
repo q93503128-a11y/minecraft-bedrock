@@ -44,3 +44,9 @@
 - [Ultimate Status System](https://www.curseforge.com/minecraft-bedrock/addons/ultimate-status-system): BP 데이터→RP HUD, 적 HP 및 변화량 표시; 다른 hud_screen.json 리소스와 충돌 가능성 명시. 물/갈증 시스템 및 미니맵은 현 GT RPG에 도입하지 않는다. 라이선스 All Rights Reserved, 소스 무단 복제 금지.
 - [Bosya PlayerStats HUD](https://www.curseforge.com/minecraft-bedrock/texture-packs/bosya-playerstats-hud-rpg-inspired-ui): HP/방어/배고픔/XP를 모은 상태 패널 사례.
 - 상기 자료는 공개 설명/문서 검토 결과이며 직접 설치·플레이·갤러리 전수 검증은 하지 않았다. 구현 전 실제 게임 화면 비교와 대상 버전 시험이 필요.
+
+## 5. 흡수 체력 및 보호막 겹침 (2026-11-24 추가)
+- 사용자 요구: **바닐라 흡수 체력(황금 사과 등)은 체력바 위 노란색 오버레이**로 표현. 보호막과 함께 표시해도 시야를 덜 가리고 현재 HP가 식별되어야 함.
+- 초기 배치 가안: 고정 길이의 얇은 막대형 HP바. 빨간 기본 HP, 위쪽 일부 높이에 금색 흡수량 오버레이, 아래쪽 얇은 파란 테두리/부분 게이지에 RPG 보호막. 두 임시 보호 계층이 빨간 HP를 완전히 덮지 않으며 각각 0이면 숨김. 최대 HP 대비 양을 표시하고 100% 초과는 잘못된 값처럼 보이지 않도록 숫자/초과 표시로 표현하는 후보. 기본 HUD에서는 상세 숫자를 남발하지 않음. 최종 크기/색/아이콘은 실제 화면 검토 후.
+- [Aceofnawa RPG HUD](https://www.curseforge.com/minecraft-bedrock/addons/aceofnawas-rpg-hud)는 금색 흡수 오버레이를 구현했으나 제작자가 **흡수량 추정**이라고 명시. 정확한 엔진 흡수 잔여값을 직접 읽을 수 있는 안정 API가 확인되지 않았으므로 추정치를 확정값으로 표시하지 않는다. [EntityComponentTypes](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitycomponenttypes?view=minecraft-bedrock-stable) 및 목표 버전 확인. 흡수의 정상 소모를 추적할 수 없으면 정확한 흡수 수치 대신 원본 표시 유지 등 폴백을 시험.
+- [EntityHurtBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable)와 WorldBeforeEvents.entityHurt는 안정 문서에서 damage 변경/cancel 및 이벤트 노출을 확인했다. RPG 쉴드와 불멸의 맹세 구현에 유력하지만 바닐라 흡수/갑옷/토템/환경피해 전후의 이벤트 순서 및 실제 소모량을 검증해야 한다. 두 계층 모두 같은 피해를 중복 흡수하지 않도록 처리 순서 확정 후 표시. 현재 NOT_RUN.

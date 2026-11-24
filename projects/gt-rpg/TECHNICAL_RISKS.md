@@ -58,3 +58,8 @@
 
 ## 7. HUD 및 피해/체력 실제 연동
 [HUD_DESIGN.md](HUD_DESIGN.md) 참조. 기존 HUD visibility 및 JSON UI 추가는 공식/커뮤니티 자료 확인; 실제 커스텀 게이지 브리지·엔진 체력·보호막·모바일 터치/화면·RP 충돌은 NOT_RUN. 바닐라 XP/배고픔/생존 정보는 보존. 기존 title/actionbar 경쟁과 고정 데이터 동기화/실패 폴백을 검증한 뒤 적용한다.
+
+## 8. 무기별 공속·범위·장신구 및 흡수 체력 (2026-11-24)
+[EQUIPMENT.md](EQUIPMENT.md) 8절 및 [HUD_DESIGN.md](HUD_DESIGN.md) 5절 참고. 문서상 지원: 공격 cooldown(type=attack, format 1.21.130+), swing_duration(시각만), piercing_weapon(reach, 직선 관통 및 채굴 금지), EntityHurtBeforeEvent(damage/cancel). 부채꼴 범위 및 장신구는 스크립트/별도 데이터 후보. PlayerItemAttackEntityBeforeEvent는 pre-release. 바닐라 흡수 잔여값 정확 조회는 미확인.
+- 우선 실기 테스트: 무기 4종의 간격·실제 명중·피격 무적 틱·무기 교체 쿨타임, 직선/부채꼴/벽 차단·아군 필터 및 액티브 충돌, 장신구 고유 데이터 교체/재접속/가방 가득 참/사망/동시 요청, 흡수+RPG 쉴드 동시 피해 및 HUD 표시/만료.
+- 공식 문서 조회와 공개 애드온 설명 검토만 수행. BP/RP/실기 NOT_RUN.

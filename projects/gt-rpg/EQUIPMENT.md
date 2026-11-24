@@ -78,3 +78,26 @@
 - Minecraft Dungeons 공식 [September Update](https://www.minecraft.net/en-us/article/dungeons-september-dev-blog): 무기 전투 스타일과 행동을 바꾸는 인챈트. 원리만 참고, 자산/UI 복제 안 함.
 - Diablo IV 공식 [Loot Reborn](https://news.blizzard.com/en-us/article/24077223/galvanize-your-legend-in-season-4-loot-reborn), [Itemization & Systems Changes](https://news.blizzard.com/en-us/article/24243142/sanctuary-ignites-with-itemization-systems-changes): 랜덤 옵션, 선택형 부여의 장비 커스터마이징. GT RPG는 더 단순한 1개 각인 방식, 다중 강화/재화 없음.
 - 직접 플레이·영상 검토·베드락 엔진·모델·UI는 NOT_RUN. 사용자 검토 이후 각인 수치·획득 확률·장신구 예산·무기별 입력/공격 간격을 구체화. 코딩/에셋 제작은 별도 사용자 승인 후.
+
+## 8. 무기 공속·사거리 및 장신구 기술 재조사 (2026-11-24)
+### 근접 무기
+- 공식 [minecraft:cooldown](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_cooldown?view=minecraft-bedrock-stable)의 type=attack은 item format 1.21.130 이상 지원. 무기별 고정 공격 간격 지정 후보. 같은 category 아이템은 쿨타임을 공유하므로 무기 바꿔치기 우회 방지를 시험. [minecraft:swing_duration](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_swing_duration?view=minecraft-bedrock-stable)은 **애니메이션만** 조정하며 실제 공격 빈도와 다름.
+- [minecraft:piercing_weapon](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_piercing_weapon?view=minecraft-bedrock-stable)은 1.21.130+에서 reach(min/max) 및 hitbox_margin을 지정하고 시선 직선상의 여러 엔티티를 공격하며 블록에 가로막히면 피해가 차단된다. 이 속성이 있는 무기는 블록을 파괴할 수 없고 단일 표적만 공격하는 검과는 다르므로 모든 무기에 무조건 적용하지 않는다. [minecraft:kinetic_weapon](https://learn.microsoft.com/en-us/minecraft/creator/reference/content/itemreference/examples/itemcomponents/minecraft_kinetic_weapon?view=minecraft-bedrock-stable)은 상대 속도 기반 돌진형이며 일반 대검 범위 공격과는 다른 기술.
+- 부채꼴/원형 범위 공격은 Script API의 [Dimension.getEntities 및 getBlockFromRay/getEntitiesFromRay](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/dimension?view=minecraft-bedrock-stable)를 이용해 공격 때 근처 적만 조회하고 시선 각도, 거리, 장애물, 적대 여부를 필터하는 후보. 직접 타격 대상 중복, 벽 너머, 아군/소환수 타격 및 추가 공격 재귀 금지. 이벤트 구독/피해 처리 순서와 피격 무적 틱을 실기 검증. playerItemAttackEntity before 이벤트는 pre-release이므로 필수 의존성으로 확정하지 않는다.
+- 무기별 공격 간격/범위 **초기 가안**:
+| 무기 | 공격 간격 | 타격 형태 및 거리 후보 |
+| --- | ---: | --- |
+| 단검 | 0.5초 | 단일, 짧은 2~2.5블록 |
+| 한손검 | 0.7초 | 단일, 3블록 |
+| 둔기 | 0.9초 | 단일 또는 좁은 충격, 3블록 |
+| 대검 | 1.1초 | 전방 부채꼴 3~3.5블록, 주 대상 외 최대 3명 |
+| 활 | 충전형 | 일반 화살, 실제 아이템별 max_draw_duration 시험 |
+| 지팡이 | 발사 간격 시험 | 마력탄, 직업 액티브와 입력 충돌 해결 |
+- 공격 간격이 다른 경우 단일 DPS를 비교하여 1타 계수를 조정(예: 기준 한손검 대비 간격 비례에서 시작). 대검 광역성과 단검의 치명타/연격 빈도까지 검토. 단검 0.5초가 엔진 피격 무적시간을 넘지 못할 경우 타격 빈도/판정 재설계. 범위 수치가 확정 또는 실기 성공을 뜻하지 않는다. 바닐라 검·도구에는 임의 쿨타임/채굴 제한을 추가하지 않는다.
+- 사례: [Lynx More Weapons](https://www.curseforge.com/minecraft-bedrock/addons/lynx-more-weapons/files/9014837/additional-files)는 piercing_weapon을 이용한 대검/대도끼 3.75블록 사거리를 명시. [Sweep Impact](https://www.curseforge.com/minecraft-bedrock/addons/sweep-impact)는 타격 시 전방 영역을 판정하는 부채꼴 공격, [Java Combat Evolved](https://www.curseforge.com/minecraft-bedrock/addons/java-combat-evolved)는 무기별 쿨타임/범위 공격을 소개. 공개 설명 검토이며 설치 시험/코드 확인/라이선스 재사용 승인 아님. GT RPG는 원본 자산을 복사하지 않고 자체 무기만 차별화.
+
+### 장신구
+- 공식 [EquipmentSlot](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/equipmentslot?view=minecraft-bedrock-stable)은 기존 장비 슬롯만 제공(Body는 비인간형 몹 갑옷용). **기존 플레이어 인벤토리에 반지/목걸이 엔진 슬롯을 직접 추가할 공식 안정 API는 확인되지 않음.**
+- 별도 **논리 장착 슬롯**으로 목걸이 1/반지 2 후보 구현: 모험가의 서 → 장비 → 각 슬롯 선택 → 소유 장신구 장착/해제/교체. 바닐라 갑옷·손·핫바 슬롯과 독립. 장착된 실제 아이템은 원래 인벤/가방에서 이동되어 장착 데이터에만 존재하며 고유 ID/레벨/희귀도/옵션/각인/고유 효과를 보존. 서버가 장착 상태에 따른 스탯을 재계산, 클라이언트 메뉴는 표시/요청 역할만.
+- 안정 [ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable) 동적 속성, [Container](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/container?view=minecraft-bedrock-stable) 입출력 및 Entity/Player 동적 속성은 기반 기능 후보. ItemStack 객체를 동적 속성에 그대로 저장한다는 뜻이 아니며 RPG 아이템의 필요한 데이터를 직렬화하거나 안전한 실제 저장 컨테이너로 보존해야 함. 가방과 장신구 장착 간 고유 ID 중복/분실 방지, 교체/해제 시 빈칸 부족하면 원 상태 유지, 서버 재시작·이탈·직업 변경·죽음/keepInventory 규칙 검증. 가상 장착 슬롯의 사망 시 보존 여부는 별도 사용자 결정. 갑옷 대체 슬롯 방식은 사용하지 않는다.
+- [Novelty API](https://www.curseforge.com/minecraft-bedrock/addons/novelty)는 추가 액세서리 24슬롯, [Easy Accessories](https://www.curseforge.com/minecraft-bedrock/addons/easy-accessories-bedrock-accessories-system)는 전용 메뉴에서 장신구별 슬롯을 제공한다고 소개. 추가 장착 시스템의 실제 공개 사례이나 엔진 고유 인벤토리 슬롯 증설을 증명하지 않는다. 해당 애드온 설치/코드/라이선스는 직접 검증하지 않았으며 종속성 채택은 미결정. GT RPG 자체 가상 슬롯 우선 검토. 모델 외형 표시(반지/목걸이가 플레이어 모델에 실제 보임)는 별도 RP 기술 검증.

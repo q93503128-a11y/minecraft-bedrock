@@ -32,3 +32,6 @@
 ## 장비·각인 기획 참고 (2026-11-24)
 - [Minecraft Dungeons September Update](https://www.minecraft.net/en-us/article/dungeons-september-dev-blog): 무기 유형별 공격 방식, 고유 장비·전투 행동을 바꾸는 인챈트. GT RPG의 무기 유형과 고유효과 차별화에 참고.
 - [Diablo IV Loot Reborn](https://news.blizzard.com/en-us/article/24077223/galvanize-your-legend-in-season-4-loot-reborn), [Itemization & Systems Changes](https://news.blizzard.com/en-us/article/24243142/sanctuary-ignites-with-itemization-systems-changes): 장비 고유 효과/옵션, 선택 가능한 부여 효과 참고. GT RPG에는 하나의 간단한 각인만 적용하며 강화 단계/다중 재화/복잡한 제작 시스템은 도입하지 않음. 공식 설명 검토, 직접 플레이/영상 확인은 후속 작업.
+
+## 무기 및 장신구 추가 조사
+[EQUIPMENT.md](EQUIPMENT.md) 8절: 공식 cooldown/swing_duration/piercing_weapon/kinetic_weapon/EquipmentSlot/ItemStack/Container/Dimension 및 Lynx More Weapons, Sweep Impact, Java Combat Evolved, Novelty API, Easy Accessories 사례. [HUD_DESIGN.md](HUD_DESIGN.md) 5절: Aceofnawa의 추정 흡수 오버레이와 공식 피해 전 이벤트. 공개 문서/설명 확인이며 실제 설치/영상 분석은 후속.
