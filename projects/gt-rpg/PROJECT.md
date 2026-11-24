@@ -8,6 +8,7 @@ Minecraft **Bedrock Edition**의 바닐라 생존(채굴·건축·탐험·제작
 
 ## 문서 정본
 - [GAME_DESIGN.md](GAME_DESIGN.md): 공통 시스템, 생존·전투·성장·장비·월드·던전·멀티플레이.
+- [BALANCE.md](BALANCE.md): 성장·전투·경험치·장비 수치 모델 가안 및 산술 검산.
 - [CLASSES.md](CLASSES.md): 9개 직업 각각의 액티브·1~6차 패시브·강화·전직 보너스.
 - [TECHNICAL_RISKS.md](TECHNICAL_RISKS.md): Bedrock 구현상의 제약, 미검증 항목, 실제 검증 조건.
 - [DECISIONS.md](DECISIONS.md): 확정사항/수치 가안/추후 결정 및 충돌 정리.

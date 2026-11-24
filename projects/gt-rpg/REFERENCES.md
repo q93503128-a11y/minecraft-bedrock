@@ -21,3 +21,7 @@
 - 예시 애드온 소개: https://www.curseforge.com/minecraft-bedrock/addons/expansive-inventory
 
 **구현 시작 전 필요한 조사:** 실제 UI 2종 이상(상태창·아이템 세부·전직·카테고리 가방), RPG 활 2종 이상(발사 모션·터치 입력), 소환/AI 2종 이상(군단 운영·모바일 성능), 던전 2종 이상(상자 위치·방 다양성·보스 텔레그래프). 조사에서 확인되지 않은 기능은 '검증 필요'로 남기고 테스트한다.
+
+## 성장/난이도 수치 참고 추가
+- [Minecraft Dungeons — Adjusting the Endgame](https://www.minecraft.net/en-us/article/dungeons-dev-blog---adjusting-endgame): 난이도 증가 완화와 보스 개방·특수장비 파밍 연결.
+- [Diablo III — Greater Rifts Preview](https://news.blizzard.com/en-us/article/15317478/patch-2-1-0-preview-greater-rifts), [Patch 2.3.0](https://news.blizzard.com/en-gb/article/19859662/patch-2-3-0-now-live): 몬스터 난도에 맞춘 보상 및 고단 피해 조정. 설계 참고이며 원작 수치/상한은 복사하지 않음. 실제 플레이/영상 미검증.

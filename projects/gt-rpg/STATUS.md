@@ -9,7 +9,7 @@
 - 이번 기록은 채팅에서 협의한 기획을 문서로 정리한 것이며 **BP/RP·스크립트·모델·실행 패키지 아직 없음**.
 - 실제 Bedrock 게임 구동/기능/모바일 렌더/멀티플레이/성능 테스트: **전부 NOT_RUN**. 외부 애드온 실제 설치 검증도 NOT_RUN.
 - 같은 저장소의 `projects/rpg-survival/`은 **별개 기존 프로젝트**이고 이 기획을 덮어쓰지 않음.
-- 문서: PROJECT, GAME_DESIGN, CLASSES, TECHNICAL_RISKS, DECISIONS, REFERENCES, STATUS.
+- 문서: PROJECT, GAME_DESIGN, CLASSES, TECHNICAL_RISKS, DECISIONS, REFERENCES, BALANCE, STATUS.
 
 ## 대화 기반으로 복구한 범위
 - 무한 성장/4개 스탯/직업별 저장·무료 재분배/1~6차 직접 전직/9개 직업 상세 패시브·액티브
@@ -27,3 +27,8 @@
 5. 단계별 구현 후 BDS·모바일 멀티 테스트. 결과와 미실행 항목을 구분하여 기록.
 
 **현재 사용자 지시: 기획 보존 및 완성. 구현 시작 지시를 받기 전에는 코딩 금지.**
+
+## 2026-11-24 밸런스 작업
+- [BALANCE.md](BALANCE.md)에 성장·전투·장비·위협도·XP 및 직업별 DPS 목표의 1차 가안을 기록.
+- 중립 비교 캐릭터 Lv.1~10,000 산술 계산 완료. **실제 9개 직업 스킬 DPS 측정 및 Bedrock 구동은 NOT_RUN**.
+- 다음 기획: 직업별 개별 스킬 계수/발동률·내부 CD 및 장비/몬스터 상세 데이터. 구현은 사용자 명시 승인 전 금지.
