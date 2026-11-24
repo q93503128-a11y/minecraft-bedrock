@@ -41,3 +41,6 @@
 
 ## 몬스터 수정 및 재도전 난도 참고
 [Terraria 적 목록](https://terraria.wiki.gg/wiki/List_of_Enemies), [미믹](https://terraria.wiki.gg/wiki/Mimic), [Minecraft Dungeons Adjusting the Endgame](https://www.minecraft.net/en-us/article/dungeons-dev-blog---adjusting-endgame), [Diablo IV Season of Hatred Rising](https://news.blizzard.com/en-us/article/24140803/conquer-colossal-foes-in-season-of-hatred-rising). 익숙한 몹 명칭과 난도·보상 선택 구조 검토. 실제 설치/영상/모델 검증 없음. 원작 수치/아트 복제하지 않음.
+
+## 던전 세부 구성 참고
+[DUNGEONS.md](DUNGEONS.md) 10절: Microsoft Learn feature rules/structure template placement 및 Minecraft Dungeons The road to Dungeons, Abyssal Monument의 공개 개발 설명. 테마 공간·구간별 랜드마크·직관적 진행을 참고. 실제 플레이/영상/생성 실기 검증 없음.
