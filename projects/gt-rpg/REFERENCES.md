@@ -1,0 +1,23 @@
+# GT RPG — 참고 게임/애드온·자료 검토 상태
+
+본 문서는 **이전 사용자 대화에서 논의된 후보와 그 활용 목적의 인덱스**다. 이 GitHub 기획 복원 작업에서 실제 외부 게임을 설치하거나 신규 영상·문서의 원문을 전수 검증한 것은 아니다. 구현 단계에서는 **공식 설명 + 실제 플레이 영상/화면 + 이용자 경험을 최소 2종 이상 비교**하고 채택/비채택 이유를 갱신해야 한다.
+
+| 사례 | 기존 대화에서 다룬 요소 | GT RPG에 적용할 원리 / 피할 점 |
+| --- | --- | --- |
+| Minecraft Dungeons (Mojang) | 던전에서 상자 탐색, 고유 장비/희귀 아이템, 전투 중심 파밍 | **일반/희귀/보스 보물상자, 개인 보상, 장비 기대감** 참고. 원작 UI·이미지·리소스·코드 복제 금지. |
+| ClassWorld — Bedrock 애드온 | 클래스별 네크로맨서 언데드·드루이드 동물·성기사 공격/회복 요소의 선례로 논의 | 직업 명확한 역할과 스킬 분화를 참고. 직접 구현 결과를 확인한 것은 아님. |
+| RPG Adventure: Skill Tree — Bedrock 애드온 | 전사·궁수·마법사·암살자 차이의 선례로 논의 | 직업 정체성만 참고; **복잡한 스킬 트리는 GT RPG에 도입하지 않음**. |
+| Epic Dungeons & More Structures / Dungeon Raiders — Bedrock 애드온 | 자연 생성 던전, 방/전리품 설계 선례로 논의 | 탐험형 던전 구조와 생성 빈도·보상 흐름 비교. 원본 구조물 복제 금지. |
+| Lilium Backpacks / Expansive Inventory — Bedrock 애드온 | 기본 인벤을 보존한 별도 가방, 저장/카테고리 UI 방식 | **54칸 RPG 가방과 필터**의 UX 참고. 저장 안정성 직접 검증 필요. |
+| Arcane Bow / NewBows — Bedrock 애드온 | 고유 모델 활, 당기기 모션, 원소/유도 화살·인챈트 대응 사례 | 커스텀 활 아트/기능과 베드락 기술 한계 비교. 부품/모델 그대로 전재 금지. |
+| Epic Loot V2 — Bedrock 애드온 | 장비 레벨/등급/랜덤 옵션·전리품 | 레벨 기반 일반 장비와 고유 장비의 역할 분리 검토. |
+
+문서 시작점:
+- Minecraft Creator 문서: https://learn.microsoft.com/en-us/minecraft/creator/
+- 공식 예제: https://github.com/microsoft/minecraft-samples
+- 예시 애드온 소개: https://www.curseforge.com/minecraft-bedrock/addons/arcane-bow
+- 예시 애드온 소개: https://www.curseforge.com/minecraft-bedrock/addons/new-bows-addon
+- 예시 애드온 소개: https://www.curseforge.com/minecraft-bedrock/addons/epic-dungeons-more-structures
+- 예시 애드온 소개: https://www.curseforge.com/minecraft-bedrock/addons/expansive-inventory
+
+**구현 시작 전 필요한 조사:** 실제 UI 2종 이상(상태창·아이템 세부·전직·카테고리 가방), RPG 활 2종 이상(발사 모션·터치 입력), 소환/AI 2종 이상(군단 운영·모바일 성능), 던전 2종 이상(상자 위치·방 다양성·보스 텔레그래프). 조사에서 확인되지 않은 기능은 '검증 필요'로 남기고 테스트한다.

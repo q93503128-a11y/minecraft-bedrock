@@ -8,6 +8,7 @@
 | [plainkingdoms](plainkingdoms/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](plainkingdoms/PROJECT.md) |
 | [wildbound](wildbound/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](wildbound/PROJECT.md) |
 | [rpg-survival](rpg-survival/) | 기존 문서 보존 / 소스 미이관 | [PROJECT.md](rpg-survival/PROJECT.md) |
+| **[gt-rpg](gt-rpg/)** | **2026-11-24 전체 기획 문서화 / BP·RP 미구현** | [PROJECT.md](gt-rpg/PROJECT.md) · [GAME_DESIGN.md](gt-rpg/GAME_DESIGN.md) · [CLASSES.md](gt-rpg/CLASSES.md) · [STATUS.md](gt-rpg/STATUS.md) |
 | [status-window-lab](status-window-lab/) | 독립 UI 실험 / 초기 구현 | [PROJECT.md](status-window-lab/PROJECT.md) · [STATUS.md](status-window-lab/STATUS.md) |
 | [augmentation-survival](augmentation-survival/) | 초기 애드온 / 부분 BDS 검증 20종, 미이식 129종 | [PROJECT.md](augmentation-survival/PROJECT.md) · [STATUS.md](augmentation-survival/STATUS.md) |
 
