@@ -8,6 +8,7 @@ Minecraft **Bedrock Edition**의 바닐라 생존(채굴·건축·탐험·제작
 
 ## 문서 정본
 - [GAME_DESIGN.md](GAME_DESIGN.md): 공통 시스템, 생존·전투·성장·장비·월드·던전·멀티플레이.
+- [EQUIPMENT.md](EQUIPMENT.md): 장비 종류·옵션·각인 콘텐츠 초안.
 - [HUD_DESIGN.md](HUD_DESIGN.md): RPG HUD 목표·베드락 지원 범위·실기 검증.
 - [SKILL_BALANCE.md](SKILL_BALANCE.md): 9직업 54단계/9액티브 상세 수치·장비 옵션 가안.
 - [BALANCE.md](BALANCE.md): 성장·전투·경험치·장비 수치 모델 가안 및 산술 검산.
