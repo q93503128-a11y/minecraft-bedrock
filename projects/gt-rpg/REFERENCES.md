@@ -47,3 +47,6 @@
 
 ## 던전 보상/승급 상세 참고
 공식 [Minecraft Dungeons September Update](https://www.minecraft.net/en-us/article/dungeons-september-dev-blog), [Adjusting the Endgame](https://www.minecraft.net/en-us/article/dungeons-dev-blog---adjusting-endgame), [Diablo III Greater Rifts](https://news.blizzard.com/en-us/article/15317478/patch-2-1-0-preview-greater-rifts): 고난도 고보상, 기존 보스 도전, 최종 보상 집중 참고. GT RPG 입장권·시간제한·순위표 미도입. 공식 설명만 확인, 직접 플레이/영상/실기 NOT_RUN.
+
+## 모험가의 서 메뉴 정보 구조 참고
+[SYSTEMS.md](SYSTEMS.md) 1절: Wynncraft Skill Points/Character Menu, Minecraft Wiki의 Dungeons Inventory/Enchantments. 공개 설명 검색 결과 확인, 실제 화면/영상 검토 및 구현 전 라이선스·호환성 확인은 후속. 원작 자산 복제 없음.
