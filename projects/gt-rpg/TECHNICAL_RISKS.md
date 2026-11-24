@@ -55,3 +55,6 @@
 최신 공식 근거 재검토 출발점: https://learn.microsoft.com/en-us/minecraft/creator/ 및 https://github.com/microsoft/minecraft-samples
 
 현재 모든 항목: **NOT_RUN**.
+
+## 7. HUD 및 피해/체력 실제 연동
+[HUD_DESIGN.md](HUD_DESIGN.md) 참조. 기존 HUD visibility 및 JSON UI 추가는 공식/커뮤니티 자료 확인; 실제 커스텀 게이지 브리지·엔진 체력·보호막·모바일 터치/화면·RP 충돌은 NOT_RUN. 바닐라 XP/배고픔/생존 정보는 보존. 기존 title/actionbar 경쟁과 고정 데이터 동기화/실패 폴백을 검증한 뒤 적용한다.

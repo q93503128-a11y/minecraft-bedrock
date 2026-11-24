@@ -25,3 +25,6 @@
 ## 성장/난이도 수치 참고 추가
 - [Minecraft Dungeons — Adjusting the Endgame](https://www.minecraft.net/en-us/article/dungeons-dev-blog---adjusting-endgame): 난이도 증가 완화와 보스 개방·특수장비 파밍 연결.
 - [Diablo III — Greater Rifts Preview](https://news.blizzard.com/en-us/article/15317478/patch-2-1-0-preview-greater-rifts), [Patch 2.3.0](https://news.blizzard.com/en-gb/article/19859662/patch-2-3-0-now-live): 몬스터 난도에 맞춘 보상 및 고단 피해 조정. 설계 참고이며 원작 수치/상한은 복사하지 않음. 실제 플레이/영상 미검증.
+
+## HUD 참고 추가 (2026-11-24)
+[HUD_DESIGN.md](HUD_DESIGN.md) 4절에 공식 ScreenDisplay·HudElement·JSON UI와 Bedrock Wiki, aceofnawa RPG HUD, Ultimate Status System, Bosya PlayerStats HUD의 공개 자료 및 적용/비적용 원리를 기록. 설치 및 실제 화면/터치 검증은 아직 하지 않았다.
