@@ -35,3 +35,6 @@
 
 ## 무기 및 장신구 추가 조사
 [EQUIPMENT.md](EQUIPMENT.md) 8절: 공식 cooldown/swing_duration/piercing_weapon/kinetic_weapon/EquipmentSlot/ItemStack/Container/Dimension 및 Lynx More Weapons, Sweep Impact, Java Combat Evolved, Novelty API, Easy Accessories 사례. [HUD_DESIGN.md](HUD_DESIGN.md) 5절: Aceofnawa의 추정 흡수 오버레이와 공식 피해 전 이벤트. 공개 문서/설명 확인이며 실제 설치/영상 분석은 후속.
+
+## 몬스터·보스 레퍼런스
+[MONSTERS.md](MONSTERS.md) 7절: Minecraft Dungeons/Jungle Awakens/Enchanted mobs, Mowzie's Mobs Bedrock, Mutant Creatures Bedrock 공식 소개 및 공개 설명. 지역별 생태/적 AI/애니메이션/공략 패턴을 참고하되 원본 자산을 복제하지 않음. 직접 플레이/영상 분석은 후속.
