@@ -50,3 +50,6 @@
 - 초기 배치 가안: 고정 길이의 얇은 막대형 HP바. 빨간 기본 HP, 위쪽 일부 높이에 금색 흡수량 오버레이, 아래쪽 얇은 파란 테두리/부분 게이지에 RPG 보호막. 두 임시 보호 계층이 빨간 HP를 완전히 덮지 않으며 각각 0이면 숨김. 최대 HP 대비 양을 표시하고 100% 초과는 잘못된 값처럼 보이지 않도록 숫자/초과 표시로 표현하는 후보. 기본 HUD에서는 상세 숫자를 남발하지 않음. 최종 크기/색/아이콘은 실제 화면 검토 후.
 - [Aceofnawa RPG HUD](https://www.curseforge.com/minecraft-bedrock/addons/aceofnawas-rpg-hud)는 금색 흡수 오버레이를 구현했으나 제작자가 **흡수량 추정**이라고 명시. 정확한 엔진 흡수 잔여값을 직접 읽을 수 있는 안정 API가 확인되지 않았으므로 추정치를 확정값으로 표시하지 않는다. [EntityComponentTypes](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entitycomponenttypes?view=minecraft-bedrock-stable) 및 목표 버전 확인. 흡수의 정상 소모를 추적할 수 없으면 정확한 흡수 수치 대신 원본 표시 유지 등 폴백을 시험.
 - [EntityHurtBeforeEvent](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable)와 WorldBeforeEvents.entityHurt는 안정 문서에서 damage 변경/cancel 및 이벤트 노출을 확인했다. RPG 쉴드와 불멸의 맹세 구현에 유력하지만 바닐라 흡수/갑옷/토템/환경피해 전후의 이벤트 순서 및 실제 소모량을 검증해야 한다. 두 계층 모두 같은 피해를 중복 흡수하지 않도록 처리 순서 확정 후 표시. 현재 NOT_RUN.
+
+## 6. 사용자 추가 디자인 요구
+UI/UX/HUD 모두 복잡하지 않고 가독성 있게, 무난하게 예쁘면서 Minecraft 분위기에 맞출 것. 바닐라 슬롯/테두리·픽셀 아이콘과 절제된 희귀도 강조, Minecraft Dungeons의 장비 정보 계층 참고 후보. 실제 플레이 화면 기반 최종 디자인 필요. 기존 최소 HUD, 금색 흡수/청색 보호막, 생존 조작 유지. SYSTEMS 3절 연계. NOT_RUN.
