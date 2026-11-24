@@ -9,7 +9,7 @@
 - 이번 기록은 채팅에서 협의한 기획을 문서로 정리한 것이며 **BP/RP·스크립트·모델·실행 패키지 아직 없음**.
 - 실제 Bedrock 게임 구동/기능/모바일 렌더/멀티플레이/성능 테스트: **전부 NOT_RUN**. 외부 애드온 실제 설치 검증도 NOT_RUN.
 - 같은 저장소의 `projects/rpg-survival/`은 **별개 기존 프로젝트**이고 이 기획을 덮어쓰지 않음.
-- 문서: PROJECT, GAME_DESIGN, CLASSES, TECHNICAL_RISKS, DECISIONS, REFERENCES, BALANCE, STATUS.
+- 문서 목록은 PROJECT.md 인덱스 참조.
 
 ## 대화 기반으로 복구한 범위
 - 무한 성장/4개 스탯/직업별 저장·무료 재분배/1~6차 직접 전직/9개 직업 상세 패시브·액티브
@@ -77,3 +77,6 @@
 
 ## 도전 위협도 및 승급 수정 / PvP 초안
 - DUNGEONS/MONSTERS/BALANCE/GAME_DESIGN: 0~W 도전 위협도 선택 및 임시 보상 저장. ASCENSION: 전원 동의 시 전원 참가, 한 공간 웨이브. PVP 신규 기획서 작성, 신규 규칙 가안. 다음: 전체 정본 충돌 검토/개발 순서. NOT_RUN.
+
+## PvP 기권 및 개발 준비
+- PVP/GAME_DESIGN 기권 반영, DEVELOPMENT_PLAN 핵심 충돌/누락 및 M0~M6 순서 가안. 실제 디렉터리 확인: 변경 전 문서 15개만 존재. 외부 링크·스킬 수치 전수 검증 미실행. 엔진 NOT_RUN. 다음은 미결정 검토 및 M0 시작 여부 사용자 승인.

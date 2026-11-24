@@ -7,6 +7,7 @@
 Minecraft **Bedrock Edition**의 바닐라 생존(채굴·건축·탐험·제작)을 보존하면서 친구와 함께 즐기는 직업 중심 RPG 애드온. 모바일 터치/PC/멀티플레이가 핵심이며 스킬 조작을 최소화한다. 직업 9종·6차 전직, 무한 레벨과 세계 위협도, 장비·각인·RPG 가방, 기존/신규 몬스터와 보스, 자연 생성 던전, 승급 도전, 동의 기반 PvP 콜로세움을 갖춘다.
 
 ## 문서 정본
+- [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md): 기획 감사·미결정 사항·단계별 개발 계획.
 - [GAME_DESIGN.md](GAME_DESIGN.md): 공통 시스템, 생존·전투·성장·장비·월드·던전·멀티플레이.
 - [PVP.md](PVP.md): 콜로세움 신청·결투·패배 및 복귀 가안.
 - [ASCENSION.md](ASCENSION.md): 승급 도전 투표·웨이브·수호자·세계 위협도 상세 가안.
