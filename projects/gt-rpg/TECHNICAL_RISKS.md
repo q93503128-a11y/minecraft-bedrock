@@ -63,3 +63,6 @@
 [EQUIPMENT.md](EQUIPMENT.md) 8절 및 [HUD_DESIGN.md](HUD_DESIGN.md) 5절 참고. 문서상 지원: 공격 cooldown(type=attack, format 1.21.130+), swing_duration(시각만), piercing_weapon(reach, 직선 관통 및 채굴 금지), EntityHurtBeforeEvent(damage/cancel). 부채꼴 범위 및 장신구는 스크립트/별도 데이터 후보. PlayerItemAttackEntityBeforeEvent는 pre-release. 바닐라 흡수 잔여값 정확 조회는 미확인.
 - 우선 실기 테스트: 무기 4종의 간격·실제 명중·피격 무적 틱·무기 교체 쿨타임, 직선/부채꼴/벽 차단·아군 필터 및 액티브 충돌, 장신구 고유 데이터 교체/재접속/가방 가득 참/사망/동시 요청, 흡수+RPG 쉴드 동시 피해 및 HUD 표시/만료.
 - 공식 문서 조회와 공개 애드온 설명 검토만 수행. BP/RP/실기 NOT_RUN.
+
+## 강화 재도전 검증 추가
+도전 시작 시 W 스냅샷, 전체 도전 몹/보스/보상 레벨 연동, 기본 자연 던전과 강화 도전의 분리, 독립 보상 중복 방지, 강화 클리어로 W 증가하지 않음, 반복 공간 리셋/재접속을 검증한다. NOT_RUN.

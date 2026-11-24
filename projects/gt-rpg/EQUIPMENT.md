@@ -101,3 +101,6 @@
 - 별도 **논리 장착 슬롯**으로 목걸이 1/반지 2 후보 구현: 모험가의 서 → 장비 → 각 슬롯 선택 → 소유 장신구 장착/해제/교체. 바닐라 갑옷·손·핫바 슬롯과 독립. 장착된 실제 아이템은 원래 인벤/가방에서 이동되어 장착 데이터에만 존재하며 고유 ID/레벨/희귀도/옵션/각인/고유 효과를 보존. 서버가 장착 상태에 따른 스탯을 재계산, 클라이언트 메뉴는 표시/요청 역할만.
 - 안정 [ItemStack](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/itemstack?view=minecraft-bedrock-stable) 동적 속성, [Container](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/container?view=minecraft-bedrock-stable) 입출력 및 Entity/Player 동적 속성은 기반 기능 후보. ItemStack 객체를 동적 속성에 그대로 저장한다는 뜻이 아니며 RPG 아이템의 필요한 데이터를 직렬화하거나 안전한 실제 저장 컨테이너로 보존해야 함. 가방과 장신구 장착 간 고유 ID 중복/분실 방지, 교체/해제 시 빈칸 부족하면 원 상태 유지, 서버 재시작·이탈·직업 변경·죽음/keepInventory 규칙 검증. 가상 장착 슬롯의 사망 시 보존 여부는 별도 사용자 결정. 갑옷 대체 슬롯 방식은 사용하지 않는다.
 - [Novelty API](https://www.curseforge.com/minecraft-bedrock/addons/novelty)는 추가 액세서리 24슬롯, [Easy Accessories](https://www.curseforge.com/minecraft-bedrock/addons/easy-accessories-bedrock-accessories-system)는 전용 메뉴에서 장신구별 슬롯을 제공한다고 소개. 추가 장착 시스템의 실제 공개 사례이나 엔진 고유 인벤토리 슬롯 증설을 증명하지 않는다. 해당 애드온 설치/코드/라이선스는 직접 검증하지 않았으며 종속성 채택은 미결정. GT RPG 자체 가상 슬롯 우선 검토. 모델 외형 표시(반지/목걸이가 플레이어 모델에 실제 보임)는 별도 RP 기술 검증.
+
+## 강화 재도전 보상 연계
+기본 보스와 별도로 위협도에 맞춘 강화 재도전에서 동일 고유 장비를 더 높은 레벨로 다시 획득할 수 있다. 고등급/고유 장비 획득 확률 상승 및 상한은 MONSTERS 4.5절 및 추후 보상 설계. 보유 장비 자동 레벨업 없음.
