@@ -8,6 +8,7 @@ Minecraft **Bedrock Edition**의 바닐라 생존(채굴·건축·탐험·제작
 
 ## 문서 정본
 - [GAME_DESIGN.md](GAME_DESIGN.md): 공통 시스템, 생존·전투·성장·장비·월드·던전·멀티플레이.
+- [ASCENSION.md](ASCENSION.md): 승급 도전 투표·웨이브·수호자·세계 위협도 상세 가안.
 - [DUNGEONS.md](DUNGEONS.md): 일회용 자연 생성 입구, 난이도 선택, 던전 공간 재사용 및 승패/보상 설계.
 - [MONSTERS.md](MONSTERS.md): 신규 몬스터·정예·미니보스·고유 보스·승급 수호자 콘텐츠 초안.
 - [EQUIPMENT.md](EQUIPMENT.md): 장비 종류·옵션·각인 콘텐츠 초안.

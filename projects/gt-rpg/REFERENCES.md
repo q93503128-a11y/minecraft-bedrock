@@ -44,3 +44,6 @@
 
 ## 던전 세부 구성 참고
 [DUNGEONS.md](DUNGEONS.md) 10절: Microsoft Learn feature rules/structure template placement 및 Minecraft Dungeons The road to Dungeons, Abyssal Monument의 공개 개발 설명. 테마 공간·구간별 랜드마크·직관적 진행을 참고. 실제 플레이/영상/생성 실기 검증 없음.
+
+## 던전 보상/승급 상세 참고
+공식 [Minecraft Dungeons September Update](https://www.minecraft.net/en-us/article/dungeons-september-dev-blog), [Adjusting the Endgame](https://www.minecraft.net/en-us/article/dungeons-dev-blog---adjusting-endgame), [Diablo III Greater Rifts](https://news.blizzard.com/en-us/article/15317478/patch-2-1-0-preview-greater-rifts): 고난도 고보상, 기존 보스 도전, 최종 보상 집중 참고. GT RPG 입장권·시간제한·순위표 미도입. 공식 설명만 확인, 직접 플레이/영상/실기 NOT_RUN.
