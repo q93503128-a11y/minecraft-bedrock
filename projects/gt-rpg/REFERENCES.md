@@ -56,3 +56,6 @@
 
 ## 최초 접속 및 성장 관리 (2026-11-25)
 검색 결과 확인: [Wynncraft Character Menu](https://wynncraft.wiki.gg/wiki/Character_Menu), [Skill Points](https://wynncraft.wiki.gg/wiki/Skills), [Diablo III 포럼 스킬 변경 설명](https://us.forums.blizzard.com/en/d3/t/skill-selection/12230). SYSTEMS 6.4의 적용/비적용. 포럼은 커뮤니티 근거이며 공식 최신 규칙 재확인 필요. 실제 화면/영상 및 베드락 검증 없음.
+
+## 2026-11-25 S4 검색 확인
+SYSTEMS 7.4에 실제 이번 검색 결과와 적용/비적용, 접근 제한 명시. 공식 Minecraft Ender Dragon/Meet the Wither/Warden, Dungeons Adjusting the Endgame, Wynncraft 지역별 몹 분류, Microsoft Learn 피해 이벤트/Entity 문서 검색 결과 확인. Minecraft Wiki Sharpness/Strength/Protection은 검색 스니펫만 확인(본문 robots.txt 제한). 이전 세션의 모든 외부 근거를 재검증했다는 의미 아님. 실제 게임/영상/API 호환성 시험 NOT_RUN.
