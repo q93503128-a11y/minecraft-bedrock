@@ -53,3 +53,6 @@
 
 ## 2026-11-25 가방 조작 참고(검색 결과 확인)
 [Minecraft Dungeons Inventory](https://minecraft.wiki/w/Dungeons%3AInventory) 장비 상세/Salvage, [Enchantment](https://minecraft.wiki/w/Dungeons%3AEnchantments) 장비별 강화 표시, [Terraria Inventory](https://terraria.wiki.gg/wiki/Inventory) 즐겨찾기 보호 및 정리. SYSTEMS 5.5의 적용/비적용 기록. 실제 게임 화면·영상/자산 라이선스·Bedrock 구현 검증 미실행. 이전 기록의 외부 링크 확인 여부는 별도 재검증 필요.
+
+## 최초 접속 및 성장 관리 (2026-11-25)
+검색 결과 확인: [Wynncraft Character Menu](https://wynncraft.wiki.gg/wiki/Character_Menu), [Skill Points](https://wynncraft.wiki.gg/wiki/Skills), [Diablo III 포럼 스킬 변경 설명](https://us.forums.blizzard.com/en/d3/t/skill-selection/12230). SYSTEMS 6.4의 적용/비적용. 포럼은 커뮤니티 근거이며 공식 최신 규칙 재확인 필요. 실제 화면/영상 및 베드락 검증 없음.

@@ -95,3 +95,6 @@
 
 ## 2026-11-25 가방 조작·장비·각인·선물
 - SYSTEMS 5절 상세 검토안, EQUIPMENT/GAME_DESIGN/DECISIONS/TECHNICAL_RISKS/REFERENCES 연결. 실제 웹 검색에서 Minecraft Dungeons Inventory/Enchantment, Terraria Inventory의 공개 설명 확인. 화면/영상·런타임·저장 구현 미검증. 다음 S1 최초 접속·재발급, S3 성장 조작. 구현 미착수.
+
+## 2026-11-25 최초 접속 및 성장 관리
+- SYSTEMS 6절 상세 가안: S1 첫 접속/책, S3 스탯·직업 전환·전직. 기존 문서 연결 및 안전 조건 추가. Wynncraft 캐릭터/스탯 공개 설명과 Diablo III 포럼 검색 결과 확인. 실제 UI 화면/영상·엔진 NOT_RUN. 다음 S4 월드/바닐라 생존 연동 및 S5 전투/협동. 구현 미착수.
