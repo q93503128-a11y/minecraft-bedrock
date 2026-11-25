@@ -59,3 +59,6 @@
 
 ## 2026-11-25 S4 검색 확인
 SYSTEMS 7.4에 실제 이번 검색 결과와 적용/비적용, 접근 제한 명시. 공식 Minecraft Ender Dragon/Meet the Wither/Warden, Dungeons Adjusting the Endgame, Wynncraft 지역별 몹 분류, Microsoft Learn 피해 이벤트/Entity 문서 검색 결과 확인. Minecraft Wiki Sharpness/Strength/Protection은 검색 스니펫만 확인(본문 robots.txt 제한). 이전 세션의 모든 외부 근거를 재검증했다는 의미 아님. 실제 게임/영상/API 호환성 시험 NOT_RUN.
+
+## 2026-11-25 S7 실제 검색 결과
+SYSTEMS 11.1에 링크·적용/비적용·권리 확인 범위 기록. Mojang bedrock-samples와 라이선스(EULA 적용), 공식 Entity Wizard/Entity Modeling and Animation, Blockbench Wiki, Nico's Mobs, Dungeon Craft(MIT 표시와 타 사이트 게시 제한 문구 상충), Fantasy Adventure, 공식 Minecraft Dungeons/Back to the Nether, Kenney Impact Sounds(CC0 검색 결과, 직접 접근 제한). 실제 파일 권리·에셋 설치·영상 분석은 미검증. 이전 기록은 이번 확인 범위와 구별.

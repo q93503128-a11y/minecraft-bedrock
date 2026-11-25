@@ -110,3 +110,6 @@
 
 ## 2026-11-25 파티클 및 알림 보완
 - SYSTEMS 10절/HUD_DESIGN 9절: 기본 파티클 최소화 및 필요한 예고/타격만, 책 내부 숫자 알림과 중요 채팅 안내. 관련 문서 동기화. 실제 UI/개별 표시/엔진 검증 NOT_RUN. 다음 S7 아트·음향.
+
+## 2026-11-25 S7 아트·모델·애니메이션·사운드
+- SYSTEMS 11절 및 관련 문서 갱신. 이번 웹 검색 실제 결과에서 공식 Mojang samples/Blockbench 문서, Nico's Mobs/Dungeon Craft/Fantasy Adventure, Dungeons, Kenney 후보 확인. Dungeon Craft 라이선스 문구 충돌 및 Kenney 직접 접근 제한 기록. 실제 다운로드/라이선스 파일별 검증/화면·영상 분석·모델 제작·게임 구동 NOT_RUN. 다음 S8 저장·복구·검증. 구현 승인 없음.
