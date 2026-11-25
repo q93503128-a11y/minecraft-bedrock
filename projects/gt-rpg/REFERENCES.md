@@ -50,3 +50,6 @@
 
 ## 모험가의 서 메뉴 정보 구조 참고
 [SYSTEMS.md](SYSTEMS.md) 1절: Wynncraft Skill Points/Character Menu, Minecraft Wiki의 Dungeons Inventory/Enchantments. 공개 설명 검색 결과 확인, 실제 화면/영상 검토 및 구현 전 라이선스·호환성 확인은 후속. 원작 자산 복제 없음.
+
+## 2026-11-25 가방 조작 참고(검색 결과 확인)
+[Minecraft Dungeons Inventory](https://minecraft.wiki/w/Dungeons%3AInventory) 장비 상세/Salvage, [Enchantment](https://minecraft.wiki/w/Dungeons%3AEnchantments) 장비별 강화 표시, [Terraria Inventory](https://terraria.wiki.gg/wiki/Inventory) 즐겨찾기 보호 및 정리. SYSTEMS 5.5의 적용/비적용 기록. 실제 게임 화면·영상/자산 라이선스·Bedrock 구현 검증 미실행. 이전 기록의 외부 링크 확인 여부는 별도 재검증 필요.

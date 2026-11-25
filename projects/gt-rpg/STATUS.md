@@ -92,3 +92,6 @@
 
 ## 워든 보상 및 인벤 용량 변경 방향
 - SYSTEMS/MONSTERS/HUD_DESIGN 등 동기화: 워든 비의무 처치 보상, 던전스식 레이아웃 재현 방향, 카테고리 독립 용량. 실제 보상 계수/가방 수치/최종 UI 미확정, 구현 NOT_RUN. 다음: 가방 상세 조작 및 첫 접속.
+
+## 2026-11-25 가방 조작·장비·각인·선물
+- SYSTEMS 5절 상세 검토안, EQUIPMENT/GAME_DESIGN/DECISIONS/TECHNICAL_RISKS/REFERENCES 연결. 실제 웹 검색에서 Minecraft Dungeons Inventory/Enchantment, Terraria Inventory의 공개 설명 확인. 화면/영상·런타임·저장 구현 미검증. 다음 S1 최초 접속·재발급, S3 성장 조작. 구현 미착수.
