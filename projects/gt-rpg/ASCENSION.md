@@ -39,3 +39,6 @@
 ## 4. 검증 및 레퍼런스
 - [Minecraft Dungeons Adjusting the Endgame](https://www.minecraft.net/en-us/article/dungeons-dev-blog---adjusting-endgame) 기존 보스 미션을 통한 상위 난도 개방, [Diablo III Greater Rifts](https://news.blizzard.com/en-us/article/15317478/patch-2-1-0-preview-greater-rifts) 성장 단계에 맞춘 반복 도전과 최종 수호자 보상 참고. GT RPG는 전원 동의, 무한 W, 고정 수호자 패턴, 시간제한/입장권 없음. 공식 설명만 검토, 직접 플레이/영상 분석 미실행.
 - 검증: 1~4인·모든 직업(소환수 포함), W=0/1/3/20/100/1000, 적절한/낮은 장비, 다음 레벨 스탯/정예 확률, 투표 중 거절/이탈/접속/동시 신청, 관전/재접속/전멸, 수호자 마지막 피해와 서버 종료 경쟁, W 단 한 번 상승 및 보상 정산, 다른 세션 침범/복귀. NOT_RUN. 코드·BP/RP·맵 제작 금지(사용자 구현 승인 전).
+
+## 저장·세션 복구 최신 상세 연결
+SAVE_DESIGN 2~3절의 중단 복구·정산·입구/W/스냅샷·이탈 및 복귀 후보 참조. 기존 사용자 확정 규칙 유지, 신규 제한/수치는 검토용이며 실제 엔진 NOT_RUN.

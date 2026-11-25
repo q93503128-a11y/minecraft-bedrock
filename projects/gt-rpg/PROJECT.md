@@ -8,6 +8,7 @@ Minecraft **Bedrock Edition**의 바닐라 생존(채굴·건축·탐험·제작
 
 ## 문서 정본
 - [SYSTEMS.md](SYSTEMS.md): 모험가의 서 메뉴 구조 초안 및 남은 공통 시스템 기획 목록.
+- [SAVE_DESIGN.md](SAVE_DESIGN.md): 저장·복구·정산·M0 게이트 상세 가안.
 - [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md): 기획 감사·미결정 사항·단계별 개발 계획.
 - [GAME_DESIGN.md](GAME_DESIGN.md): 공통 시스템, 생존·전투·성장·장비·월드·던전·멀티플레이.
 - [PVP.md](PVP.md): 콜로세움 신청·결투·패배 및 복귀 가안.
