@@ -106,3 +106,6 @@
 - XP는 BALANCE 기존 곡선 그대로. 예시 지하 묘지 일반 Lv.7 14기, 미니보스 Lv.8 1기, 리치 Lv.10 1기라면 기여자 XP=14×44+7×48+12×56=1624, Lv.10의 단일 레벨 필요 XP(365)의 약 4.45배. 실제 연속 레벨업 요구량은 증가하므로 4.45레벨 상승을 뜻하지 않음. 현재 성장 속도가 빠를 수 있음; 실제 던전 클리어/반복 실패 XP 효율을 관찰해 총 XP 곡선/몹 수를 튜닝하되 실패 XP 보존은 변경하지 않는다.
 - 상자 보상 표시/정산은 한 번만 기록, 보스 소환 몹 보상 반복 악용 차단. 가방 만석 시 이미 확정된 개인 보상을 유실시키지 않을 회수 대기 방식 후보. 직접 월드 아이템으로 무한 떨구지 않음.
 - 참고 [Minecraft Dungeons September Update](https://www.minecraft.net/en-us/article/dungeons-september-dev-blog) 고난도 임무의 희귀/고유 장비 보상, [Diablo III Greater Rifts](https://news.blizzard.com/en-us/article/15317478/patch-2-1-0-preview-greater-rifts) 최종 수호자 보상, [Adjusting the Endgame](https://www.minecraft.net/en-us/article/dungeons-dev-blog---adjusting-endgame) 난도 개방/희귀 보상. GT RPG는 입장권/시간제한/순위표 미채택, 실패 경험치 유지. 공개 공식 설명 검토, 영상/직접 플레이/밸런스 실측 NOT_RUN.
+
+## S5 회복 포션 후보 연계
+SYSTEMS 8.1의 RPG 회복 포션 신규 도입 제안은 검토용. 기존 소지 포션 사용 가능, 던전 내 새로 얻은 포션은 임시 보상에 포함하여 성공 시 정산, 실패 시 폐기 및 소비분 미복원 원칙 유지. 기존 장비·각인서 드롭률 변경 없음.

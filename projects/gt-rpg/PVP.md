@@ -17,3 +17,6 @@
 - 기존 야생 PvP 차단과 경기장 허용은 피해 원인/소유자/세션 기반 검증. 월드 PvP gamerule 변경만으로 경기장을 구현하지 않음. 공식 EntityHurtBeforeEvent cancel/damage 및 Entity.applyDamage/teleport는 후보. 목표 안정 버전에서 실제 플레이어 피해/투사체/소환수/토템/환경 피해/이벤트 순서 확인 필수.
 - 참고: [Wynncraft 결투 설명](https://forums.wynncraft.com/threads/how-does-battles-work-in-this-server.321789/) 상대 수락형 결투의 커뮤니티 설명(공식 규칙 문서 아님); [Microsoft Learn EntityHurtBeforeEvent](https://learn.microsoft.com/ja-jp/minecraft/creator/scriptapi/minecraft/server/entityhurtbeforeevent?view=minecraft-bedrock-stable), [Entity](https://learn.microsoft.com/en-us/minecraft/creator/scriptapi/minecraft/server/entity?view=minecraft-bedrock-stable). 공개 문서 확인, 실기/영상 검증 NOT_RUN.
 - 필수 시험: 두 플레이어/9직업 조합, 모든 피해 원인 및 치명 피해/생존 패시브, 외부 난입, 경기 중 이탈·재접속·동시 요청·무승부, 손실 없는 복귀 및 회복 악용 차단, BDS/모바일. 사용자 구현 승인 전 코드/맵/에셋 제작 금지.
+
+## 회복 포션 후보 연계
+SYSTEMS 8.1의 RPG 회복 포션 도입 가안. 기존 경기용 소모품 허용 후보와 결투 직전 상태 복원 유지. 포션 CD와 회복 효과는 경기용 상태에서 처리, PvP 별도 회복 배율 적용 및 교착 가능성은 실기 시험 후 결정. NOT_RUN.
